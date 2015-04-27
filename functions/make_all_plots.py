@@ -141,9 +141,9 @@ def make_kde_plots(i, galax, k, in_params):
     '''
     Prepare parameters and call function to generate SMC and LMC KDE plots.
     '''
-
-    gal_names, ra, dec, zarr, zsigma, aarr, asigma, earr, esigma, darr, \
-    dsigma, marr, msigma, rarr = in_params
+    zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, msigma = \
+    [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
+    'esigma', 'darr', 'dsigma', 'marr', 'msigma']]
 
     fig = plt.figure(figsize=(14, 25))  # create the top-level container
     gs = gridspec.GridSpec(4, 2)       # create a GridSpec object

@@ -1,7 +1,7 @@
 # mc-catalog
 
-Set of scripts to analyze and plot the results of the ASteCA processing of the
-210 MC clusters observed with Washington photometry.
+Set of scripts to analyze and plot the results of the **ASteCA** processing of
+the 210 MC clusters in our database, observed with Washington photometry.
 
 
 ## Scripts and data files description
@@ -17,6 +17,8 @@ Set of scripts to analyze and plot the results of the ASteCA processing of the
  Script that Produces the main figures by comparing parameters with each other
  (KDE maps), with literature values (1:1 plots) and distributed in space
  (RA vs DEC plots.)
+
+ Functions are stored in the `functions/` folder.
 
 * `extinction_MCEV/IRSA_MC_ext.tbl`
 
@@ -46,6 +48,6 @@ Set of scripts to analyze and plot the results of the ASteCA processing of the
 
  The results are stored in the `cls_exts_match.dat` file.
 
- * `extinction_MCEV/cls_exts_match.dat`
+* `extinction_MCEV/cls_exts_match.dat`
 
-   Output of the above script.
+  Output of the above script.
