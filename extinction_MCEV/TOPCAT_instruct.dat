@@ -1,0 +1,13 @@
+TOPCAT
+
+VO / (TAP) Query: http://dc.g-vo.org/tap
+
+Query:
+
+  SELECT centerAlpha, centerDelta, ev_i, sig_ev_i, mine.* FROM
+          mcextinct.exts AS exts
+          RIGHT OUTER JOIN tap_upload.t1 AS mine
+          ON (1=INTERSECTS(
+            CIRCLE('ICRS', mine.ra_deg, mine.dec_deg, 0.9),
+            exts.bbox))
+
