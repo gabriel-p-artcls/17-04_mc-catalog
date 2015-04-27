@@ -66,11 +66,11 @@ def check_diffs(in_params):
 
                 if par[j][1][i] > -99.:
 
-                    # Metallicity.
-                    if k == 0 and diff > pars_diff[0]:
-                        flag_cl = True
-                        print '{} {} {}, {:.4f} vs {:.4f}'.format(gal[j],
-                            name, p_n[k], par[j][0][i], par[j][1][i])
+                    ## Metallicity.
+                    #if k == 0 and diff > pars_diff[0]:
+                        #flag_cl = True
+                        #print '{} {} {}, {:.4f} vs {:.4f}'.format(gal[j],
+                            #name, p_n[k], par[j][0][i], par[j][1][i])
 
                     # Age.
                     if k == 1 and diff > pars_diff[1]:
@@ -78,17 +78,17 @@ def check_diffs(in_params):
                         print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
                             name, p_n[k], par[j][0][i], par[j][1][i])
 
-                    # Extinction.
-                    if k == 2 and diff > pars_diff[2]:
-                        flag_cl = True
-                        print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
-                            name, p_n[k], par[j][0][i], par[j][1][i])
+                    ## Extinction.
+                    #if k == 2 and diff > pars_diff[2]:
+                        #flag_cl = True
+                        #print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
+                            #name, p_n[k], par[j][0][i], par[j][1][i])
 
-                    # Distance.
-                    if k == 3 and diff > pars_diff[3]:
-                        flag_cl = True
-                        print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
-                            name, p_n[k], par[j][0][i], par[j][1][i])
+                    ## Distance.
+                    #if k == 3 and diff > pars_diff[3]:
+                        #flag_cl = True
+                        #print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
+                            #name, p_n[k], par[j][0][i], par[j][1][i])
 
                     # Radius.
                     if k == 4 and diff > pars_diff[4]:
@@ -157,7 +157,7 @@ def main():
     check_diffs(in_params)
 
     # Make final plots.
-    make_plots(i, in_params)
+    #make_plots(i, in_params)
 
     print '\nEnd.'
 
