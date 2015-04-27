@@ -10,7 +10,7 @@ the 210 MC clusters in our database, observed with Washington photometry.
 
   RA & DEC positions for the 3740 clusters in the
   [Bica et al. (2008)](http://cdsads.u-strasbg.fr/abs/2008MNRAS.389..678B)
-  catalog.
+  catalog ([Table 3](http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=J/MNRAS/389/678/table3)).
 
 * `mc_cat_analysis.py`
 
@@ -23,8 +23,9 @@ the 210 MC clusters in our database, observed with Washington photometry.
 * `extinction_MCEV/IRSA_MC_ext.tbl`
 
   Output of the [IRSA](http://irsa.ipac.caltech.edu/applications/DUST/) query to
-  obtain the Schlafly & Finkbeiner (2011) corrected `E(B-V)` values for the 210
-  clusters.
+  obtain the [Schlafly & Finkbeiner
+  (2011)](http://adsabs.harvard.edu/abs/2011ApJ...737..103S) corrected `E(B-V)`
+  values for the 210 clusters.
 
 * `extinction_MCEV/IRSA_BB_ext.tbl`
 
@@ -36,9 +37,10 @@ the 210 MC clusters in our database, observed with Washington photometry.
   service query. Each of the 210 cluster's position is matched with at least
   one area in the reddening maps containing a E(V-I) value.
 
-  The cluster OHSC28 needed a 6.0 deg search radius to find areas with
-  extinction in the maps, making it the one furthest away from the areas
-  studied in the MCEV maps.
+  The cluster [OHSC28]
+  (http://simbad.u-strasbg.fr/simbad/sim-id?Ident=OHSC+28)
+  needed a 6.0 deg search radius to find areas with extinction in the maps,
+  making it the one furthest away from the areas studied in the MCEV maps.
 
 * `extinction_MCEV/extin_analysis.py`
 
