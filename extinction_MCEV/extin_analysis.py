@@ -41,7 +41,7 @@ def get_data():
 
 def match_coords(ext_pars):
     '''
-    Store all the indexes pointing to each star in separate lists.
+    Store all the indexes pointing to each cluster in separate lists.
     '''
 
     # 173 stars have extinction values found in a 0.5 degree box.
