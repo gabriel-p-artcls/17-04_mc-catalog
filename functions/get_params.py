@@ -28,6 +28,16 @@ def rad_in_pc(float_lst):
     return r_pc
 
 
+def correct_int_col_extin(int_col, extinc):
+    '''
+    Corret integrated color for the extinction.
+    '''
+    E_CT1_E_BV = 1.97
+    int_col_cor = int_col - E_CT1_E_BV * float_str(extinc)
+
+    return int_col_cor
+
+
 def params(as_names, as_pars, cl_dict, names_idx):
     '''
     Return ASteCA output and literature parameters values.
@@ -71,8 +81,12 @@ def params(as_names, as_pars, cl_dict, names_idx):
         # Store coordinates.
         ra[j].append(cl_dict[names_idx[i]][ra_i])
         dec[j].append(cl_dict[names_idx[i]][dec_i])
-        # Store integrated colors.
-        int_colors[j].append(float_str(as_pars[i][a_int_c]))
+        # Integrated color.
+        int_col_no_corr = float_str(as_pars[i][a_int_c])
+        # Correct for extinction.
+        int_col_corr = correct_int_col_extin(int_col_no_corr, as_pars[i][a_ei])
+        # Store extinction corrected integrated color.
+        int_colors[j].append(int_col_corr)
         # Store literature E(B-V) values: Schlafly & Finkbeiner (SandF) and
         # MCEV.
         ext_sf[j][0].append(cl_dict[names_idx[i]][l_e_sandf])
