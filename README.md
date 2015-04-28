@@ -53,3 +53,7 @@ the 210 MC clusters in our database, observed with Washington photometry.
 * `extinction_MCEV/cls_exts_match.dat`
 
   Output of the above script.
+
+* `age_BB/BB_ages.dat`
+
+  List of ages for clusters in the database presented in [Bonato & Bica (2010)](http://cdsads.u-strasbg.fr/abs/2010MNRAS.403..996B).
