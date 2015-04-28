@@ -242,3 +242,72 @@ def make_lit_ext_plot(in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('ext_lit_plot.png', dpi=300)
+
+
+def int_cols_plots(pl_params):
+    '''
+    Generate ASteCA integrated colors plots.
+    '''
+    gs, i, xmin, xmax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, zarr, rad = \
+    pl_params
+    siz = np.asarray(rad) * 5
+
+    xy_font_s = 16
+    cm = plt.cm.get_cmap('RdYlBu_r')
+
+    ax = plt.subplot(gs[i])
+    #ax.set_aspect('auto')
+    plt.xlim(xmin, xmax)
+    #plt.ylim(xmin, xmax)
+    plt.xlabel(x_lab, fontsize=xy_font_s)
+    plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+        zorder=1)
+    ax.minorticks_on()
+    # Plot all clusters in dictionary.
+    SC = plt.scatter(xarr, yarr, marker='o', c=zarr, s=siz, lw=0.25, cmap=cm,
+        zorder=3)
+    # Only plot y error bar if it has a value assigned in the literarute.
+    plt.errorbar(xarr, yarr, xerr=xsigma, ls='none', color='k',
+        elinewidth=0.8, zorder=1)
+    # Position colorbar.
+    the_divider = make_axes_locatable(ax)
+    color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
+    # Colorbar.
+    cbar = plt.colorbar(SC, cax=color_axis)
+    zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
+    cbar.set_label(z_lab, fontsize=xy_font_s - 2, labelpad=zpad)
+
+
+def make_int_cols_plot(in_params):
+    '''
+    Prepare parameters and call function to generate integrated color vs Age
+    (colored by mass) plots for the SMC and LMC.
+    '''
+
+    aarr, asigma, marr, int_colors, rad_pc = [in_params[_] for _ in ['aarr',
+    'asigma', 'marr', 'int_colors', 'rad_pc']]
+
+    # Define values to pass.
+    xmin, xmax = 6.5, 10.4
+    x_lab, y_lab, z_lab = '$log(age/yr)_{asteca}$', \
+    '$(C-T_{1})_{0;\,asteca}$', '$M\,(M_{\odot})$'
+
+    fig = plt.figure(figsize=(16, 25))  # create the top-level container
+    gs = gridspec.GridSpec(4, 1)       # create a GridSpec object
+
+    ext_pl_lst = [
+        # SMC
+        [gs, 0, xmin, xmax, x_lab, y_lab, z_lab, aarr[0][0], asigma[0][0],
+            int_colors[0], marr[0][0], rad_pc[0]],
+        ## LMC
+        #[gs, 1, xmin, xmax, x_lab, y_lab, z_lab, aarr[1][0], asigma[1][0],
+            #int_colors[1], marr[1][0], rad_pc[1]]
+    ]
+
+    for pl_params in ext_pl_lst:
+        int_cols_plots(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    plt.savefig('int_colors_plot.png', dpi=300)

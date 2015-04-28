@@ -5,7 +5,7 @@
 from functions.get_data import get_asteca_data, get_liter_data
 from functions.get_params import params
 from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
-make_ra_dec_plots, make_lit_ext_plot
+make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot
 
 
 def d_search(dat_lst, cl_name, name_idx):
@@ -108,23 +108,26 @@ def make_plots(i, in_params):
     Make each plot sequentially.
     '''
 
-    print 'Making SMC ASteCA vs literature plots.'
-    make_as_vs_lit_plot(i, 'SMC', 0, in_params)
+    #print 'Making SMC ASteCA vs literature plots.'
+    #make_as_vs_lit_plot(i, 'SMC', 0, in_params)
 
-    print 'Making LMC ASteCA vs literature plots.'
-    make_as_vs_lit_plot(i, 'LMC', 1, in_params)
+    #print 'Making LMC ASteCA vs literature plots.'
+    #make_as_vs_lit_plot(i, 'LMC', 1, in_params)
 
-    print 'Making SMC KDE maps.'
-    make_kde_plots(i, 'SMC', 0, in_params)
+    #print 'Making SMC KDE maps.'
+    #make_kde_plots(i, 'SMC', 0, in_params)
 
-    print 'Making LMC KDE maps.'
-    make_kde_plots(i, 'LMC', 1, in_params)
+    #print 'Making LMC KDE maps.'
+    #make_kde_plots(i, 'LMC', 1, in_params)
 
-    print 'Making RA vs DEC plots.'
-    make_ra_dec_plots(i, in_params)
+    #print 'Making RA vs DEC plots.'
+    #make_ra_dec_plots(i, in_params)
 
-    print 'Make ASteca vs MCEV vs SandF extinction plot.'
-    make_lit_ext_plot(in_params)
+    #print 'Make ASteca vs MCEV vs SandF extinction plot.'
+    #make_lit_ext_plot(in_params)
+
+    print 'Make integrated colors plot.'
+    make_int_cols_plot(in_params)
 
 
 def main():
@@ -154,10 +157,10 @@ def main():
     print 'Dictionary of parameters obtained.\n'
 
     # Check for differences in ASteCA vs Lit values.
-    check_diffs(in_params)
+    #check_diffs(in_params)
 
     # Make final plots.
-    #make_plots(i, in_params)
+    make_plots(i, in_params)
 
     print '\nEnd.'
 
