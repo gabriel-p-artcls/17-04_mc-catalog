@@ -50,7 +50,7 @@ def kde_map(xarr, xsigma, yarr, ysigma):
         ext[3] + yax_ext]
 
     # Define grid of points in x,y.
-    x, y = np.mgrid[ext2[0]:ext2[1]:50j, ext2[2]:ext2[3]:50j]
+    x, y = np.mgrid[ext2[0]:ext2[1]:100j, ext2[2]:ext2[3]:100j]
     positions = np.vstack([x.ravel(), y.ravel()])
 
     # Evaluate KDE in x,y grid.

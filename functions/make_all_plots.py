@@ -248,8 +248,8 @@ def wide_plots(pl_params):
     Generate plots for integrated colors, concentration parameter, and radius
     (in parsec) vs several parameters.
     '''
-    gs, i, xmin, xmax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, zarr, rad = \
-    pl_params
+    gs, i, xmin, xmax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, ysigma, zarr,\
+    rad = pl_params
     siz = np.asarray(rad) * 5
 
     xy_font_s = 16
@@ -270,6 +270,10 @@ def wide_plots(pl_params):
     # Plot x error bar.
     plt.errorbar(xarr, yarr, xerr=xsigma, ls='none', color='k',
         elinewidth=0.4, zorder=1)
+    # Plot y error bar if it is passed.
+    if ysigma:
+        plt.errorbar(xarr, yarr, yerr=ysigma, ls='none', color='k',
+            elinewidth=0.4, zorder=1)
     # Position colorbar.
     the_divider = make_axes_locatable(ax)
     color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
@@ -299,7 +303,7 @@ def make_int_cols_plot(in_params):
     ext_pl_lst = [
         # SMC
         [gs, 0, xmin, xmax, x_lab, y_lab, z_lab, aarr[0][0], asigma[0][0],
-            int_colors[0], marr[0][0], rad_pc[0]],
+            int_colors[0], [], marr[0][0], rad_pc[0]],
         ## LMC
         #[gs, 1, xmin, xmax, x_lab, y_lab, z_lab, aarr[1][0], asigma[1][0],
             #int_colors[1], marr[1][0], rad_pc[1]]
@@ -340,9 +344,9 @@ def make_concent_plot(in_params):
     conc_pl_lst = [
         # SMC
         [gs, 0, xmin[0], xmax[0], x_lab[0], y_lab, z_lab, aarr[0][0],
-            asigma[0][0], conc_p[0], marr[0][0], rad_pc[0]],
+            asigma[0][0], conc_p[0], [], marr[0][0], rad_pc[0]],
         [gs, 1, xmin[1], xmax[1], x_lab[1], y_lab, z_lab, zarr[0][0],
-            zsigma[0][0], conc_p[0], marr[0][0], rad_pc[0]],
+            zsigma[0][0], conc_p[0], [], marr[0][0], rad_pc[0]],
         ## LMC
         #[gs, 1, xmin, xmax, x_lab, y_lab, z_lab, aarr[1][0], asigma[1][0],
             #int_colors[1], marr[1][0], rad_pc[1]]
@@ -361,24 +365,27 @@ def make_radius_plot(in_params):
 
     '''
 
-    zarr, zsigma, aarr, asigma, marr, rad_pc, n_memb, rad_pc = [in_params[_]
-    for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'marr', 'rad_pc', 'n_memb',
-        'rad_pc']]
+    zarr, zsigma, aarr, asigma, marr, msigma, rad_pc, n_memb, rad_pc, \
+    erad_pc = [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma',
+    'marr', 'msigma', 'rad_pc', 'n_memb', 'rad_pc', 'erad_pc']]
 
     # Define values to pass.
     xmin, xmax = 0., 40.
     x_lab, y_lab, z_lab = '$R_{cl;\,asteca}\,(pc)$', \
-    ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$'], '$M\,(M_{\odot})$'
+    ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$', '$M\,(M_{\odot})$'], \
+    ['$M\,(M_{\odot})$', '$log(age/yr)_{asteca}$']
 
     fig = plt.figure(figsize=(16, 25))
     gs = gridspec.GridSpec(4, 1)
 
     rad_pl_lst = [
         # SMC
-        [gs, 0, xmin, xmax, x_lab, y_lab[0], z_lab, rad_pc[0], rad_sigma[0], # ARREGLAR: pasar error en 'y' y hacer
-            aarr[0][0], asigma[0][0], marr[0][0], rad_pc[0]],   # que funcione bien con las dos llamadas de arriba
-        [gs, 1, xmin, xmax, x_lab, y_lab[1], z_lab, rad_pc[0], rad_sigma[0],
+        [gs, 0, xmin, xmax, x_lab, y_lab[0], z_lab[0], rad_pc[0], erad_pc[0],
+            aarr[0][0], asigma[0][0], marr[0][0], rad_pc[0]],
+        [gs, 1, xmin, xmax, x_lab, y_lab[1], z_lab[0], rad_pc[0], erad_pc[0],
             zarr[0][0], zsigma[0][0], marr[0][0], rad_pc[0]],
+        [gs, 2, xmin, xmax, x_lab, y_lab[1], z_lab[1], rad_pc[0], erad_pc[0],
+            marr[0][0], msigma[0][0], aarr[0][0], rad_pc[0]],
         ## LMC
         #[gs, 1, xmin, xmax, x_lab, y_lab, z_lab, aarr[1][0], asigma[1][0],
             #int_colors[1], marr[1][0], rad_pc[1]]

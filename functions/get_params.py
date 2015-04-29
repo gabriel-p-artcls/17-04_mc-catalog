@@ -45,7 +45,8 @@ def params(as_names, as_pars, cl_dict, names_idx):
 
     # Indexes of columns in ASteCA output file.
     a_zi, a_zei, a_ai, a_aei, a_ei, a_eei, a_di, a_dei, a_mi, a_mei, a_rad, \
-    a_int_c, a_nmemb = 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 4, 18, 13
+    a_erad, a_int_c, a_nmemb = 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 4, 5, \
+    18, 13
 
     # Indexes of columns in .ods literature file.
     ra_i, dec_i, gal_i, l_zi, l_zei, l_ai, l_aei, l_ei, l_eei, l_di, l_dei, \
@@ -68,7 +69,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
     ra, dec = [[], []], [[], []]
     ext_sf, ext_mcev = [[[], []], [[], []]], [[[], []], [[], []]]
     # Cluster radius in parsecs.
-    rad_pc = [[], []]
+    rad_pc, erad_pc = [[], []], [[], []]
     zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, marr, \
     msigma, rarr = ([[[], []], [[], []]] for i in range(12))
 
@@ -100,11 +101,19 @@ def params(as_names, as_pars, cl_dict, names_idx):
         float_lst = []
         for el in [as_p[a_rad], cl_dict[names_idx[i]][l_scale], as_p[a_di],
             as_p[a_ei]]:
-                # Store in list as floats.
+            # Store in list as floats.
             float_lst.append(float_str(el))
         r_pc = rad_in_pc(float_lst)
         #print as_names[i], as_p[a_rad], cl_dict[names_idx[i]][l_scale], r_pc
         rad_pc[j].append(r_pc)
+        # Repeat process for errors in radius.
+        float_lst = []
+        for el in [as_p[a_erad], cl_dict[names_idx[i]][l_scale], as_p[a_di],
+            as_p[a_ei]]:
+            # Store in list as floats.
+            float_lst.append(float_str(el))
+        e_r_pc = rad_in_pc(float_lst)
+        erad_pc[j].append(e_r_pc)
 
         # Organize param values, ASteCA first, lit second.
         met = [as_pars[i][a_zi], cl_dict[names_idx[i]][l_zi]]
@@ -153,6 +162,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
         'zsigma': zsigma, 'aarr': aarr, 'asigma': asigma, 'earr': earr,
         'esigma': esigma, 'darr': darr, 'dsigma': dsigma, 'marr': marr,
         'msigma': msigma, 'rarr': rarr, 'ext_sf': ext_sf, 'ext_mcev': ext_mcev,
-        'rad_pc': rad_pc, 'int_colors': int_colors, 'n_memb': n_memb}
+        'rad_pc': rad_pc, 'erad_pc': erad_pc, 'int_colors': int_colors,
+        'n_memb': n_memb}
 
     return pars_dict
