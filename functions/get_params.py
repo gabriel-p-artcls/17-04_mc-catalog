@@ -45,7 +45,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
 
     # Indexes of columns in ASteCA output file.
     a_zi, a_zei, a_ai, a_aei, a_ei, a_eei, a_di, a_dei, a_mi, a_mei, a_rad, \
-    a_int_c = 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 4, 18
+    a_int_c, a_nmemb = 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 4, 18, 13
 
     # Indexes of columns in .ods literature file.
     ra_i, dec_i, gal_i, l_zi, l_zei, l_ai, l_aei, l_ei, l_eei, l_di, l_dei, \
@@ -64,6 +64,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
     # corresponds to clusters in the SMC and the second to those in the LMC.
     gal_names = [[], []]
     int_colors = [[], []]
+    n_memb = [[], []]
     ra, dec = [[], []], [[], []]
     ext_sf, ext_mcev = [[[], []], [[], []]], [[[], []], [[], []]]
     # Cluster radius in parsecs.
@@ -87,6 +88,8 @@ def params(as_names, as_pars, cl_dict, names_idx):
         int_col_corr = correct_int_col_extin(int_col_no_corr, as_pars[i][a_ei])
         # Store extinction corrected integrated color.
         int_colors[j].append(int_col_corr)
+        # Approx number of members.
+        n_memb[j].append(float_str(as_pars[i][a_nmemb]))
         # Store literature E(B-V) values: Schlafly & Finkbeiner (SandF) and
         # MCEV.
         ext_sf[j][0].append(cl_dict[names_idx[i]][l_e_sandf])
@@ -150,6 +153,6 @@ def params(as_names, as_pars, cl_dict, names_idx):
         'zsigma': zsigma, 'aarr': aarr, 'asigma': asigma, 'earr': earr,
         'esigma': esigma, 'darr': darr, 'dsigma': dsigma, 'marr': marr,
         'msigma': msigma, 'rarr': rarr, 'ext_sf': ext_sf, 'ext_mcev': ext_mcev,
-        'rad_pc': rad_pc, 'int_colors': int_colors}
+        'rad_pc': rad_pc, 'int_colors': int_colors, 'n_memb': n_memb}
 
     return pars_dict
