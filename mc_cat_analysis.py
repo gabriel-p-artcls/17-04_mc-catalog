@@ -108,17 +108,12 @@ def make_plots(i, in_params):
     Make each plot sequentially.
     '''
 
-    #print 'Making SMC ASteCA vs literature plots.'
-    #make_as_vs_lit_plot(i, 'SMC', 0, in_params)
+    #for j, gal in enumerate(['SMC', 'LMC']):
+        #print 'Making {} ASteCA vs literature plots.'.format(gal)
+        #make_as_vs_lit_plot(i, gal, j, in_params)
 
-    #print 'Making LMC ASteCA vs literature plots.'
-    #make_as_vs_lit_plot(i, 'LMC', 1, in_params)
-
-    #print 'Making SMC KDE maps.'
-    #make_kde_plots(i, 'SMC', 0, in_params)
-
-    #print 'Making LMC KDE maps.'
-    #make_kde_plots(i, 'LMC', 1, in_params)
+        #print 'Making {} KDE maps.'.format(gal)
+        #make_kde_plots(i, gal, j, in_params)
 
     #print 'Making RA vs DEC plots.'
     #make_ra_dec_plots(i, in_params)
