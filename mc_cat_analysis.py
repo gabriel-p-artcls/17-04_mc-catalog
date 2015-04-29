@@ -5,7 +5,8 @@
 from functions.get_data import get_asteca_data, get_liter_data
 from functions.get_params import params
 from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
-make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, make_concent_plot
+make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, make_concent_plot, \
+make_radius_plot
 
 
 def d_search(dat_lst, cl_name, name_idx):
@@ -108,12 +109,12 @@ def make_plots(i, in_params):
     Make each plot sequentially.
     '''
 
-    #for j, gal in enumerate(['SMC', 'LMC']):
+    for j, gal in enumerate(['SMC', 'LMC']):
         #print 'Making {} ASteCA vs literature plots.'.format(gal)
         #make_as_vs_lit_plot(i, gal, j, in_params)
 
-        #print 'Making {} KDE maps.'.format(gal)
-        #make_kde_plots(i, gal, j, in_params)
+        print 'Making {} KDE maps.'.format(gal)
+        make_kde_plots(i, gal, j, in_params)
 
     #print 'Making RA vs DEC plots.'
     #make_ra_dec_plots(i, in_params)
@@ -124,8 +125,11 @@ def make_plots(i, in_params):
     #print 'Make integrated colors plot.'
     #make_int_cols_plot(in_params)
 
-    print 'Make concentration parameter plot.'
-    make_concent_plot(in_params)
+    #print 'Make concentration parameter plot.'
+    #make_concent_plot(in_params)
+
+    #print 'Make radius (pc) plot.'
+    #make_radius_plot(in_params)
 
 
 def main():

@@ -110,13 +110,6 @@ def kde_plots(pl_params):
     z, ext = kde_map(np.array(xarr), np.array(xsigma), np.array(yarr),
         np.array(ysigma))
 
-    # 10% of axis ranges.
-    xax_ext = (ext[1] - ext[0]) * 0.1
-    yax_ext = (ext[3] - ext[2]) * 0.1
-    # Extend plotting range.
-    ext2 = [ext[0] - xax_ext, ext[1] + xax_ext, ext[2] - yax_ext,
-        ext[3] + yax_ext]
-
     # Make plot.
     ax = plt.subplot(gs[i])
     xy_font_s = 21
@@ -125,16 +118,22 @@ def kde_plots(pl_params):
 
     cm = plt.cm.get_cmap('RdYlBu_r')
     #cm = plt.cm.gist_earth_r
-    ax.imshow(z, cmap=cm, extent=ext2)
+    ax.imshow(z, cmap=cm, extent=ext)
     ax.set_aspect('auto')
-    #plt.errorbar(xarr, yarr, xerr=xsigma, yerr=ysigma, fmt=None, color='k')
+    # Errorbars.
+    #plt.errorbar(xarr, yarr, xerr=xsigma, yerr=ysigma, fmt='none',
+        #elinewidth=0.4, color='k')
+    # 1% of axis ranges.
+    xax_ext = (ext[1] - ext[0]) * 0.01
+    yax_ext = (ext[3] - ext[2]) * 0.01
     # Random scatter.
-    rs_x = np.random.uniform(0., 0.1 * xax_ext, len(xarr))
-    rs_y = np.random.uniform(0., 0.1 * yax_ext, len(xarr))
+    rs_x = np.random.uniform(0., xax_ext, len(xarr))
+    rs_y = np.random.uniform(0., yax_ext, len(xarr))
+    # Clusters.
     plt.scatter(xarr + rs_x, yarr + rs_y, marker='*', color='#6b6868', s=40,
         lw=0.5, facecolors='none')
-    ax.set_xlim([ext[0] - xax_ext, ext[1] + xax_ext])
-    ax.set_ylim([ext[2] - yax_ext, ext[3] + yax_ext])
+    ax.set_xlim(ext[0], ext[1])
+    ax.set_ylim(ext[2], ext[3])
 
 
 def make_kde_plots(i, galax, k, in_params):
@@ -244,9 +243,10 @@ def make_lit_ext_plot(in_params):
     plt.savefig('ext_lit_plot.png', dpi=300)
 
 
-def int_cols_plots(pl_params):
+def wide_plots(pl_params):
     '''
-    Generate ASteCA integrated colors plots.
+    Generate plots for integrated colors, concentration parameter, and radius
+    (in parsec) vs several parameters.
     '''
     gs, i, xmin, xmax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, zarr, rad = \
     pl_params
@@ -269,7 +269,7 @@ def int_cols_plots(pl_params):
         zorder=3)
     # Plot x error bar.
     plt.errorbar(xarr, yarr, xerr=xsigma, ls='none', color='k',
-        elinewidth=0.8, zorder=1)
+        elinewidth=0.4, zorder=1)
     # Position colorbar.
     the_divider = make_axes_locatable(ax)
     color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
@@ -306,53 +306,17 @@ def make_int_cols_plot(in_params):
     ]
 
     for pl_params in ext_pl_lst:
-        int_cols_plots(pl_params)
+        wide_plots(pl_params)
 
     # Output png file.
     fig.tight_layout()
     plt.savefig('int_colors_plot.png', dpi=300)
 
 
-def concentration_plots(pl_params):
-    '''
-    Generate ASteCA concentration parameter, cp, plots, where:
-    cp = n_memb / (r_pc **2)
-    '''
-    gs, i, xmin, xmax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, zarr, rad = \
-    pl_params
-    siz = np.asarray(rad) * 5
-
-    xy_font_s = 16
-    cm = plt.cm.get_cmap('RdYlBu_r')
-
-    ax = plt.subplot(gs[i])
-    #ax.set_aspect('auto')
-    plt.xlim(xmin, xmax)
-    #plt.ylim(xmin, xmax)
-    plt.xlabel(x_lab, fontsize=xy_font_s)
-    plt.ylabel(y_lab, fontsize=xy_font_s)
-    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
-        zorder=1)
-    ax.minorticks_on()
-    # Plot all clusters in dictionary.
-    SC = plt.scatter(xarr, yarr, marker='o', c=zarr, s=siz, lw=0.25, cmap=cm,
-        zorder=3)
-    # Plot x error bar.
-    plt.errorbar(xarr, yarr, xerr=xsigma, ls='none', color='k',
-        elinewidth=0.4, zorder=1)
-    # Position colorbar.
-    the_divider = make_axes_locatable(ax)
-    color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
-    # Colorbar.
-    cbar = plt.colorbar(SC, cax=color_axis)
-    zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
-    cbar.set_label(z_lab, fontsize=xy_font_s - 2, labelpad=zpad)
-
-
 def make_concent_plot(in_params):
     '''
-    Prepare parameters and call function to generate integrated color vs Age
-    (colored by mass) plots for the SMC and LMC.
+    Generate ASteCA concentration parameter (cp) plots, where:
+    cp = n_memb / (r_pc **2)
     '''
 
     zarr, zsigma, aarr, asigma, marr, rad_pc, n_memb, rad_pc = [in_params[_]
@@ -385,8 +349,44 @@ def make_concent_plot(in_params):
     ]
 
     for pl_params in conc_pl_lst:
-        concentration_plots(pl_params)
+        wide_plots(pl_params)
 
     # Output png file.
     fig.tight_layout()
     plt.savefig('concent_plot.png', dpi=300)
+
+
+def make_radius_plot(in_params):
+    '''
+
+    '''
+
+    zarr, zsigma, aarr, asigma, marr, rad_pc, n_memb, rad_pc = [in_params[_]
+    for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'marr', 'rad_pc', 'n_memb',
+        'rad_pc']]
+
+    # Define values to pass.
+    xmin, xmax = 0., 40.
+    x_lab, y_lab, z_lab = '$R_{cl;\,asteca}\,(pc)$', \
+    ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$'], '$M\,(M_{\odot})$'
+
+    fig = plt.figure(figsize=(16, 25))
+    gs = gridspec.GridSpec(4, 1)
+
+    rad_pl_lst = [
+        # SMC
+        [gs, 0, xmin, xmax, x_lab, y_lab[0], z_lab, rad_pc[0], rad_sigma[0], # ARREGLAR: pasar error en 'y' y hacer
+            aarr[0][0], asigma[0][0], marr[0][0], rad_pc[0]],   # que funcione bien con las dos llamadas de arriba
+        [gs, 1, xmin, xmax, x_lab, y_lab[1], z_lab, rad_pc[0], rad_sigma[0],
+            zarr[0][0], zsigma[0][0], marr[0][0], rad_pc[0]],
+        ## LMC
+        #[gs, 1, xmin, xmax, x_lab, y_lab, z_lab, aarr[1][0], asigma[1][0],
+            #int_colors[1], marr[1][0], rad_pc[1]]
+    ]
+
+    for pl_params in rad_pl_lst:
+        wide_plots(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    plt.savefig('radius_pc_plot.png', dpi=300)

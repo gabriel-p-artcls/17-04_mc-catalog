@@ -38,15 +38,19 @@ def kde_map(xarr, xsigma, yarr, ysigma):
     and return the 2D KDE density map.
     '''
 
-    # Define grid of points in x,y.
-    # Limits.
-    # Leave out bad values.
+    # Limits. Leave out bad values.
     xmin, xmax = xarr[xarr > -99.].min(), xarr[xarr > -99.].max()
     ymin, ymax = yarr[xarr > -99.].min(), yarr[xarr > -99.].max()
     ext = [xmin, xmax, ymin, ymax]
 
-    # Grid.
-    x, y = np.mgrid[xmin:xmax:50j, ymin:ymax:50j]
+    # Extend range by 10% of axis ranges.
+    xax_ext = (ext[1] - ext[0]) * 0.1
+    yax_ext = (ext[3] - ext[2]) * 0.1
+    ext2 = [ext[0] - xax_ext, ext[1] + xax_ext, ext[2] - yax_ext,
+        ext[3] + yax_ext]
+
+    # Define grid of points in x,y.
+    x, y = np.mgrid[ext2[0]:ext2[1]:50j, ext2[2]:ext2[3]:50j]
     positions = np.vstack([x.ravel(), y.ravel()])
 
     # Evaluate KDE in x,y grid.
@@ -57,7 +61,7 @@ def kde_map(xarr, xsigma, yarr, ysigma):
     # Re-shape values for plotting.
     z = np.rot90(np.reshape(np.array(kde_grid).T, x.shape))
 
-    return z, ext
+    return z, ext2
 
 
 
