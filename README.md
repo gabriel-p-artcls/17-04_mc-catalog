@@ -6,7 +6,7 @@ the 210 MC clusters in our database, observed with Washington photometry.
 
 ## Scripts and data files description
 
-### Main folder
+### `../`
 
 * `bb_cat.dat`
 
