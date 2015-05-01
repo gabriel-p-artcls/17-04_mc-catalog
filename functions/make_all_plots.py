@@ -73,23 +73,23 @@ def make_as_vs_lit_plot(i, galax, k, in_params):
     gs = gridspec.GridSpec(4, 2)
 
     if galax == 'SMC':
-        dm_min, dm_max = 18.6, 19.4
+        dm_min, dm_max = 18.61, 19.39
     else:
-        dm_min, dm_max = 18.1, 18.9
+        dm_min, dm_max = 18.11, 18.89
 
     as_lit_pl_lst = [
     [gs, 0, -1.8, 0.45, '$[Fe/H]_{asteca}$', '$[Fe/H]_{lit}$', '$E_{(B-V)}$',
         zarr[k][0], zsigma[k][0], zarr[k][1], zsigma[k][1], earr[k][0]],
-    [gs, 1, 5.9, 10.6, '$log(age)_{asteca}$', '$log(age)_{lit}$',
+    [gs, 1, 5.8, 10.6, '$log(age)_{asteca}$', '$log(age)_{lit}$',
         '$E_{(B-V)}$', aarr[k][0], asigma[k][0], aarr[k][1], asigma[k][1],
         earr[k][0]],
-    [gs, 2, -0.05, 0.3, '$E(B-V)_{asteca}$', '$E(B-V)_{lit}$',
+    [gs, 2, -0.04, 0.29, '$E(B-V)_{asteca}$', '$E(B-V)_{lit}$',
         '$log(age)_{asteca}$', earr[k][0], esigma[k][0], earr[k][1],
         esigma[k][1], aarr[k][0]],
     [gs, 3, dm_min, dm_max, '$(m-M)_{0;\,asteca}$', '$(m-M)_{0;\,lit}$',
         '$log(age)_{asteca}$', darr[k][0], dsigma[k][0], darr[k][1],
         dsigma[k][1], aarr[k][0]],
-    [gs, 4, 0., 500., '$rad_{asteca}$', '$rad_{lit}$',
+    [gs, 4, 1., 499., '$rad_{asteca}$', '$rad_{lit}$',
         '$log(age)_{asteca}$', rarr[k][0], [], rarr[k][1], [], aarr[k][0]]
         ]
     #
@@ -384,7 +384,7 @@ def make_radius_plot(in_params):
             aarr[0][0], asigma[0][0], marr[0][0], rad_pc[0]],
         [gs, 1, xmin, xmax, x_lab, y_lab[1], z_lab[0], rad_pc[0], erad_pc[0],
             zarr[0][0], zsigma[0][0], marr[0][0], rad_pc[0]],
-        [gs, 2, xmin, xmax, x_lab, y_lab[1], z_lab[1], rad_pc[0], erad_pc[0],
+        [gs, 2, xmin, xmax, x_lab, y_lab[2], z_lab[1], rad_pc[0], erad_pc[0],
             marr[0][0], msigma[0][0], aarr[0][0], rad_pc[0]],
         ## LMC
         #[gs, 1, xmin, xmax, x_lab, y_lab, z_lab, aarr[1][0], asigma[1][0],
