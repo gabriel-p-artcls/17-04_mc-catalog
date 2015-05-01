@@ -98,7 +98,7 @@ def make_as_vs_lit_plot(i, galax, k, in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig(galax + '_as_vs_lit_' + i + '.png', dpi=300)
+    plt.savefig('figures/' + galax + '_as_vs_lit_' + i + '.png', dpi=300)
 
 
 def kde_plots(pl_params):
@@ -167,7 +167,7 @@ def make_kde_plots(i, galax, k, in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig(galax + '_kde_maps_' + i + '.png', dpi=300)
+    plt.savefig('figures/' + galax + '_kde_maps_' + i + '.png', dpi=300)
 
 
 def make_ra_dec_plots(i, in_params):
@@ -206,7 +206,7 @@ def make_ra_dec_plots(i, in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('RA_DEC_maps_ ' + i + '.png', dpi=300)
+    plt.savefig('figures/' + 'RA_DEC_maps_ ' + i + '.png', dpi=300)
 
 
 def make_lit_ext_plot(in_params):
@@ -240,7 +240,7 @@ def make_lit_ext_plot(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('ext_lit_plot.png', dpi=300)
+    plt.savefig('figures/ext_lit_plot.png', dpi=300)
 
 
 def wide_plots(pl_params):
@@ -314,7 +314,7 @@ def make_int_cols_plot(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('int_colors_plot.png', dpi=300)
+    plt.savefig('figures/int_colors_plot.png', dpi=300)
 
 
 def make_concent_plot(in_params):
@@ -357,12 +357,12 @@ def make_concent_plot(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('concent_plot.png', dpi=300)
+    plt.savefig('figures/concent_plot.png', dpi=300)
 
 
 def make_radius_plot(in_params):
     '''
-
+    Plot radius (in pc) versus several parameters.
     '''
 
     zarr, zsigma, aarr, asigma, marr, msigma, rad_pc, n_memb, rad_pc, \
@@ -396,4 +396,4 @@ def make_radius_plot(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('radius_pc_plot.png', dpi=300)
+    plt.savefig('figures/radius_pc_plot.png', dpi=300)
