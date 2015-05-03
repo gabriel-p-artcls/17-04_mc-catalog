@@ -82,3 +82,17 @@ the 210 MC clusters in our database, observed with Washington photometry.
 
   CMD ages taken from the *Glatt et al.* catalog for 1194 LMC clusters and
   322 SMC clusters.
+
+#### `hunter/`
+
+   * `a*_names.ages`
+
+   Files containing 981 clusters in the LMC.
+
+   * `obj*_final.ages`
+
+   Files containing 248 clusters in the SMC.
+
+   * `SMC_LMC_hunter.ods`
+
+   Clusters in the S/LMC from *Hunter et al*, organized.
