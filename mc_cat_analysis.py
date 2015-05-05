@@ -51,7 +51,7 @@ def check_diffs(in_params):
     gal = ['SMC', 'LMC']
     p_n = ['metal', 'age', 'ext', 'dist', 'rad']
     # Max diff acceptable for each parameter.
-    pars_diff = [0.1, 0.2, 0.1, 0.1, 30]
+    pars_diff = [0.1, 0.3, 0.1, 0.1, 30]
 
     # For SMC and LMC.
     for j in [0, 1]:
@@ -100,7 +100,7 @@ def check_diffs(in_params):
             if flag_cl:
                 cl_count += 1
 
-        print '\n{}, total num of clusts with diffs in params: {}'.format(
+        print '\n* {}, total num of clusts with diffs in params: {}\n'.format(
             gal[j], cl_count)
 
 
@@ -122,11 +122,11 @@ def make_plots(i, in_params):
     #print 'Making ASteca vs MCEV vs SandF extinction plot.'
     #make_lit_ext_plot(in_params)
 
-    print 'Making integrated colors plot.'
-    make_int_cols_plot(in_params)
+    #print 'Making integrated colors plot.'
+    #make_int_cols_plot(in_params)
 
-    print 'Making concentration parameter plot.'
-    make_concent_plot(in_params)
+    #print 'Making concentration parameter plot.'
+    #make_concent_plot(in_params)
 
     print 'Making radius (pc) plot.'
     make_radius_plot(in_params)
@@ -138,7 +138,7 @@ def main():
     '''
 
     # Read data from ASteca output file.
-    # 0 (25/04/15): SMC clusters, restricted range in extinction and dist mod,
+    # 0: restricted range in extinction and dist mod,
     # semi center with 100px search area, auto rads, DA + bayesian blocks,
     # knuth binning.
     i = '0'
@@ -158,7 +158,7 @@ def main():
     in_params = params(as_names, as_pars, cl_dict, names_idx)
     print 'Dictionary of parameters obtained.\n'
 
-    # Check for differences in ASteCA vs Lit values.
+     ##Check for differences in ASteCA vs Lit values.
     #check_diffs(in_params)
 
     # Make final plots.

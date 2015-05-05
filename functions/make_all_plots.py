@@ -304,9 +304,9 @@ def make_int_cols_plot(in_params):
         # SMC
         [gs, 0, xmin, xmax, x_lab, y_lab, z_lab, aarr[0][0], asigma[0][0],
             int_colors[0], [], marr[0][0], rad_pc[0]],
-        ## LMC
-        #[gs, 1, xmin, xmax, x_lab, y_lab, z_lab, aarr[1][0], asigma[1][0],
-            #int_colors[1], marr[1][0], rad_pc[1]]
+        # LMC
+        [gs, 1, xmin, xmax, x_lab, y_lab, z_lab, aarr[1][0], asigma[1][0],
+            int_colors[1], [], marr[1][0], rad_pc[1]]
     ]
 
     for pl_params in ext_pl_lst:
@@ -347,9 +347,11 @@ def make_concent_plot(in_params):
             asigma[0][0], conc_p[0], [], marr[0][0], rad_pc[0]],
         [gs, 1, xmin[1], xmax[1], x_lab[1], y_lab, z_lab, zarr[0][0],
             zsigma[0][0], conc_p[0], [], marr[0][0], rad_pc[0]],
-        ## LMC
-        #[gs, 1, xmin, xmax, x_lab, y_lab, z_lab, aarr[1][0], asigma[1][0],
-            #int_colors[1], marr[1][0], rad_pc[1]]
+        # LMC
+        [gs, 2, xmin[0], xmax[0], x_lab[0], y_lab, z_lab, aarr[1][0],
+            asigma[1][0], conc_p[1], [], marr[1][0], rad_pc[1]],
+        [gs, 3, xmin[1], xmax[1], x_lab[1], y_lab, z_lab, zarr[1][0],
+            zsigma[1][0], conc_p[1], [], marr[1][0], rad_pc[1]]
     ]
 
     for pl_params in conc_pl_lst:
@@ -386,9 +388,9 @@ def make_radius_plot(in_params):
             zarr[0][0], zsigma[0][0], marr[0][0], rad_pc[0]],
         [gs, 2, xmin, xmax, x_lab, y_lab[2], z_lab[1], rad_pc[0], erad_pc[0],
             marr[0][0], msigma[0][0], aarr[0][0], rad_pc[0]],
-        ## LMC
-        #[gs, 1, xmin, xmax, x_lab, y_lab, z_lab, aarr[1][0], asigma[1][0],
-            #int_colors[1], marr[1][0], rad_pc[1]]
+        # LMC
+        [gs, 3, xmin, xmax, x_lab, y_lab[0], z_lab[0], rad_pc[1], erad_pc[1],
+            aarr[1][0], asigma[1][0], marr[1][0], rad_pc[1]]
     ]
 
     for pl_params in rad_pl_lst:
