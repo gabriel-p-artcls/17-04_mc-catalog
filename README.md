@@ -12,7 +12,8 @@ the 210 MC clusters in our database, observed with Washington photometry.
 
   RA & DEC positions for the 3740 clusters in the
   [Bica et al. (2008)](http://cdsads.u-strasbg.fr/abs/2008MNRAS.389..678B)
-  catalog ([Table 3](http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=J/MNRAS/389/678/table3)).
+  catalog ([Table 3](http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=J/
+  MNRAS/389/678/table3)).
 
 * `mc_cat_analysis.py`
 
@@ -60,39 +61,30 @@ the 210 MC clusters in our database, observed with Washington photometry.
 
 ### `ages_mass_lit/`
 
+* `hunter_03.dat`
+
+   Clusters in the S/LMC from [Hunter et al. (2003)](http://adsabs.harvard.edu/
+   abs/2003AJ....126.1836H), 748 belong to the LMC and 191 to the SMC for a
+   total of 939 clusters.
+
 * `BB_ages.dat`
 
-  List of ages for clusters in the database presented in
+  List of ages for 151 SMC and 539 LMC clusters in the database presented in
   [Bonato & Bica (2010)](http://cdsads.u-strasbg.fr/abs/2010MNRAS.403..996B).
+  Only 285 out of the 690 clusters have an age value assigned.
+
+* `glatt_2010_S-LMC_glatt.dat`
+
+  CMD ages taken from the [Glatt et al. (2010)](http://www.aanda.org/10.1051/
+  0004-6361/201014187) catalog for 1194 LMC clusters and 322 SMC clusters.
 
 * `popescu_2012_LMC.dat`
 
   List of ages and masses for 632 clusters in the database presented in
   [Popescu et al. (2012)](http://adsabs.harvard.edu/abs/2012ApJ...751..122P)
-  with ages correlated to the [Hunter et al. (2003)](http://adsabs.harvard.edu/abs/2003AJ....126.1836H)
-  catalog.
+  with ages correlated to the *Hunter et al* catalog.
 
 * `popescu_2012_LMC_glatt.dat`
 
-  Idem above, but also adds ages taken from the
-  [Glatt et al. (2010)](http://www.aanda.org/10.1051/0004-6361/201014187)
-  catalog, for 288 clusters in the *Hunter et al.* catalog.
-
-* `glatt_2010_S-LMC_glatt.dat`
-
-  CMD ages taken from the *Glatt et al.* catalog for 1194 LMC clusters and
-  322 SMC clusters.
-
-#### `hunter/`
-
-   * `a*_names.ages`
-
-   Files containing 981 clusters in the LMC.
-
-   * `obj*_final.ages`
-
-   Files containing 248 clusters in the SMC.
-
-   * `SMC_LMC_hunter.ods`
-
-   Clusters in the S/LMC from *Hunter et al*, organized.
+  Idem above, but also adds ages taken from the *Glatt et al.* catalog, for
+  288 clusters in the *Hunter et al.* catalog.
