@@ -45,21 +45,21 @@ def params(as_names, as_pars, cl_dict, names_idx):
 
     # Indexes of columns in ASteCA output file.
     a_zi, a_zei, a_ai, a_aei, a_ei, a_eei, a_di, a_dei, a_mi, a_mei, a_rad, \
-    a_erad, a_int_c, a_nmemb = 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 4, 5, \
-    18, 13
+        a_erad, a_int_c, a_nmemb = 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 4, \
+        5, 18, 13
 
     # Indexes of columns in .ods literature file.
     ra_i, dec_i, gal_i, l_zi, l_zei, l_ai, l_aei, l_ei, l_eei, l_di, l_dei, \
-    l_rad, l_scale, l_e_sandf, l_e_e_sandf, l_e_mcev, l_e_e_mcev = \
-    cl_dict[0].index(u'ra_deg'), cl_dict[0].index(u'dec_deg'), \
-    cl_dict[0].index(u'Galaxia'), cl_dict[0].index(u'[Fe/H] (dex)'), \
-    cl_dict[0].index(u'e_Fe/H'), cl_dict[0].index(u'log(age)'), \
-    cl_dict[0].index(u'e_log(age)'), cl_dict[0].index(u'E(B-V) (lit)'), \
-    cl_dict[0].index(u'e_E(B-V)'), cl_dict[0].index(u'(m-M)o (mag)'), \
-    cl_dict[0].index(u'e_(m-M)o'), cl_dict[0].index(u'rad (eye)'), \
-    cl_dict[0].index(u'arcsec/pixel'), cl_dict[0].index(u'E_B_V_SandF'), \
-    cl_dict[0].index(u'stdev_E_B_V_SandF'), cl_dict[0].index(u'E_BV_max'), \
-    cl_dict[0].index(u'E_BV_std_dev')
+        l_rad, l_scale, l_e_sandf, l_e_e_sandf, l_e_mcev, l_e_e_mcev = \
+        cl_dict[0].index(u'ra_deg'), cl_dict[0].index(u'dec_deg'), \
+        cl_dict[0].index(u'Galaxia'), cl_dict[0].index(u'[Fe/H] (dex)'), \
+        cl_dict[0].index(u'e_Fe/H'), cl_dict[0].index(u'log(age)'), \
+        cl_dict[0].index(u'e_log(age)'), cl_dict[0].index(u'E(B-V) (lit)'), \
+        cl_dict[0].index(u'e_E(B-V)'), cl_dict[0].index(u'(m-M)o (mag)'), \
+        cl_dict[0].index(u'e_(m-M)o'), cl_dict[0].index(u'rad (eye)'), \
+        cl_dict[0].index(u'arcsec/pixel'), cl_dict[0].index(u'E_B_V_SandF'), \
+        cl_dict[0].index(u'stdev_E_B_V_SandF'), cl_dict[0].index(u'E_BV_max'),\
+        cl_dict[0].index(u'E_BV_std_dev')
 
     # Initialize empty lists. The first sub-list in the paramaters list
     # corresponds to clusters in the SMC and the second to those in the LMC.
@@ -71,7 +71,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
     # Cluster radius in parsecs.
     rad_pc, erad_pc = [[], []], [[], []]
     zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, marr, \
-    msigma, rarr = ([[[], []], [[], []]] for i in range(12))
+        msigma, rarr = ([[[], []], [[], []]] for i in range(12))
 
     for i, as_p in enumerate(as_pars):
 
@@ -100,16 +100,16 @@ def params(as_names, as_pars, cl_dict, names_idx):
         # Store radius value in parsecs.
         float_lst = []
         for el in [as_p[a_rad], cl_dict[names_idx[i]][l_scale], as_p[a_di],
-            as_p[a_ei]]:
+                as_p[a_ei]]:
             # Store in list as floats.
             float_lst.append(float_str(el))
         r_pc = rad_in_pc(float_lst)
-        #print as_names[i], as_p[a_rad], cl_dict[names_idx[i]][l_scale], r_pc
+        # print as_names[i], as_p[a_rad], cl_dict[names_idx[i]][l_scale], r_pc
         rad_pc[j].append(r_pc)
         # Repeat process for errors in radius.
         float_lst = []
         for el in [as_p[a_erad], cl_dict[names_idx[i]][l_scale], as_p[a_di],
-            as_p[a_ei]]:
+                as_p[a_ei]]:
             # Store in list as floats.
             float_lst.append(float_str(el))
         e_r_pc = rad_in_pc(float_lst)

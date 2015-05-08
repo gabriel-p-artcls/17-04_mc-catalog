@@ -1,12 +1,12 @@
 
-#from astropy import units as u
-#from astropy.coordinates import SkyCoord
+# from astropy import units as u
+# from astropy.coordinates import SkyCoord
 
 from functions.get_data import get_asteca_data, get_liter_data
 from functions.get_params import params
 from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
-make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, make_concent_plot, \
-make_radius_plot
+    make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
+    make_concent_plot, make_radius_plot
 
 
 def d_search(dat_lst, cl_name, name_idx):
@@ -67,11 +67,11 @@ def check_diffs(in_params):
 
                 if par[j][1][i] > -99.:
 
-                    ## Metallicity.
-                    #if k == 0 and diff > pars_diff[0]:
-                        #flag_cl = True
-                        #print '{} {} {}, {:.4f} vs {:.4f}'.format(gal[j],
-                            #name, p_n[k], par[j][0][i], par[j][1][i])
+                    # # Metallicity.
+                    # if k == 0 and diff > pars_diff[0]:
+                    #     flag_cl = True
+                    #     print '{} {} {}, {:.4f} vs {:.4f}'.format(gal[j],
+                    #         name, p_n[k], par[j][0][i], par[j][1][i])
 
                     # Age.
                     if k == 1 and diff > pars_diff[1]:
@@ -79,17 +79,17 @@ def check_diffs(in_params):
                         print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
                             name, p_n[k], par[j][0][i], par[j][1][i])
 
-                    ## Extinction.
-                    #if k == 2 and diff > pars_diff[2]:
-                        #flag_cl = True
-                        #print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
-                            #name, p_n[k], par[j][0][i], par[j][1][i])
+                    # # Extinction.
+                    # if k == 2 and diff > pars_diff[2]:
+                    #     flag_cl = True
+                    #     print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
+                    #         name, p_n[k], par[j][0][i], par[j][1][i])
 
-                    ## Distance.
-                    #if k == 3 and diff > pars_diff[3]:
-                        #flag_cl = True
-                        #print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
-                            #name, p_n[k], par[j][0][i], par[j][1][i])
+                    # # Distance.
+                    # if k == 3 and diff > pars_diff[3]:
+                    #     flag_cl = True
+                    #     print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
+                    #         name, p_n[k], par[j][0][i], par[j][1][i])
 
                     # Radius.
                     if k == 4 and diff > pars_diff[4]:
@@ -109,24 +109,24 @@ def make_plots(i, in_params):
     Make each plot sequentially.
     '''
 
-    #for j, gal in enumerate(['SMC', 'LMC']):
-        #print 'Making {} ASteCA vs literature plots.'.format(gal)
-        #make_as_vs_lit_plot(i, gal, j, in_params)
+    # for j, gal in enumerate(['SMC', 'LMC']):
+    #     print 'Making {} ASteCA vs literature plots.'.format(gal)
+    #     make_as_vs_lit_plot(i, gal, j, in_params)
 
-        #print 'Making {} KDE maps.'.format(gal)
-        #make_kde_plots(i, gal, j, in_params)
+    #     print 'Making {} KDE maps.'.format(gal)
+    #     make_kde_plots(i, gal, j, in_params)
 
-    #print 'Making RA vs DEC plots.'
-    #make_ra_dec_plots(i, in_params)
+    # print 'Making RA vs DEC plots.'
+    # make_ra_dec_plots(i, in_params)
 
-    #print 'Making ASteca vs MCEV vs SandF extinction plot.'
-    #make_lit_ext_plot(in_params)
+    # print 'Making ASteca vs MCEV vs SandF extinction plot.'
+    # make_lit_ext_plot(in_params)
 
-    #print 'Making integrated colors plot.'
-    #make_int_cols_plot(in_params)
+    # print 'Making integrated colors plot.'
+    # make_int_cols_plot(in_params)
 
-    #print 'Making concentration parameter plot.'
-    #make_concent_plot(in_params)
+    # print 'Making concentration parameter plot.'
+    # make_concent_plot(in_params)
 
     print 'Making radius (pc) plot.'
     make_radius_plot(in_params)
@@ -158,8 +158,8 @@ def main():
     in_params = params(as_names, as_pars, cl_dict, names_idx)
     print 'Dictionary of parameters obtained.\n'
 
-     ##Check for differences in ASteCA vs Lit values.
-    #check_diffs(in_params)
+    # # Check for differences in ASteCA vs Lit values.
+    # check_diffs(in_params)
 
     # Make final plots.
     make_plots(i, in_params)
