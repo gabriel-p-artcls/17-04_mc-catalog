@@ -73,7 +73,7 @@ the 210 MC clusters in our database, observed with Washington photometry.
   [Bonato & Bica (2010)](http://cdsads.u-strasbg.fr/abs/2010MNRAS.403..996B).
   Only 285 out of the 690 clusters have an age value assigned.
 
-* `glatt_2010_S-LMC_glatt.dat`
+* `glatt_10.dat`
 
   CMD ages taken from the [Glatt et al. (2010)](http://www.aanda.org/10.1051/
   0004-6361/201014187) catalog for 1194 LMC clusters and 322 SMC clusters.
@@ -88,3 +88,8 @@ the 210 MC clusters in our database, observed with Washington photometry.
 
   Idem above, but also adds ages taken from the *Glatt et al.* catalog, for
   288 clusters in the *Hunter et al.* catalog.
+
+* `cross_match.py`
+
+  Matches the data in the above databases to those clusters processed by
+  ASteCA.
