@@ -145,7 +145,7 @@ def read_glatt():
 
         for line in skip_comments(f):
             # lin = line.split()
-            col_widths = [7, 5, 6, 8, 1, 7, 3, 6]
+            col_widths = [7, 5, 6, 8, 1, 7, 3, 62, 150]
             print list(slices(line, col_widths))
             raw_input()
             # gal = lin[0]
