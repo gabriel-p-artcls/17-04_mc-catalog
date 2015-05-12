@@ -107,10 +107,13 @@ def kde_plots(pl_params):
     '''
     Generate KDE plots.
     '''
-    gs, i, x_lab, y_lab, xarr, xsigma, yarr, ysigma = pl_params
+    gs, i, x_lab, y_lab, xarr, xsigma, yarr, ysigma, x_rang, y_rang = pl_params
+
+    ext = [x_rang[0], x_rang[1], y_rang[0], y_rang[1]]
+
     # Generate maps.
-    z, ext = kde_map(np.array(xarr), np.array(xsigma), np.array(yarr),
-        np.array(ysigma))
+    z = kde_map(np.array(xarr), np.array(xsigma), np.array(yarr),
+        np.array(ysigma), ext)
 
     # Make plot.
     ax = plt.subplot(gs[i])
@@ -149,15 +152,22 @@ def make_kde_plots(i, galax, k, in_params):
     fig = plt.figure(figsize=(14, 25))  # create the top-level container
     gs = gridspec.GridSpec(4, 2)       # create a GridSpec object
 
+    # Define extension for each parameter range.
+    age_rang, fe_h_rang, mass_rang = [6., 10.], [-2.4, 0.15], [-100., 10500.]
+    if galax == 'SMC':
+        E_bv_rang, dist_mod_rang = [-0.014, 0.16], [18.75, 19.25]
+    else:
+        E_bv_rang, dist_mod_rang = [-0.02, 0.31], [18.25, 18.75]
+
     kde_pl_lst = [
         [gs, 0, '$log(age/yr)$', '$[Fe/H]$', aarr[k][0], asigma[k][0],
-        zarr[k][0], zsigma[k][0]],
+        zarr[k][0], zsigma[k][0], age_rang, fe_h_rang],
         [gs, 1, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0], asigma[k][0],
-        marr[k][0], msigma[k][0]],
+        marr[k][0], msigma[k][0], age_rang, mass_rang],
         [gs, 2, '$(m-M)_0$', '$E_{(B-V)}$', darr[k][0], dsigma[k][0],
-        earr[k][0], esigma[k][0]],
+        earr[k][0], esigma[k][0], dist_mod_rang, E_bv_rang],
         [gs, 3, '$M\,(M_{\odot})$', '$[Fe/H]$', marr[k][0], msigma[k][0],
-        zarr[k][0], zsigma[k][0]]
+        zarr[k][0], zsigma[k][0], mass_rang, fe_h_rang]
         # [gs, 4, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0],
         # asigma[k][0], marr[k][0], msigma[k][0]],
         # [gs, 5, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0],
