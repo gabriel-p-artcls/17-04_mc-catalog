@@ -72,6 +72,13 @@ the 210 MC clusters in our database, observed with Washington photometry.
    abs/2003AJ....126.1836H), 748 belong to the LMC and 191 to the SMC for a
    total of 939 clusters.
 
+* `chiosi_06.dat`
+
+  Contains 311 SMC clusters younger than 1 Gyr (ages determined using isochrone
+  fitting) from the work by [Chiosi et al. (2006)](http://adsabs.harvard.edu/
+  abs/2006A%26A...452..179C). Also lists several other structures/objects, ie:
+  association, supernovas, H II regions and entities in between.
+
 * `BB_10.dat`
 
   List of ages for 151 SMC and 539 LMC clusters in the database presented in
