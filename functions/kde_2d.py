@@ -64,31 +64,29 @@ def kde_map(xarr, xsigma, yarr, ysigma):
     return z, ext2
 
 
+# def measure(n):
+#     "Return two coupled measurements."
+#     m1 = np.random.normal(size=n)
+#     m2 = np.random.normal(scale=0.5, size=n)
+#     return m1 + m2, m1 - m2
 
 
-#def measure(n):
-    #"Return two coupled measurements."
-    #m1 = np.random.normal(size=n)
-    #m2 = np.random.normal(scale=0.5, size=n)
-    #return m1 + m2, m1 - m2
+# import matplotlib.pyplot as plt
+# # Create x,y data an its errors (sigmas).
+# N = 250
+# # Data.
+# xarr, yarr = measure(N)
+# # Errors.
+# xsigma, ysigma = np.random.uniform(0., 1., N), np.random.uniform(0., 1., N)
 
 
-#import matplotlib.pyplot as plt
-## Create x,y data an its errors (sigmas).
-#N = 250
-## Data.
-#xarr, yarr = measure(N)
-## Errors.
-#xsigma, ysigma = np.random.uniform(0., 1., N), np.random.uniform(0., 1., N)
-
-
-## Plot.
-#fig = plt.figure()
-#ax = fig.add_subplot(111)
-#ax.imshow(z, cmap=plt.cm.gist_earth_r, extent=[xmin, xmax, ymin, ymax])
-##ax.set_aspect('auto')
-##plt.errorbar(xarr, yarr, xerr=xsigma, yerr=ysigma, fmt=None, color='r')
-#plt.scatter(xarr, yarr, marker='.', color='r', s=5)
-#ax.set_xlim([xmin, xmax])
-#ax.set_ylim([ymin, ymax])
-#plt.show()
+# # Plot.
+# fig = plt.figure()
+# ax = fig.add_subplot(111)
+# ax.imshow(z, cmap=plt.cm.gist_earth_r, extent=[xmin, xmax, ymin, ymax])
+# #ax.set_aspect('auto')
+# #plt.errorbar(xarr, yarr, xerr=xsigma, yerr=ysigma, fmt=None, color='r')
+# plt.scatter(xarr, yarr, marker='.', color='r', s=5)
+# ax.set_xlim([xmin, xmax])
+# ax.set_ylim([ymin, ymax])
+# plt.show()

@@ -1,41 +1,11 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import  mpl_toolkits.axisartist.angle_helper as angle_helper
+import mpl_toolkits.axisartist.angle_helper as angle_helper
 from matplotlib.projections import PolarAxes
 from matplotlib.transforms import Affine2D
 from mpl_toolkits.axisartist import SubplotHost
 from mpl_toolkits.axisartist import GridHelperCurveLinear
-
-
-#def skip_comments(f):
-    #'''
-    #Read lines that DO NOT start with a # symbol.
-    #'''
-    #for line in f:
-        #if not line.strip().startswith('#'):
-            #yield line
-
-
-#def get_data_ext():
-    #'''
-    #RA, DEC, ext data file.
-    #'''
-
-    ## Path to data file.
-    ##out_file = '/media/rest/github/mc-catalogue/extinction.tbl'
-    #out_file = '/media/rest/github/mc-catalogue/mc_ext_irsa.tbl'
-
-    ## Read data file
-    #with open(out_file) as f:
-        #ra, dec, ext = [], [], []
-
-        #for line in skip_comments(f):
-            #ra.append(float(line.split()[0]))
-            #dec.append(float(line.split()[1]))
-            #ext.append(float(line.split()[3]))
-
-    #return ra, dec, ext
 
 
 def curvelinear_test2(fig, rect=111):
@@ -92,8 +62,8 @@ def curvelinear_test2(fig, rect=111):
     ax1.set_ylabel('$DEC\,(^{\circ})$')
     ax1.set_xlabel('$RA\,(h)$')
     ax1.grid(True)
-    #ax1.grid(linestyle='--', which='x') # either keyword applies to both
-    #ax1.grid(linestyle=':', which='y')  # sets of gridlines
+    # ax1.grid(linestyle='--', which='x') # either keyword applies to both
+    # ax1.grid(linestyle=':', which='y')  # sets of gridlines
 
     return ax1, tr
 
@@ -124,5 +94,5 @@ def ra_dec_plots(pl_params):
     # Colorbar
     cbar = plt.colorbar(SC, shrink=1., pad=0.05)
     cbar.ax.tick_params(labelsize=8)
-    #cbar.set_clim(0., 0.4)
+    # cbar.set_clim(0., 0.4)
     cbar.set_label(z_lab, fontsize=12)

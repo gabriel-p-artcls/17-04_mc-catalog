@@ -109,27 +109,27 @@ def make_plots(i, in_params):
     Make each plot sequentially.
     '''
 
-    # for j, gal in enumerate(['SMC', 'LMC']):
-    #     print 'Making {} ASteCA vs literature plots.'.format(gal)
-    #     make_as_vs_lit_plot(i, gal, j, in_params)
+    for j, gal in enumerate(['SMC', 'LMC']):
+        make_as_vs_lit_plot(i, gal, j, in_params)
+        print '{} ASteCA vs literature plots done.'.format(gal)
 
-    #     print 'Making {} KDE maps.'.format(gal)
-    #     make_kde_plots(i, gal, j, in_params)
+        make_kde_plots(i, gal, j, in_params)
+        print '{} KDE maps done.'.format(gal)
 
-    # print 'Making RA vs DEC plots.'
-    # make_ra_dec_plots(i, in_params)
+    make_ra_dec_plots(i, in_params)
+    print 'RA vs DEC plots done.'
 
-    # print 'Making ASteca vs MCEV vs SandF extinction plot.'
-    # make_lit_ext_plot(in_params)
+    make_lit_ext_plot(in_params)
+    print 'ASteca vs MCEV vs SandF extinction plot done.'
 
-    # print 'Making integrated colors plot.'
-    # make_int_cols_plot(in_params)
+    make_int_cols_plot(in_params)
+    print 'Integrated colors plot done.'
 
-    # print 'Making concentration parameter plot.'
-    # make_concent_plot(in_params)
+    make_concent_plot(in_params)
+    print 'Concentration parameter plot done.'
 
-    print 'Making radius (pc) plot.'
     make_radius_plot(in_params)
+    print 'ASteCA radius (pc) vs parameters plot done.'
 
 
 def main():

@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+import matplotlib.offsetbox as offsetbox
 
 from functions.ra_dec_map import ra_dec_plots
 from functions.kde_2d import kde_map
@@ -13,13 +14,13 @@ def as_vs_lit_plots(pl_params):
     Generate ASteCA vs literature values plots.
     '''
     gs, i, xmin, xmax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, ysigma, \
-    zarr = pl_params
+        zarr = pl_params
 
     xy_font_s = 16
     cm = plt.cm.get_cmap('RdYlBu_r')
 
     ax = plt.subplot(gs[i], aspect='equal')
-    #ax.set_aspect('auto')
+    # ax.set_aspect('auto')
     plt.xlim(xmin, xmax)
     plt.ylim(xmin, xmax)
     if x_lab == '$(m-M)_{0;\,asteca}$':
@@ -64,12 +65,12 @@ def make_as_vs_lit_plot(i, galax, k, in_params):
     '''
 
     zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, rarr = \
-    [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
-    'esigma', 'darr', 'dsigma', 'rarr']]
+        [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
+        'esigma', 'darr', 'dsigma', 'rarr']]
 
     # Generate ASteca vs literature plots.
     fig = plt.figure(figsize=(17, 26))  # create the top-level container
-    #gs = gridspec.GridSpec(2, 4, width_ratios=[1, 0.35, 1, 0.35])
+    # gs = gridspec.GridSpec(2, 4, width_ratios=[1, 0.35, 1, 0.35])
     gs = gridspec.GridSpec(4, 2)
 
     if galax == 'SMC':
@@ -78,27 +79,28 @@ def make_as_vs_lit_plot(i, galax, k, in_params):
         dm_min, dm_max = 18.11, 18.89
 
     as_lit_pl_lst = [
-    [gs, 0, -1.8, 0.45, '$[Fe/H]_{asteca}$', '$[Fe/H]_{lit}$', '$E_{(B-V)}$',
-        zarr[k][0], zsigma[k][0], zarr[k][1], zsigma[k][1], earr[k][0]],
-    [gs, 1, 5.8, 10.6, '$log(age)_{asteca}$', '$log(age)_{lit}$',
+        [gs, 0, -1.8, 0.45, '$[Fe/H]_{asteca}$', '$[Fe/H]_{lit}$',
+        '$E_{(B-V)}$', zarr[k][0], zsigma[k][0], zarr[k][1], zsigma[k][1],
+        earr[k][0]],
+        [gs, 1, 5.8, 10.6, '$log(age/yr)_{asteca}$', '$log(age/yr)_{lit}$',
         '$E_{(B-V)}$', aarr[k][0], asigma[k][0], aarr[k][1], asigma[k][1],
         earr[k][0]],
-    [gs, 2, -0.04, 0.29, '$E(B-V)_{asteca}$', '$E(B-V)_{lit}$',
-        '$log(age)_{asteca}$', earr[k][0], esigma[k][0], earr[k][1],
+        [gs, 2, -0.04, 0.29, '$E(B-V)_{asteca}$', '$E(B-V)_{lit}$',
+        '$log(age/yr)_{asteca}$', earr[k][0], esigma[k][0], earr[k][1],
         esigma[k][1], aarr[k][0]],
-    [gs, 3, dm_min, dm_max, '$(m-M)_{0;\,asteca}$', '$(m-M)_{0;\,lit}$',
-        '$log(age)_{asteca}$', darr[k][0], dsigma[k][0], darr[k][1],
+        [gs, 3, dm_min, dm_max, '$(m-M)_{0;\,asteca}$', '$(m-M)_{0;\,lit}$',
+        '$log(age/yr)_{asteca}$', darr[k][0], dsigma[k][0], darr[k][1],
         dsigma[k][1], aarr[k][0]],
-    [gs, 4, 1., 499., '$rad_{asteca}$', '$rad_{lit}$',
-        '$log(age)_{asteca}$', rarr[k][0], [], rarr[k][1], [], aarr[k][0]]
-        ]
+        [gs, 4, 1., 499., '$rad_{asteca}$', '$rad_{lit}$',
+        '$log(age/yr)_{asteca}$', rarr[k][0], [], rarr[k][1], [], aarr[k][0]]
+    ]
     #
     for pl_params in as_lit_pl_lst:
         as_vs_lit_plots(pl_params)
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/' + galax + '_as_vs_lit_' + i + '.png', dpi=300)
+    plt.savefig('figures/as_vs_lit_' + galax + '_' + i + '.png', dpi=300)
 
 
 def kde_plots(pl_params):
@@ -117,12 +119,12 @@ def kde_plots(pl_params):
     plt.ylabel(y_lab, fontsize=xy_font_s)
 
     cm = plt.cm.get_cmap('RdYlBu_r')
-    #cm = plt.cm.gist_earth_r
+    # cm = plt.cm.gist_earth_r
     ax.imshow(z, cmap=cm, extent=ext)
     ax.set_aspect('auto')
     # Errorbars.
-    #plt.errorbar(xarr, yarr, xerr=xsigma, yerr=ysigma, fmt='none',
-        #elinewidth=0.4, color='k')
+    # plt.errorbar(xarr, yarr, xerr=xsigma, yerr=ysigma, fmt='none',
+    #     elinewidth=0.4, color='k')
     # 1% of axis ranges.
     xax_ext = (ext[1] - ext[0]) * 0.01
     yax_ext = (ext[3] - ext[2]) * 0.01
@@ -141,25 +143,25 @@ def make_kde_plots(i, galax, k, in_params):
     Prepare parameters and call function to generate SMC and LMC KDE plots.
     '''
     zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, msigma = \
-    [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
+        [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
     'esigma', 'darr', 'dsigma', 'marr', 'msigma']]
 
     fig = plt.figure(figsize=(14, 25))  # create the top-level container
     gs = gridspec.GridSpec(4, 2)       # create a GridSpec object
 
     kde_pl_lst = [
-    [gs, 0, '$log(age)$', '$[Fe/H]$', aarr[k][0], asigma[k][0], zarr[k][0],
-        zsigma[k][0]],
-    [gs, 1, '$log(age)$', '$M\,(M_{\odot})$', aarr[k][0], asigma[k][0],
+        [gs, 0, '$log(age/yr)$', '$[Fe/H]$', aarr[k][0], asigma[k][0],
+        zarr[k][0], zsigma[k][0]],
+        [gs, 1, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0], asigma[k][0],
         marr[k][0], msigma[k][0]],
-    [gs, 2, '$(m-M)_0$', '$E_{(B-V)}$', darr[k][0], dsigma[k][0],
+        [gs, 2, '$(m-M)_0$', '$E_{(B-V)}$', darr[k][0], dsigma[k][0],
         earr[k][0], esigma[k][0]],
-    [gs, 3, '$M\,(M_{\odot})$', '$[Fe/H]$', marr[k][0], msigma[k][0],
+        [gs, 3, '$M\,(M_{\odot})$', '$[Fe/H]$', marr[k][0], msigma[k][0],
         zarr[k][0], zsigma[k][0]]
-    #[gs, 4, '$log(age)$', '$M\,(M_{\odot})$', aarr[k][0], asigma[k][0],
-        #marr[k][0], msigma[k][0]],
-    #[gs, 5, '$log(age)$', '$M\,(M_{\odot})$', aarr[k][0], asigma[k][0],
-        #marr[k][0], msigma[k][0]]
+        # [gs, 4, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0],
+        # asigma[k][0], marr[k][0], msigma[k][0]],
+        # [gs, 5, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0],
+        # asigma[k][0], marr[k][0], msigma[k][0]]
     ]
     #
     for pl_params in kde_pl_lst:
@@ -167,7 +169,7 @@ def make_kde_plots(i, galax, k, in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/' + galax + '_kde_maps_' + i + '.png', dpi=300)
+    plt.savefig('figures/as_kde_maps_' + galax + '_' + i + '.png', dpi=300)
 
 
 def make_ra_dec_plots(i, in_params):
@@ -193,12 +195,12 @@ def make_ra_dec_plots(i, in_params):
     fig.clf()
 
     ra_dec_pl_lst = [
-    [fig, 321, ra, dec, zarr, '$[Fe/H]$'],
-    [fig, 322, ra, dec, aarr, '$log(age)$'],
-    [fig, 323, ra, dec, earr, '$E_{(B-V)}$'],
-    [fig, 324, ra, dec, darr, '$(m-M)_0$'],
-    [fig, 325, ra, dec, marr, '$M\,(M_{\odot})$'],
-    [fig, 326, ra, dec, rad_pc, '$r_{clust}\,[pc]$']
+        [fig, 321, ra, dec, zarr, '$[Fe/H]$'],
+        [fig, 322, ra, dec, aarr, '$log(age/yr)$'],
+        [fig, 323, ra, dec, earr, '$E_{(B-V)}$'],
+        [fig, 324, ra, dec, darr, '$(m-M)_0$'],
+        [fig, 325, ra, dec, marr, '$M\,(M_{\odot})$'],
+        [fig, 326, ra, dec, rad_pc, '$r_{clust}\,[pc]$']
     ]
 
     for pl_params in ra_dec_pl_lst:
@@ -206,7 +208,7 @@ def make_ra_dec_plots(i, in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/' + 'RA_DEC_maps_ ' + i + '.png', dpi=300)
+    plt.savefig('figures/as_RA_DEC_ ' + i + '.png', dpi=300)
 
 
 def make_lit_ext_plot(in_params):
@@ -221,7 +223,7 @@ def make_lit_ext_plot(in_params):
     # Define values to pass.
     xmin, xmax = -0.02, 0.4
     x_lab, y_lab, z_lab = '$E(B-V)_{asteca}$', '$E(B-V)_{MCEV}$', \
-    '$E(B-V)_{SF}$'
+        '$E(B-V)_{SF}$'
 
     fig = plt.figure(figsize=(16, 25))  # create the top-level container
     gs = gridspec.GridSpec(4, 2)       # create a GridSpec object
@@ -240,7 +242,7 @@ def make_lit_ext_plot(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/ext_lit_plot.png', dpi=300)
+    plt.savefig('figures/as_vs_lit_extin.png', dpi=300)
 
 
 def wide_plots(pl_params):
@@ -249,16 +251,16 @@ def wide_plots(pl_params):
     (in parsec) vs several parameters.
     '''
     gs, i, xmin, xmax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, ysigma, zarr,\
-    rad = pl_params
+        rad, gal_name = pl_params
     siz = np.asarray(rad) * 5
 
     xy_font_s = 16
     cm = plt.cm.get_cmap('RdYlBu_r')
 
     ax = plt.subplot(gs[i])
-    #ax.set_aspect('auto')
+    # ax.set_aspect('auto')
     plt.xlim(xmin, xmax)
-    #plt.ylim(xmin, xmax)
+    # plt.ylim(xmin, xmax)
     plt.xlabel(x_lab, fontsize=xy_font_s)
     plt.ylabel(y_lab, fontsize=xy_font_s)
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
@@ -274,6 +276,10 @@ def wide_plots(pl_params):
     if ysigma:
         plt.errorbar(xarr, yarr, yerr=ysigma, ls='none', color='k',
             elinewidth=0.4, zorder=1)
+    # Text box.
+    ob = offsetbox.AnchoredText(gal_name, loc=2, prop=dict(size=xy_font_s))
+    ob.patch.set(alpha=0.85)
+    ax.add_artist(ob)
     # Position colorbar.
     the_divider = make_axes_locatable(ax)
     color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
@@ -293,9 +299,9 @@ def make_int_cols_plot(in_params):
     'asigma', 'marr', 'int_colors', 'rad_pc']]
 
     # Define values to pass.
-    xmin, xmax = 6.5, 10.4
+    xmin, xmax = 6.5, 9.95
     x_lab, y_lab, z_lab = '$log(age/yr)_{asteca}$', \
-    '$(C-T_{1})_{0;\,asteca}$', '$M\,(M_{\odot})$'
+        '$(C-T_{1})_{0;\,asteca}$', '$M\,(M_{\odot})$'
 
     fig = plt.figure(figsize=(16, 25))  # create the top-level container
     gs = gridspec.GridSpec(4, 1)       # create a GridSpec object
@@ -303,10 +309,10 @@ def make_int_cols_plot(in_params):
     ext_pl_lst = [
         # SMC
         [gs, 0, xmin, xmax, x_lab, y_lab, z_lab, aarr[0][0], asigma[0][0],
-            int_colors[0], [], marr[0][0], rad_pc[0]],
+            int_colors[0], [], marr[0][0], rad_pc[0], 'SMC'],
         # LMC
         [gs, 1, xmin, xmax, x_lab, y_lab, z_lab, aarr[1][0], asigma[1][0],
-            int_colors[1], [], marr[1][0], rad_pc[1]]
+            int_colors[1], [], marr[1][0], rad_pc[1], 'LMC']
     ]
 
     for pl_params in ext_pl_lst:
@@ -314,7 +320,7 @@ def make_int_cols_plot(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/int_colors_plot.png', dpi=300)
+    plt.savefig('figures/as_integ_colors.png', dpi=300)
 
 
 def make_concent_plot(in_params):
@@ -331,12 +337,13 @@ def make_concent_plot(in_params):
     # (structural) members divided by the area of the cluster in parsecs.
     conc_p = [[], []]
     for j in [0, 1]:
-        conc_p[j] = np.asarray(n_memb[j]) / (np.pi * np.asarray(rad_pc[j]) ** 2)
+        conc_p[j] = np.asarray(n_memb[j]) / (np.pi *
+            np.asarray(rad_pc[j]) ** 2)
 
     # Define values to pass.
     xmin, xmax = [6.5, -2.3], [10.4, 0.2]
     x_lab, y_lab, z_lab = ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$'], \
-    '$Concentration\,(N_{memb}/pc^{2})$', '$M\,(M_{\odot})$'
+        '$Concentration\,(N_{memb}/pc^{2})$', '$M\,(M_{\odot})$'
 
     fig = plt.figure(figsize=(16, 25))  # create the top-level container
     gs = gridspec.GridSpec(4, 1)       # create a GridSpec object
@@ -344,14 +351,14 @@ def make_concent_plot(in_params):
     conc_pl_lst = [
         # SMC
         [gs, 0, xmin[0], xmax[0], x_lab[0], y_lab, z_lab, aarr[0][0],
-            asigma[0][0], conc_p[0], [], marr[0][0], rad_pc[0]],
+            asigma[0][0], conc_p[0], [], marr[0][0], rad_pc[0], 'SMC'],
         [gs, 1, xmin[1], xmax[1], x_lab[1], y_lab, z_lab, zarr[0][0],
-            zsigma[0][0], conc_p[0], [], marr[0][0], rad_pc[0]],
+            zsigma[0][0], conc_p[0], [], marr[0][0], rad_pc[0], 'SMC'],
         # LMC
         [gs, 2, xmin[0], xmax[0], x_lab[0], y_lab, z_lab, aarr[1][0],
-            asigma[1][0], conc_p[1], [], marr[1][0], rad_pc[1]],
+            asigma[1][0], conc_p[1], [], marr[1][0], rad_pc[1], 'LMC'],
         [gs, 3, xmin[1], xmax[1], x_lab[1], y_lab, z_lab, zarr[1][0],
-            zsigma[1][0], conc_p[1], [], marr[1][0], rad_pc[1]]
+            zsigma[1][0], conc_p[1], [], marr[1][0], rad_pc[1], 'LMC']
     ]
 
     for pl_params in conc_pl_lst:
@@ -359,7 +366,7 @@ def make_concent_plot(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/concent_plot.png', dpi=300)
+    plt.savefig('figures/concent_param.png', dpi=300)
 
 
 def make_radius_plot(in_params):
@@ -368,14 +375,14 @@ def make_radius_plot(in_params):
     '''
 
     zarr, zsigma, aarr, asigma, marr, msigma, rad_pc, n_memb, rad_pc, \
-    erad_pc = [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma',
-    'marr', 'msigma', 'rad_pc', 'n_memb', 'rad_pc', 'erad_pc']]
+        erad_pc = [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma',
+        'marr', 'msigma', 'rad_pc', 'n_memb', 'rad_pc', 'erad_pc']]
 
     # Define values to pass.
     xmin, xmax = 0., 40.
     x_lab, y_lab, z_lab = '$R_{cl;\,asteca}\,(pc)$', \
-    ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$', '$M\,(M_{\odot})$'], \
-    ['$M\,(M_{\odot})$', '$log(age/yr)_{asteca}$']
+        ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$', '$M\,(M_{\odot})$'], \
+        ['$M\,(M_{\odot})$', '$log(age/yr)_{asteca}$']
 
     fig = plt.figure(figsize=(16, 25))
     gs = gridspec.GridSpec(4, 1)
@@ -383,14 +390,14 @@ def make_radius_plot(in_params):
     rad_pl_lst = [
         # SMC
         [gs, 0, xmin, xmax, x_lab, y_lab[0], z_lab[0], rad_pc[0], erad_pc[0],
-            aarr[0][0], asigma[0][0], marr[0][0], rad_pc[0]],
+            aarr[0][0], asigma[0][0], marr[0][0], rad_pc[0], 'SMC'],
         [gs, 1, xmin, xmax, x_lab, y_lab[1], z_lab[0], rad_pc[0], erad_pc[0],
-            zarr[0][0], zsigma[0][0], marr[0][0], rad_pc[0]],
+            zarr[0][0], zsigma[0][0], marr[0][0], rad_pc[0], 'SMC'],
         [gs, 2, xmin, xmax, x_lab, y_lab[2], z_lab[1], rad_pc[0], erad_pc[0],
-            marr[0][0], msigma[0][0], aarr[0][0], rad_pc[0]],
+            marr[0][0], msigma[0][0], aarr[0][0], rad_pc[0], 'SMC'],
         # LMC
         [gs, 3, xmin, xmax, x_lab, y_lab[0], z_lab[0], rad_pc[1], erad_pc[1],
-            aarr[1][0], asigma[1][0], marr[1][0], rad_pc[1]]
+            aarr[1][0], asigma[1][0], marr[1][0], rad_pc[1], 'LMC']
     ]
 
     for pl_params in rad_pl_lst:
@@ -398,4 +405,4 @@ def make_radius_plot(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/radius_pc_plot.png', dpi=300)
+    plt.savefig('figures/as_rad_vs_params.png', dpi=300)
