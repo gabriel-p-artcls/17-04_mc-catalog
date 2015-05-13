@@ -91,11 +91,11 @@ def check_diffs(in_params):
                     #     print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
                     #         name, p_n[k], par[j][0][i], par[j][1][i])
 
-                    # Radius.
-                    if k == 4 and diff > pars_diff[4]:
-                        flag_cl = True
-                        print '{} {} {}, {} vs {}'.format(gal[j], name,
-                            p_n[k], par[j][0][i], par[j][1][i])
+                    # # Radius.
+                    # if k == 4 and diff > pars_diff[4]:
+                    #     flag_cl = True
+                    #     print '{} {} {}, {} vs {}'.format(gal[j], name,
+                    #         p_n[k], par[j][0][i], par[j][1][i])
 
             if flag_cl:
                 cl_count += 1
@@ -138,12 +138,7 @@ def main():
     '''
 
     # Read data from ASteca output file.
-    # 0: restricted range in extinction and dist mod,
-    # semi center with 100px search area, auto rads, DA + bayesian blocks,
-    # knuth binning.
-    i = '0'
-
-    as_names, as_pars = get_asteca_data(i)
+    as_names, as_pars = get_asteca_data()
     print 'ASteCA data read from output file.'
 
     # Read literature data.
@@ -159,10 +154,10 @@ def main():
     print 'Dictionary of parameters obtained.\n'
 
     # # Check for differences in ASteCA vs Lit values.
-    # check_diffs(in_params)
+    check_diffs(in_params)
 
     # Make final plots.
-    make_plots(i, in_params)
+    # make_plots(in_params)
 
     print '\nEnd.'
 

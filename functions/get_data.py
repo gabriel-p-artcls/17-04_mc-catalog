@@ -11,14 +11,14 @@ def skip_comments(f):
             yield line
 
 
-def get_asteca_data(i):
+def get_asteca_data():
     '''
     Read the ASteCA output data file 'asteca_output.dat' and store each
     data column for each cluster.
     '''
 
     # Path to data file.
-    out_file = 'asteca_output_' + i + '.dat'
+    out_file = 'asteca_output.dat'
 
     # Read data file
     with open(out_file) as f:
