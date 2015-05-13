@@ -25,11 +25,11 @@ def get_data():
             # Skip coords witn no values.
             if line.split()[0] != '--':
                 ra_c, dec_c, ra, dec = float(line.split()[0]), \
-                float(line.split()[1]), float(line.split()[4]), \
-                float(line.split()[5])
+                    float(line.split()[1]), float(line.split()[4]), \
+                    float(line.split()[5])
                 # Convert extinction from E(V-I) to E(B-V)
                 E_BV, e_EBV = float(line.split()[2]) / 1.38, \
-                float(line.split()[3]) / 1.38
+                    float(line.split()[3]) / 1.38
                 # Append all values.
                 ext_pars.append([ra_c, dec_c, E_BV, e_EBV, ra, dec])
 
@@ -44,7 +44,6 @@ def match_coords(ext_pars):
     Store all the indexes pointing to each cluster in separate lists.
     '''
 
-    # 173 stars have extinction values found in a 0.5 degree box.
     coords_match = [[] for _ in range(210)]
 
     ra_old, dec_old, st_indx = 0., 0., -1
@@ -63,8 +62,8 @@ def match_coords(ext_pars):
 def get_ext_values(ext_pars, coords_match):
     '''
     Obtain the closest extinction value and its distance (in degrees),
-    the average extincion and its standard deviation, and the maximum
-    extincion value.
+    the average extinction and its standard deviation, and the maximum
+    extinction value.
     Convert from E(V-I) to E(B-V) according to:
     E(V-I) = 1.38 *  E(B-V)
     '''
@@ -82,8 +81,8 @@ def get_ext_values(ext_pars, coords_match):
             ra_c, dec_c = ext_pars[0][ext_idx], ext_pars[1][ext_idx]
             # Get angular distance.
             cos_d = np.sin(np.deg2rad(dec)) * np.sin(np.deg2rad(dec_c)) + \
-            np.cos(np.deg2rad(dec)) * np.cos(np.deg2rad(dec_c)) * \
-            np.cos(np.deg2rad(ra - ra_c))
+                np.cos(np.deg2rad(dec)) * np.cos(np.deg2rad(dec_c)) * \
+                np.cos(np.deg2rad(ra - ra_c))
             # Arccos, radians to decimal degrees.
             dist = np.rad2deg(np.arccos(cos_d))
             if dist < dist_min:

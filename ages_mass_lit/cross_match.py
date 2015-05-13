@@ -40,7 +40,7 @@ def mag_2_mass(M_V_10):
     return 10 ** (6. + 0.4 * (-14.55 - M_V_10))
 
 
-def age_errors(gal, age):
+def h03_age_errors(gal, age):
     '''
     Assign errors to Hunter et al. (2003) age values.
     '''
@@ -105,7 +105,7 @@ def read_hunter():
             names = [_.upper() for _ in lin[2].split(',')]
             age = float(lin[21])
             # Error in age is already in logarithmic scale.
-            e_age = age_errors(gal, age)
+            e_age = h03_age_errors(gal, age)
             # Convert to log(age)
             log_age = np.log10(age * 10 ** 6)
             M_V_10 = float(lin[22])
@@ -113,17 +113,42 @@ def read_hunter():
             mass = mag_2_mass(M_V_10)
             quality = float(lin[23])
             h03.append([gal, names, log_age, e_age, mass, quality])
-            # raw_input()
 
     return h03
 
 
 def slices(s, args):
+    '''
+    Take a long string 's', a list with column widths 'args' and return the
+    string sliced into as many smaller strings as column widths are passed.
+    '''
     position = 0
-    print args
     for length in args:
         yield s[position:position + length]
         position += length
+
+
+def g10_age_errors(q):
+    '''
+    Assign errors to Glatt et al. (2010) age values.
+    '''
+    # Errors in logarithmic scale as defined in the article
+    errs = [0.3, 0.4, 0.5]
+
+    # Identify \delta log(age) range.
+    if q == 1:
+        i = 0
+    elif q == 2:
+        i = 1
+    elif q == 3:
+        i = 2
+    elif q == 9:
+        i = 2
+
+    # Assign error.
+    age_err = errs[i]
+
+    return age_err
 
 
 def read_glatt():
@@ -144,33 +169,28 @@ def read_glatt():
         g10 = []
 
         for line in skip_comments(f):
-            # lin = line.split()
-            col_widths = [7, 5, 6, 8, 1, 7, 3, 62, 150]
-            print list(slices(line, col_widths))
-            raw_input()
-            # gal = lin[0]
-            # # Store all names as separate uppercase strings.
-            # names = [_.upper() for _ in lin[2].split(',')]
-            # age = float(lin[21])
-            # # Error in age is already in logarithmic scale.
-            # e_age = age_errors(gal, age)
-            # # Convert to log(age)
-            # log_age = np.log10(age * 10 ** 6)
-            # M_V_10 = float(lin[22])
-            # # Convert absolute magnitude to mass.
-            # mass = mag_2_mass(M_V_10)
-            # quality = float(lin[23])
-            # g10.append([gal, names, log_age, e_age, mass, quality])
+            # Width of columns in file.
+            col_widths = [12, 6, 8, 1, 7, 3, 62, 150]
+            lin = list(slices(line, col_widths))
+            gal = lin[0][:3]
+            names = [_.upper().strip() for _ in lin[7].split(',')]
+            E_BV = float(lin[1])
+            log_age = float(lin[4])
+            q = int(lin[5])
+            e_age = g10_age_errors(q)
+            g10.append([gal, names, log_age, e_age, E_BV, q])
 
     return g10
 
 
 def match_clusts(as_names, as_pars, h03, g10):
     '''
+    Cross match clusters processed by ASteCA to those published in several
+    articles.
     '''
 
     # Store H03, G10, P12 in each sub-list respectively.
-    match_cl = [[[], [], []] for _ in len(as_names)]
+    match_cl = [[[], [], []] for _ in range(len(as_names))]
 
     # Cross-match all clusters processed by ASteCA.
     for i, cl_n in enumerate(as_names):
@@ -182,9 +202,20 @@ def match_clusts(as_names, as_pars, h03, g10):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store H03 cluster data.
-                    match_cl[i][0].append(cl_h[2], cl_h[3], cl_h[4], cl_h[5])
-                    print cl_n, as_pars[i][21], cl_h[2], cl_h[3],\
-                        as_pars[i][27], cl_h[4]
+                    match_cl[i][0] = [cl_h[2], cl_h[3], cl_h[4], cl_h[5]]
+                    # print cl_n, as_pars[i][21], cl_h[2], cl_h[3],\
+                    #     as_pars[i][27], cl_h[4]
+
+        # Match clusters in G10.
+        for cl_h in g10:
+            # For each stored cluster name.
+            for cl_h_n in cl_h[1]:
+                # If names match.
+                if cl_n == cl_h_n:
+                    # Store G10 cluster data.
+                    match_cl[i][1] = [cl_h[2], cl_h[3], cl_h[4], cl_h[5]]
+                    # print cl_n, as_pars[i][21], cl_h[2], cl_h[3],\
+                    #     as_pars[i][27], cl_h[4]
 
     return match_cl
 
@@ -195,14 +226,15 @@ def main():
     as_names, as_pars = get_asteca_data('0')
 
     # Read Hunter et al. (2003) data.
-    # h03 = read_hunter()
+    h03 = read_hunter()
 
     # Read Glatt  et. al (2010) data.
     g10 = read_glatt()
-    print g10[:10]
 
     # Cross-match all clusters.
     match_cl = match_clusts(as_names, as_pars, h03, g10)
+    print np.array(as_names[:10])
+    print np.array(match_cl[:10])
 
 
 if __name__ == "__main__":

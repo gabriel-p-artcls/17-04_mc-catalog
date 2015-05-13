@@ -3,6 +3,10 @@
 #
 # n: Identification numbers with an asterix are possible double/multiple populations
 #
+# E(B-V): Foreground reddening.
+#
+# R: Radii adopted from Bica et al., 2008, Cat. J/MNRAS/389/678.
+#
 # l: limit uncertainty error flag
 #
 # q  : Class code as follows:
