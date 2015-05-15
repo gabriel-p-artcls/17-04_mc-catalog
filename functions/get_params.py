@@ -19,10 +19,12 @@ def rad_in_pc(float_lst):
     '''
     # Unpack
     r_px, scale, dis_mod, e_bv = float_lst
-    # Convert to parsecs.
+    # Convert from px to arcsecs.
     rad_arcsec = r_px * scale
     Av = 3.1 * e_bv
+    # Distance to cluster in parsecs.
     d_pc = 10 ** (0.2 * (dis_mod + 5 - Av))
+    # Radius in parsecs.
     r_pc = d_pc * np.tan(np.deg2rad(rad_arcsec / 3600.))
 
     return r_pc
@@ -30,7 +32,7 @@ def rad_in_pc(float_lst):
 
 def correct_int_col_extin(int_col, extinc):
     '''
-    Corret integrated color for the extinction.
+    Correct integrated color for the extinction.
     '''
     E_CT1_E_BV = 1.97
     int_col_cor = int_col - E_CT1_E_BV * float_str(extinc)
