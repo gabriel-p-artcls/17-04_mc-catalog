@@ -45,8 +45,9 @@ def check_diffs(in_params):
     check differences between ASteCA values and literature values for given
     parameters.
     '''
-    gal_names, zarr, aarr, earr, darr, rarr = [in_params[_] for _ in
-    ['gal_names', 'zarr', 'aarr', 'earr', 'darr', 'rarr']]
+    gal_names, zarr, aarr, earr, darr, rarr = \
+        [in_params[_] for _ in ['gal_names', 'zarr', 'aarr', 'earr', 'darr',
+                                'rarr']]
 
     gal = ['SMC', 'LMC']
     p_n = ['metal', 'age', 'ext', 'dist', 'rad']
@@ -76,8 +77,8 @@ def check_diffs(in_params):
                     # Age.
                     if k == 1 and diff > pars_diff[1]:
                         flag_cl = True
-                        print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
-                            name, p_n[k], par[j][0][i], par[j][1][i])
+                        print '{} {} {}, {:.2f} vs {:.2f}'.format(
+                            gal[j], name, p_n[k], par[j][0][i], par[j][1][i])
 
                     # # Extinction.
                     # if k == 2 and diff > pars_diff[2]:

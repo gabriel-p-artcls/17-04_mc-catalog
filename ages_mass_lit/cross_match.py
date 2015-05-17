@@ -46,8 +46,10 @@ def h03_age_errors(gal, age):
     '''
     # Errors in logarithmic scale as defined in the article. Last value (0.15)
     # is for all cluster with ages outside of the defined ranges.
-    errs_LMC_SMC = [[0.13, 0.13, 0.52, 0.54, 1.06, 0.17, 0.09, 0.15],
-        [0.15, 0.31, 0.58, 0.24, 0.24, 0.16, 0.12, 0.15]]
+    errs_LMC_SMC = [
+        [0.13, 0.13, 0.52, 0.54, 1.06, 0.17, 0.09, 0.15],
+        [0.15, 0.31, 0.58, 0.24, 0.24, 0.16, 0.12, 0.15]
+    ]
 
     # Identify galaxy.
     g = 0 if gal == 'LMC' else 1
