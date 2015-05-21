@@ -1,0 +1,33 @@
+
+# Distribution of clusters in 2nd run of ASteCA.
+
+
+* params_input.dat
+
+## Changes to 'semi_input.dat' file required only.
+1- (7) Manual radius.
+2- (11) Manual center and radius.
+
+## No changes required.
+16- (1) semi-input.dat file contained bad center coords. Run again with updated file.
+
+
+* params_input_01.dat
+
+3- (8) Manual radius & more (15) field regions.
+4- (9) Manual center and radius & more (15) field regions.
+
+
+* params_input_02.dat
+
+5- (2) Manual center and radius & less (7) field regions.
+6- (13) Manual radius & restrict E(B-V) to MCEV max.
+7- (2) Manual center and radius & restrict E(B-V) to MCEV max.
+8- (2) Manual center and radius, more field regions & restrict E(B-V) to MCEV max.
+9- (1) Manual radius, more field regions & restrict E(B-V) to MCEV max.
+10- (1) More field regions & use 'freedman' o 'sqrt' binning in red_memb.
+11- (1) More field regions, restrict E(B-V) & use 'freedman' o 'sqrt' binning in red_memb.
+12- (12) Use 'freedman' o 'sqrt' binning in red_memb.
+13- (1) Use 'freedman' o 'sqrt' binning in red_memb and best_fit.
+14- (10) Restrict E(B-V) to MCEV max.
+15- (2) Restrict E(B-V) to MCEV max & use 'freedman' o 'sqrt' binning in red_memb.

@@ -58,3 +58,4 @@ target/
 
 *.png
 .~*
+MC-catalog/*
