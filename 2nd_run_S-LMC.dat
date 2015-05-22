@@ -11,54 +11,49 @@ Distribution of clusters in 'params_input_XX.dat' files.
 
 * params_input.dat <-- No changes.
 
-  1- (7) Manual radius.
-  2- (11) Manual center and radius.
-  16- (1) semi-input.dat file contained bad center coords. Run
+  1- (18) Manual center & radius.
+  2- (1) semi-input.dat file contained bad center coords. Run
       again with updated file.
-      ## ^ No changes required.
+      ## ^ No changes required to semi_input.dat file either.
 
 
 * params_input_01.dat <-- No changes
 
-  6- (13) Manual radius & restrict E(B-V) to MCEV max.
-  7- (2) Manual center and radius & restrict E(B-V) to MCEV max.
+  3- (15) Manual center and radius & restrict E(B-V) to MCEV max.
 
 
 * params_input_02.dat <-- No changes
 
-  14- (10) Restrict E(B-V) to MCEV max.
+  4- (10) Restrict E(B-V) to MCEV max.
 
 
-* params_input_03.dat <-- More field regions
-
-  3- (8) Manual radius & more field regions.
-  4- (9) Manual center and radius & more field regions.
-  8- (2) Manual center and radius, more field regions & restrict
-     E(B-V) to MCEV max.
-  9- (1) Manual radius, more field regions & restrict E(B-V) to
-     MCEV max.
-
-
-* params_input_04.dat <-- Less field regions
+* params_input_03.dat <-- Less field regions
 
   5- (2) Manual center and radius & less (7) field regions.
 
 
+* params_input_04.dat <-- More field regions
+
+  6- (17) Manual center and radius & more field regions.
+  7- (3) Manual center and radius, more field regions & restrict
+     E(B-V) to MCEV max.
+
+
 * params_input_05.dat <-- More field regions + red_memb binning
 
-  10- (1) More field regions & use 'freedman' or 'sqrt' binning in
+  8- (1) More field regions & use 'freedman' or 'sqrt' binning in
       red_memb.
-  11- (1) More field regions, restrict E(B-V) & use 'freedman' or
+  9- (1) More field regions, restrict E(B-V) & use 'freedman' or
       'sqrt' binning in red_memb.
 
 
 * params_input_06.dat <-- red_memb binning
 
-  12- (12) Use 'freedman' o 'sqrt' binning in red_memb.
-  15- (2) Restrict E(B-V) to MCEV max & use 'freedman' o 'sqrt'
+  10- (12) Use 'freedman' o 'sqrt' binning in red_memb.
+  11- (2) Restrict E(B-V) to MCEV max & use 'freedman' o 'sqrt'
       binning in red_memb.
 
 
 * params_input_07.dat <-- red_memb binning + best_fit binning.
 
-  13- (1) Use 'freedman' o 'sqrt' binning in red_memb and best_fit.
+  12- (1) Use 'freedman' o 'sqrt' binning in red_memb and best_fit.
