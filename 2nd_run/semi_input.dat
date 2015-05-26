@@ -1,4 +1,8 @@
 #
+#
+# File used by the 2nd run of ASteCA on the MC clusters.
+#
+#
 # NAME: Cluster's name.
 # c_x:  Cluster's x center coordinate in pixels.
 # c_y:  Cluster's y center coordinate in pixels.

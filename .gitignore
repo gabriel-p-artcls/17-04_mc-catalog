@@ -58,4 +58,5 @@ target/
 
 *.png
 .~*
-MC-catalog/*
+1st_run/output/*
+2nd_run/input_temp/*
