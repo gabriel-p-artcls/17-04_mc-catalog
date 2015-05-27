@@ -14,9 +14,9 @@ def as_vs_lit_plots(pl_params):
     Generate ASteCA vs literature values plots.
     '''
     gs, i, xmin, xmax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, ysigma, \
-        zarr = pl_params
+        zarr, gal_name = pl_params
 
-    xy_font_s = 16
+    xy_font_s = 18
     cm = plt.cm.get_cmap('RdYlBu_r')
 
     ax = plt.subplot(gs[i], aspect='equal')
@@ -40,7 +40,11 @@ def as_vs_lit_plots(pl_params):
     # Plot all clusters in dictionary.
     SC = plt.scatter(xarr, yarr, marker='o', c=zarr, s=70, lw=0.25, cmap=cm,
                      zorder=3)
-    # Only plot y error bar if it has a value assigned in the literarute.
+    # Text box.
+    ob = offsetbox.AnchoredText(gal_name, loc=4, prop=dict(size=xy_font_s))
+    ob.patch.set(alpha=0.85)
+    ax.add_artist(ob)
+    # Only plot y error bar if it has a value assigned in the literature.
     for j, xy in enumerate(zip(*[xarr, yarr])):
         if ysigma:  # Check if list is not empty (radii list)
             if ysigma[j] > -99.:
@@ -55,7 +59,7 @@ def as_vs_lit_plots(pl_params):
     # Colorbar.
     cbar = plt.colorbar(SC, cax=color_axis)
     zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
-    cbar.set_label(z_lab, fontsize=xy_font_s - 2, labelpad=zpad)
+    cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=zpad)
 
 
 def make_as_vs_lit_plot(galax, k, in_params):
@@ -81,19 +85,19 @@ def make_as_vs_lit_plot(galax, k, in_params):
     as_lit_pl_lst = [
         [gs, 0, -1.8, 0.45, '$[Fe/H]_{asteca}$', '$[Fe/H]_{lit}$',
             '$E_{(B-V)}$', zarr[k][0], zsigma[k][0], zarr[k][1], zsigma[k][1],
-            earr[k][0]],
+            earr[k][0], galax],
         [gs, 1, 5.8, 10.6, '$log(age/yr)_{asteca}$', '$log(age/yr)_{lit}$',
             '$E_{(B-V)}$', aarr[k][0], asigma[k][0], aarr[k][1], asigma[k][1],
-            earr[k][0]],
+            earr[k][0], galax],
         [gs, 2, -0.04, 0.29, '$E(B-V)_{asteca}$', '$E(B-V)_{lit}$',
             '$log(age/yr)_{asteca}$', earr[k][0], esigma[k][0], earr[k][1],
-            esigma[k][1], aarr[k][0]],
+            esigma[k][1], aarr[k][0], galax],
         [gs, 3, dm_min, dm_max, '$(m-M)_{0;\,asteca}$', '$(m-M)_{0;\,lit}$',
             '$log(age/yr)_{asteca}$', darr[k][0], dsigma[k][0], darr[k][1],
-            dsigma[k][1], aarr[k][0]],
+            dsigma[k][1], aarr[k][0], galax],
         [gs, 4, 1., 499., '$rad_{asteca}$', '$rad_{lit}$',
             '$log(age/yr)_{asteca}$', rarr[k][0], [], rarr[k][1], [],
-            aarr[k][0]]
+            aarr[k][0], galax]
     ]
     #
     for pl_params in as_lit_pl_lst:
@@ -118,7 +122,7 @@ def kde_plots(pl_params):
 
     # Make plot.
     ax = plt.subplot(gs[i])
-    xy_font_s = 21
+    xy_font_s = 18
     plt.xlabel(x_lab, fontsize=xy_font_s)
     plt.ylabel(y_lab, fontsize=xy_font_s)
 
@@ -206,8 +210,6 @@ def make_ra_dec_plots(in_params):
     fig = plt.figure(figsize=(20, 20))
     fig.clf()
 
-    print len(ra), len(dec)
-
     ra_dec_pl_lst = [
         [fig, 321, ra, dec, zarr, '$[Fe/H]$'],
         [fig, 322, ra, dec, aarr, '$log(age/yr)$'],
@@ -245,10 +247,10 @@ def make_lit_ext_plot(in_params):
     ext_pl_lst = [
         # SMC
         [gs, 0, xmin, xmax, x_lab, y_lab, z_lab, earr[0][0], esigma[0][0],
-            ext_mcev[0][0], ext_mcev[0][1], ext_sf[0][0]],
+            ext_mcev[0][0], ext_mcev[0][1], ext_sf[0][0], 'SMC'],
         # LMC
         [gs, 1, xmin, xmax, x_lab, y_lab, z_lab, earr[1][0], esigma[1][0],
-            ext_mcev[1][0], ext_mcev[1][1], ext_sf[1][0]]
+            ext_mcev[1][0], ext_mcev[1][1], ext_sf[1][0], 'LMC']
     ]
 
     for pl_params in ext_pl_lst:
@@ -300,7 +302,7 @@ def wide_plots(pl_params):
     # Colorbar.
     cbar = plt.colorbar(SC, cax=color_axis)
     zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
-    cbar.set_label(z_lab, fontsize=xy_font_s - 2, labelpad=zpad)
+    cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=zpad)
 
 
 def make_int_cols_plot(in_params):
@@ -395,32 +397,33 @@ def make_radius_plot(in_params):
 
     # Define values to pass.
     xmin, xmax = 0., 40.
-    x_lab, y_lab, z_lab = '$R_{cl;\,asteca}\,(pc)$', \
-        ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$', '$M\,(M_{\odot})$'], \
-        ['$M\,(M_{\odot})$', '$log(age/yr)_{asteca}$']
+    x_lab = '$R_{cl;\,asteca}\,(pc)$'
+    y_lab = ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$', '$M\,(M_{\odot})$']
+    z_lab = ['$M\,(M_{\odot})$', '$log(age/yr)_{asteca}$']
 
-    fig = plt.figure(figsize=(16, 25))
-    gs = gridspec.GridSpec(4, 1)
+    for i, gal_name in enumerate(['SMC', 'LMC']):
 
-    rad_pl_lst = [
-        # SMC
-        [gs, 0, xmin, xmax, x_lab, y_lab[0], z_lab[0], rad_pc[0], erad_pc[0],
-            aarr[0][0], asigma[0][0], marr[0][0], rad_pc[0], 'SMC'],
-        [gs, 1, xmin, xmax, x_lab, y_lab[1], z_lab[0], rad_pc[0], erad_pc[0],
-            zarr[0][0], zsigma[0][0], marr[0][0], rad_pc[0], 'SMC'],
-        [gs, 2, xmin, xmax, x_lab, y_lab[2], z_lab[1], rad_pc[0], erad_pc[0],
-            marr[0][0], msigma[0][0], aarr[0][0], rad_pc[0], 'SMC'],
-        # LMC
-        [gs, 3, xmin, xmax, x_lab, y_lab[0], z_lab[0], rad_pc[1], erad_pc[1],
-            aarr[1][0], asigma[1][0], marr[1][0], rad_pc[1], 'LMC']
-    ]
+        fig = plt.figure(figsize=(16, 25))
+        gs = gridspec.GridSpec(4, 1)
 
-    for pl_params in rad_pl_lst:
-        wide_plots(pl_params)
+        rad_pl_lst = [
+            [gs, 0, xmin, xmax, x_lab, y_lab[0], z_lab[0], rad_pc[i],
+                erad_pc[i], aarr[i][0], asigma[i][0], marr[i][0], rad_pc[i],
+                gal_name],
+            [gs, 1, xmin, xmax, x_lab, y_lab[1], z_lab[0], rad_pc[i],
+                erad_pc[i], zarr[i][0], zsigma[i][0], marr[i][0], rad_pc[i],
+                gal_name],
+            [gs, 2, xmin, xmax, x_lab, y_lab[2], z_lab[1], rad_pc[i],
+                erad_pc[i], marr[i][0], msigma[i][0], aarr[i][0], rad_pc[i],
+                gal_name]
+        ]
 
-    # Output png file.
-    fig.tight_layout()
-    plt.savefig('figures/as_rad_vs_params.png', dpi=300)
+        for pl_params in rad_pl_lst:
+            wide_plots(pl_params)
+
+        # Output png file.
+        fig.tight_layout()
+        plt.savefig('figures/as_rad_vs_params_' + gal_name + '.png', dpi=300)
 
 
 def prov_vs_CI_plot(pl_params):
@@ -456,7 +459,7 @@ def prov_vs_CI_plot(pl_params):
     # Colorbar.
     cbar = plt.colorbar(SC, cax=color_axis)
     zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
-    cbar.set_label(z_lab, fontsize=xy_font_s - 2, labelpad=zpad)
+    cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=zpad)
 
 
 def make_probs_CI_plot(in_params):

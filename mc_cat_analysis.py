@@ -110,12 +110,12 @@ def make_plots(in_params):
     Make each plot sequentially.
     '''
 
-    # for j, gal in enumerate(['SMC', 'LMC']):
-    #     make_as_vs_lit_plot(gal, j, in_params)
-    #     print '{} ASteCA vs literature plots done.'.format(gal)
+    for j, gal in enumerate(['SMC', 'LMC']):
+        make_as_vs_lit_plot(gal, j, in_params)
+        print '{} ASteCA vs literature plots done.'.format(gal)
 
-    #     make_kde_plots(gal, j, in_params)
-    #     print '{} KDE maps done.'.format(gal)
+        make_kde_plots(gal, j, in_params)
+        print '{} KDE maps done.'.format(gal)
 
     make_ra_dec_plots(in_params)
     print 'RA vs DEC plots done.'
@@ -157,7 +157,7 @@ def main():
     in_params = params(as_names, as_pars, cl_dict, names_idx)
     print 'Dictionary of parameters obtained.\n'
 
-    # # Check for differences in ASteCA vs Lit values.
+    # Check for differences in ASteCA vs Lit values.
     check_diffs(in_params)
 
     # Make final plots.
