@@ -6,7 +6,7 @@ from functions.get_data import get_asteca_data, get_liter_data
 from functions.get_params import params
 from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
     make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
-    make_concent_plot, make_radius_plot
+    make_concent_plot, make_radius_plot, make_probs_CI_plot
 
 
 def d_search(dat_lst, cl_name, name_idx):
@@ -105,19 +105,19 @@ def check_diffs(in_params):
             gal[j], cl_count)
 
 
-def make_plots(i, in_params):
+def make_plots(in_params):
     '''
     Make each plot sequentially.
     '''
 
-    for j, gal in enumerate(['SMC', 'LMC']):
-        make_as_vs_lit_plot(i, gal, j, in_params)
-        print '{} ASteCA vs literature plots done.'.format(gal)
+    # for j, gal in enumerate(['SMC', 'LMC']):
+    #     make_as_vs_lit_plot(gal, j, in_params)
+    #     print '{} ASteCA vs literature plots done.'.format(gal)
 
-        make_kde_plots(i, gal, j, in_params)
-        print '{} KDE maps done.'.format(gal)
+    #     make_kde_plots(gal, j, in_params)
+    #     print '{} KDE maps done.'.format(gal)
 
-    make_ra_dec_plots(i, in_params)
+    make_ra_dec_plots(in_params)
     print 'RA vs DEC plots done.'
 
     make_lit_ext_plot(in_params)
@@ -131,6 +131,9 @@ def make_plots(i, in_params):
 
     make_radius_plot(in_params)
     print 'ASteCA radius (pc) vs parameters plot done.'
+
+    make_probs_CI_plot(in_params)
+    print 'ASteCA probabilities versus CI done.'
 
 
 def main():
@@ -158,7 +161,7 @@ def main():
     check_diffs(in_params)
 
     # Make final plots.
-    # make_plots(in_params)
+    make_plots(in_params)
 
     print '\nEnd.'
 

@@ -34,21 +34,21 @@ def as_vs_lit_plots(pl_params):
     plt.xlabel(x_lab, fontsize=xy_font_s)
     plt.ylabel(y_lab, fontsize=xy_font_s)
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
-        zorder=1)
+            zorder=1)
     ax.minorticks_on()
     plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
     # Plot all clusters in dictionary.
     SC = plt.scatter(xarr, yarr, marker='o', c=zarr, s=70, lw=0.25, cmap=cm,
-        zorder=3)
+                     zorder=3)
     # Only plot y error bar if it has a value assigned in the literarute.
     for j, xy in enumerate(zip(*[xarr, yarr])):
         if ysigma:  # Check if list is not empty (radii list)
             if ysigma[j] > -99.:
                 plt.errorbar(xy[0], xy[1], xerr=xsigma[j], yerr=ysigma[j],
-                    ls='none', color='k', elinewidth=0.8, zorder=1)
+                             ls='none', color='k', elinewidth=0.8, zorder=1)
             else:
                 plt.errorbar(xy[0], xy[1], xerr=xsigma[j], ls='none',
-                    color='k', elinewidth=0.8, zorder=1)
+                             color='k', elinewidth=0.8, zorder=1)
     # Position colorbar.
     the_divider = make_axes_locatable(ax)
     color_axis = the_divider.append_axes("right", size="5%", pad=0.1)
@@ -58,7 +58,7 @@ def as_vs_lit_plots(pl_params):
     cbar.set_label(z_lab, fontsize=xy_font_s - 2, labelpad=zpad)
 
 
-def make_as_vs_lit_plot(i, galax, k, in_params):
+def make_as_vs_lit_plot(galax, k, in_params):
     '''
     Prepare parameters and call function to generate ASteca vs literature
     SMC and LMC plots.
@@ -66,7 +66,7 @@ def make_as_vs_lit_plot(i, galax, k, in_params):
 
     zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, rarr = \
         [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
-        'esigma', 'darr', 'dsigma', 'rarr']]
+                                'esigma', 'darr', 'dsigma', 'rarr']]
 
     # Generate ASteca vs literature plots.
     fig = plt.figure(figsize=(17, 26))  # create the top-level container
@@ -80,19 +80,20 @@ def make_as_vs_lit_plot(i, galax, k, in_params):
 
     as_lit_pl_lst = [
         [gs, 0, -1.8, 0.45, '$[Fe/H]_{asteca}$', '$[Fe/H]_{lit}$',
-        '$E_{(B-V)}$', zarr[k][0], zsigma[k][0], zarr[k][1], zsigma[k][1],
-        earr[k][0]],
+            '$E_{(B-V)}$', zarr[k][0], zsigma[k][0], zarr[k][1], zsigma[k][1],
+            earr[k][0]],
         [gs, 1, 5.8, 10.6, '$log(age/yr)_{asteca}$', '$log(age/yr)_{lit}$',
-        '$E_{(B-V)}$', aarr[k][0], asigma[k][0], aarr[k][1], asigma[k][1],
-        earr[k][0]],
+            '$E_{(B-V)}$', aarr[k][0], asigma[k][0], aarr[k][1], asigma[k][1],
+            earr[k][0]],
         [gs, 2, -0.04, 0.29, '$E(B-V)_{asteca}$', '$E(B-V)_{lit}$',
-        '$log(age/yr)_{asteca}$', earr[k][0], esigma[k][0], earr[k][1],
-        esigma[k][1], aarr[k][0]],
+            '$log(age/yr)_{asteca}$', earr[k][0], esigma[k][0], earr[k][1],
+            esigma[k][1], aarr[k][0]],
         [gs, 3, dm_min, dm_max, '$(m-M)_{0;\,asteca}$', '$(m-M)_{0;\,lit}$',
-        '$log(age/yr)_{asteca}$', darr[k][0], dsigma[k][0], darr[k][1],
-        dsigma[k][1], aarr[k][0]],
+            '$log(age/yr)_{asteca}$', darr[k][0], dsigma[k][0], darr[k][1],
+            dsigma[k][1], aarr[k][0]],
         [gs, 4, 1., 499., '$rad_{asteca}$', '$rad_{lit}$',
-        '$log(age/yr)_{asteca}$', rarr[k][0], [], rarr[k][1], [], aarr[k][0]]
+            '$log(age/yr)_{asteca}$', rarr[k][0], [], rarr[k][1], [],
+            aarr[k][0]]
     ]
     #
     for pl_params in as_lit_pl_lst:
@@ -100,7 +101,7 @@ def make_as_vs_lit_plot(i, galax, k, in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/as_vs_lit_' + galax + '_' + i + '.png', dpi=300)
+    plt.savefig('figures/as_vs_lit_' + galax + '.png', dpi=300)
 
 
 def kde_plots(pl_params):
@@ -113,7 +114,7 @@ def kde_plots(pl_params):
 
     # Generate maps.
     z = kde_map(np.array(xarr), np.array(xsigma), np.array(yarr),
-        np.array(ysigma), ext)
+                np.array(ysigma), ext)
 
     # Make plot.
     ax = plt.subplot(gs[i])
@@ -136,18 +137,18 @@ def kde_plots(pl_params):
     rs_y = np.random.uniform(0., yax_ext, len(xarr))
     # Clusters.
     plt.scatter(xarr + rs_x, yarr + rs_y, marker='*', color='#6b6868', s=40,
-        lw=0.5, facecolors='none')
+                lw=0.5, facecolors='none')
     ax.set_xlim(ext[0], ext[1])
     ax.set_ylim(ext[2], ext[3])
 
 
-def make_kde_plots(i, galax, k, in_params):
+def make_kde_plots(galax, k, in_params):
     '''
     Prepare parameters and call function to generate SMC and LMC KDE plots.
     '''
     zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, msigma = \
         [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
-    'esigma', 'darr', 'dsigma', 'marr', 'msigma']]
+                                'esigma', 'darr', 'dsigma', 'marr', 'msigma']]
 
     fig = plt.figure(figsize=(14, 25))  # create the top-level container
     gs = gridspec.GridSpec(4, 2)       # create a GridSpec object
@@ -161,13 +162,13 @@ def make_kde_plots(i, galax, k, in_params):
 
     kde_pl_lst = [
         [gs, 0, '$log(age/yr)$', '$[Fe/H]$', aarr[k][0], asigma[k][0],
-        zarr[k][0], zsigma[k][0], age_rang, fe_h_rang],
+            zarr[k][0], zsigma[k][0], age_rang, fe_h_rang],
         [gs, 1, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0], asigma[k][0],
-        marr[k][0], msigma[k][0], age_rang, mass_rang],
+            marr[k][0], msigma[k][0], age_rang, mass_rang],
         [gs, 2, '$(m-M)_0$', '$E_{(B-V)}$', darr[k][0], dsigma[k][0],
-        earr[k][0], esigma[k][0], dist_mod_rang, E_bv_rang],
+            earr[k][0], esigma[k][0], dist_mod_rang, E_bv_rang],
         [gs, 3, '$M\,(M_{\odot})$', '$[Fe/H]$', marr[k][0], msigma[k][0],
-        zarr[k][0], zsigma[k][0], mass_rang, fe_h_rang]
+            zarr[k][0], zsigma[k][0], mass_rang, fe_h_rang]
         # [gs, 4, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0],
         # asigma[k][0], marr[k][0], msigma[k][0]],
         # [gs, 5, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0],
@@ -179,17 +180,18 @@ def make_kde_plots(i, galax, k, in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/as_kde_maps_' + galax + '_' + i + '.png', dpi=300)
+    plt.savefig('figures/as_kde_maps_' + galax + '.png', dpi=300)
 
 
-def make_ra_dec_plots(i, in_params):
+def make_ra_dec_plots(in_params):
     '''
     Prepare parameters and call function to generate RA vs DEC positional
     plots for the SMC and LMC.
     '''
 
-    ra, dec, zarr, aarr, earr, darr, marr, rad_pc = [in_params[_] for _ in
-    ['ra', 'dec', 'zarr', 'aarr', 'earr', 'darr', 'marr', 'rad_pc']]
+    ra, dec, zarr, aarr, earr, darr, marr, rad_pc = [
+        in_params[_] for _ in ['ra', 'dec', 'zarr', 'aarr', 'earr', 'darr',
+                               'marr', 'rad_pc']]
 
     # Put both SMC and LMC clusters into a single list.
     ra = ra[0] + ra[1]
@@ -203,6 +205,8 @@ def make_ra_dec_plots(i, in_params):
 
     fig = plt.figure(figsize=(20, 20))
     fig.clf()
+
+    print len(ra), len(dec)
 
     ra_dec_pl_lst = [
         [fig, 321, ra, dec, zarr, '$[Fe/H]$'],
@@ -218,7 +222,7 @@ def make_ra_dec_plots(i, in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/as_RA_DEC_ ' + i + '.png', dpi=300)
+    plt.savefig('figures/as_RA_DEC.png', dpi=300)
 
 
 def make_lit_ext_plot(in_params):
@@ -228,7 +232,7 @@ def make_lit_ext_plot(in_params):
     '''
 
     earr, esigma, ext_sf, ext_mcev = [in_params[_] for _ in ['earr', 'esigma',
-    'ext_sf', 'ext_mcev']]
+                                      'ext_sf', 'ext_mcev']]
 
     # Define values to pass.
     xmin, xmax = -0.02, 0.4
@@ -274,18 +278,18 @@ def wide_plots(pl_params):
     plt.xlabel(x_lab, fontsize=xy_font_s)
     plt.ylabel(y_lab, fontsize=xy_font_s)
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
-        zorder=1)
+            zorder=1)
     ax.minorticks_on()
     # Plot all clusters in dictionary.
     SC = plt.scatter(xarr, yarr, marker='o', c=zarr, s=siz, lw=0.25, cmap=cm,
-        zorder=3)
+                     zorder=3)
     # Plot x error bar.
     plt.errorbar(xarr, yarr, xerr=xsigma, ls='none', color='k',
-        elinewidth=0.4, zorder=1)
+                 elinewidth=0.4, zorder=1)
     # Plot y error bar if it is passed.
     if ysigma:
         plt.errorbar(xarr, yarr, yerr=ysigma, ls='none', color='k',
-            elinewidth=0.4, zorder=1)
+                     elinewidth=0.4, zorder=1)
     # Text box.
     ob = offsetbox.AnchoredText(gal_name, loc=2, prop=dict(size=xy_font_s))
     ob.patch.set(alpha=0.85)
@@ -305,8 +309,9 @@ def make_int_cols_plot(in_params):
     (colored by mass) plots for the SMC and LMC.
     '''
 
-    aarr, asigma, marr, int_colors, rad_pc = [in_params[_] for _ in ['aarr',
-    'asigma', 'marr', 'int_colors', 'rad_pc']]
+    aarr, asigma, marr, int_colors, rad_pc = [
+        in_params[_] for _ in ['aarr', 'asigma', 'marr', 'int_colors',
+                               'rad_pc']]
 
     # Define values to pass.
     xmin, xmax = 6.5, 9.95
@@ -339,16 +344,16 @@ def make_concent_plot(in_params):
     cp = n_memb / (r_pc **2)
     '''
 
-    zarr, zsigma, aarr, asigma, marr, rad_pc, n_memb, rad_pc = [in_params[_]
-    for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'marr', 'rad_pc', 'n_memb',
-        'rad_pc']]
+    zarr, zsigma, aarr, asigma, marr, rad_pc, n_memb, rad_pc = [
+        in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'marr',
+                               'rad_pc', 'n_memb', 'rad_pc']]
 
     # Calculate the 'concentration parameter' as the approximate number of
     # (structural) members divided by the area of the cluster in parsecs.
     conc_p = [[], []]
     for j in [0, 1]:
-        conc_p[j] = np.asarray(n_memb[j]) / (np.pi *
-            np.asarray(rad_pc[j]) ** 2)
+        conc_p[j] = np.asarray(n_memb[j]) / \
+            (np.pi * np.asarray(rad_pc[j]) ** 2)
 
     # Define values to pass.
     xmin, xmax = [6.5, -2.3], [10.4, 0.2]
@@ -384,9 +389,9 @@ def make_radius_plot(in_params):
     Plot radius (in pc) versus several parameters.
     '''
 
-    zarr, zsigma, aarr, asigma, marr, msigma, rad_pc, n_memb, rad_pc, \
-        erad_pc = [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma',
-        'marr', 'msigma', 'rad_pc', 'n_memb', 'rad_pc', 'erad_pc']]
+    zarr, zsigma, aarr, asigma, marr, msigma, n_memb, rad_pc, erad_pc = \
+        [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'marr',
+                                'msigma', 'n_memb', 'rad_pc', 'erad_pc']]
 
     # Define values to pass.
     xmin, xmax = 0., 40.
@@ -416,3 +421,75 @@ def make_radius_plot(in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/as_rad_vs_params.png', dpi=300)
+
+
+def prov_vs_CI_plot(pl_params):
+    '''
+    Generate plots for KDE probabilities versus contamination indexes.
+    '''
+    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, xarr, yarr, zarr, \
+        rad, gal_name = pl_params
+    siz = np.asarray(rad) * 5
+
+    xy_font_s = 16
+    cm = plt.cm.get_cmap('RdYlBu_r')
+
+    ax = plt.subplot(gs[i])
+    # ax.set_aspect('auto')
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    plt.xlabel(x_lab, fontsize=xy_font_s)
+    plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+            zorder=1)
+    ax.minorticks_on()
+    # Plot all clusters in dictionary.
+    SC = plt.scatter(xarr, yarr, marker='o', c=zarr, s=siz, lw=0.25, cmap=cm,
+                     zorder=3)
+    # Text box.
+    ob = offsetbox.AnchoredText(gal_name, loc=2, prop=dict(size=xy_font_s))
+    ob.patch.set(alpha=0.85)
+    ax.add_artist(ob)
+    # Position colorbar.
+    the_divider = make_axes_locatable(ax)
+    color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
+    # Colorbar.
+    cbar = plt.colorbar(SC, cax=color_axis)
+    zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
+    cbar.set_label(z_lab, fontsize=xy_font_s - 2, labelpad=zpad)
+
+
+def make_probs_CI_plot(in_params):
+    '''
+    Plot cluster's ASteCA probabilities versus contamination indexes.
+    '''
+
+    zarr, zsigma, aarr, asigma, marr, msigma, rad_pc, kde_prob, cont_ind = \
+        [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'marr',
+                                'msigma', 'rad_pc', 'kde_prob', 'cont_ind']]
+
+    # Define names of arrays being plotted.
+    x_lab, y_lab, z_lab = '$CI_{asteca}$', '$prob_{asteca}$', \
+        ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$', '$M\,(M_{\odot})$',
+            '$M\,(M_{\odot})$', '$log(age/yr)_{asteca}$']
+
+    fig = plt.figure(figsize=(16, 25))
+    gs = gridspec.GridSpec(4, 2)
+
+    prob_CI_pl_lst = [
+        # SMC
+        [gs, 0, -0.01, 1.01, -0.01, 1.01, x_lab, y_lab, z_lab[0], cont_ind[0],
+            kde_prob[0], aarr[0][0], rad_pc[0], 'SMC'],
+        [gs, 1, -0.01, 1.01, -0.01, 1.01, x_lab, y_lab, z_lab[1], cont_ind[0],
+            kde_prob[0], zarr[0][0], rad_pc[0], 'SMC']
+        # # LMC
+        # [gs, 3, xmin, xmax, x_lab, y_lab[0], z_lab[0], rad_pc[1], erad_pc[1],
+        #     aarr[1][0], asigma[1][0], marr[1][0], rad_pc[1], 'LMC']
+    ]
+
+    for pl_params in prob_CI_pl_lst:
+        prov_vs_CI_plot(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    plt.savefig('figures/as_prob_vs_CI.png', dpi=300)

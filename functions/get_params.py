@@ -47,8 +47,8 @@ def params(as_names, as_pars, cl_dict, names_idx):
 
     # Indexes of columns in ASteCA output file.
     a_zi, a_zei, a_ai, a_aei, a_ei, a_eei, a_di, a_dei, a_mi, a_mei, a_rad, \
-        a_erad, a_int_c, a_nmemb = 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 4, \
-        5, 18, 13
+        a_erad, a_int_c, a_nmemb, a_CI, a_prob = 19, 20, 21, 22, 23, 24, 25, \
+        26, 27, 28, 4, 5, 18, 13, 11, 17
 
     # Indexes of columns in .ods literature file.
     ra_i, dec_i, gal_i, l_zi, l_zei, l_ai, l_aei, l_ei, l_eei, l_di, l_dei, \
@@ -63,15 +63,17 @@ def params(as_names, as_pars, cl_dict, names_idx):
         cl_dict[0].index(u'stdev_E_B_V_SandF'), cl_dict[0].index(u'E_BV_max'),\
         cl_dict[0].index(u'E_BV_std_dev')
 
-    # Initialize empty lists. The first sub-list in the paramaters list
+    # Initialize empty lists. The first sub-list in the parameters list
     # corresponds to clusters in the SMC and the second to those in the LMC.
-    gal_names = [[], []]
-    int_colors = [[], []]
-    n_memb = [[], []]
-    ra, dec = [[], []], [[], []]
+    gal_names, int_colors, n_memb, cont_ind, kde_prob, ra, dec, rad_pc, \
+        erad_pc = [[[], []] for _ in range(9)]
+    # First sub-list stores SMC values, the second one stores LMC values.
+    # First and 2nd sub-sublist store Schlafly & Finkbeiner extinction values
+    # and their errors. Third and 4th store MCEV extinction values and their
+    # errors.
     ext_sf, ext_mcev = [[[], []], [[], []]], [[[], []], [[], []]]
-    # Cluster radius in parsecs.
-    rad_pc, erad_pc = [[], []], [[], []]
+    # First sub-list stores ASteCA values, the second one stores literature
+    # values.
     zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, marr, \
         msigma, rarr = ([[[], []], [[], []]] for i in range(12))
 
@@ -93,6 +95,10 @@ def params(as_names, as_pars, cl_dict, names_idx):
         int_colors[j].append(int_col_corr)
         # Approx number of members.
         n_memb[j].append(float_str(as_pars[i][a_nmemb]))
+        # Contamination index.
+        cont_ind[j].append(float_str(as_pars[i][a_CI]))
+        # Cluster KDE p-value probability.
+        kde_prob[j].append(float_str(as_pars[i][a_prob]))
         # Store literature E(B-V) values: Schlafly & Finkbeiner (SandF) and
         # MCEV.
         ext_sf[j][0].append(cl_dict[names_idx[i]][l_e_sandf])
@@ -102,7 +108,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
         # Store radius value in parsecs.
         float_lst = []
         for el in [as_p[a_rad], cl_dict[names_idx[i]][l_scale], as_p[a_di],
-                as_p[a_ei]]:
+                   as_p[a_ei]]:
             # Store in list as floats.
             float_lst.append(float_str(el))
         r_pc = rad_in_pc(float_lst)
@@ -111,7 +117,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
         # Repeat process for errors in radius.
         float_lst = []
         for el in [as_p[a_erad], cl_dict[names_idx[i]][l_scale], as_p[a_di],
-                as_p[a_ei]]:
+                   as_p[a_ei]]:
             # Store in list as floats.
             float_lst.append(float_str(el))
         e_r_pc = rad_in_pc(float_lst)
@@ -159,12 +165,14 @@ def params(as_names, as_pars, cl_dict, names_idx):
             msigma[j][k].append(float_str(smass[k]))
             rarr[j][k].append(float_str(rads[k]))
 
-    # Pass as dict.
-    pars_dict = {'gal_names': gal_names, 'ra': ra, 'dec': dec, 'zarr': zarr,
+    # Pass as dictionary.
+    pars_dict = {
+        'gal_names': gal_names, 'ra': ra, 'dec': dec, 'zarr': zarr,
         'zsigma': zsigma, 'aarr': aarr, 'asigma': asigma, 'earr': earr,
         'esigma': esigma, 'darr': darr, 'dsigma': dsigma, 'marr': marr,
         'msigma': msigma, 'rarr': rarr, 'ext_sf': ext_sf, 'ext_mcev': ext_mcev,
         'rad_pc': rad_pc, 'erad_pc': erad_pc, 'int_colors': int_colors,
-        'n_memb': n_memb}
+        'n_memb': n_memb, 'cont_ind': cont_ind, 'kde_prob': kde_prob
+    }
 
     return pars_dict

@@ -1,0 +1,123 @@
+#
+# [ASteCA v0.1.9-beta]
+#
+# Modified: 2015-05-27 09:54:13
+#
+# NAME: Cluster's name.
+# c_x: Cluster's x center coordinate.
+# e_x: Cluster's x center coordinate error.
+# c_y: Cluster's y center coordinate.
+# e_y: Cluster's x center coordinate error.
+# r_cl: Cluster's radius.
+# e_rcl: Cluster's radius error.
+# r_c: Core radius (3-P King profile).
+# e_rc: Core radius error.
+# r_t: Tidal radius (3-P King profile).
+# e_rt: Tidal radius error.
+# kcp: King's profile concentration parameter.
+#
+# CI: 'Contamination index' is a  measure of the contamination of field
+#      stars in the cluster region. The closer to 1, the more contaminated 
+#      the cluster region is.
+# n_memb_k: Approximate number of cluster's members obtained integrating the
+#         fitted 3-P King profile (if it converged).
+# n_memb: Approximate number of cluster's members assuming a uniform
+#       background.
+# n_memb_da: Approximate number of cluster's members obtained via the DA
+#          algorithm.
+# memb_par: Members parameter comparing the approximate structural number of
+#           members ('n_memb') with the approximate photometric number of
+#           members ('n_memb_da').
+# a_f: Fraction of cluster's area that is present in frame.
+# prob_cl: Statistical comparision of cluster vs field KDEs. It is obtained
+#          as 1 minus the overlap area between the KDEs. If the KDEs are
+#          very similar this value will be low indicating the overdensity is
+#          probably not a true cluster.
+# int_col: Integrated color magnitude for all stars inside the cluster
+#          radius, except those that were rejected due to large errors.
+# met: Metallicity value (z).
+# e_m: Metallicity error.
+# age: log(age).
+# e_a: log(age) error.
+# E(B-V): extinction.
+# e_E: Extinction error.
+# dist: Distance modulus.
+# e_d: Distance error.
+# M_i: Total initial mass.
+# e_M: Mass error.
+# bin_fr: Binary fraction.
+# e_bf: Binary fraction error.
+#
+# M1 Indicates that the center was set manually.
+# M2 Indicates that the radius was set manually.
+#
+# f1 Either median cluster's central coordinates (obtained using several
+#    standard deviation smoothing values) is more than 10% away from the
+#    central position assigned.
+# f2 The standard deviation for either center coordinate is larger than 10%
+#    of the coordinate's value.
+# f3 The background value is smaller than a third of the maximum radial
+#    density value.
+# f4 Not enough points found stabilized around the background value -->
+#    clust_rad was set to the middle value in the density profile.
+# f5 The delta range around the background used to attain the stable
+#    condition to determine the radius is greater than 10%%. This indicates
+#    a possible variable background.
+# f6 The process to fit a 3-P King profile to the density points did not
+#    converge or did so to a tidal radius beyond the ranges of the frame.
+# f7 No error rejection was possible.
+# f8 The function had to fall back to the 'e_max'-based rejection method
+#    since the selected one failed.
+# f9 The number of approximate structural cluster members ('n_memb') is < 10.
+# f10 The number of approximate structural and photometric cluster members
+#     differ greatly --> abs(n_memb_par) > 0.33.
+#
+# FC (flags count): Sum of all the flags values. The bigger this value the
+#    more likely it is that there's a problem with the frame, ie: no cluster,
+#    more than one cluster present in the frame, variable or too crowded
+#    field, etc.
+#
+#NAME                 c_x      e_x      c_y      e_y     r_cl    e_rcl      r_c     e_rc      r_t     e_rt      kcp      CI   n_memb_k     n_memb  n_memb_da  memb_par     a_f  prob_cl  int_col      met      e_m      age      e_a   E(B-V)      e_E     dist      e_d      M_i      e_M   bin_fr     e_bf      M1 M2  f1 f2 f3 f4 f5 f6 f7 f8 f9 f10  FC
+AM3         3784.0      2.0   4741.0      2.0    200.0     40.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.22         -1         85         -1       inf    1.00     0.83   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  0  0  0  1  0  0  0   0   1
+B112        7040.0      0.0   5200.0      0.0    110.0      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    1.00         -1          0         -1       inf    1.00     0.60   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  1   0   3
+B34         543.35      0.0  1446.43      0.0     65.0      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.80         -1         35         -1       inf    1.00     0.35   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+B39          288.0      2.0   2277.0      2.0    100.0     20.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.97         -1         12         -1       inf    1.00     0.69   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+B47         2655.0      0.0   5345.0      0.0     70.0      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.88         -1         25         -1       inf    1.00     0.96   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BRHT38B     6193.0      2.0   3139.0      2.0     70.0     10.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.65         -1         33         -1       inf    1.00     1.00   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BRHT45A     1836.0      2.0   3619.0      2.0     70.0     10.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.72         -1         44         -1       inf    1.00     0.98   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BRHT4B      1720.0      0.0   1900.0      0.0     40.0      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.79         -1         21         -1       inf    1.00     0.61   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BS121       1165.0      2.0   1211.0      2.0    110.0     20.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.89         -1         56         -1       inf    1.00     0.48   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BS265       8170.0      0.0   2080.0      0.0    100.0      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.90         -1         15         -1       inf    1.00     0.53   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BS35         360.0      0.0   4625.0      0.0     62.5      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    1.00         -1          1         -1       inf    1.00     0.85   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  1   0   3
+BS88        7346.0      2.0    852.0      2.0    120.0     30.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.92         -1         39         -1       inf    1.00     0.20   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BSDL1024    5381.0      2.0    153.0      2.0    100.0     20.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.99         -1          2         -1       inf    1.00     0.39   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  1   0   3
+BSDL1035    8128.0      2.0    243.0      2.0     40.0     20.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.93         -1          5         -1       inf    1.00     0.94   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  1   0   3
+BSDL268     5040.0      0.0   3290.0      0.0    216.8      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    1.11         -1          0         -1       inf    1.00     1.00   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  1   0   3
+BSDL2995     457.0      2.0   8163.0      2.0    110.0     20.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.66         -1        125         -1       inf    0.87     1.00   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BSDL3158    1649.0      2.0   2045.0      2.0    200.0     20.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.73         -1        162         -1       inf    1.00     0.84   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  0  0  0  1  0  0  0   0   1
+BSDL341     1234.0      2.0   5362.0      2.0    210.0     30.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.80         -1        216         -1       inf    1.00     0.27   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BSDL527     3405.0      0.0    840.0      0.0     87.5      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.88         -1         33         -1       inf    1.00     0.32   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BSDL594      182.0      2.0   1394.0      2.0    120.0     20.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.65         -1        186         -1       inf    1.00     0.46   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  0  0  0  1  0  0  0   0   1
+BSDL631      509.0      0.0   3280.0      0.0     54.7      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    1.10         -1          0         -1       inf    1.00     0.95   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  1  1  1  0  0  1   0   5
+BSDL654     1062.0      0.0   3302.0      0.0    112.5      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.80         -1         70         -1       inf    1.00     0.58   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BSDL665     1418.0      2.0   3841.0      2.0    110.0     20.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.85         -1         48         -1       inf    1.00     0.45   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BSDL675      682.0      2.0    193.0      2.0    110.0     20.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.83         -1         55         -1       inf    1.00     0.30   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  0  0  0  1  0  0  0   0   1
+BSDL677     7170.0      2.0   5065.0      2.0     50.0     10.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.81         -1         17         -1       inf    1.00     0.66   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BSDL716     5100.0      0.0   6250.0      0.0    150.0      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.94         -1         43         -1       inf    1.00     0.85   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BSDL761      720.0      0.0   2725.0      0.0     87.5      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.82         -1         34         -1       inf    1.00     0.72   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+BSDL77      5412.0      2.0   5700.0      2.0     70.0     10.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.54         -1         61         -1       inf    1.00     0.41   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  0  0  0  1  0  0  0   0   1
+BSDL779      924.0      2.0    881.0      2.0    130.0     20.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.77         -1         83         -1       inf    1.00     0.86   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  0  0  0  1  0  0  0   0   1
+C11         1525.0      0.0    520.0      0.0    112.5      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.67         -1         76         -1       inf    1.00     0.46   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  0  0  0  1  0  0  0   0   1
+H3          3775.0      0.0   4800.0      0.0    262.5      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.73         -1        392         -1       inf    1.00     1.00   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+H86-197      891.0      2.0   7527.0      2.0     60.0     10.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.51         -1         13         -1       inf    1.00     0.20   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  0  0  0  1  0  0  0   0   1
+H86-70      7063.0      2.0    606.0      2.0    180.0     10.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.88         -1        139         -1       inf    1.00     0.12   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+H88-131     2828.0      2.0   1251.0      2.0     90.0     10.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.88         -1         20         -1       inf    1.00     0.87   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+H88-188     7849.0      2.0   6656.0      2.0    140.0     30.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.86         -1         44         -1       inf    1.00     0.69   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+H88-235     1243.0      0.0    780.0      0.0     54.7      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.96         -1          5         -1       inf    1.00     0.75   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  1   0   3
+H88-244     1749.0      0.0   1410.0      0.0     91.2      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.96         -1         11         -1       inf    1.00     0.62   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+H88-245     2750.0      0.0   1625.0      0.0     70.0      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.88         -1         20         -1       inf    1.00     0.38   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+H88-26      2364.0      2.0   1309.0      2.0    110.0     30.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.89         -1         37         -1       inf    1.00     0.26   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+H88-265     1521.0      0.0   3570.0      0.0     73.0      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    1.02         -1          0         -1       inf    1.00     0.79   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  1   0   3
+H88-269     2760.0      0.0   4314.0      0.0     73.0      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.86         -1         25         -1       inf    1.00     0.99   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+H88-279      265.0      0.0   5890.0      0.0     73.0      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    1.14         -1          0         -1       inf    1.00     0.35   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  1   0   3
+H88-307     2905.0      0.0    559.0      0.0    197.1      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    1.20         -1          0         -1       inf    1.00     0.96   -99.00       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       -1     -1.0       0  0   0  0  1  0  0  1  0  0  1   0   3

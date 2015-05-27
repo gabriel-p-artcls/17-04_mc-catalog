@@ -90,7 +90,7 @@ def ra_dec_plots(pl_params):
     else:
         siz = 30.
     SC = ax1.scatter(ra_dec_tr[:, 0], ra_dec_tr[:, 1], marker='o', s=siz,
-        c=dens, cmap=cm, lw=0.1, zorder=9)
+                     c=dens, cmap=cm, lw=0.1, zorder=9)
     # Colorbar
     cbar = plt.colorbar(SC, shrink=1., pad=0.05)
     cbar.ax.tick_params(labelsize=8)
