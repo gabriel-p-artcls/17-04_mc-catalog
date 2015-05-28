@@ -95,7 +95,7 @@ def make_as_vs_lit_plot(galax, k, in_params):
         [gs, 3, dm_min, dm_max, '$(m-M)_{0;\,asteca}$', '$(m-M)_{0;\,lit}$',
             '$log(age/yr)_{asteca}$', darr[k][0], dsigma[k][0], darr[k][1],
             dsigma[k][1], aarr[k][0], galax],
-        [gs, 4, 1., 499., '$rad_{asteca}$', '$rad_{lit}$',
+        [gs, 4, 1., 599., '$rad_{asteca} (px)$', '$rad_{lit} (px)$',
             '$log(age/yr)_{asteca}$', rarr[k][0], [], rarr[k][1], [],
             aarr[k][0], galax]
     ]

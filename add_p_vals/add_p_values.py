@@ -18,7 +18,7 @@ def read_data():
 
 def read_p_values():
     '''
-    Read p_value probabilities from 2nd data 'asteca_output.dat'.
+    Read p_value probabilities from 'asteca_output.dat' file with the p-values.
     '''
 
     in_p_values = []
@@ -56,7 +56,8 @@ def add_p_values(in_data, in_p_values):
 
 def out_data(in_data_out):
     '''
-    Write data from 'asteca_output.dat' with p_values assigned.
+    Write data from 'asteca_output.dat' with p_values assigned to final merged
+    file.
     '''
 
     # Write values to file.

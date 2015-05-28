@@ -112,8 +112,9 @@ def params(as_names, as_pars, cl_dict, names_idx):
             # Store in list as floats.
             float_lst.append(float_str(el))
         r_pc = rad_in_pc(float_lst)
-        # print as_names[i], as_p[a_rad], cl_dict[names_idx[i]][l_scale], r_pc
         rad_pc[j].append(r_pc)
+        # if as_names[i] == 'NGC1846':
+        #     print r_pc
         # Repeat process for errors in radius.
         float_lst = []
         for el in [as_p[a_erad], cl_dict[names_idx[i]][l_scale], as_p[a_di],
