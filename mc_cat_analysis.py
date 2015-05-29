@@ -93,7 +93,7 @@ def check_diffs(in_params):
                     #         name, p_n[k], par[j][0][i], par[j][1][i])
 
                     # Radius.
-                    if k == 4 and diff > pars_diff[4]:
+                    if k == 4 and 50 < diff < pars_diff[4]:
                         flag_cl = True
                         print '{} {} {}, {} vs {}'.format(gal[j], name,
                             p_n[k], par[j][0][i], par[j][1][i])
