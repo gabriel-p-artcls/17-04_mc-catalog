@@ -8,6 +8,14 @@ the 210 MC clusters in our database, observed with Washington photometry.
 
 ### `../`
 
+* `README.md`
+
+  This file.
+
+* `lista_unica_cumulos.ods`
+
+  Literature data on each cluster.
+
 * `bb_cat.dat`
 
   RA & DEC positions for the 3740 clusters in the
@@ -22,6 +30,12 @@ the 210 MC clusters in our database, observed with Washington photometry.
  (RA vs DEC plots.)
 
  Functions are stored in the `functions/` folder.
+
+### `1st_run/`
+
+### `2nd_run/`
+
+### `3rd_run/`
 
 ### `extinction_MCEV/`
 
@@ -105,3 +119,24 @@ the 210 MC clusters in our database, observed with Washington photometry.
 
   Matches the data in the above databases to those clusters processed by
   ASteCA.
+
+### `aux_funcs/`
+
+* `move_files_sizes.py`
+
+  Script to move files into `input_XX/` folders distributed so that each
+  folder has approximately the same total size.
+
+* `add_p_vals/`
+
+  Contains the script and input / output files used to add KDE p_values
+  to the `asteca_output.dat` file from the 1st run, since the function was
+  turned off.
+
+### `figures/`
+
+   Output figures from main script.
+
+### `functions/`
+
+   Functions called by the main script.

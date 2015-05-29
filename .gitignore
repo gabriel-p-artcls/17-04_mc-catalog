@@ -59,4 +59,5 @@ target/
 *.png
 .~*
 1st_run/output/*
-2nd_run/input_temp/*
+2nd_run/output/*
+3rd_run/output/*

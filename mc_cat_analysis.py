@@ -52,7 +52,7 @@ def check_diffs(in_params):
     gal = ['SMC', 'LMC']
     p_n = ['metal', 'age', 'ext', 'dist', 'rad']
     # Max diff acceptable for each parameter.
-    pars_diff = [0.1, 0.3, 0.1, 0.1, 30]
+    pars_diff = [0.1, 0.3, 0.1, 0.1, 100]
 
     # For SMC and LMC.
     for j in [0, 1]:
@@ -74,11 +74,11 @@ def check_diffs(in_params):
                     #     print '{} {} {}, {:.4f} vs {:.4f}'.format(gal[j],
                     #         name, p_n[k], par[j][0][i], par[j][1][i])
 
-                    # Age.
-                    if k == 1 and diff > pars_diff[1]:
-                        flag_cl = True
-                        print '{} {} {}, {:.2f} vs {:.2f}'.format(
-                            gal[j], name, p_n[k], par[j][0][i], par[j][1][i])
+                    # # Age.
+                    # if k == 1 and diff > pars_diff[1]:
+                    #     flag_cl = True
+                    #     print '{} {} {}, {:.2f} vs {:.2f}'.format(
+                    #         gal[j], name, p_n[k], par[j][0][i], par[j][1][i])
 
                     # # Extinction.
                     # if k == 2 and diff > pars_diff[2]:
@@ -92,11 +92,11 @@ def check_diffs(in_params):
                     #     print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
                     #         name, p_n[k], par[j][0][i], par[j][1][i])
 
-                    # # Radius.
-                    # if k == 4 and diff > pars_diff[4]:
-                    #     flag_cl = True
-                    #     print '{} {} {}, {} vs {}'.format(gal[j], name,
-                    #         p_n[k], par[j][0][i], par[j][1][i])
+                    # Radius.
+                    if k == 4 and diff > pars_diff[4]:
+                        flag_cl = True
+                        print '{} {} {}, {} vs {}'.format(gal[j], name,
+                            p_n[k], par[j][0][i], par[j][1][i])
 
             if flag_cl:
                 cl_count += 1
@@ -161,7 +161,7 @@ def main():
     check_diffs(in_params)
 
     # Make final plots.
-    make_plots(in_params)
+    # make_plots(in_params)
 
     print '\nEnd.'
 
