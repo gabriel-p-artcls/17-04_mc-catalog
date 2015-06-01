@@ -25,17 +25,49 @@ the 210 MC clusters in our database, observed with Washington photometry.
 
 * `mc_cat_analysis.py`
 
- Script that Produces the main figures by comparing parameters with each other
- (KDE maps), with literature values (1:1 plots) and distributed in space
- (RA vs DEC plots.)
+  Script that Produces the main figures by comparing parameters with each other
+  (KDE maps), with literature values (1:1 plots) and distributed in space
+  (RA vs DEC plots.)
 
- Functions are stored in the `functions/` folder.
+  Functions are stored in the `functions/` folder.
 
 ### `1st_run/`
 
+First batch of data obtained using the following parameters:
+
+  - Semi mode.
+  - Center found with 100px search area.
+  - Auto radius.
+  - Field regions: 10.
+  - Decontamination algorithm: auto.
+  - Reduced membership: Bayesian blocks binning
+  - Restricted range in extinction: MCEV max + 0.1.
+  - Restricted distance modulus:  SMC, [18.8, 19.201, 0.05] ;
+    LMC, [18.3, 18.701, 0.05].
+  - Best fit: Dolphin + Knuth binning.
+
 ### `2nd_run/`
 
+Second batch of data for 83 clusters (60 LMC, 23 SMC) from the 1st run,
+marked to be re-processed. The data was obtained using the following
+parameters:
+
+  - Center, radius, number of field regions, max E(B-V) and binning of red_memb
+   and best_fit, as described in `README.dat`.
+
+The following clusters were left un-processed:
+
+  - NGC1917, SL579, SL588, LW54, NGC419, SL244
+
 ### `3rd_run/`
+
+  Third batch of data obtained using the following parameters:
+
+  - Semi mode with center and radius fixed for several clusters.
+  - Number of field regions set individually for some clusters.
+  - Restricted range in extinction: MCEV max for all clusters.
+  - Restricted distance modulus:  SMC, [18.86, 19.061, 0.02] ;
+    LMC, [18.4, 18.601, 0.02].
 
 ### `extinction_MCEV/`
 

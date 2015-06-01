@@ -74,11 +74,11 @@ def check_diffs(in_params):
                     #     print '{} {} {}, {:.4f} vs {:.4f}'.format(gal[j],
                     #         name, p_n[k], par[j][0][i], par[j][1][i])
 
-                    # # Age.
-                    # if k == 1 and diff > pars_diff[1]:
-                    #     flag_cl = True
-                    #     print '{} {} {}, {:.2f} vs {:.2f}'.format(
-                    #         gal[j], name, p_n[k], par[j][0][i], par[j][1][i])
+                    # Age.
+                    if k == 1 and diff > pars_diff[1]:
+                        flag_cl = True
+                        print '{} {} {}, {:.2f} vs {:.2f}'.format(
+                            gal[j], name, p_n[k], par[j][0][i], par[j][1][i])
 
                     # # Extinction.
                     # if k == 2 and diff > pars_diff[2]:
@@ -92,11 +92,11 @@ def check_diffs(in_params):
                     #     print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
                     #         name, p_n[k], par[j][0][i], par[j][1][i])
 
-                    # Radius.
-                    if k == 4 and 50 < diff < pars_diff[4]:
-                        flag_cl = True
-                        print '{} {} {}, {} vs {}'.format(gal[j], name,
-                            p_n[k], par[j][0][i], par[j][1][i])
+                    # # Radius.
+                    # if k == 4 and diff > pars_diff[4]:
+                    #     flag_cl = True
+                    #     print '{} {} {}, {} vs {}'.format(gal[j], name,
+                    #         p_n[k], par[j][0][i], par[j][1][i])
 
             if flag_cl:
                 cl_count += 1
