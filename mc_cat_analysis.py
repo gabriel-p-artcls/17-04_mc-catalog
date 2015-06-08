@@ -77,8 +77,13 @@ def check_diffs(in_params):
                     # Age.
                     if k == 1 and diff > pars_diff[1]:
                         flag_cl = True
-                        print '{} {} {}, {:.2f} vs {:.2f}'.format(
-                            gal[j], name, p_n[k], par[j][0][i], par[j][1][i])
+                        # Relative difference in Gyr.
+                        rel_diff = abs(
+                            10 ** (par[j][0][i]) - 10 ** (par[j][1][i])
+                            ) / 10 ** 9
+                        print '{} {} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
+                            gal[j], name, p_n[k], par[j][0][i], par[j][1][i],
+                            rel_diff)
 
                     # # Extinction.
                     # if k == 2 and diff > pars_diff[2]:
@@ -161,7 +166,7 @@ def main():
     check_diffs(in_params)
 
     # Make final plots.
-    make_plots(in_params)
+    # make_plots(in_params)
 
     print '\nEnd.'
 
