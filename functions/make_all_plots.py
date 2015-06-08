@@ -38,7 +38,15 @@ def as_vs_lit_plots(pl_params):
     ax.minorticks_on()
     plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
     # Plot all clusters in dictionary.
-    SC = plt.scatter(xarr, yarr, marker='o', c=zarr, s=70, lw=0.25, cmap=cm,
+    if x_lab == '$[Fe/H]_{asteca}$':
+        # 1% of axis ranges.
+        ax_ext = (xmax - xmin) * 0.01
+        # Random scatter.
+        rs_x = xarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
+        rs_y = yarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
+    else:
+        rs_x, rs_y = xarr, yarr
+    SC = plt.scatter(rs_x, rs_y, marker='o', c=zarr, s=70, lw=0.25, cmap=cm,
                      zorder=3)
     # Text box.
     ob = offsetbox.AnchoredText(gal_name, loc=4, prop=dict(size=xy_font_s))
@@ -49,10 +57,10 @@ def as_vs_lit_plots(pl_params):
         if ysigma:  # Check if list is not empty (radii list)
             if ysigma[j] > -99.:
                 plt.errorbar(xy[0], xy[1], xerr=xsigma[j], yerr=ysigma[j],
-                             ls='none', color='k', elinewidth=0.8, zorder=1)
+                             ls='none', color='k', elinewidth=0.5, zorder=1)
             else:
                 plt.errorbar(xy[0], xy[1], xerr=xsigma[j], ls='none',
-                             color='k', elinewidth=0.8, zorder=1)
+                             color='k', elinewidth=0.5, zorder=1)
     # Position colorbar.
     the_divider = make_axes_locatable(ax)
     color_axis = the_divider.append_axes("right", size="5%", pad=0.1)
@@ -83,12 +91,12 @@ def make_as_vs_lit_plot(galax, k, in_params):
         dm_min, dm_max = 18.11, 18.89
 
     as_lit_pl_lst = [
-        [gs, 0, -1.8, 0.45, '$[Fe/H]_{asteca}$', '$[Fe/H]_{lit}$',
-            '$E_{(B-V)}$', zarr[k][0], zsigma[k][0], zarr[k][1], zsigma[k][1],
-            earr[k][0], galax],
+        [gs, 0, -2.4, 0.45, '$[Fe/H]_{asteca}$', '$[Fe/H]_{lit}$',
+            '$log(age/yr)_{asteca}$', zarr[k][0], zsigma[k][0], zarr[k][1],
+            zsigma[k][1], aarr[k][0], galax],
         [gs, 1, 5.8, 10.6, '$log(age/yr)_{asteca}$', '$log(age/yr)_{lit}$',
-            '$E_{(B-V)}$', aarr[k][0], asigma[k][0], aarr[k][1], asigma[k][1],
-            earr[k][0], galax],
+            '$E(B-V)_{asteca}$', aarr[k][0], asigma[k][0], aarr[k][1],
+            asigma[k][1], earr[k][0], galax],
         [gs, 2, -0.04, 0.29, '$E(B-V)_{asteca}$', '$E(B-V)_{lit}$',
             '$log(age/yr)_{asteca}$', earr[k][0], esigma[k][0], earr[k][1],
             esigma[k][1], aarr[k][0], galax],
@@ -475,19 +483,22 @@ def make_probs_CI_plot(in_params):
     x_lab, y_lab, z_lab = '$CI_{asteca}$', '$prob_{asteca}$', \
         ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$', '$M\,(M_{\odot})$',
             '$M\,(M_{\odot})$', '$log(age/yr)_{asteca}$']
+    xmin, xmax, ymin, ymax = -0.01, 1.02, -0.01, 1.02
 
     fig = plt.figure(figsize=(16, 25))
     gs = gridspec.GridSpec(4, 2)
 
     prob_CI_pl_lst = [
         # SMC
-        [gs, 0, -0.01, 1.01, -0.01, 1.01, x_lab, y_lab, z_lab[0], cont_ind[0],
+        [gs, 0, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab[0], cont_ind[0],
             kde_prob[0], aarr[0][0], rad_pc[0], 'SMC'],
-        [gs, 1, -0.01, 1.01, -0.01, 1.01, x_lab, y_lab, z_lab[1], cont_ind[0],
-            kde_prob[0], zarr[0][0], rad_pc[0], 'SMC']
-        # # LMC
-        # [gs, 3, xmin, xmax, x_lab, y_lab[0], z_lab[0], rad_pc[1], erad_pc[1],
-        #     aarr[1][0], asigma[1][0], marr[1][0], rad_pc[1], 'LMC']
+        [gs, 1, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab[1], cont_ind[0],
+            kde_prob[0], zarr[0][0], rad_pc[0], 'SMC'],
+        # LMC
+        [gs, 2, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab[0], cont_ind[1],
+            kde_prob[1], aarr[1][0], rad_pc[1], 'LMC'],
+        [gs, 3, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab[1], cont_ind[1],
+            kde_prob[1], zarr[1][0], rad_pc[1], 'LMC']
     ]
 
     for pl_params in prob_CI_pl_lst:

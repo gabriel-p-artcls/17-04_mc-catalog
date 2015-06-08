@@ -40,6 +40,20 @@ def correct_int_col_extin(int_col, extinc):
     return int_col_cor
 
 
+def z_to_feh(z, ez):
+    '''
+    Convert z to [Fe/H] for ASteCA values.
+    '''
+    # Use minimum metallicity value if z=0.
+    z = max(0.0001, z)
+    fe_h = np.log10(z / 0.0152)
+    e_fe_h = (1. / np.log(10.)) * (ez / z)
+    # Trim error if it's too large.
+    e_fe_h = min(e_fe_h, 2.)
+
+    return fe_h, e_fe_h
+
+
 def params(as_names, as_pars, cl_dict, names_idx):
     '''
     Return ASteCA output and literature parameters values.
@@ -140,16 +154,10 @@ def params(as_names, as_pars, cl_dict, names_idx):
         # Store ASteCA values (k=0) and literature values (k=1).
         for k in [0, 1]:
 
-            # Convert z to [Fe/H] for ASteCA values.
             if k == 0:
                 z, ez = float_str(met[k]), float_str(smet[k])
-                if z > 0.:
-                    fe_h = np.log10(z / 0.0152)
-                else:
-                    # Use minimum metallicity value if z=0.
-                    fe_h = np.log10(0.0001 / 0.0152)
-                e_fe_h = (1. / np.log(10.)) * z / ez
-                # Store.
+                # Convert z to [Fe/H] for ASteCA values.
+                fe_h, e_fe_h = z_to_feh(z, ez)
                 zarr[j][k].append(fe_h)
                 zsigma[j][k].append(e_fe_h)
             else:

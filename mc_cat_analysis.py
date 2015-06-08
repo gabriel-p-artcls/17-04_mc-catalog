@@ -52,7 +52,7 @@ def check_diffs(in_params):
     gal = ['SMC', 'LMC']
     p_n = ['metal', 'age', 'ext', 'dist', 'rad']
     # Max diff acceptable for each parameter.
-    pars_diff = [0.1, 0.3, 0.1, 0.1, 100]
+    pars_diff = [0.1, 0.5, 0.1, 0.1, 100]
 
     # For SMC and LMC.
     for j in [0, 1]:
@@ -161,7 +161,7 @@ def main():
     check_diffs(in_params)
 
     # Make final plots.
-    # make_plots(in_params)
+    make_plots(in_params)
 
     print '\nEnd.'
 
