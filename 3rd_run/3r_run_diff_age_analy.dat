@@ -1,18 +1,33 @@
 
-SMC L35 age, 6.30 vs 8.34
-SMC L72 age, 6.50 vs 7.40
-SMC L45 age, 6.60 vs 8.15
-SMC BS35 age, 6.80 vs 8.70
-SMC HW47 age, 8.90 vs 9.45
-SMC NGC339 age, 8.90 vs 9.73
-SMC L91 age, 9.00 vs 9.63
-SMC B34 age, 9.85 vs 9.08
+# Good match, no re-process:
 
-* ^ SMC
+    SMC HW47 age, 8.90 vs 9.45
 
-LMC SL218 age, 6.00 vs 7.70
-LMC H88-269 age, 6.00 vs 8.90
-LMC NGC1860 age, 6.00 vs 8.40
+
+# SMC re-process:
+
+## red_memb: skip ; generations=3000 ; mut=0.2
+
+    SMC L35 age, 6.30 vs 8.34
+    SMC L72 age, 6.50 vs 7.40
+    SMC L45 age, 6.60 vs 8.15
+    SMC BS35 age, 6.80 vs 8.70
+    SMC NGC339 age, 8.90 vs 9.73
+    # v 1st run gave better results fitting dist_mod = 19.2
+    SMC L91 age, 9.00 vs 9.63
+    SMC B34 age, 9.85 vs 9.08
+
+
+# LMC re-process:
+
+## red_memb: skip ; generations=3000 ; mut=0.2
+
+    # v 2nd run gave marginally better results (log(age)=8.1).
+    LMC SL218 age, 6.00 vs 7.70
+    # v 1sr run gave marginally better results (log(age)=9.6).
+    LMC H88-269 age, 6.00 vs 8.90
+    LMC NGC1860 age, 6.00 vs 8.40
+    
 LMC H88-279 age, 6.30 vs 8.10
 LMC HS247 age, 6.50 vs 8.55
 LMC KMHK975 age, 6.60 vs 8.30
@@ -36,5 +51,3 @@ LMC H88-316 age, 7.30 vs 8.25
 LMC NGC2093 age, 7.50 vs 8.40
 LMC H88-245 age, 8.80 vs 8.20
 LMC H88-320 age, 8.80 vs 8.20
-
-* ^ LMC
