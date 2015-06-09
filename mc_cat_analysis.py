@@ -166,7 +166,7 @@ def main():
     check_diffs(in_params)
 
     # Make final plots.
-    # make_plots(in_params)
+    make_plots(in_params)
 
     print '\nEnd.'
 

@@ -77,6 +77,9 @@
 #    more than one cluster present in the frame, variable or too crowded
 #    field, etc.
 #
+########################################################################
+#  1st run COMPLETE.
+#
 #NAME                 c_x      e_x      c_y      e_y     r_cl    e_rcl      r_c     e_rc      r_t     e_rt      kcp      CI   n_memb_k     n_memb  n_memb_da  memb_par     a_f  prob_cl  int_col      met      e_m      age      e_a   E(B-V)      e_E     dist      e_d      M_i      e_M   bin_fr     e_bf      M1 M2  f1 f2 f3 f4 f5 f6 f7 f8 f9 f10  FC
 BSDL2995    457.0      2.0   8163.0      2.0    110.0     20.0     62.0      5.0    220.0     10.0     0.55    0.66        146        125        212     -0.26    0.87    -1.00     1.06    0.005    0.003     9.05     0.05     0.12     0.03     18.5     0.07   2000.0    400.0      0.5     -1.0       0  0   0  0  1  0  0  0  0  0  0   0   1
 H88-244            1807.0      2.0   1427.0      2.0     40.0     10.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.90         -1          6          0      1.00    1.00    -1.00     1.75    0.012    0.003      8.8      0.2     0.06     0.06     18.5     0.09    200.0    200.0      0.5     -1.0       0  0   0  0  1  0  0  1  0  0  1   1   4

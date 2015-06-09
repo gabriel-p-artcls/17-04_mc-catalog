@@ -46,6 +46,15 @@ First batch of data obtained using the following parameters:
     LMC, [18.3, 18.701, 0.05].
   - Best fit: Dolphin + Knuth binning.
 
+* `asteca_output.dat`
+
+  Result of the 1st run, combined first and second batch of processing.
+
+* `asteca_output_1st_analysis.dat`
+
+  Analysis of the above output file were those clusters marked for a re-process
+  in the 2nd run are marked.
+
 ### `2nd_run/`
 
 Second batch of data for 83 clusters (60 LMC, 23 SMC) from the 1st run,
@@ -59,6 +68,10 @@ The following clusters were left un-processed:
 
   - NGC1917, SL579, SL588, LW54, NGC419, SL244
 
+* `asteca_output.dat`
+
+  Result of the 2nd run, except those mentioned above.
+
 ### `3rd_run/`
 
   Third batch of data obtained using the following parameters:
@@ -68,6 +81,10 @@ The following clusters were left un-processed:
   - Restricted range in extinction: MCEV max for all clusters.
   - Restricted distance modulus:  SMC, [18.86, 19.061, 0.02] ;
     LMC, [18.4, 18.601, 0.02].
+
+* `asteca_output.dat`
+
+  Result of the 3rd run, entire sample.
 
 ### `extinction_MCEV/`
 
