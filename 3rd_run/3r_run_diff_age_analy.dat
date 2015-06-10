@@ -1,12 +1,20 @@
 
-# Good match, no re-process:
+# Cluster from 3rd run with \delta log(age) > 0.5
 
+## Don't re-process (3)
+
+    # v Use results from this run.
     SMC HW47 age, 8.90 vs 9.45
+    # v Use 1st run results.
+    LMC KMHK1045 age, 6.80 vs 8.80
+    # v Use 2nd run results.
+    LMC BSDL654 age, 7.00 vs 8.34
 
+## Re-process in 4th run (31)
 
-# SMC re-process:
+* red_memb: skip ; generations=3000 ; mut=0.2
 
-## red_memb: skip ; generations=3000 ; mut=0.2
+### SMC (7)
 
     SMC L35 age, 6.30 vs 8.34
     SMC L72 age, 6.50 vs 7.40
@@ -18,36 +26,45 @@
     SMC B34 age, 9.85 vs 9.08
 
 
-# LMC re-process:
-
-## red_memb: skip ; generations=3000 ; mut=0.2
+### LMC (24)
 
     # v 2nd run gave marginally better results (log(age)=8.1).
     LMC SL218 age, 6.00 vs 7.70
-    # v 1sr run gave marginally better results (log(age)=9.6).
+    # v 1st run gave marginally better results (log(age)=9.6).
     LMC H88-269 age, 6.00 vs 8.90
     LMC NGC1860 age, 6.00 vs 8.40
-    
-LMC H88-279 age, 6.30 vs 8.10
-LMC HS247 age, 6.50 vs 8.55
-LMC KMHK975 age, 6.60 vs 8.30
-LMC SL510 age, 6.70 vs 8.11
-LMC SL588 age, 6.70 vs 8.60
-LMC KMHK979 age, 6.70 vs 7.90
-LMC HS130 age, 6.80 vs 8.15
-LMC BSDL631 age, 6.80 vs 8.35
-LMC H88-307 age, 6.80 vs 8.25
-LMC KMHK1045 age, 6.80 vs 8.80
-LMC BSDL268 age, 6.90 vs 7.95
-LMC BSDL654 age, 7.00 vs 8.34
-LMC H88-131 age, 7.00 vs 9.00
-LMC SL579 age, 7.00 vs 8.15
-LMC HS329 age, 7.00 vs 9.26
-LMC KMHK1055 age, 7.00 vs 9.00
-LMC BSDL341 age, 7.10 vs 8.45
-LMC BSDL761 age, 7.10 vs 8.15
-LMC BSDL779 age, 7.30 vs 8.00
-LMC H88-316 age, 7.30 vs 8.25
-LMC NGC2093 age, 7.50 vs 8.40
-LMC H88-245 age, 8.80 vs 8.20
-LMC H88-320 age, 8.80 vs 8.20
+    LMC H88-279 age, 6.30 vs 8.10
+    # v 2nd run gave better results with higher ext: E_BV=0.24
+    LMC HS247 age, 6.50 vs 8.55
+    LMC KMHK975 age, 6.60 vs 8.30
+    LMC SL510 age, 6.70 vs 8.11
+    # v 1st run did better although with a high error: 9. +- 1.
+    LMC SL588 age, 6.70 vs 8.60
+    # Shared the frame with HS329, new file has that cluster cropped (x<300)
+    LMC KMHK979 age, 6.70 vs 7.90
+    # v 1st run gave marginally better results (log(age)=7.5).
+    LMC HS130 age, 6.80 vs 8.15
+    LMC BSDL631 age, 6.80 vs 8.35
+    # v Use 3 field regions
+    LMC H88-307 age, 6.80 vs 8.25
+    # v 1st run gave much better results (log(age)=7.6).
+    LMC BSDL268 age, 6.90 vs 7.95
+    LMC H88-131 age, 7.00 vs 9.00
+    LMC SL579 age, 7.00 vs 8.15
+    # v 2nd run gave better results (log(age)=9.4) but with a high dist_mod=18.7
+    LMC HS329 age, 7.00 vs 9.26
+    LMC KMHK1055 age, 7.00 vs 9.00
+    # v 2nd run gave better results (log(age)=8.5) but with a low dist_mod=18.35
+    # Run with semi center and auto rad.
+    LMC BSDL341 age, 7.10 vs 8.45
+    # v 1st run gave marginally better results (log(age)=8.6) but with a low
+    # dist_mod=18.35
+    LMC BSDL761 age, 7.10 vs 8.15
+    LMC BSDL779 age, 7.30 vs 8.00
+    # v 2nd run gave marginally better results (log(age)=7.8) 
+    LMC H88-316 age, 7.30 vs 8.25
+    LMC NGC2093 age, 7.50 vs 8.40
+    LMC H88-245 age, 8.80 vs 8.20
+    # v 2nd run gave marginally better results (log(age)=7.8) but with a high
+    # dist_mod=18.6. 1st run gave batter results (log(age)=8.6).
+    LMC H88-320 age, 8.80 vs 8.20
