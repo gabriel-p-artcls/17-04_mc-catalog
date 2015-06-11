@@ -75,7 +75,7 @@ def check_diffs(in_params):
                     #         name, p_n[k], par[j][0][i], par[j][1][i])
 
                     # Age.
-                    if k == 1 and diff > pars_diff[1]:
+                    if k == 1 and 0.3 <= diff <= pars_diff[1]:
                         flag_cl = True
                         # Relative difference in Gyr.
                         rel_diff = abs(
@@ -166,7 +166,7 @@ def main():
     check_diffs(in_params)
 
     # Make final plots.
-    make_plots(in_params)
+    # make_plots(in_params)
 
     print '\nEnd.'
 

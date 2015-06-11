@@ -77,6 +77,9 @@
 #    more than one cluster present in the frame, variable or too crowded
 #    field, etc.
 #
+########################################################################
+#  3rd run COMPLETE. 
+#
 #NAME                 c_x      e_x      c_y      e_y     r_cl    e_rcl      r_c     e_rc      r_t     e_rt      kcp      CI   n_memb_k     n_memb  n_memb_da  memb_par     a_f  prob_cl  int_col      met      e_m      age      e_a   E(B-V)      e_E     dist      e_d      M_i      e_M   bin_fr     e_bf      M1 M2  f1 f2 f3 f4 f5 f6 f7 f8 f9 f10  FC
 BRHT4B             1720.0      0.0   1900.0      0.0     40.0      0.0     28.0      9.0    400.0    600.0     1.11    0.79         62         21         11      0.31    1.00     0.61     0.64    0.012    0.003     8.45     0.08     0.01     0.02    18.42     0.05    600.0    200.0      0.5     -1.0       0  0   0  0  1  0  0  0  0  0  0   0   1
 BRHT45A            1836.0      2.0   3619.0      2.0     70.0     10.0     10.0      1.0     -1.0     -1.0    -1.00    0.72         -1         44         49     -0.05    1.00     0.98    -0.36    0.012    0.003      8.2      0.3     0.06     0.02    18.54     0.05    400.0    200.0      0.5     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
