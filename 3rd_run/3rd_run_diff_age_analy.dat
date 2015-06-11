@@ -78,31 +78,41 @@
     # v Use 2nd results (log(age)=8.0)
     SMC L114 age, 7.80 vs 8.15 , 0.08
     SMC BS265 age, 9.10 vs 8.80 , 0.63
+    # v Use 1st run results (log(age)=8.1)
+    LMC SL551 age, 7.80 vs 8.15 , 0.08
+    # v Use 2nd run results (log(age)=8.6)
+    LMC H88-333 age, 8.30 vs 8.60 , 0.20
+    # v Use 1st run results (log(age)=9.1)
+    LMC HS264 age, 8.90 vs 9.20 , 0.81
+    # Use 1st run results (log(age)=9.5)
+    LMC KMHK586 age, 9.65 vs 9.26 , 2.67
 
 ## Re-process in 4th run (XX)
 
 * red_memb: skip ; generations=3000 ; mut=0.2
 
-### SMC (5)
+### SMC (1)
+
+    # v Fit is not unreasonable but run again nonetheless.
+    SMC L28 age, 9.40 vs 9.00 , 1.51
 
 SMC HW31 age, 9.30 vs 9.68 , 2.80
-SMC L28 age, 9.40 vs 9.00 , 1.51
 
+### LMC (11)
 
-### LMC (15)
-
-LMC SL551 age, 7.80 vs 8.15 , 0.08
-LMC NGC1863 age, 8.00 vs 7.70 , 0.05
-LMC H88-244 age, 8.00 vs 8.30 , 0.10
-LMC SL72 age, 8.00 vs 8.40 , 0.15
-LMC H88-188 age, 8.30 vs 8.65 , 0.25
-LMC H88-333 age, 8.30 vs 8.60 , 0.20
-LMC HS412 age, 8.40 vs 8.10 , 0.13
-LMC BRHT4B age, 8.45 vs 8.00 , 0.18
-LMC OGLE298 age, 8.80 vs 8.30 , 0.43
-LMC KMHK378 age, 8.90 vs 8.45 , 0.51
-LMC HS264 age, 8.90 vs 9.20 , 0.81
-LMC SL244 age, 9.45 vs 9.08 , 1.62
-LMC NGC1836 age, 9.00 vs 8.60 , 0.60
-LMC SL33 age, 9.65 vs 9.30 , 2.47
-LMC KMHK586 age, 9.65 vs 9.26 , 2.67
+    LMC NGC1863 age, 8.00 vs 7.70 , 0.05
+    LMC H88-244 age, 8.00 vs 8.30 , 0.10
+    # v 1st run gave better results (log(age)=8.2) but with a high dist_mod=18.7
+    LMC SL72 age, 8.00 vs 8.40 , 0.15
+    LMC H88-188 age, 8.30 vs 8.65 , 0.25
+    # v Use auto center & manual rad value.
+    LMC HS412 age, 8.40 vs 8.10 , 0.13
+    # v 2nd run gave very similar results.
+    LMC BRHT4B age, 8.45 vs 8.00 , 0.18
+    LMC OGLE298 age, 8.80 vs 8.30 , 0.43
+    LMC KMHK378 age, 8.90 vs 8.45 , 0.51
+    LMC SL244 age, 9.45 vs 9.08 , 1.62
+    LMC NGC1836 age, 9.00 vs 8.60 , 0.60
+    # v 1st run gave marginally better results (log(age)=8.6) but with a low
+    # dits_mod=18.3
+    LMC SL33 age, 9.65 vs 9.30 , 2.47
