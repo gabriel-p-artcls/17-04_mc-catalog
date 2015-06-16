@@ -75,7 +75,7 @@ def check_diffs(in_params):
                     #         name, p_n[k], par[j][0][i], par[j][1][i])
 
                     # Age.
-                    if k == 1 and 0.3 <= diff <= pars_diff[1]:
+                    if k == 1 and 0.3 <= diff:
                         flag_cl = True
                         # Relative difference in Gyr.
                         rel_diff = abs(
@@ -119,26 +119,26 @@ def make_plots(in_params):
         make_as_vs_lit_plot(gal, j, in_params)
         print '{} ASteCA vs literature plots done.'.format(gal)
 
-        make_kde_plots(gal, j, in_params)
-        print '{} KDE maps done.'.format(gal)
+    #     make_kde_plots(gal, j, in_params)
+    #     print '{} KDE maps done.'.format(gal)
 
-    make_ra_dec_plots(in_params)
-    print 'RA vs DEC plots done.'
+    # make_ra_dec_plots(in_params)
+    # print 'RA vs DEC plots done.'
 
-    make_lit_ext_plot(in_params)
-    print 'ASteca vs MCEV vs SandF extinction plot done.'
+    # make_lit_ext_plot(in_params)
+    # print 'ASteca vs MCEV vs SandF extinction plot done.'
 
-    make_int_cols_plot(in_params)
-    print 'Integrated colors plot done.'
+    # make_int_cols_plot(in_params)
+    # print 'Integrated colors plot done.'
 
-    make_concent_plot(in_params)
-    print 'Concentration parameter plot done.'
+    # make_concent_plot(in_params)
+    # print 'Concentration parameter plot done.'
 
-    make_radius_plot(in_params)
-    print 'ASteCA radius (pc) vs parameters plot done.'
+    # make_radius_plot(in_params)
+    # print 'ASteCA radius (pc) vs parameters plot done.'
 
-    make_probs_CI_plot(in_params)
-    print 'ASteCA probabilities versus CI done.'
+    # make_probs_CI_plot(in_params)
+    # print 'ASteCA probabilities versus CI done.'
 
 
 def main():
@@ -166,7 +166,7 @@ def main():
     check_diffs(in_params)
 
     # Make final plots.
-    # make_plots(in_params)
+    make_plots(in_params)
 
     print '\nEnd.'
 

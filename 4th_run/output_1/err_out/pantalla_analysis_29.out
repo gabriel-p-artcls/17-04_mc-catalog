@@ -1,0 +1,171 @@
+
+
+-------------------------------------------
+             [ASteCA v0.1.9-beta]
+-------------------------------------------
+
+  WARNING: params_input_29.dat file does not exist.
+  Falling back to 'params_input.dat' file.
+
+PARSEC v1.1 theoretical isochrones read,
+interpolated and stored:
+  23 metallicity values (z),
+  83 age values (per z),
+  21 reddening values,
+  9 distance values,
+  51 mass values,
+  1 binary fraction values.
+  = 1.8e+07 approx total models.
+Full check done.
+
+(Force matplotlib to not use any Xwindows backend)
+
+Analyzing cluster BSDL268 (semi).
+ Set max extinction value: 0.14, step: 0.02
+ LMC cluster
+Data obtained from input file (N_stars: 4490).
+Frame's 2D histogram obtained
+Semi center fixed: (5040, 3290) px.
+Radial density profile (RDP) calculated.
+Field density calculated (6.0E-03 stars/px^2).
+Semi radius set: 216.8 px.
+Tidal radius obtained: 228.859 px.
+Stars accepted/rejected based on their errors.
+Stars separated in/out of cluster's boundaries.
+Area of cluster obtained.
+  WARNING: only 0 true members estimated in cluster region.
+  WARNING: CI value obtained is too high: 1.11
+  WARNING: Number of FR defined (15) larger than
+  the maximum allowed (4). Using max number.
+LF and completeness magnitude levels obtained.
+Integrated color magnitude distribution obtained (-0.04).
+Obtaining KDE p-value for cluster vs field regions.
+  15% done
+  30% done
+  50% done
+  70% done
+  85% done
+  100% done
+Probability of physical cluster obtained (1.00).
+Applying decontamination algorithm.
+  25% done
+  50% done
+  MPs converged. Breaking out (684).
+  WARNING: the number of estimated true cluster members
+  (structural vs. photometric) differ greatly.
+Reduced membership function skipped.
+Membership probabilities saved to file.
+Searching for optimal parameters.
+Optimization terminated successfully.
+         Current function value: -354.053541
+         Iterations: 15
+         Function evaluations: 44
+Optimization terminated successfully.
+         Current function value: -193.381807
+         Iterations: 16
+         Function evaluations: 45
+Using Genetic Algorithm (dolphin; knuth).
+   10% done       (0.012074, 7.1, 0.14, 18.56, 3010, 0.5)
+   20% done       (0.012074, 7.1, 0.14, 18.56, 3010, 0.5)
+   30% done       (0.012074, 7.1, 0.14, 18.56, 3010, 0.5)
+   40% done       (0.012074, 7.1, 0.14, 18.56, 3010, 0.5)
+Best fit params obtained.
+Begin bootstrap process (10).
+Optimization terminated successfully.
+         Current function value: -244.850015
+         Iterations: 15
+         Function evaluations: 44
+Optimization terminated successfully.
+         Current function value: -155.443078
+         Iterations: 15
+         Function evaluations: 44
+  10% done
+Optimization terminated successfully.
+         Current function value: -229.837228
+         Iterations: 16
+         Function evaluations: 44
+Optimization terminated successfully.
+         Current function value: -181.478494
+         Iterations: 19
+         Function evaluations: 50
+  20% done
+Optimization terminated successfully.
+         Current function value: -330.839389
+         Iterations: 16
+         Function evaluations: 45
+Optimization terminated successfully.
+         Current function value: -144.741915
+         Iterations: 16
+         Function evaluations: 45
+  30% done
+Optimization terminated successfully.
+         Current function value: -247.991333
+         Iterations: 15
+         Function evaluations: 43
+Optimization terminated successfully.
+         Current function value: -193.682706
+         Iterations: 15
+         Function evaluations: 44
+  40% done
+Optimization terminated successfully.
+         Current function value: -289.068629
+         Iterations: 16
+         Function evaluations: 45
+Optimization terminated successfully.
+         Current function value: -194.090022
+         Iterations: 15
+         Function evaluations: 44
+  50% done
+Optimization terminated successfully.
+         Current function value: -212.477295
+         Iterations: 15
+         Function evaluations: 44
+Optimization terminated successfully.
+         Current function value: -178.841116
+         Iterations: 14
+         Function evaluations: 41
+  60% done
+Optimization terminated successfully.
+         Current function value: -319.458095
+         Iterations: 15
+         Function evaluations: 43
+Optimization terminated successfully.
+         Current function value: -131.593241
+         Iterations: 15
+         Function evaluations: 41
+  70% done
+Optimization terminated successfully.
+         Current function value: -205.934570
+         Iterations: 15
+         Function evaluations: 44
+Optimization terminated successfully.
+         Current function value: -161.403390
+         Iterations: 16
+         Function evaluations: 44
+  80% done
+Optimization terminated successfully.
+         Current function value: -330.993155
+         Iterations: 15
+         Function evaluations: 43
+Optimization terminated successfully.
+         Current function value: -186.777701
+         Iterations: 16
+         Function evaluations: 45
+  90% done
+Optimization terminated successfully.
+         Current function value: -310.160673
+         Iterations: 15
+         Function evaluations: 44
+Optimization terminated successfully.
+         Current function value: -197.884999
+         Iterations: 18
+         Function evaluations: 50
+  100% done
+Best fit synthetic cluster saved to file.
+Cluster's parameters and flags added to output file.
+Top tier models saved to file and plotted.
+Plots created.
+Photometric data file moved.
+End of analysis for BSDL268 in 1645m 41s.
+
+Full iteration completed in 1645m 57s.

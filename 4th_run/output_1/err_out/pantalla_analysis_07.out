@@ -1,0 +1,167 @@
+
+
+-------------------------------------------
+             [ASteCA v0.1.9-beta]
+-------------------------------------------
+
+  WARNING: params_input_07.dat file does not exist.
+  Falling back to 'params_input.dat' file.
+
+PARSEC v1.1 theoretical isochrones read,
+interpolated and stored:
+  23 metallicity values (z),
+  83 age values (per z),
+  21 reddening values,
+  9 distance values,
+  51 mass values,
+  1 binary fraction values.
+  = 1.8e+07 approx total models.
+Full check done.
+
+(Force matplotlib to not use any Xwindows backend)
+
+Analyzing cluster NGC339 (semi).
+ Set max extinction value: 0.035, step: 0.005
+ SMC cluster
+Data obtained from input file (N_stars: 58048).
+Frame's 2D histogram obtained
+Semi center found: (1873.78, 4666.51) px.
+Radial density profile (RDP) calculated.
+Field density calculated (4.3E-03 stars/px^2).
+Semi radius set: 300 px.
+Tidal radius obtained: 750.47 px.
+Stars accepted/rejected based on their errors.
+Stars separated in/out of cluster's boundaries.
+Area of cluster obtained.
+Approximate number of members in cluster obtained (2396).
+Contamination index obtained (0.34).
+Using defined number of field regions (10).
+LF and completeness magnitude levels obtained.
+Integrated color magnitude distribution obtained (1.38).
+Obtaining KDE p-value for cluster vs field regions.
+  15% done
+  30% done
+  50% done
+  70% done
+  85% done
+  100% done
+Probability of physical cluster obtained (1.00).
+Applying decontamination algorithm.
+  25% done
+  MPs converged. Breaking out (266).
+Reduced membership function skipped.
+Membership probabilities saved to file.
+Searching for optimal parameters.
+Optimization terminated successfully.
+         Current function value: -4334.093340
+         Iterations: 18
+         Function evaluations: 50
+Optimization terminated successfully.
+         Current function value: -2014.620999
+         Iterations: 17
+         Function evaluations: 47
+Using Genetic Algorithm (dolphin; knuth).
+   10% done       (0.0152, 9.05, 0.005, 18.88, 9810, 0.5)
+   20% done       (0.0152, 9.05, 0.005, 18.88, 9810, 0.5)
+   30% done       (0.0152, 9.05, 0.005, 18.88, 9810, 0.5)
+   40% done       (0.0152, 9.05, 0.005, 18.88, 9810, 0.5)
+Best fit params obtained.
+Begin bootstrap process (10).
+Optimization terminated successfully.
+         Current function value: -4085.410669
+         Iterations: 17
+         Function evaluations: 48
+Optimization terminated successfully.
+         Current function value: -2013.775370
+         Iterations: 16
+         Function evaluations: 46
+  10% done
+Optimization terminated successfully.
+         Current function value: -4362.436327
+         Iterations: 19
+         Function evaluations: 52
+Optimization terminated successfully.
+         Current function value: -2019.443438
+         Iterations: 16
+         Function evaluations: 45
+  20% done
+Optimization terminated successfully.
+         Current function value: -4137.103357
+         Iterations: 19
+         Function evaluations: 52
+Optimization terminated successfully.
+         Current function value: -1974.619837
+         Iterations: 17
+         Function evaluations: 47
+  30% done
+Optimization terminated successfully.
+         Current function value: -4091.871301
+         Iterations: 17
+         Function evaluations: 48
+Optimization terminated successfully.
+         Current function value: -1987.383404
+         Iterations: 16
+         Function evaluations: 46
+  40% done
+Optimization terminated successfully.
+         Current function value: -4088.475003
+         Iterations: 17
+         Function evaluations: 48
+Optimization terminated successfully.
+         Current function value: -1912.858288
+         Iterations: 16
+         Function evaluations: 44
+  50% done
+Optimization terminated successfully.
+         Current function value: -3394.142248
+         Iterations: 17
+         Function evaluations: 48
+Optimization terminated successfully.
+         Current function value: -2085.831411
+         Iterations: 17
+         Function evaluations: 47
+  60% done
+Optimization terminated successfully.
+         Current function value: -4499.980057
+         Iterations: 23
+         Function evaluations: 61
+Optimization terminated successfully.
+         Current function value: -2125.791611
+         Iterations: 16
+         Function evaluations: 45
+  70% done
+Optimization terminated successfully.
+         Current function value: -3443.231135
+         Iterations: 20
+         Function evaluations: 55
+Optimization terminated successfully.
+         Current function value: -2041.198262
+         Iterations: 17
+         Function evaluations: 48
+  80% done
+Optimization terminated successfully.
+         Current function value: -4396.540246
+         Iterations: 22
+         Function evaluations: 59
+Optimization terminated successfully.
+         Current function value: -2097.145425
+         Iterations: 16
+         Function evaluations: 46
+  90% done
+Optimization terminated successfully.
+         Current function value: -4150.169175
+         Iterations: 18
+         Function evaluations: 50
+Optimization terminated successfully.
+         Current function value: -2049.149087
+         Iterations: 16
+         Function evaluations: 46
+  100% done
+Best fit synthetic cluster saved to file.
+Cluster's parameters and flags added to output file.
+Top tier models saved to file and plotted.
+Plots created.
+Photometric data file moved.
+End of analysis for NGC339 in 1755m 12s.
+
+Full iteration completed in 1755m 29s.

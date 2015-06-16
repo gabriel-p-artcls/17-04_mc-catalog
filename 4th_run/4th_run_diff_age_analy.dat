@@ -1,0 +1,35 @@
+
+# Clusters from 4th run with \delta log(age) >= 0.3
+
+## Don't re-process (0)
+
+## Re-process in 5th run (31)
+
+* generations=3000 ; mut=0.2 ; see each cluster
+
+    # v Use E(B-V)_max=0.04
+    SMC L35 age, 6.90 vs 8.34 , 0.21
+    # v 1st run gave better results (log(age)=7.7) with a high dist_mod=19.1
+    # Use 20 field regs + red_memb=local
+    SMC L72 age, 7.80 vs 7.40 , 0.04
+SMC BS35 age, 8.10 vs 8.70 , 0.37
+SMC NGC339 age, 9.10 vs 9.73 , 4.14
+SMC L91 age, 9.15 vs 9.63 , 2.89
+
+
+LMC H88-245 age, 9.00 vs 8.20 , 0.84
+LMC SL510 age, 7.00 vs 8.11 , 0.12
+LMC NGC2093 age, 7.90 vs 8.40 , 0.17
+LMC SL218 age, 9.20 vs 7.70 , 1.53
+LMC KMHK979 age, 7.30 vs 7.90 , 0.06
+LMC KMHK975 age, 6.70 vs 8.30 , 0.19
+LMC BSDL779 age, 7.50 vs 8.00 , 0.07
+LMC NGC1860 age, 8.80 vs 8.40 , 0.38
+LMC BSDL268 age, 7.10 vs 7.95 , 0.08
+LMC H88-279 age, 9.00 vs 8.10 , 0.87
+LMC H88-131 age, 7.20 vs 9.00 , 0.98
+LMC H88-307 age, 7.90 vs 8.25 , 0.10
+LMC BSDL631 age, 6.90 vs 8.35 , 0.22
+LMC H88-316 age, 7.70 vs 8.25 , 0.13
+LMC SL579 age, 6.85 vs 8.15 , 0.13
+

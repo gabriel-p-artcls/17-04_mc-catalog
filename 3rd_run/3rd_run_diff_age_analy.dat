@@ -72,7 +72,7 @@
 
 # Clusters from 3rd run with 0.3 <= \delta log(age) <= 0.5
 
-## Don't re-process (3)
+## Don't re-process (7)
 
     SMC L7 age, 8.95 vs 9.30 , 1.11
     # v Use 2nd results (log(age)=8.0)
@@ -91,12 +91,12 @@
 
 * red_memb: skip ; generations=3000 ; mut=0.2
 
-### SMC (1)
+### SMC (2)
 
     # v Fit is not unreasonable but run again nonetheless.
     SMC L28 age, 9.40 vs 9.00 , 1.51
-
-SMC HW31 age, 9.30 vs 9.68 , 2.80
+    # v 15 field regions + rm over-density in frame.
+    SMC HW31 age, 9.30 vs 9.68 , 2.80
 
 ### LMC (11)
 
