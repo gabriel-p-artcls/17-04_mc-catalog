@@ -14,16 +14,20 @@
 
     * skip DA, red_memb: local + scott
 
+    (params_input_01.dat)
     SMC L35 age, 6.90 vs 8.34 , 0.21
 
 
     * skip DA, red_memb: local + blocks
 
+    (params_input_02-04.dat)
     # v 1st run gave better results (log(age)=7.7) with a high dist_mod=19.1
     SMC L72 age, 7.80 vs 7.40 , 0.04
     # v 1st run gave better results (log(age)=9.6) with high dist_mod = 19.2
     SMC L91 age, 9.15 vs 9.63 , 2.89
     SMC BS35 age, 8.10 vs 8.70 , 0.37
+
+    (params_input_05.dat)
     # v max mass = 30000
     SMC NGC339 age, 9.10 vs 9.73 , 4.14
 
@@ -31,6 +35,7 @@
 
     * skip DA, red_memb: local + scott
 
+    (params_input_06-20.dat)
     LMC SL510 age, 7.00 vs 8.11 , 0.12
     LMC BSDL268 age, 7.10 vs 7.95 , 0.08
     LMC H88-131 age, 7.20 vs 9.00 , 0.98
@@ -54,6 +59,7 @@
 
     * skip DA, red_memb: local + blocks
 
+    (params_input_21-23.dat)
     # v 3rd run gave better results (log(age)=8.0)
     LMC NGC1863 age, 6.40 vs 7.70 , 0.05
     # v Not sure if fit is incorrect. Run again just to check:
@@ -64,5 +70,6 @@
 
     * skip DA, skip red_memb <-- Will fit mostly field stars if n_memb is low.
 
+    (params_input_24/25.dat)
     LMC BSDL631 age, 6.90 vs 8.35 , 0.22
     LMC OGLE298 age, 8.80 vs 8.30 , 0.43
