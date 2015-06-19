@@ -58,9 +58,9 @@ target/
 
 *.png
 .~*
-1st_run/output/*
-2nd_run/output/*
-3rd_run/output/*
-4th_run/output/*
-5th_run/output/*
-6th_run/output/*
+runs/1st_run/output/*
+runs/2nd_run/output/*
+runs/3rd_run/output/*
+runs/4th_run/output/*
+runs/5th_run/output/*
+runs/6th_run/output/*
