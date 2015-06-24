@@ -434,7 +434,7 @@ def make_radius_plot(in_params):
         plt.savefig('figures/as_rad_vs_params_' + gal_name + '.png', dpi=300)
 
 
-def prov_vs_CI_plot(pl_params):
+def prob_vs_CI_plot(pl_params):
     '''
     Generate plots for KDE probabilities versus contamination indexes.
     '''
@@ -502,7 +502,7 @@ def make_probs_CI_plot(in_params):
     ]
 
     for pl_params in prob_CI_pl_lst:
-        prov_vs_CI_plot(pl_params)
+        prob_vs_CI_plot(pl_params)
 
     # Output png file.
     fig.tight_layout()

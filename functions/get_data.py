@@ -18,7 +18,7 @@ def get_asteca_data():
     '''
 
     # Path to data file.
-    out_file = 'asteca_output.dat'
+    out_file = 'asteca_output_final.dat'
 
     # Read data file
     with open(out_file) as f:

@@ -87,7 +87,7 @@
     # Use 1st run results (log(age)=9.5)
     LMC KMHK586 age, 9.65 vs 9.26 , 2.67
 
-## Re-process in 4th run (XX)
+## Re-process in 4th run (13)
 
 * red_memb: skip ; generations=3000 ; mut=0.2
 

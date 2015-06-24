@@ -77,13 +77,14 @@ def check_diffs(in_params):
                     # Age.
                     if k == 1 and 0.3 <= diff:
                         flag_cl = True
-                        # Relative difference in Gyr.
-                        rel_diff = abs(
-                            10 ** (par[j][0][i]) - 10 ** (par[j][1][i])
-                            ) / 10 ** 9
+                        # Relative Log difference.
+                        rel_diff = abs(par[j][0][i] - par[j][1][i]) / \
+                            par[j][1][i]
                         print '{} {} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
                             gal[j], name, p_n[k], par[j][0][i], par[j][1][i],
                             rel_diff)
+                    elif k == 1 and 0.3 > diff:
+                        print 'save:', name
 
                     # # Extinction.
                     # if k == 2 and diff > pars_diff[2]:
@@ -166,7 +167,7 @@ def main():
     check_diffs(in_params)
 
     # Make final plots.
-    make_plots(in_params)
+    # make_plots(in_params)
 
     print '\nEnd.'
 
