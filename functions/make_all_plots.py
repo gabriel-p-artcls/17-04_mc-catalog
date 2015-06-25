@@ -507,3 +507,50 @@ def make_probs_CI_plot(in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/as_prob_vs_CI.png', dpi=300)
+
+
+def make_dist_2_cents(in_params):
+    '''
+    Plot ASteCA distances to center of either MC galaxy.
+    '''
+
+    zarr, aarr, earr, marr, rad_pc, cont_ind, dist_cent = \
+        [in_params[_] for _ in ['zarr', 'aarr', 'earr', 'marr',
+                                'rad_pc', 'cont_ind', 'dist_cent']]
+
+    # Define names of arrays being plotted.
+    x_lab, yz_lab = '$dist_{center}\,[pc]$', \
+        ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$', '$M\,(M_{\odot})$',
+            '$E(B-V)_{asteca}$']
+    xmin, xmax = 0, 18000
+
+    fig = plt.figure(figsize=(16, 25))
+    gs = gridspec.GridSpec(4, 2)
+
+    prob_CI_pl_lst = [
+        # SMC
+        [gs, 0, xmin, xmax, 6., 10.5, x_lab, yz_lab[0], yz_lab[1],
+            dist_cent[0], aarr[0][0], zarr[0][0], rad_pc[0], 'SMC'],
+        [gs, 1, xmin, xmax, -2.4, 0.4, x_lab, yz_lab[1], yz_lab[2],
+            dist_cent[0], zarr[0][0], marr[0][0], rad_pc[0], 'SMC'],
+        [gs, 2, xmin, xmax, 0., 11000, x_lab, yz_lab[2], yz_lab[3],
+            dist_cent[0], marr[0][0], earr[0][0], rad_pc[0], 'SMC'],
+        [gs, 3, xmin, xmax, -0.01, 0.15, x_lab, yz_lab[3], yz_lab[0],
+            dist_cent[0], earr[0][0], aarr[0][0], rad_pc[0], 'SMC'],
+        # LMC
+        [gs, 4, xmin, xmax, 6., 10.5, x_lab, yz_lab[0], yz_lab[1],
+            dist_cent[1], aarr[1][0], zarr[1][0], rad_pc[1], 'LMC'],
+        [gs, 5, xmin, xmax, -2.4, 0.4, x_lab, yz_lab[1], yz_lab[2],
+            dist_cent[1], zarr[1][0], marr[1][0], rad_pc[1], 'LMC'],
+        [gs, 6, xmin, xmax, 0., 11000, x_lab, yz_lab[2], yz_lab[3],
+            dist_cent[1], marr[1][0], earr[1][0], rad_pc[1], 'LMC'],
+        [gs, 7, xmin, xmax, -0.01, 0.15, x_lab, yz_lab[3], yz_lab[0],
+            dist_cent[1], earr[1][0], aarr[1][0], rad_pc[1], 'LMC']
+    ]
+
+    for pl_params in prob_CI_pl_lst:
+        prob_vs_CI_plot(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    plt.savefig('figures/as_dist_2_cent.png', dpi=300)

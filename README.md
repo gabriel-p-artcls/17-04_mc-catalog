@@ -1,12 +1,25 @@
+
+
+<!-- MarkdownTOC -->
+
+- [mc-catalog][mc-catalog]
+  - [Top level][top-level]
+    - [`ages_mass_lit/`][ages_mass_lit]
+    - [`aux_funcs/`][aux_funcs]
+    - [`extinction_MCEV/`][extinction_mcev]
+    - [`figures/`][figures]
+    - [`functions/`][functions]
+    - [`runs/`][runs]
+
+<!-- /MarkdownTOC -->
+
+
 # mc-catalog
 
 Set of scripts to analyze and plot the results of the **ASteCA** processing of
 the 210 MC clusters in our database, observed with Washington photometry.
 
-
-## Scripts and data files description
-
-### `../`
+## Top level
 
 * `README.md`
 
@@ -31,96 +44,10 @@ the 210 MC clusters in our database, observed with Washington photometry.
 
   Functions are stored in the `functions/` folder.
 
-### `1st_run/`
+* `asteca_output_final.dat`
 
-First batch of data obtained using the following parameters:
+  Combined final results for the entire sample.
 
-  - Semi mode.
-  - Center found with 100px search area.
-  - Auto radius.
-  - Field regions: 10.
-  - Decontamination algorithm: auto.
-  - Reduced membership: Bayesian blocks binning
-  - Restricted range in extinction: MCEV max + 0.1.
-  - Restricted distance modulus:  SMC, [18.8, 19.201, 0.05] ;
-    LMC, [18.3, 18.701, 0.05].
-  - Best fit: Dolphin + Knuth binning.
-
-* `asteca_output.dat`
-
-  Result of the 1st run, combined first and second batch of processing.
-
-* `asteca_output_1st_analysis.dat`
-
-  Analysis of the above output file were those clusters marked for a re-process
-  in the 2nd run are marked.
-
-### `2nd_run/`
-
-Second batch of data for 83 clusters (60 LMC, 23 SMC) from the 1st run,
-marked to be re-processed. The data was obtained using the following
-parameters:
-
-  - Center, radius, number of field regions, max E(B-V) and binning of red_memb
-   and best_fit, as described in `README.dat`.
-
-The following clusters were left un-processed:
-
-  - NGC1917, SL579, SL588, LW54, NGC419, SL244
-
-* `asteca_output.dat`
-
-  Result of the 2nd run, except those mentioned above.
-
-### `3rd_run/`
-
-  Third batch of data obtained using the following parameters:
-
-  - Semi mode with center and radius fixed for several clusters.
-  - Number of field regions set individually for some clusters.
-  - Restricted range in extinction: MCEV max for all clusters.
-  - Restricted distance modulus:  SMC, [18.86, 19.061, 0.02] ;
-    LMC, [18.4, 18.601, 0.02].
-
-* `asteca_output.dat`
-
-  Result of the 3rd run, entire sample.
-
-### `extinction_MCEV/`
-
-* `IRSA_MC_ext.tbl`
-
-  Output of the [IRSA](http://irsa.ipac.caltech.edu/applications/DUST/) query to
-  obtain the [Schlafly & Finkbeiner
-  (2011)](http://adsabs.harvard.edu/abs/2011ApJ...737..103S) corrected `E(B-V)`
-  values for the 210 clusters.
-
-* `IRSA_BB_ext.tbl`
-
-  Idem above for the 3740 clusters in the Bica et al. catalog.
-
-* `ra_dec_exts_mult_matches.dat`
-
-  Output of the [MCEV](http://dc.zah.uni-heidelberg.de/mcextinct/q/cone/form)
-  service query. Each of the 210 cluster's position is matched with at least
-  one area in the reddening maps containing a E(V-I) value.
-
-  The cluster [OHSC28]
-  (http://simbad.u-strasbg.fr/simbad/sim-id?Ident=OHSC+28)
-  needed a 6.0 deg search radius to find areas with extinction in the maps,
-  making it the one furthest away from the areas studied in the MCEV maps.
-
-* `extin_analysis.py`
-
- Gets the extinction data from the table obtained via the MCEV service
- (`ra_dec_exts_mult_matches.dat`) and produces for each of the 210 clusters a
- value of the closest, average and maximum extinction values.
-
- The results are stored in the `cls_exts_match.dat` file.
-
-* `cls_exts_match.dat`
-
-  Output of the above script.
 
 ### `ages_mass_lit/`
 
@@ -169,6 +96,7 @@ The following clusters were left un-processed:
   Matches the data in the above databases to those clusters processed by
   ASteCA.
 
+
 ### `aux_funcs/`
 
 * `move_files_sizes.py`
@@ -182,6 +110,43 @@ The following clusters were left un-processed:
   to the `asteca_output.dat` file from the 1st run, since the function was
   turned off.
 
+
+### `extinction_MCEV/`
+
+* `IRSA_MC_ext.tbl`
+
+  Output of the [IRSA](http://irsa.ipac.caltech.edu/applications/DUST/) query to
+  obtain the [Schlafly & Finkbeiner
+  (2011)](http://adsabs.harvard.edu/abs/2011ApJ...737..103S) corrected `E(B-V)`
+  values for the 210 clusters.
+
+* `IRSA_BB_ext.tbl`
+
+  Idem above for the 3740 clusters in the Bica et al. catalog.
+
+* `ra_dec_exts_mult_matches.dat`
+
+  Output of the [MCEV](http://dc.zah.uni-heidelberg.de/mcextinct/q/cone/form)
+  service query. Each of the 210 cluster's position is matched with at least
+  one area in the reddening maps containing a E(V-I) value.
+
+  The cluster [OHSC28]
+  (http://simbad.u-strasbg.fr/simbad/sim-id?Ident=OHSC+28)
+  needed a 6.0 deg search radius to find areas with extinction in the maps,
+  making it the one furthest away from the areas studied in the MCEV maps.
+
+* `extin_analysis.py`
+
+ Gets the extinction data from the table obtained via the MCEV service
+ (`ra_dec_exts_mult_matches.dat`) and produces for each of the 210 clusters a
+ value of the closest, average and maximum extinction values.
+
+ The results are stored in the `cls_exts_match.dat` file.
+
+* `cls_exts_match.dat`
+
+  Output of the above script.
+
 ### `figures/`
 
    Output figures from main script.
@@ -189,3 +154,63 @@ The following clusters were left un-processed:
 ### `functions/`
 
    Functions called by the main script.
+### `runs/`
+
+ Folder that contains the results for all the runs.
+
+#### `1st_run/`
+
+First batch of data obtained using the following parameters:
+
+  - Semi mode.
+  - Center found with 100px search area.
+  - Auto radius.
+  - Field regions: 10.
+  - Decontamination algorithm: auto.
+  - Reduced membership: Bayesian blocks binning
+  - Restricted range in extinction: MCEV max + 0.1.
+  - Restricted distance modulus:  SMC, [18.8, 19.201, 0.05] ;
+    LMC, [18.3, 18.701, 0.05].
+  - Best fit: Dolphin + Knuth binning.
+
+* `asteca_output.dat`
+
+  Result of the 1st run, combined first and second batch of processing.
+
+* `asteca_output_1st_analysis.dat`
+
+  Analysis of the above output file were those clusters marked for a re-process
+  in the 2nd run are marked.
+
+#### `2nd_run/`
+
+Second batch of data for 83 clusters (60 LMC, 23 SMC) from the 1st run,
+marked to be re-processed. The data was obtained using the following
+parameters:
+
+  - Center, radius, number of field regions, max E(B-V) and binning of red_memb
+   and best_fit, as described in `README.dat`.
+
+The following clusters were left un-processed:
+
+  - NGC1917, SL579, SL588, LW54, NGC419, SL244
+
+* `asteca_output.dat`
+
+  Result of the 2nd run, except those mentioned above.
+
+#### `3rd_run/`
+
+  Third batch of data obtained using the following parameters:
+
+  - Semi mode with center and radius fixed for several clusters.
+  - Number of field regions set individually for some clusters.
+  - Restricted range in extinction: MCEV max for all clusters.
+  - Restricted distance modulus:  SMC, [18.86, 19.061, 0.02] ;
+    LMC, [18.4, 18.601, 0.02].
+
+#### `4th_run/`
+
+#### `5th_run/`
+
+#### `6th_run/`

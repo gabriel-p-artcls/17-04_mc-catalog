@@ -1,4 +1,6 @@
 import numpy as np
+from astropy import units as u
+from astropy.coordinates import SkyCoord
 
 
 def float_str(val):
@@ -54,6 +56,40 @@ def z_to_feh(z, ez):
     return fe_h, e_fe_h
 
 
+def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod, E_BV):
+    '''
+    Obtain the 3D distance in parsecs between the center of a cluster and
+    the center of the Magellanic cloud it belongs to.
+    '''
+
+    # S/LMC central coords stored in degrees.
+    c_SMC = SkyCoord('00h52m45s', '-72d49m43s', frame='icrs')
+    # ^ (13.1875, -72.82861111)
+    c_LMC = SkyCoord('05h20m57s', '-69d28m41s', frame='icrs')
+    # ^ (80.2375, -69.47805556)
+
+    # S/LMC distance stored in parsecs.
+    d_SMC = 10 ** (0.2 * (18.96 + 5))  # ~ 61944.11 pc
+    d_LMC = 10 ** (0.2 * (18.49 + 5))  # ~ 49888.45 pc
+
+    # Distance (ASteCA) to cluster in parsecs.
+    d_clust = 10 ** (0.2 * (float(dist_mod) + 5 - (3.1 * float(E_BV))))
+
+    if gal == 0:  # SMC
+        gal_center, gal_dist = c_SMC, d_SMC
+    else:  # LMC
+        gal_center, gal_dist = c_LMC, d_LMC
+
+    c1 = SkyCoord(ra=gal_center.ra, dec=gal_center.dec,
+                  distance=gal_dist*u.pc, frame='icrs')
+    c2 = SkyCoord(ra=ra_deg*u.degree, dec=dec_deg*u.degree,
+                  distance=d_clust*u.pc, frame='icrs')
+
+    dist_pc = float(str(c1.separation_3d(c2))[:-3])
+
+    return dist_pc
+
+
 def params(as_names, as_pars, cl_dict, names_idx):
     '''
     Return ASteCA output and literature parameters values.
@@ -80,7 +116,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
     # Initialize empty lists. The first sub-list in the parameters list
     # corresponds to clusters in the SMC and the second to those in the LMC.
     gal_names, int_colors, n_memb, cont_ind, kde_prob, ra, dec, rad_pc, \
-        erad_pc = [[[], []] for _ in range(9)]
+        erad_pc, dist_cent = [[[], []] for _ in range(10)]
     # First sub-list stores SMC values, the second one stores LMC values.
     # First and 2nd sub-sublist store Schlafly & Finkbeiner extinction values
     # and their errors. Third and 4th store MCEV extinction values and their
@@ -102,17 +138,17 @@ def params(as_names, as_pars, cl_dict, names_idx):
         ra[j].append(cl_dict[names_idx[i]][ra_i])
         dec[j].append(cl_dict[names_idx[i]][dec_i])
         # Integrated color.
-        int_col_no_corr = float_str(as_pars[i][a_int_c])
+        int_col_no_corr = float_str(as_p[a_int_c])
         # Correct for extinction.
-        int_col_corr = correct_int_col_extin(int_col_no_corr, as_pars[i][a_ei])
+        int_col_corr = correct_int_col_extin(int_col_no_corr, as_p[a_ei])
         # Store extinction corrected integrated color.
         int_colors[j].append(int_col_corr)
         # Approx number of members.
-        n_memb[j].append(float_str(as_pars[i][a_nmemb]))
+        n_memb[j].append(float_str(as_p[a_nmemb]))
         # Contamination index.
-        cont_ind[j].append(float_str(as_pars[i][a_CI]))
+        cont_ind[j].append(float_str(as_p[a_CI]))
         # Cluster KDE p-value probability.
-        kde_prob[j].append(float_str(as_pars[i][a_prob]))
+        kde_prob[j].append(float_str(as_p[a_prob]))
         # Store literature E(B-V) values: Schlafly & Finkbeiner (SandF) and
         # MCEV.
         ext_sf[j][0].append(cl_dict[names_idx[i]][l_e_sandf])
@@ -127,8 +163,6 @@ def params(as_names, as_pars, cl_dict, names_idx):
             float_lst.append(float_str(el))
         r_pc = rad_in_pc(float_lst)
         rad_pc[j].append(r_pc)
-        # if as_names[i] == 'NGC1846':
-        #     print r_pc
         # Repeat process for errors in radius.
         float_lst = []
         for el in [as_p[a_erad], cl_dict[names_idx[i]][l_scale], as_p[a_di],
@@ -138,18 +172,22 @@ def params(as_names, as_pars, cl_dict, names_idx):
         e_r_pc = rad_in_pc(float_lst)
         erad_pc[j].append(e_r_pc)
 
+        # Get distance from cluster to galaxy center.
+        dist_cent[j].append(dist_2_cloud_center(j, ra[j][-1], dec[j][-1],
+                            as_p[a_di], as_p[a_ei]))
+
         # Organize param values, ASteCA first, lit second.
-        met = [as_pars[i][a_zi], cl_dict[names_idx[i]][l_zi]]
-        smet = [as_pars[i][a_zei], cl_dict[names_idx[i]][l_zei]]
-        age = [as_pars[i][a_ai], cl_dict[names_idx[i]][l_ai]]
-        sage = [as_pars[i][a_aei], cl_dict[names_idx[i]][l_aei]]
-        ext = [as_pars[i][a_ei], cl_dict[names_idx[i]][l_ei]]
-        sext = [as_pars[i][a_eei], cl_dict[names_idx[i]][l_eei]]
-        dis = [as_pars[i][a_di], cl_dict[names_idx[i]][l_di]]
-        sdis = [as_pars[i][a_dei], cl_dict[names_idx[i]][l_dei]]
-        mass = [as_pars[i][a_mi], -1.]
-        smass = [as_pars[i][a_mei], -1.]
-        rads = [as_pars[i][a_rad], cl_dict[names_idx[i]][l_rad]]
+        met = [as_p[a_zi], cl_dict[names_idx[i]][l_zi]]
+        smet = [as_p[a_zei], cl_dict[names_idx[i]][l_zei]]
+        age = [as_p[a_ai], cl_dict[names_idx[i]][l_ai]]
+        sage = [as_p[a_aei], cl_dict[names_idx[i]][l_aei]]
+        ext = [as_p[a_ei], cl_dict[names_idx[i]][l_ei]]
+        sext = [as_p[a_eei], cl_dict[names_idx[i]][l_eei]]
+        dis = [as_p[a_di], cl_dict[names_idx[i]][l_di]]
+        sdis = [as_p[a_dei], cl_dict[names_idx[i]][l_dei]]
+        mass = [as_p[a_mi], -1.]
+        smass = [as_p[a_mei], -1.]
+        rads = [as_p[a_rad], cl_dict[names_idx[i]][l_rad]]
 
         # Store ASteCA values (k=0) and literature values (k=1).
         for k in [0, 1]:
@@ -181,7 +219,8 @@ def params(as_names, as_pars, cl_dict, names_idx):
         'esigma': esigma, 'darr': darr, 'dsigma': dsigma, 'marr': marr,
         'msigma': msigma, 'rarr': rarr, 'ext_sf': ext_sf, 'ext_mcev': ext_mcev,
         'rad_pc': rad_pc, 'erad_pc': erad_pc, 'int_colors': int_colors,
-        'n_memb': n_memb, 'cont_ind': cont_ind, 'kde_prob': kde_prob
+        'n_memb': n_memb, 'cont_ind': cont_ind, 'kde_prob': kde_prob,
+        'dist_cent': dist_cent
     }
 
     return pars_dict
