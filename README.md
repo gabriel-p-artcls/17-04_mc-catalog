@@ -2,14 +2,14 @@
 
 <!-- MarkdownTOC -->
 
-- [mc-catalog](mc-catalog)
-  - [Top level](top-level)
-    - [`ages_mass_lit/`](ages_mass_lit)
-    - [`aux_funcs/`](aux_funcs)
-    - [`extinction_MCEV/`](extinction_mcev)
-    - [`figures/`](figures)
-    - [`functions/`](functions)
-    - [`runs/`](runs)
+- [mc-catalog](#mc-catalog)
+  - [Top level](#top-level)
+    - [`ages_mass_lit/`](#ages_mass_lit)
+    - [`aux_funcs/`](#aux_funcs)
+    - [`extinction_MCEV/`](#extinction_mcev)
+    - [`figures/`](#figures)
+    - [`functions/`](#functions)
+    - [runs](#runs)
 
 <!-- /MarkdownTOC -->
 
@@ -154,7 +154,8 @@ the 210 MC clusters in our database, observed with Washington photometry.
 ### `functions/`
 
    Functions called by the main script.
-### `runs/`
+
+### runs
 
  Folder that contains the results for all the runs.
 
