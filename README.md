@@ -9,7 +9,7 @@
     - [`extinction_MCEV/`](#extinction_mcev)
     - [`figures/`](#figures)
     - [`functions/`](#functions)
-    - [runs](#runs)
+    - [`runs/`](#runs)
 
 <!-- /MarkdownTOC -->
 
@@ -155,7 +155,7 @@ the 210 MC clusters in our database, observed with Washington photometry.
 
    Functions called by the main script.
 
-### runs
+### `runs/`
 
  Folder that contains the results for all the runs.
 
