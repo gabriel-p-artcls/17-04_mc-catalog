@@ -45,9 +45,9 @@ def check_diffs(in_params):
     check differences between ASteCA values and literature values for given
     parameters.
     '''
-    gal_names, zarr, aarr, earr, darr, rarr, dist_cent, ra, dec = \
+    gal_names, zarr, aarr, earr, darr, rarr, marr, dist_cent, ra, dec = \
         [in_params[_] for _ in ['gal_names', 'zarr', 'aarr', 'earr', 'darr',
-                                'rarr', 'dist_cent', 'ra', 'dec']]
+                                'rarr', 'marr', 'dist_cent', 'ra', 'dec']]
 
     gal = ['SMC', 'LMC']
     p_n = ['metal', 'age', 'ext', 'dist', 'rad']
@@ -63,16 +63,15 @@ def check_diffs(in_params):
             flag_cl = False
 
             # # For each parameter.
-            # for k, par in enumerate([aarr]):
+            # for k, par in enumerate([marr]):
             #     diff = abs(par[j][0][i] - par[j][1][i])
-
             #     if par[j][1][i] > -99.:
 
-            #         # # Metallicity.
-            #         # if k == 0 and diff > pars_diff[0]:
-            #         #     flag_cl = True
-            #         #     print '{} {} {}, {:.4f} vs {:.4f}'.format(gal[j],
-            #         #         name, p_n[k], par[j][0][i], par[j][1][i])
+            #         # Metallicity.
+            #         if k == 0 and diff > pars_diff[0]:
+            #             flag_cl = True
+            #             print '{} {} {}, {:.4f} vs {:.4f}'.format(gal[j],
+            #                 name, p_n[k], par[j][0][i], par[j][1][i])
 
             #         # Age.
             #         if k == 0 and 0.3 <= diff:
@@ -86,28 +85,33 @@ def check_diffs(in_params):
             #         elif k == 1 and 0.3 > diff:
             #             print 'save:', name
 
-            #         # # Extinction.
-            #         # if k == 2 and diff > pars_diff[2]:
-            #         #     flag_cl = True
-            #         #     print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
-            #         #         name, p_n[k], par[j][0][i], par[j][1][i])
+            #         # Extinction.
+            #         if k == 2 and diff > pars_diff[2]:
+            #             flag_cl = True
+            #             print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
+            #                 name, p_n[k], par[j][0][i], par[j][1][i])
 
-            #         # # Distance.
-            #         # if k == 3 and diff > pars_diff[3]:
-            #         #     flag_cl = True
-            #         #     print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
-            #         #         name, p_n[k], par[j][0][i], par[j][1][i])
+            #         # Distance.
+            #         if k == 3 and diff > pars_diff[3]:
+            #             flag_cl = True
+            #             print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
+            #                 name, p_n[k], par[j][0][i], par[j][1][i])
 
-            #         # # Radius.
-            #         # if k == 4 and diff > pars_diff[4]:
-            #         #     flag_cl = True
-            #         #     print '{} {} {}, {} vs {}'.format(gal[j], name,
-            #         #         p_n[k], par[j][0][i], par[j][1][i])
+            #         # Radius.
+            #         if k == 4 and diff > pars_diff[4]:
+            #             flag_cl = True
+            #             print '{} {} {}, {} vs {}'.format(gal[j], name,
+            #                 p_n[k], par[j][0][i], par[j][1][i])
 
-            # Distance to center.
-            print '{} {} {:.2f} {} {} {}'.format(
-                gal[j], name, dist_cent[j][i] / 1000., darr[j][0][i], ra[j][i],
-                dec[j][i])
+            # Mass.
+            if marr[j][0][i] > 8000.:
+                flag_cl = True
+                print '{} {} {}'.format(gal[j], name, marr[j][0][i])
+
+            # # Distance to center.
+            # print '{} {} {:.2f} {} {} {}'.format(
+            #     gal[j], name, dist_cent[j][i] / 1000., darr[j][0][i],
+            #      ra[j][i], dec[j][i])
 
             if flag_cl:
                 cl_count += 1
@@ -121,9 +125,9 @@ def make_plots(in_params):
     Make each plot sequentially.
     '''
 
-    # for j, gal in enumerate(['SMC', 'LMC']):
-    #     make_as_vs_lit_plot(gal, j, in_params)
-    #     print '{} ASteCA vs literature plots done.'.format(gal)
+    for j, gal in enumerate(['SMC', 'LMC']):
+        make_as_vs_lit_plot(gal, j, in_params)
+        print '{} ASteCA vs literature plots done.'.format(gal)
 
     #     make_kde_plots(gal, j, in_params)
     #     print '{} KDE maps done.'.format(gal)
@@ -146,8 +150,8 @@ def make_plots(in_params):
     # make_probs_CI_plot(in_params)
     # print 'ASteCA probabilities versus CI done.'
 
-    make_dist_2_cents(in_params)
-    print 'Distances to center of MC done.'
+    # make_dist_2_cents(in_params)
+    # print 'Distances to center of MC done.'
 
 
 def main():
@@ -172,7 +176,7 @@ def main():
     print 'Dictionary of parameters obtained.\n'
 
     # Check for differences in ASteCA vs Lit values.
-    check_diffs(in_params)
+    # check_diffs(in_params)
 
     # Make final plots.
     make_plots(in_params)

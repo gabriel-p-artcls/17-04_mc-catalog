@@ -14,7 +14,7 @@
 
 ### SMC (2)
 
-    * v DA + red_memb=scott
+    * DA + red_memb=scott
 
     (params_input_01/02.dat)
     SMC L35 age, 6.80 vs 8.34 , 0.18
@@ -36,7 +36,7 @@
     LMC BSDL631 age, 7.20 vs 8.35 , 0.14
 
 
-    * v DA + red_memb=scott
+    * DA + red_memb=scott
 
     (params_input_07-13.dat)
     # v 2nd run gave marginally better results (log(age)=8.1) but the fit is
@@ -58,7 +58,7 @@
     LMC BSDL779 age, 8.40 vs 8.00 , 0.05
 
 
-    * v DA + red_memb=blocks (same as 3rd run)
+    * DA + red_memb=blocks (same as 3rd run)
 
     (params_input_14-16.dat)
     # v More field_regs, increased number of generations and mutation rate.

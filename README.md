@@ -1,7 +1,5 @@
 
 
-<!-- MarkdownTOC -->
-
 - [mc-catalog](#mc-catalog)
   - [Top level](#top-level)
     - [`ages_mass_lit/`](#ages_mass_lit)
@@ -11,13 +9,12 @@
     - [`functions/`](#functions)
     - [`runs/`](#runs)
 
-<!-- /MarkdownTOC -->
-
 
 # mc-catalog
 
 Set of scripts to analyze and plot the results of the **ASteCA** processing of
-the 210 MC clusters in our database, observed with Washington photometry.
+the 210 MC clusters in our database, observed with `C, T1` Washington
+photometry.
 
 ## Top level
 
@@ -212,6 +209,23 @@ The following clusters were left un-processed:
 
 #### `4th_run/`
 
+  Fourth batch, increased number of generations and mutation rate (`gens=3000 ;
+  mut_rate=0.2`). Some clusters had their parameters adjusted in
+  `semi_input.dat`.
+
 #### `5th_run/`
 
+  Increased mutation rate (`mut_rate=0.25`), three blocks of clusters processed
+  with the following options:
+
+  * skip DA + red_memb: local + scott
+  * skip DA + red_memb: local + blocks
+  * skip DA + skip red_memb <-- Will fit mostly field stars if n_memb is low.
+
 #### `6th_run/`
+
+  Sixth run, 16 clusters processed.
+
+  * DA + red_memb=scott
+  * skip DA + red_memb=scott
+  * DA + red_memb=blocks (same as 3rd run)
