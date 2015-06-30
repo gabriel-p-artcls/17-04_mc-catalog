@@ -28,7 +28,7 @@
     (params_input_03-06.dat)
     # v 3rd run gave batter results (log(age)=8.0)
     LMC NGC1863 age, 6.40 vs 7.70 , 0.17
-    # v 4th run gave worst match (log(age)=6.7) bu the fit seems to be better.
+    # v 4th run gave worst match (log(age)=6.7) but the fit seems to be better.
     LMC KMHK975 age, 6.90 vs 8.30 , 0.17
     # v 3-5 runs gave quite similar results
     LMC SL579 age, 7.00 vs 8.15 , 0.14

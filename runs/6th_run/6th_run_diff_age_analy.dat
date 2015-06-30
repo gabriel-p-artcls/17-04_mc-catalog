@@ -1,0 +1,50 @@
+
+# Clusters from 6th run with \delta log(age) >= 0.3 (16)
+
+    * Use 2nd run results
+
+    # v (log(age)=8.1).
+    LMC SL218 metal, 8.80 vs 7.70 , 0.14
+
+
+    * Use 3th run results
+
+    # v log(age)=6.8
+    LMC BSDL631 metal, 6.70 vs 8.35 , 0.20
+    # v log(age)=7.3
+    LMC KMHK979 metal, 8.30 vs 7.90 , 0.05
+    # v  log(age)=8.0
+    LMC H88-244 metal, 6.00 vs 8.30 , 0.28
+    # v log(age)=7.0
+    LMC SL579 metal, 6.70 vs 8.15 , 0.18
+
+
+    * Use 4th run results
+
+    # v log(age)=6.9
+    SMC L35 metal, 6.50 vs 8.34 , 0.22
+    # v log(age)=7.8
+    SMC L72 metal, 6.40 vs 7.40 , 0.13
+    # v log(age)=8.8
+    LMC NGC1860 metal, 6.00 vs 8.40 , 0.29
+    # v log(age)=6.7
+    LMC KMHK975 metal, 6.90 vs 8.30 , 0.17
+
+
+    * Use 5th run results
+
+    # v log(age)=8.4
+    LMC BSDL779 metal, 7.20 vs 8.00 , 0.10
+
+
+    * Use results from this run.
+
+    LMC H88-245 metal, 8.70 vs 8.20 , 0.06
+    LMC H88-279 metal, 8.60 vs 8.10 , 0.06
+
+
+
+LMC NGC1863 metal, 6.30 vs 7.70 , 0.18
+LMC H88-316 metal, 7.20 vs 8.25 , 0.13
+LMC OGLE298 metal, 6.30 vs 8.30 , 0.24
+LMC H88-131 metal, 7.00 vs 9.00 , 0.22

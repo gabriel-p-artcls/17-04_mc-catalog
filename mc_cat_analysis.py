@@ -63,7 +63,7 @@ def check_diffs(in_params):
             flag_cl = False
 
             # # For each parameter.
-            # for k, par in enumerate([marr]):
+            # for k, par in enumerate([aarr]):
             #     diff = abs(par[j][0][i] - par[j][1][i])
             #     if par[j][1][i] > -99.:
 
@@ -82,8 +82,6 @@ def check_diffs(in_params):
             #             print '{} {} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
             #                 gal[j], name, p_n[k], par[j][0][i], par[j][1][i],
             #                 rel_diff)
-            #         elif k == 1 and 0.3 > diff:
-            #             print 'save:', name
 
             #         # Extinction.
             #         if k == 2 and diff > pars_diff[2]:
@@ -103,10 +101,10 @@ def check_diffs(in_params):
             #             print '{} {} {}, {} vs {}'.format(gal[j], name,
             #                 p_n[k], par[j][0][i], par[j][1][i])
 
-            # Mass.
-            if marr[j][0][i] > 8000.:
-                flag_cl = True
-                print '{} {} {}'.format(gal[j], name, marr[j][0][i])
+            # # Mass.
+            # if marr[j][0][i] > 8000.:
+            #     flag_cl = True
+            #     print '{} {} {}'.format(gal[j], name, marr[j][0][i])
 
             # # Distance to center.
             # print '{} {} {:.2f} {} {} {}'.format(
@@ -176,10 +174,10 @@ def main():
     print 'Dictionary of parameters obtained.\n'
 
     # Check for differences in ASteCA vs Lit values.
-    # check_diffs(in_params)
+    check_diffs(in_params)
 
     # Make final plots.
-    make_plots(in_params)
+    # make_plots(in_params)
 
     print '\nEnd.'
 
