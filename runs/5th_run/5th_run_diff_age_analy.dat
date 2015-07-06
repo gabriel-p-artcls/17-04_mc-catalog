@@ -51,7 +51,7 @@
     LMC KMHK979 age, 7.00 vs 7.90 , 0.11
     # v Fit does not look good because the RC is being fitted over the ZAMS.
     # Cluster KDE prob is very low: 0.1.
-    # 4th run gave the closest results (log(age)=8.8)
+    # 3rd & 4th run gave the closest results (log(age)=8.8)
     LMC OGLE298 age, 9.10 vs 8.30 , 0.10
     LMC H88-279 age, 8.80 vs 8.10 , 0.09
     # v Fit is reasonable. Run again to see if a better result is found.

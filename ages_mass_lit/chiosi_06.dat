@@ -16,7 +16,7 @@
 # Class (gives an estimate of the uncertainties on the age determination):
 # 1 = objects having Delta(Log(Age(yr)))<0.3
 # 2 = objects having 0.3<Delta(Log(Age(yr)))<0.5
-# 3 = objects having Delta(Log(Age(yr)))>0.5#
+# 3 = objects having Delta(Log(Age(yr)))>0.5
 #
 #
 #Bica   RAJ2000   DEJ2000    Rad  log(Age) E(V-I) Type Class  Names                          

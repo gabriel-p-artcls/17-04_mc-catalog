@@ -32,6 +32,94 @@ def get_asteca_data():
     return as_names, as_pars
 
 
+def find_dup_cls_in_database(db_name, db):
+    '''
+    Check for duplicate clusters in the database.
+
+    db = [gal, names, log_age, e_age, mass, e_mass, quality]
+    (where 'quality' is present only for the H03 database)
+    '''
+
+    dup_names, dup_vals = [[] for _ in db], [[] for _ in db]
+    indx_dup = []
+    for i, el1 in enumerate(db):
+        # If this cluster has already been stored as a duplicate, do not
+        # process again.
+        if i not in indx_dup:
+
+            names1 = el1[1]
+            for j, el2 in enumerate(db[(i + 1):]):
+                names2 = el2[1]
+                if any(n1 == n2 for n1 in names1 for n2 in names2):
+
+                    # Store index of duplicated entry so that it won't be
+                    # processed again by the outer loop.
+                    indx_dup.append(j + i + 1)
+                    # Store extra names for the cluster, not already stored.
+                    for n1 in names1:
+                        if n1 not in dup_names[i]:
+                            dup_names[i].append(n1)
+                    for n2 in names2:
+                        if n2 not in dup_names[i]:
+                            dup_names[i].append(n2)
+
+                    # Store age, e_age, mass, and e_mass values.
+                    dup_vals[i].append(db[j + i + 1][2:6:])
+                    print db_name, i, db[i], j + i + 1, dup_names[i],\
+                        dup_vals[i]
+
+    print '\nEntries to be removed from {} ({}): {}'.format(
+        db_name, len(indx_dup), np.asarray(sorted(indx_dup)[::-1]))
+
+    print '\nAveraged values for duplicated clusters:'
+    # Average values for all duplicated clusters in database.
+    for i, vals in enumerate(dup_vals):
+        # skip non-duplicated clusters.
+        if vals:
+            # Store all values for the cluster in a flat list.
+            if len(vals) > 1:
+                dup_ages = list(zip(*vals)[0])
+                dup_e_ages = list(zip(*vals)[1])
+                dup_masses = list(zip(*vals)[2])
+                dup_e_masses = list(zip(*vals)[3])
+            else:
+                dup_ages = [vals[0][0]]
+                dup_e_ages = [vals[0][1]]
+                dup_masses = [vals[0][2]]
+                dup_e_masses = [vals[0][3]]
+
+            # Obtain the average for age and mass.
+            age_avrg = np.mean([[db[i][2]] + dup_ages])
+            mass_avrg = np.mean([[db[i][4]] + dup_masses])
+            # print 'ages:', [db[i][2]] + dup_ages
+            # print 'e_ages:', [db[i][3]] + dup_e_ages
+            # print 'masses:', [db[i][4]] + dup_masses
+            # print 'e_masses:', [db[i][5]] + dup_e_masses
+
+            # Obtain the new errors as the maximum value between all the errors
+            # and half the distance between the min and max value for each
+            # parameter.
+            age_half_dist = abs(max([db[i][2]] + dup_ages) -
+                                min([db[i][2]] + dup_ages)) / 2.
+            mass_half_dist = abs(max([db[i][4]] + dup_masses) -
+                                 min([db[i][4]] + dup_masses)) / 2.
+            # print dup_e_ages, age_half_dist
+            # print dup_e_masses, mass_half_dist
+            age_err = max(max([db[i][3]] + dup_e_ages), age_half_dist)
+            mass_err = max(max([db[i][5]] + dup_e_masses), mass_half_dist)
+
+            # Store age, e_age, mass, and e_mass final values for this cluster.
+            # Replace in first appearance of list.
+            db[i][2:6:] = [age_avrg, age_err, mass_avrg, mass_err]
+            print db[i]
+
+    # Remove all duplicated entries from database.
+    for i in sorted(indx_dup)[::-1]:
+        db.pop(i)
+
+    return db
+
+
 def mag_2_mass(M_V_10):
     '''
     Convert absolute magnitude at 10Myr to mass using Eq (1) in Hunter et al.
@@ -78,6 +166,10 @@ def h03_age_errors(gal, age):
     return age_err
 
 
+def mean_lsts(a):
+    return sum(a) / len(a)
+
+
 def read_hunter():
     '''
     Read Hunter et al. (2003) database.
@@ -92,6 +184,7 @@ def read_hunter():
     log(age) <-- Logarithmic age of the cluster.
     e_age <-- Age error.
     mass <-- Mass value for the cluster.
+    -1. <-- Since there's no mass error assigned.
     quality <-- quality flag: 0=good, 1=probable, 2=questionable
     '''
 
@@ -100,39 +193,96 @@ def read_hunter():
 
     # Read data file
     with open(h03_file) as f:
-        h03 = []
 
+        h03 = []
         for line in skip_comments(f):
             lin = line.split()
             gal = lin[0]
             # Store all names as separate uppercase strings.
             names = [_.upper() for _ in lin[2].split(',')]
+
+            # Remove empty entries ('') and ESO* clusters that introduce
+            # spurious duplicates.
+            idx_rm = []
+            for i, name in enumerate(names):
+                if name == '':
+                    idx_rm.append(i)
+                if name[:3] == 'ESO':
+                    idx_rm.append(i)
+            if idx_rm:
+                for i in idx_rm[::-1]:
+                    names.pop(i)
+
             age = float(lin[21])
             # Error in age is already in logarithmic scale.
             e_age = h03_age_errors(gal, age)
             # Convert to log(age)
-            log_age = "{:.2f}".format(np.log10(age * 10 ** 6))
+            log_age = np.log10(age * 10 ** 6)
             M_V_10 = float(lin[22])
             # Convert absolute magnitude to mass.
-            mass = "{:.2f}".format(mag_2_mass(M_V_10))
+            mass = mag_2_mass(M_V_10)
             quality = int(lin[23])
-            h03.append([gal, names, log_age, e_age, mass, quality])
+            h03.append([gal, names, log_age, e_age, mass, -1., quality])
 
-    # names_lst = []
-    # for cl in h03:
-    #     for name in cl[1]:
-    #         names_lst.append(name)
-
-    # print len(names_lst), names_lst, '\n'
-    # j = 0
-    # for i, n1 in enumerate(names_lst):
-    #     for n2 in names_lst[(i + 1):]:
-    #         if n1 == n2 and n1 != '':
-    #             print j, i, n1
-    #             j += 1
-    # raw_input()
+    h03 = find_dup_cls_in_database('H03', h03)
 
     return h03
+
+
+def c06_age_errors(c):
+    '''
+    Assign errors to Chiosi et al. (2006) age values.
+    '''
+    # Errors in logarithmic scale as defined in the article
+    errs = [0.3, 0.4, 0.5]
+
+    # Identify \delta log(age) range.
+    if c == 1:
+        i = 0
+    elif c == 2:
+        i = 1
+    elif c == 3:
+        i = 2
+
+    # Assign error.
+    age_err = errs[i]
+
+    return age_err
+
+
+def read_chiosi():
+    '''
+    Read Chiosi et al. (2006) LMC database.
+
+    Return
+    ------
+
+    c06 = [gal, names, log_age, e_age, E_VI, t]
+    '''
+
+    # Path to data file.
+    c06_file = 'chiosi_06.dat'
+
+    c06 = []
+
+    # Read data file
+    with open(c06_file) as f:
+
+        for line in skip_comments(f):
+            lin = line.split()
+            gal = 'SMC'
+            # Store all names as separate uppercase strings.
+            names = [_.upper() for _ in lin[8].split(',')]
+            log_age = float(lin[4])
+            c = int(lin[7])
+            e_age = c06_age_errors(c)
+            # Type
+            t = str(lin[6])
+            # E(V-I)
+            E_VI = float(lin[5])
+            c06.append([gal, names, log_age, e_age, E_VI, t])
+
+    return c06
 
 
 def slices(s, args):
@@ -192,8 +342,8 @@ def read_glatt():
             lin = list(slices(line, col_widths))
             gal = lin[0][:3]
             names = [_.upper().strip() for _ in lin[7].split(',')]
-            E_BV = "{:.2f}".format(float(lin[1]))
-            log_age = "{:.2f}".format(float(lin[4]))
+            E_BV = float(lin[1])
+            log_age = float(lin[4])
             q = int(lin[5])
             e_age = g10_age_errors(q)
             g10.append([gal, names, log_age, e_age, E_BV])
@@ -208,7 +358,7 @@ def read_popescu_h03():
     Return
     ------
 
-    p12 = []
+    p12 = [gal, names, log_age, e_age, mass, e_mass]
     '''
 
     # Path to data file.
@@ -241,40 +391,66 @@ def read_popescu_h03():
             gal = 'LMC'
             # Store all names as separate uppercase strings.
             names = [_.upper() for _ in lin[0].split('.')]
-            log_age = "{:.2f}".format(float(lin[13]))
+            log_age = float(lin[13])
             # Obtain average error from upper and lower estimates.
             e_age = (float(lin[14]) + float(lin[15])) / 2.
             # Mass.
-            mass = "{:.2f}".format(float(lin[16]))
+            mass = float(lin[16])
             e_mass = (float(lin[17]) + float(lin[18])) / 2.
             p12.append([gal, names, log_age, e_age, mass, e_mass])
+
+    p12 = find_dup_cls_in_database('P12', p12)
+
+    # # Check for duplicates.
+    # dup_found = False
+    # for i, cl1 in enumerate(p12):
+    #     names1 = cl1[1]
+    #     if any(n1 == n2 for n1 in names1 for n2 in names):
+    #         dup_found = True
+    #         dup_indx = i
+    #         # Store values for duplicated cluster.
+    #         dup_cls.append()
+
+    # if dup_found:
+    #     # Average values.
+    #     print 'P12 dup:', cl1, clust_data
+    #     a = [cl1[2:], clust_data[2:]]
+    #     clust_data[2:] = map(mean_lsts, zip(*a))
+    #     print 'P12 avrg:', clust_data
+    #     p12[dup_indx] = clust_data
+    # else:
+    #     p12.append(clust_data)
 
     return p12
 
 
-def match_clusts(as_names, as_pars, h03, g10, p12):
+def match_clusts(as_names, as_pars, h03, c06, g10, p12):
     '''
     Cross match clusters processed by ASteCA to those published in several
     articles. The final list is ordered in the same way the 'as_params' list
     is.
 
     match_cl = [[[h03], [g10], [p12]], ..., N_clusts]
-    h03 = [Gal, name, 'H03', log_age, e_age, log_age_asteca, e_age, mass,
-    '--', mass_asteca, e_mass, '--', quality]
 
-    g10 = [Gal, name, 'G10', log_age, e_age, log_age_asteca, e_age, '--', '--',
-    '--', '--', E_BV, '--']
+    h03 = ['H03', Gal, name, log_age, e_age, log_age_asteca, e_age, mass,
+    -1., mass_asteca, e_mass, -1., quality]
 
-    p12 = [Gal, name, 'P12', log_age, e_age, log_age_asteca, e_age, mass,
-    e_mass, mass_asteca, e_mass, '--', '--']
+    c06 = ['G06', Gal, name, log_age, e_age, log_age_asteca, e_age, -1.,
+    -1., mass_asteca, e_mass, E_VI, type]
+
+    g10 = ['G10', Gal, name, log_age, e_age, log_age_asteca, e_age, -1., -1.,
+    -1., -1., E_BV, '--']
+
+    p12 = ['P12', Gal, name, log_age, e_age, log_age_asteca, e_age, mass,
+    e_mass, mass_asteca, e_mass, -1., '--']
 
     '''
 
     # Store H03, G10, P12 in each sub-list respectively.
-    match_cl = [[[], [], []] for _ in range(len(as_names))]
+    match_cl = [[[], [], [], []] for _ in range(len(as_names))]
 
     # Cross-match all clusters processed by ASteCA.
-    total = [0, 0, 0]
+    total = [0, 0, 0, 0]
     for i, cl_n in enumerate(as_names):
 
         # Match clusters in H03.
@@ -284,12 +460,27 @@ def match_clusts(as_names, as_pars, h03, g10, p12):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store H03 cluster data.
-                    match_cl[i][0] = [cl_h[0], cl_n, 'H03', cl_h[2], cl_h[3],
+                    match_cl[i][0] = ['H03', cl_h[0], cl_n, cl_h[2], cl_h[3],
                                       as_pars[i][21], as_pars[i][22], cl_h[4],
-                                      '--', as_pars[i][27], as_pars[i][28],
-                                      '--', cl_h[5]]
+                                      cl_h[5], as_pars[i][27], as_pars[i][28],
+                                      -1., cl_h[6]]
                     # Increase counter.
                     total[0] = total[0] + 1
+
+        # Match clusters in C06.
+        # [gal, names, log_age, e_age, E_VI, t]
+        for cl_h in c06:
+            # For each stored cluster name.
+            for cl_h_n in cl_h[1]:
+                # If names match.
+                if cl_n == cl_h_n:
+                    # Store C06 cluster data.
+                    match_cl[i][1] = ['C06', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                                      as_pars[i][21], as_pars[i][22], -1.,
+                                      -1., as_pars[i][27], as_pars[i][28],
+                                      cl_h[4], cl_h[5]]
+                    # Increase counter.
+                    total[1] = total[1] + 1
 
         # Match clusters in G10.
         for cl_h in g10:
@@ -298,10 +489,10 @@ def match_clusts(as_names, as_pars, h03, g10, p12):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store G10 cluster data.
-                    match_cl[i][1] = [cl_h[0], cl_n, 'G10', cl_h[2], cl_h[3],
-                                      as_pars[i][21], as_pars[i][22], '--',
-                                      '--', '--', '--', cl_h[4], '--']
-                    total[1] = total[1] + 1
+                    match_cl[i][2] = ['G10', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                                      as_pars[i][21], as_pars[i][22], -1.,
+                                      -1., -1., -1., cl_h[4], '--']
+                    total[2] = total[2] + 1
 
         # Match clusters in P12.
         for cl_h in p12:
@@ -310,12 +501,12 @@ def match_clusts(as_names, as_pars, h03, g10, p12):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store P12 cluster data.
-                    match_cl[i][2] = [cl_h[0], cl_n, 'P12', cl_h[2], cl_h[3],
+                    match_cl[i][3] = ['P12', cl_h[0], cl_n, cl_h[2], cl_h[3],
                                       as_pars[i][21], as_pars[i][22], cl_h[4],
                                       cl_h[5], as_pars[i][27], as_pars[i][28],
-                                      '--', '--']
+                                      -1., '--']
                     # Increase counter.
-                    total[2] = total[2] + 1
+                    total[3] = total[3] + 1
 
     print '\nTotal clusters matched in each database:', total, \
         sum(_ for _ in total)
@@ -331,14 +522,14 @@ def write_out_data(match_cl):
     # Read data file
     with open('matched_clusters.dat', 'w') as f_out:
         f_out.write("#\n# Age1: log(age)_DB\n# Age2: log(age)_asteca\n")
-        f_out.write("#\n# Mass1: Mass_DB\n# Mass: Mass_asteca\n#\n")
-        f_out.write("#GAL      NAME   DB   Age1  e_age  Age2  \
-e_age      Mass1   e_mass    Mass2   e_mass     E_BV  quality\n#\n")
+        f_out.write("#\n# Mass1: Mass_DB\n# Mass2: Mass_asteca\n#\n")
+        f_out.write("#DB   GAL      NAME   Age1  e_age  Age2  \
+e_age      Mass1   e_mass    Mass2   e_mass  E_BV/VI  quality/class\n#\n")
         for data_base in zip(*match_cl):
             for clust in data_base:
                 if clust:  # Check that list is not empty.
-                    f_out.write('''{:<5} {:>8} {:>4} {:>6} {:>6} {:>5} {:>6} \
-{:>10} {:>8} {:>8} {:>8} {:>8} {:>8}\n'''.format(*[str(_) for _ in clust]))
+                    f_out.write('''{:<4} {:>4} {:>9} {:>6.2f} {:>6.2f} {:>5} \
+{:>6} {:>10.2f} {:>8.0f} {:>8} {:>8} {:>8} {:>8}\n'''.format(*clust))
 
 
 def main():
@@ -349,6 +540,9 @@ def main():
     # Read Hunter et al. (2003) data.
     h03 = read_hunter()
 
+    # Read Chiosi et al. (2006) data.
+    c06 = read_chiosi()
+
     # Read Glatt  et. al (2010) data.
     g10 = read_glatt()
 
@@ -356,7 +550,7 @@ def main():
     p12 = read_popescu_h03()
 
     # Cross-match all clusters.
-    match_cl = match_clusts(as_names, as_pars, h03, g10, p12)
+    match_cl = match_clusts(as_names, as_pars, h03, c06, g10, p12)
     # print np.array(as_names[:10])
     # print np.array(match_cl[:10])
 

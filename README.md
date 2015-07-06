@@ -93,6 +93,10 @@ photometry.
   Matches the data in the above databases to those clusters processed by
   ASteCA.
 
+* `matched_clusters.dat`
+
+  Final data file with all matched clusters between **ASteCA** and the
+  databases in the literature.
 
 ### `aux_funcs/`
 
@@ -171,61 +175,83 @@ First batch of data obtained using the following parameters:
     LMC, [18.3, 18.701, 0.05].
   - Best fit: Dolphin + Knuth binning.
 
-* `asteca_output.dat`
-
-  Result of the 1st run, combined first and second batch of processing.
-
-* `asteca_output_1st_analysis.dat`
-
-  Analysis of the above output file were those clusters marked for a re-process
-  in the 2nd run are marked.
-
 #### `2nd_run/`
 
 Second batch of data for 83 clusters (60 LMC, 23 SMC) from the 1st run,
-marked to be re-processed. The data was obtained using the following
-parameters:
+marked to be re-processed. The data was obtained using the same extinction and
+distance modulus range, and changing the following parameters:
 
-  - Center, radius, number of field regions, max E(B-V) and binning of red_memb
+  * Center, radius, number of field regions, max E(B-V) and binning of red_memb
    and best_fit, as described in `README.dat`.
 
-The following clusters were left un-processed:
+The following clusters were left un-processed (no reason, just didn't bother):
 
-  - NGC1917, SL579, SL588, LW54, NGC419, SL244
-
-* `asteca_output.dat`
-
-  Result of the 2nd run, except those mentioned above.
+  * NGC1917, SL579, SL588, LW54, NGC419, SL244
 
 #### `3rd_run/`
 
   Third batch of data obtained using the following parameters:
 
-  - Semi mode with center and radius fixed for several clusters.
-  - Number of field regions set individually for some clusters.
-  - Restricted range in extinction: MCEV max for all clusters.
-  - Restricted distance modulus:  SMC, [18.86, 19.061, 0.02] ;
+  * Semi mode with center and radius fixed for several clusters.
+  * Number of field regions set individually for some clusters.
+  * Restricted range in extinction: **MCEV max for all clusters**.
+  * Restricted distance modulus:  SMC, [18.86, 19.061, 0.02] ;
     LMC, [18.4, 18.601, 0.02].
 
 #### `4th_run/`
 
-  Fourth batch, increased number of generations and mutation rate (`gens=3000 ;
-  mut_rate=0.2`). Some clusters had their parameters adjusted in
-  `semi_input.dat`.
+  Fourth batch, same parameters as in 3rd run but increased number of
+  generations and mutation rate. Some   clusters had their parameters adjusted
+  in `semi_input.dat`.
+
+  * gens=3000
+  * mut_rate=0.2
 
 #### `5th_run/`
 
-  Increased mutation rate (`mut_rate=0.25`), three blocks of clusters processed
+  Increased mutation rate, three blocks of clusters processed
   with the following options:
 
+  * mut_rate=0.25 (all blocks)
   * skip DA + red_memb: local + scott
   * skip DA + red_memb: local + blocks
   * skip DA + skip red_memb <-- Will fit mostly field stars if n_memb is low.
 
 #### `6th_run/`
 
-  Sixth run, 16 clusters processed.
+  Sixth run, 16 problematic clusters processed in three blocks with:
 
   * DA + red_memb=scott
   * skip DA + red_memb=scott
   * DA + red_memb=blocks (same as 3rd run)
+
+#### `7th_run/`
+
+  Seventh run, 20 high mass clusters re-process with higher mass max limit.
+  Parameters used:
+
+  * max mass = 30000
+  * generations = 3000
+  * mut = 0.25
+
+#### `8th_run/`
+
+  Re-process 8 clusters from 1st and 2nd run with extinction and distance
+  modulus limits as in 3rd run, more generations and an increased mutation
+  rate.
+
+  * Restricted range in extinction: MCEV max for all clusters.
+  * Restricted distance modulus:  SMC, [18.86, 19.061, 0.02] ;
+    LMC, [18.4, 18.601, 0.02]
+  * generations = 3000
+  * mut = 0.25
+
+#### `9th_run/`
+
+  Three clusters re-processed from the 8th run that showed large age
+  differences, with the following parameters changed:
+
+  * generations = 5000
+  * n_el = 10
+  * n_ei = 100
+  * n_es = 25

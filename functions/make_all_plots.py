@@ -86,9 +86,9 @@ def make_as_vs_lit_plot(galax, k, in_params):
     gs = gridspec.GridSpec(4, 2)
 
     if galax == 'SMC':
-        dm_min, dm_max = 18.61, 19.39
+        dm_min, dm_max = 18.62, 19.21
     else:
-        dm_min, dm_max = 18.11, 18.89
+        dm_min, dm_max = 18.21, 18.79
 
     as_lit_pl_lst = [
         [gs, 0, -2.4, 0.45, '$[Fe/H]_{asteca}$', '$[Fe/H]_{lit}$',
@@ -168,9 +168,9 @@ def make_kde_plots(galax, k, in_params):
     # Define extension for each parameter range.
     age_rang, fe_h_rang, mass_rang = [6., 10.], [-2.4, 0.15], [-100., 10500.]
     if galax == 'SMC':
-        E_bv_rang, dist_mod_rang = [-0.014, 0.16], [18.75, 19.25]
+        E_bv_rang, dist_mod_rang = [-0.01, 0.2], [18.75, 19.25]
     else:
-        E_bv_rang, dist_mod_rang = [-0.02, 0.31], [18.25, 18.75]
+        E_bv_rang, dist_mod_rang = [-0.01, 0.2], [18.25, 18.75]
 
     kde_pl_lst = [
         [gs, 0, '$log(age/yr)$', '$[Fe/H]$', aarr[k][0], asigma[k][0],
@@ -554,3 +554,89 @@ def make_dist_2_cents(in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/as_dist_2_cent.png', dpi=300)
+
+
+def cross_match_plot(pl_params):
+    '''
+    Generate plots for the cross-matched age and mass values.
+    '''
+    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, cross_match = pl_params
+
+    h03, c06, g10, p12 = cross_match
+    labels = ['Hunter et al. (2003)', 'Chiosi et al. (2006)',
+              'Glatt et al. (2010)', 'Popescu et al. (2012)']
+    markers = ['<', 'v', 's', 'o']
+    cols = ['r', 'k', 'b', 'g']
+    if i == 0:
+        a, b = 3, 1  # means we are plotting the age.
+    else:
+        a, b = 7, 5   # means we are plotting the mass.
+
+    xy_font_s = 16
+    # cm = plt.cm.get_cmap('RdYlBu_r')
+
+    ax = plt.subplot(gs[i])
+    ax.set_aspect('equal')
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    plt.xlabel(x_lab, fontsize=xy_font_s)
+    plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+            zorder=1)
+    ax.minorticks_on()
+    # Plot all clusters for each DB.
+    for j, DB in enumerate(cross_match):
+        proc_flag = True
+        if i == 1 and (j == 1 or j == 2):
+            proc_flag = False
+
+        if proc_flag:
+            xarr, yarr = DB[a], DB[b]
+
+            # Fit y = s*x + i line.
+            # from scipy import stats
+            # slope, intrcpt, r_v, p_v, std_err = stats.linregress(xarr, yarr)
+
+            # Fit y = s*x line to data, ie: x=0 --> y=0 (intercept=0).
+            # x needs to be a column vector instead of a 1D vector for this.
+            x = np.asarray(xarr)[:, np.newaxis]
+            # slope, _, _, _ = np.linalg.lstsq(x, yarr)
+            slope = np.linalg.lstsq(x, yarr)[0][0]
+
+            db_lab = labels[j] + '$,\;s={:.2f}$'.format(slope)
+            plt.scatter(xarr, yarr, marker=markers[j], c=cols[j], s=60.,
+                        lw=0.25, edgecolor='w', label=db_lab, zorder=3)
+    plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
+    # Legend.
+    plt.legend(loc='upper left', markerscale=0.7, scatterpoints=1, fontsize=10)
+
+
+def make_cross_match(cross_match):
+    '''
+    Plot ASteCA ages and masses versus the values found in several databases.
+    '''
+
+    # Define names of arrays being plotted.
+    x_lab = ['$log(age/yr)_{asteca}$', '$mass_{asteca}\,[M_{\odot}]$']
+    y_lab = ['$log(age/yr)_{DB}$', '$mass_{DB}\,[M_{\odot}]$']
+    z_lab = ['$mass_{asteca}\,[M_{\odot}]$', '$log(age/yr)_{asteca}$']
+    xymin, xymax = [6., -69.], [10.5, 30000]
+
+    fig = plt.figure(figsize=(16, 25))
+    gs = gridspec.GridSpec(4, 2)
+
+    cross_match_lst = [
+        # Age cross-match
+        [gs, 0, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[0], y_lab[0],
+            z_lab[0], cross_match],
+        # Mass cross_match
+        [gs, 1, xymin[1], xymax[1], xymin[1], xymax[1], x_lab[1], y_lab[1],
+            z_lab[1], cross_match]
+    ]
+
+    for pl_params in cross_match_lst:
+        cross_match_plot(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    plt.savefig('figures/cross_match.png', dpi=300)

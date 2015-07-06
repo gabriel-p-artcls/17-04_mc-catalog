@@ -1,12 +1,11 @@
 
-# from astropy import units as u
-# from astropy.coordinates import SkyCoord
-
-from functions.get_data import get_asteca_data, get_liter_data
+from functions.get_data import get_asteca_data, get_liter_data, \
+    get_cross_match_data
 from functions.get_params import params
 from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
     make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
-    make_concent_plot, make_radius_plot, make_probs_CI_plot, make_dist_2_cents
+    make_concent_plot, make_radius_plot, make_probs_CI_plot, \
+    make_dist_2_cents, make_cross_match
 
 
 def d_search(dat_lst, cl_name, name_idx):
@@ -50,9 +49,6 @@ def check_diffs(in_params):
                                 'rarr', 'marr', 'dist_cent', 'ra', 'dec']]
 
     gal = ['SMC', 'LMC']
-    p_n = ['metal', 'age', 'ext', 'dist', 'rad']
-    # Max diff acceptable for each parameter.
-    pars_diff = [0.1, 0.5, 0.1, 0.1, 100]
 
     # For SMC and LMC.
     for j in [0, 1]:
@@ -62,26 +58,18 @@ def check_diffs(in_params):
         for i, name in enumerate(gal_names[j]):
             flag_cl = False
 
-            # # For each parameter.
-            # for k, par in enumerate([aarr]):
-            #     diff = abs(par[j][0][i] - par[j][1][i])
-            #     if par[j][1][i] > -99.:
+            # For each parameter.
+            for k, par in enumerate([aarr]):
+                diff = abs(par[j][0][i] - par[j][1][i])
+                if par[j][1][i] > -99.:
 
-            #         # Metallicity.
-            #         if k == 0 and diff > pars_diff[0]:
-            #             flag_cl = True
-            #             print '{} {} {}, {:.4f} vs {:.4f}'.format(gal[j],
-            #                 name, p_n[k], par[j][0][i], par[j][1][i])
-
-            #         # Age.
-            #         if k == 0 and 0.3 <= diff:
-            #             flag_cl = True
-            #             # Relative Log difference.
-            #             rel_diff = abs(par[j][0][i] - par[j][1][i]) / \
-            #                 par[j][1][i]
-            #             print '{} {} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
-            #                 gal[j], name, p_n[k], par[j][0][i], par[j][1][i],
-            #                 rel_diff)
+                    # Age.
+                    if diff >= 0.5:
+                        flag_cl = True
+                        # Relative Log difference.
+                        rel_diff = abs(par[j][0][i] - par[j][1][i])
+                        print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
+                            gal[j], name, par[j][0][i], par[j][1][i], rel_diff)
 
             #         # Extinction.
             #         if k == 2 and diff > pars_diff[2]:
@@ -102,7 +90,7 @@ def check_diffs(in_params):
             #                 p_n[k], par[j][0][i], par[j][1][i])
 
             # # Mass.
-            # if marr[j][0][i] > 8000.:
+            # if marr[j][0][i] > 0.:
             #     flag_cl = True
             #     print '{} {} {}'.format(gal[j], name, marr[j][0][i])
 
@@ -118,17 +106,17 @@ def check_diffs(in_params):
             gal[j], cl_count)
 
 
-def make_plots(in_params):
+def make_plots(in_params, cross_match):
     '''
     Make each plot sequentially.
     '''
 
-    for j, gal in enumerate(['SMC', 'LMC']):
-        make_as_vs_lit_plot(gal, j, in_params)
-        print '{} ASteCA vs literature plots done.'.format(gal)
+    # for j, gal in enumerate(['SMC', 'LMC']):
+    #     make_as_vs_lit_plot(gal, j, in_params)
+    #     print '{} ASteCA vs literature plots done.'.format(gal)
 
-    #     make_kde_plots(gal, j, in_params)
-    #     print '{} KDE maps done.'.format(gal)
+        # make_kde_plots(gal, j, in_params)
+        # print '{} KDE maps done.'.format(gal)
 
     # make_ra_dec_plots(in_params)
     # print 'RA vs DEC plots done.'
@@ -151,6 +139,9 @@ def make_plots(in_params):
     # make_dist_2_cents(in_params)
     # print 'Distances to center of MC done.'
 
+    make_cross_match(cross_match)
+    print 'Cross-matched clusters done.'
+
 
 def main():
     '''
@@ -165,6 +156,10 @@ def main():
     cl_dict = get_liter_data()
     print 'Literature data read from .ods file.'
 
+    # Read cross-matched clusters.
+    cross_match = get_cross_match_data()
+    print 'Cross-matched data read.'
+
     # Match clusters.
     names_idx = match_clusters(as_names, cl_dict)
     print 'Cluster parameters matched.'
@@ -177,7 +172,7 @@ def main():
     check_diffs(in_params)
 
     # Make final plots.
-    # make_plots(in_params)
+    # make_plots(in_params, cross_match)
 
     print '\nEnd.'
 
