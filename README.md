@@ -190,7 +190,8 @@ The following clusters were left un-processed (no reason, just didn't bother):
 
 #### `3rd_run/`
 
-  Third batch of data obtained using the following parameters:
+  Third batch of data obtained using the following parameters, for all
+  clusters:
 
   * Semi mode with center and radius fixed for several clusters.
   * Number of field regions set individually for some clusters.
@@ -200,17 +201,17 @@ The following clusters were left un-processed (no reason, just didn't bother):
 
 #### `4th_run/`
 
-  Fourth batch, same parameters as in 3rd run but increased number of
-  generations and mutation rate. Some   clusters had their parameters adjusted
-  in `semi_input.dat`.
+  Fourth run, 44 clusters from 3rd run re-processed. Same parameters as in
+  3rd run but increased number of generations and mutation rate. Some clusters
+  had their parameters adjusted in `semi_input.dat`.
 
   * gens=3000
   * mut_rate=0.2
 
 #### `5th_run/`
 
-  Increased mutation rate, three blocks of clusters processed
-  with the following options:
+  25 clusters from 4th run re-process. Increased mutation rate, three blocks
+  of clusters processed with the following options:
 
   * mut_rate=0.25 (all blocks)
   * skip DA + red_memb: local + scott
@@ -255,3 +256,17 @@ The following clusters were left un-processed (no reason, just didn't bother):
   * n_el = 10
   * n_ei = 100
   * n_es = 25
+
+#### `10th_run/`
+
+  Re-process 13 cluster. Two are the ones were parameter values are still
+  taken from the 2nd run, and the remaining 11 are those with
+  `\delta log(age)>= 0.5`.
+
+  Use the following parameters:
+
+  * DA + red_memb = scott
+  * generations = 5000
+  * n_el = 1
+  * n_ei = 25
+  * n_es = 150

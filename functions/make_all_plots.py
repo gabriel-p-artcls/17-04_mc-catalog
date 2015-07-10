@@ -134,16 +134,16 @@ def kde_plots(pl_params):
     plt.xlabel(x_lab, fontsize=xy_font_s)
     plt.ylabel(y_lab, fontsize=xy_font_s)
 
-    cm = plt.cm.get_cmap('RdYlBu_r')
-    # cm = plt.cm.gist_earth_r
+    # cm = plt.cm.get_cmap('RdYlBu_r')
+    cm = plt.cm.gist_earth_r
     ax.imshow(z, cmap=cm, extent=ext)
     ax.set_aspect('auto')
-    # Errorbars.
+    # Error bars.
     # plt.errorbar(xarr, yarr, xerr=xsigma, yerr=ysigma, fmt='none',
-    #     elinewidth=0.4, color='k')
-    # 1% of axis ranges.
-    xax_ext = (ext[1] - ext[0]) * 0.01
-    yax_ext = (ext[3] - ext[2]) * 0.01
+    #              elinewidth=0.4, color='k')
+    # Define 1% of axis ranges.
+    xax_ext = (ext[1] - ext[0]) * 0.001
+    yax_ext = (ext[3] - ext[2]) * 0.001
     # Random scatter.
     rs_x = np.random.uniform(0., xax_ext, len(xarr))
     rs_y = np.random.uniform(0., yax_ext, len(xarr))
@@ -166,7 +166,7 @@ def make_kde_plots(galax, k, in_params):
     gs = gridspec.GridSpec(4, 2)       # create a GridSpec object
 
     # Define extension for each parameter range.
-    age_rang, fe_h_rang, mass_rang = [6., 10.], [-2.4, 0.15], [-100., 10500.]
+    age_rang, fe_h_rang, mass_rang = [6., 10.], [-2.4, 0.15], [-100., 30500.]
     if galax == 'SMC':
         E_bv_rang, dist_mod_rang = [-0.01, 0.2], [18.75, 19.25]
     else:
@@ -568,9 +568,9 @@ def cross_match_plot(pl_params):
     markers = ['<', 'v', 's', 'o']
     cols = ['r', 'k', 'b', 'g']
     if i == 0:
-        a, b = 3, 1  # means we are plotting the age.
+        a, e_a, b, e_b = 3, 4, 1, 2  # means we are plotting the age.
     else:
-        a, b = 7, 5   # means we are plotting the mass.
+        a, e_a, b, e_b = 7, 8, 5, 6   # means we are plotting the mass.
 
     xy_font_s = 16
     # cm = plt.cm.get_cmap('RdYlBu_r')
@@ -586,12 +586,14 @@ def cross_match_plot(pl_params):
     ax.minorticks_on()
     # Plot all clusters for each DB.
     for j, DB in enumerate(cross_match):
+        # Plot all DBs for age, only plot H03 & P12 for mass.
         proc_flag = True
         if i == 1 and (j == 1 or j == 2):
             proc_flag = False
 
         if proc_flag:
             xarr, yarr = DB[a], DB[b]
+            xsigma, ysigma = DB[e_a], DB[e_b]
 
             # Fit y = s*x + i line.
             # from scipy import stats
@@ -602,10 +604,15 @@ def cross_match_plot(pl_params):
             x = np.asarray(xarr)[:, np.newaxis]
             # slope, _, _, _ = np.linalg.lstsq(x, yarr)
             slope = np.linalg.lstsq(x, yarr)[0][0]
-
-            db_lab = labels[j] + '$,\;s={:.2f}$'.format(slope)
+            cl_num = len(xarr)
+            db_lab = labels[j] + '$\;(N={},\,s={:.2f})$'.format(cl_num, slope)
             plt.scatter(xarr, yarr, marker=markers[j], c=cols[j], s=60.,
                         lw=0.25, edgecolor='w', label=db_lab, zorder=3)
+            # Plot error bars.
+            for k, xy in enumerate(zip(*[xarr, yarr])):
+                y_err = ysigma[k] if ysigma[k] > 0. else 0.
+                plt.errorbar(xy[0], xy[1], xerr=xsigma[k], yerr=y_err,
+                             ls='none', color='k', elinewidth=0.2, zorder=1)
     plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
     # Legend.
     plt.legend(loc='upper left', markerscale=0.7, scatterpoints=1, fontsize=10)

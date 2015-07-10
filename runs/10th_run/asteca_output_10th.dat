@@ -1,0 +1,93 @@
+#
+# [ASteCA v0.1.9-beta]
+#
+# Modified: 2015-07-09 23:33:27
+#
+# NAME: Cluster's name.
+# c_x: Cluster's x center coordinate.
+# e_x: Cluster's x center coordinate error.
+# c_y: Cluster's y center coordinate.
+# e_y: Cluster's x center coordinate error.
+# r_cl: Cluster's radius.
+# e_rcl: Cluster's radius error.
+# r_c: Core radius (3-P King profile).
+# e_rc: Core radius error.
+# r_t: Tidal radius (3-P King profile).
+# e_rt: Tidal radius error.
+# kcp: King's profile concentration parameter.
+#
+# CI: 'Contamination index' is a  measure of the contamination of field
+#      stars in the cluster region. The closer to 1, the more contaminated 
+#      the cluster region is.
+# n_memb_k: Approximate number of cluster's members obtained integrating the
+#         fitted 3-P King profile (if it converged).
+# n_memb: Approximate number of cluster's members assuming a uniform
+#       background.
+# n_memb_da: Approximate number of cluster's members obtained via the DA
+#          algorithm.
+# memb_par: Members parameter comparing the approximate structural number of
+#           members ('n_memb') with the approximate photometric number of
+#           members ('n_memb_da').
+# a_f: Fraction of cluster's area that is present in frame.
+# prob_cl: Statistical comparision of cluster vs field KDEs. It is obtained
+#          as 1 minus the overlap area between the KDEs. If the KDEs are
+#          very similar this value will be low indicating the overdensity is
+#          probably not a true cluster.
+# int_col: Integrated color magnitude for all stars inside the cluster
+#          radius, except those that were rejected due to large errors.
+# met: Metallicity value (z).
+# e_m: Metallicity error.
+# age: log(age).
+# e_a: log(age) error.
+# E(B-V): extinction.
+# e_E: Extinction error.
+# dist: Distance modulus.
+# e_d: Distance error.
+# M_i: Total initial mass.
+# e_M: Mass error.
+# bin_fr: Binary fraction.
+# e_bf: Binary fraction error.
+#
+# M1 Indicates that the center was set manually.
+# M2 Indicates that the radius was set manually.
+#
+# f1 Either median cluster's central coordinates (obtained using several
+#    standard deviation smoothing values) is more than 10% away from the
+#    central position assigned.
+# f2 The standard deviation for either center coordinate is larger than 10%
+#    of the coordinate's value.
+# f3 The background value is smaller than a third of the maximum radial
+#    density value.
+# f4 Not enough points found stabilized around the background value -->
+#    clust_rad was set to the middle value in the density profile.
+# f5 The delta range around the background used to attain the stable
+#    condition to determine the radius is greater than 10%%. This indicates
+#    a possible variable background.
+# f6 The process to fit a 3-P King profile to the density points did not
+#    converge or did so to a tidal radius beyond the ranges of the frame.
+# f7 No error rejection was possible.
+# f8 The function had to fall back to the 'e_max'-based rejection method
+#    since the selected one failed.
+# f9 The number of approximate structural cluster members ('n_memb') is < 10.
+# f10 The number of approximate structural and photometric cluster members
+#     differ greatly --> abs(n_memb_par) > 0.33.
+#
+# FC (flags count): Sum of all the flags values. The bigger this value the
+#    more likely it is that there's a problem with the frame, ie: no cluster,
+#    more than one cluster present in the frame, variable or too crowded
+#    field, etc.
+#
+#NAME                 c_x      e_x      c_y      e_y     r_cl    e_rcl      r_c     e_rc      r_t     e_rt      kcp      CI   n_memb_k     n_memb  n_memb_da  memb_par     a_f  prob_cl  int_col      met      e_m      age      e_a   E(B-V)      e_E     dist      e_d      M_i      e_M   bin_fr     e_bf      M1 M2  f1 f2 f3 f4 f5 f6 f7 f8 f9 f10  FC
+H88-279             265.0      0.0   5890.0      0.0     73.0      0.0      2.0      7.0     -1.0     -1.0    -1.00    1.14         -1          0        141     -1.00    1.00     0.36    -0.25    0.015    0.003      9.0      1.0     0.04     0.05    18.58     0.04   1400.0    300.0      0.5     -1.0       0  0   0  0  1  0  0  1  0  0  1   1   4
+BS35                360.0      0.0   4625.0      0.0     62.5      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    1.00         -1          1        102     -0.98    1.00     0.84    -1.69    0.012    0.004      8.8      0.7     0.06     0.03    19.06     0.05    800.0    200.0      0.5     -1.0       0  0   0  0  1  0  0  1  0  0  1   1   4
+BSDL654            1062.0      0.0   3302.0      0.0    112.5      0.0     29.0      2.0    230.0     20.0     0.90    0.80        124         70          6      0.84    1.00     0.56    -0.13    0.008    0.003      7.1      0.5     0.05     0.02     18.4     0.05    200.0    200.0      0.5     -1.0       0  0   0  0  1  0  0  0  0  0  0   1   2
+L35                1040.0      0.0    990.0      0.0    137.5      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    0.95         -1         22          0      1.00    1.00     0.94    -0.91    0.015    0.004      6.5      0.6      0.1     0.03     18.9     0.05    800.0    200.0      0.5     -1.0       0  0   0  0  1  0  0  1  0  0  0   1   3
+H88-316            3159.0      0.0   1950.0      0.0    197.1      0.0      9.0      2.0     -1.0     -1.0    -1.00    0.93         -1         99          5      0.90    1.00     0.49    -0.37    0.012    0.003      7.2      0.4     0.18     0.04    18.42     0.07    600.0    200.0      0.5     -1.0       0  0   0  0  1  0  0  1  0  0  0   1   3
+SL218              1930.0      0.0    660.0      0.0    100.0      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    1.01         -1          0         77     -1.00    1.00     0.88    -0.10    0.012    0.003     8.85     0.05      0.0     0.02    18.48     0.06   1000.0    300.0      0.5     -1.0       0  0   0  0  1  0  0  1  0  0  1   1   4
+HW47               1215.0      2.0   1332.0      2.0    140.0     20.0     34.0      3.0    500.0    200.0     1.13    0.47         97         88        145     -0.24    1.00     0.76     1.52    0.006    0.003      9.2      0.1     0.02    0.007    18.96     0.03   1400.0    700.0      0.5     -1.0       0  0   0  0  0  0  0  0  0  0  0   0   0
+BSDL631             509.0      0.0   3280.0      0.0     54.7      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    1.10         -1          0         75     -1.00    1.00     0.95     0.10    0.012    0.004      6.7      0.1     0.07     0.01    18.42     0.03    400.0    200.0      0.5     -1.0       0  0   0  0  1  1  1  1  0  0  1   1   6
+H88-131            2828.0      2.0   1251.0      2.0     90.0     10.0     40.0     20.0    200.0    400.0     0.80    0.88         36         20          1      0.90    1.00     0.87     0.39    0.015    0.003      7.0      0.7     0.03     0.02    18.42     0.05    200.0    200.0      0.5     -1.0       0  0   0  0  1  0  0  0  0  0  0   1   2
+KMHK979             387.0      0.0   7390.0      0.0     73.0      0.0      0.0   2000.0      0.0   4000.0    -0.68    1.25          0          0         95     -1.00    1.00     0.76    -0.35    0.012    0.003      8.4      0.7     0.01     0.03    18.48     0.05    400.0    200.0      0.5     -1.0       0  0   0  0  1  0  0  0  0  0  1   1   3
+SL579              7723.0      0.0   5989.0      0.0    100.0      0.0     12.0      8.0     -1.0     -1.0    -1.00    0.86         -1         24         29     -0.09    1.00     1.00    -0.61    0.012    0.003      6.8     0.09     0.04     0.05    18.52     0.04    800.0    200.0      0.5     -1.0       0  0   0  0  1  0  0  1  0  0  0   0   2
+OGLE298            1800.0      0.0   2135.0      0.0     54.7      0.0     -1.0     -1.0     -1.0     -1.0    -1.00    1.02         -1          0         69     -1.00    1.00     0.11    -0.85    0.015    0.005      6.0      1.0     0.12     0.04     18.4     0.06      0.0   2000.0      0.5     -1.0       0  0   0  0  1  0  0  1  0  0  1   1   4
+KMHK975            7464.0      2.0    561.0      2.0     90.0     10.0     60.0     70.0    300.0    600.0     0.65    0.85         40         23          2      0.84    1.00     0.79    -0.85    0.012    0.004      6.9      0.2     0.06     0.08    18.46     0.06    200.0    200.0      0.5     -1.0       0  0   0  0  1  0  0  0  0  0  0   1   2
