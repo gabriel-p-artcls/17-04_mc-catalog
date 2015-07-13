@@ -270,3 +270,17 @@ The following clusters were left un-processed (no reason, just didn't bother):
   * n_el = 1
   * n_ei = 25
   * n_es = 150
+
+#### `11th_run/`
+
+ Re-process the 2 clusters still dragged from the 2nd run (SL218 & BSDL654)
+ plus 4 more clusters with large age differences (H88-131, BSDL631, L35, SL579).
+
+ Use the following parameters:
+
+ * DA + red_memb = different values per cluster
+ * generations = 3000
+ * p_mut = 0.1
+ * n_el = 1
+ * n_ei = 50
+ * n_es = 30

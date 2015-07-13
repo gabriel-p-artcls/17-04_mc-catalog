@@ -1,6 +1,4 @@
 
-import os.path
-
 
 def skip_comments(f):
     '''
@@ -21,14 +19,14 @@ def get_asteca_data(i, run):
     out_file = '../runs/' + run + '_run/' + 'asteca_output_' + run + '.dat'
 
     # Read data file
-    # with open(os.path.dirname(__file__) + out_file, 'r') as f:
     with open(out_file, 'r') as f:
 
         for line in skip_comments(f):
             name = line.split()[0]
-
-            if name == 'BSDL654':
-                print i, name, line.split()[1:]
+            # 'BSDL654' 'SL218' 'H88-131' 'KMHK975' 'BSDL631' 'L35'
+            if name == 'SL579':
+                print i, name, line.split()[24], line.split()[26], \
+                    line.split()[22]
 
     return
 
@@ -43,7 +41,7 @@ def main():
             '10th']
 
     for i, run in enumerate(runs):
-        get_asteca_data(i, run)
+        get_asteca_data((i + 1), run)
 
 
 if __name__ == "__main__":
