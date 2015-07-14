@@ -23,10 +23,10 @@ def get_asteca_data(i, run):
 
         for line in skip_comments(f):
             name = line.split()[0]
-            # 'BSDL654' 'SL218' 'H88-131' 'KMHK975' 'BSDL631' 'L35'
+            # 'BSDL654' 'SL218' 'H88-131' 'KMHK975' 'BSDL631' 'L35' 'SL579'
             if name == 'SL579':
                 print i, name, line.split()[24], line.split()[26], \
-                    line.split()[22]
+                    line.split()[22], line.split()[23]
 
     return
 
@@ -38,7 +38,7 @@ def main():
     '''
 
     runs = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th',
-            '10th']
+            '10th', '11th']
 
     for i, run in enumerate(runs):
         get_asteca_data((i + 1), run)

@@ -232,7 +232,7 @@ The following clusters were left un-processed (no reason, just didn't bother):
   Parameters used:
 
   * max mass = 30000
-  * generations = 3000
+  * n_gen = 3000
   * mut = 0.25
 
 #### `8th_run/`
@@ -244,7 +244,7 @@ The following clusters were left un-processed (no reason, just didn't bother):
   * Restricted range in extinction: MCEV max for all clusters.
   * Restricted distance modulus:  SMC, [18.86, 19.061, 0.02] ;
     LMC, [18.4, 18.601, 0.02]
-  * generations = 3000
+  * n_gen = 3000
   * mut = 0.25
 
 #### `9th_run/`
@@ -252,7 +252,7 @@ The following clusters were left un-processed (no reason, just didn't bother):
   Three clusters re-processed from the 8th run that showed large age
   differences, with the following parameters changed:
 
-  * generations = 5000
+  * n_gen = 5000
   * n_el = 10
   * n_ei = 100
   * n_es = 25
@@ -266,7 +266,7 @@ The following clusters were left un-processed (no reason, just didn't bother):
   Use the following parameters:
 
   * DA + red_memb = scott
-  * generations = 5000
+  * n_gen = 5000
   * n_el = 1
   * n_ei = 25
   * n_es = 150
@@ -279,8 +279,21 @@ The following clusters were left un-processed (no reason, just didn't bother):
  Use the following parameters:
 
  * DA + red_memb = different values per cluster
- * generations = 3000
+ * n_gen = 3000
  * p_mut = 0.1
  * n_el = 1
  * n_ei = 50
  * n_es = 30
+
+#### `12th_run/`
+
+ Re-process SL218 using the following parameters:
+
+ * field regions = 25
+ * DA + red_memb = auto + local (blocks)
+ * n_pop = 500
+ * n_gen = 2000
+ * p_mut = 0.5
+ * n_el = 1
+ * n_ei = 25
+ * n_es = 70

@@ -274,7 +274,7 @@ def wide_plots(pl_params):
     Generate plots for integrated colors, concentration parameter, and radius
     (in parsec) vs several parameters.
     '''
-    gs, i, xmin, xmax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, ysigma, zarr,\
+    gs, i, xlim, ylim, x_lab, y_lab, z_lab, xarr, xsigma, yarr, ysigma, zarr,\
         rad, gal_name = pl_params
     siz = np.asarray(rad) * 5
 
@@ -283,8 +283,11 @@ def wide_plots(pl_params):
 
     ax = plt.subplot(gs[i])
     # ax.set_aspect('auto')
+    xmin, xmax = xlim
     plt.xlim(xmin, xmax)
-    # plt.ylim(xmin, xmax)
+    if ylim:
+        ymin, ymax = ylim
+        plt.ylim(ymin, ymax)
     plt.xlabel(x_lab, fontsize=xy_font_s)
     plt.ylabel(y_lab, fontsize=xy_font_s)
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
@@ -333,11 +336,11 @@ def make_int_cols_plot(in_params):
 
     ext_pl_lst = [
         # SMC
-        [gs, 0, xmin, xmax, x_lab, y_lab, z_lab, aarr[0][0], asigma[0][0],
-            int_colors[0], [], marr[0][0], rad_pc[0], 'SMC'],
+        [gs, 0, [xmin, xmax], [], x_lab, y_lab, z_lab, aarr[0][0],
+            asigma[0][0], int_colors[0], [], marr[0][0], rad_pc[0], 'SMC'],
         # LMC
-        [gs, 1, xmin, xmax, x_lab, y_lab, z_lab, aarr[1][0], asigma[1][0],
-            int_colors[1], [], marr[1][0], rad_pc[1], 'LMC']
+        [gs, 1, [xmin, xmax], [], x_lab, y_lab, z_lab, aarr[1][0],
+            asigma[1][0], int_colors[1], [], marr[1][0], rad_pc[1], 'LMC']
     ]
 
     for pl_params in ext_pl_lst:
@@ -375,14 +378,14 @@ def make_concent_plot(in_params):
 
     conc_pl_lst = [
         # SMC
-        [gs, 0, xmin[0], xmax[0], x_lab[0], y_lab, z_lab, aarr[0][0],
+        [gs, 0, [xmin[0], xmax[0]], [], x_lab[0], y_lab, z_lab, aarr[0][0],
             asigma[0][0], conc_p[0], [], marr[0][0], rad_pc[0], 'SMC'],
         [gs, 1, xmin[1], xmax[1], x_lab[1], y_lab, z_lab, zarr[0][0],
             zsigma[0][0], conc_p[0], [], marr[0][0], rad_pc[0], 'SMC'],
         # LMC
-        [gs, 2, xmin[0], xmax[0], x_lab[0], y_lab, z_lab, aarr[1][0],
+        [gs, 2, [xmin[0], xmax[0]], [], x_lab[0], y_lab, z_lab, aarr[1][0],
             asigma[1][0], conc_p[1], [], marr[1][0], rad_pc[1], 'LMC'],
-        [gs, 3, xmin[1], xmax[1], x_lab[1], y_lab, z_lab, zarr[1][0],
+        [gs, 3, [xmin[1], xmax[1]], [], x_lab[1], y_lab, z_lab, zarr[1][0],
             zsigma[1][0], conc_p[1], [], marr[1][0], rad_pc[1], 'LMC']
     ]
 
@@ -399,31 +402,39 @@ def make_radius_plot(in_params):
     Plot radius (in pc) versus several parameters.
     '''
 
-    zarr, zsigma, aarr, asigma, marr, msigma, n_memb, rad_pc, erad_pc = \
-        [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'marr',
-                                'msigma', 'n_memb', 'rad_pc', 'erad_pc']]
+    zarr, zsigma, aarr, asigma, marr, msigma, n_memb, rad_pc, erad_pc, \
+        r_core_pc, e_r_core = \
+        [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma',
+                                'marr', 'msigma', 'n_memb', 'rad_pc',
+                                'erad_pc', 'r_core_pc', 'e_r_core']]
 
     # Define values to pass.
     xmin, xmax = 0., 40.
-    x_lab = '$R_{cl;\,asteca}\,(pc)$'
+    ymin, ymax = 6., 10.
+    x_lab = ['$R_{cl;\,asteca}\,(pc)$', '$R_{core;\,asteca}\,(pc)$']
     y_lab = ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$', '$M\,(M_{\odot})$']
     z_lab = ['$M\,(M_{\odot})$', '$log(age/yr)_{asteca}$']
 
     for i, gal_name in enumerate(['SMC', 'LMC']):
 
+        max_r_core = 24 if i == 1 else 42
+
         fig = plt.figure(figsize=(16, 25))
         gs = gridspec.GridSpec(4, 1)
 
         rad_pl_lst = [
-            [gs, 0, xmin, xmax, x_lab, y_lab[0], z_lab[0], rad_pc[i],
-                erad_pc[i], aarr[i][0], asigma[i][0], marr[i][0], rad_pc[i],
-                gal_name],
-            [gs, 1, xmin, xmax, x_lab, y_lab[1], z_lab[0], rad_pc[i],
-                erad_pc[i], zarr[i][0], zsigma[i][0], marr[i][0], rad_pc[i],
-                gal_name],
-            [gs, 2, xmin, xmax, x_lab, y_lab[2], z_lab[1], rad_pc[i],
-                erad_pc[i], marr[i][0], msigma[i][0], aarr[i][0], rad_pc[i],
-                gal_name]
+            [gs, 0, [xmin, xmax], [ymin, ymax], x_lab[0], y_lab[0], z_lab[0],
+                rad_pc[i], erad_pc[i], aarr[i][0], asigma[i][0], marr[i][0],
+                rad_pc[i], gal_name],
+            [gs, 1, [xmin, xmax], [-2.5, 0.5], x_lab[0], y_lab[1], z_lab[0],
+                rad_pc[i], erad_pc[i], zarr[i][0], zsigma[i][0], marr[i][0],
+                rad_pc[i], gal_name],
+            [gs, 2, [xmin, xmax], [-200, 30000], x_lab[0], y_lab[2], z_lab[1],
+                rad_pc[i], erad_pc[i], marr[i][0], msigma[i][0], aarr[i][0],
+                rad_pc[i], gal_name],
+            [gs, 3, [-0.4, max_r_core], [ymin, ymax], x_lab[1], y_lab[0],
+                z_lab[0], r_core_pc[i], e_r_core[i], aarr[i][0], asigma[i][0],
+                marr[i][0], rad_pc[i], gal_name]
         ]
 
         for pl_params in rad_pl_lst:

@@ -97,8 +97,8 @@ def params(as_names, as_pars, cl_dict, names_idx):
 
     # Indexes of columns in ASteCA output file.
     a_zi, a_zei, a_ai, a_aei, a_ei, a_eei, a_di, a_dei, a_mi, a_mei, a_rad, \
-        a_erad, a_int_c, a_nmemb, a_CI, a_prob = 19, 20, 21, 22, 23, 24, 25, \
-        26, 27, 28, 4, 5, 18, 13, 11, 17
+        a_erad, a_int_c, a_nmemb, a_CI, a_prob, a_r_core, a_e_r_core =\
+        19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 4, 5, 18, 13, 11, 17, 6, 7
 
     # Indexes of columns in .ods literature file.
     ra_i, dec_i, gal_i, l_zi, l_zei, l_ai, l_aei, l_ei, l_eei, l_di, l_dei, \
@@ -116,7 +116,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
     # Initialize empty lists. The first sub-list in the parameters list
     # corresponds to clusters in the SMC and the second to those in the LMC.
     gal_names, int_colors, n_memb, cont_ind, kde_prob, ra, dec, rad_pc, \
-        erad_pc, dist_cent = [[[], []] for _ in range(10)]
+        erad_pc, dist_cent, r_core_pc, e_r_core = [[[], []] for _ in range(12)]
     # First sub-list stores SMC values, the second one stores LMC values.
     # First and 2nd sub-sublist store Schlafly & Finkbeiner extinction values
     # and their errors. Third and 4th store MCEV extinction values and their
@@ -171,6 +171,21 @@ def params(as_names, as_pars, cl_dict, names_idx):
             float_lst.append(float_str(el))
         e_r_pc = rad_in_pc(float_lst)
         erad_pc[j].append(e_r_pc)
+        # Calculate r_core and its error in parsecs, using a simple 3 rule.
+        r_core_px = float_str(as_p[a_r_core])
+        e_r_core_px = float_str(as_p[a_e_r_core])
+        px_2_pc_scale = r_pc / float_str(as_p[a_rad])
+        if r_core_px > 0.:
+            r_c_pc = r_core_px * px_2_pc_scale
+            e_r_c_pc = e_r_core_px * px_2_pc_scale
+        else:
+            # Dummy values for clusters with no r_core values.
+            r_c_pc, e_r_c_pc = -10., 0.
+        # Store core radius and its error in parsecs.
+        r_core_pc[j].append(r_c_pc)
+        e_r_core[j].append(e_r_c_pc)
+        # if r_c_pc > r_pc:
+        #     print j, as_names[i], as_p[a_rad], r_core_px
 
         # Get distance from cluster to galaxy center.
         dist_cent[j].append(dist_2_cloud_center(j, ra[j][-1], dec[j][-1],
@@ -220,7 +235,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
         'msigma': msigma, 'rarr': rarr, 'ext_sf': ext_sf, 'ext_mcev': ext_mcev,
         'rad_pc': rad_pc, 'erad_pc': erad_pc, 'int_colors': int_colors,
         'n_memb': n_memb, 'cont_ind': cont_ind, 'kde_prob': kde_prob,
-        'dist_cent': dist_cent
+        'dist_cent': dist_cent, 'r_core_pc': r_core_pc, 'e_r_core': e_r_core
     }
 
     return pars_dict
