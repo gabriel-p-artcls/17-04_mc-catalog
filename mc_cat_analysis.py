@@ -64,7 +64,7 @@ def check_diffs(in_params):
                 if par[j][1][i] > -99.:
 
                     # Age.
-                    if diff > 0.:
+                    if diff > 0.55:
                         flag_cl = True
                         # Relative Log difference.
                         rel_diff = abs(par[j][0][i] - par[j][1][i])
@@ -130,8 +130,8 @@ def make_plots(in_params, cross_match):
     # make_concent_plot(in_params)
     # print 'Concentration parameter plot done.'
 
-    make_radius_plot(in_params)
-    print 'ASteCA radius (pc) vs parameters plot done.'
+    # make_radius_plot(in_params)
+    # print 'ASteCA radius (pc) vs parameters plot done.'
 
     # make_probs_CI_plot(in_params)
     # print 'ASteCA probabilities versus CI done.'
@@ -139,8 +139,8 @@ def make_plots(in_params, cross_match):
     # make_dist_2_cents(in_params)
     # print 'Distances to center of MC done.'
 
-    # make_cross_match(cross_match)
-    # print 'Cross-matched clusters done.'
+    make_cross_match(cross_match)
+    print 'Cross-matched clusters done.'
 
 
 def main():
@@ -172,7 +172,7 @@ def main():
     check_diffs(in_params)
 
     # Make final plots.
-    # make_plots(in_params, cross_match)
+    make_plots(in_params, cross_match)
 
     print '\nEnd.'
 

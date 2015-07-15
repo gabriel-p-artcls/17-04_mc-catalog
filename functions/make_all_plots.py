@@ -573,11 +573,13 @@ def cross_match_plot(pl_params):
     '''
     gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, cross_match = pl_params
 
-    h03, c06, g10, p12 = cross_match
-    labels = ['Hunter et al. (2003)', 'Chiosi et al. (2006)',
-              'Glatt et al. (2010)', 'Popescu et al. (2012)']
-    markers = ['<', 'v', 's', 'o']
-    cols = ['r', 'k', 'b', 'g']
+    p00, h03, r05, c06, g10, p12 = cross_match
+    labels = ['Pietrzynski et al. 2000', 'Hunter et al. (2003)',
+              'Rafelski et al. (2005)',
+              'Chiosi et al. (2006)', 'Glatt et al. (2010)',
+              'Popescu et al. (2012)']
+    markers = ['^', '*', '<', 'v', 's', 'o']
+    cols = ['m', 'c', 'r', 'k', 'b', 'g']
     if i == 0:
         a, e_a, b, e_b = 3, 4, 1, 2  # means we are plotting the age.
     else:

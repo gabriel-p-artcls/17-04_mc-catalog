@@ -35,8 +35,8 @@ def get_asteca_data():
 
 def get_liter_data():
     '''
-    Read the ASteCA output data file 'asteca_output.dat' and store each
-    data column for each cluster.
+    Read the data file with the literature values for each cluster as a
+    dictionary.
     '''
 
     # Read .ods file with literature data.
@@ -57,19 +57,23 @@ def get_cross_match_data():
 
     # Read data file
     with open(os.path.dirname(__file__) + in_file, 'r') as f:
-        cross_match = [[], [], [], []]
+        cross_match = [[], [], [], [], [], []]
 
         for line in skip_comments(f):
             lin = line.split()
 
-            if lin[0] == 'H03':
+            if lin[0] == 'P00':
                 j = 0
-            elif lin[0] == 'C06':
+            elif lin[0] == 'H03':
                 j = 1
-            elif lin[0] == 'G10':
+            elif lin[0] == 'R05':
                 j = 2
-            elif lin[0] == 'P12':
+            elif lin[0] == 'C06':
                 j = 3
+            elif lin[0] == 'G10':
+                j = 4
+            elif lin[0] == 'P12':
+                j = 5
 
             cross_match[j].append([lin[2]] + [float(_) for _ in lin[3:11:]])
 

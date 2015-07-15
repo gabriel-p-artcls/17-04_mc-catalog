@@ -1,5 +1,8 @@
 
+from pyexcel_ods import ODSBook
 import numpy as np
+from astropy.coordinates import SkyCoord, match_coordinates_sky
+from astropy import units as u
 
 
 def skip_comments(f):
@@ -120,9 +123,159 @@ def find_dup_cls_in_database(db_name, db):
     return db
 
 
+def slices(s, args):
+    '''
+    Take a long string 's', a list with column widths 'args' and return the
+    string sliced into as many smaller strings as column widths are passed.
+    '''
+    position = 0
+    for length in args:
+        yield s[position:position + length]
+        position += length
+
+
+def get_liter_data():
+    '''
+    Read the data file with the literature values for each cluster as a
+    dictionary.
+    '''
+
+    # Read .ods file with literature data.
+    cl_file = ODSBook('../lista_unica_cumulos.ods')
+    # Store as dictionary and then as list.
+    cl_dict = cl_file.sheets()["S-LMC"]
+
+    # Indexes of coord columns in .ods literature file.
+    ra_i, dec_i = cl_dict[0].index(u'ra_deg'), cl_dict[0].index(u'dec_deg')
+    # Index of the cluster's name in the .ods file.
+    name_idx = cl_dict[0].index(u'Name')
+
+    names_ra_dec, ra, dec = [], [], []
+    for cl in cl_dict:
+        names_ra_dec.append(str(cl[name_idx]))
+        ra.append(cl[ra_i])
+        dec.append(cl[dec_i])
+    # remove first line (column names) and last line (empty string)
+    del names_ra_dec[-1], ra[-1], dec[-1]
+    del names_ra_dec[0], ra[0], dec[0]
+
+    # Create the RA, DEC catalog.
+    cat_ra_dec = SkyCoord(ra*u.degree, dec*u.degree, frame='icrs')
+
+    return names_ra_dec, cat_ra_dec
+
+
+def match_ra_dec_asteca(names_ra_dec, cat_ra_dec, ra, dec):
+    '''
+    Receive cluster center (ra, dec) coordinates in decimal degrees and use
+    them to match with the closest cluster in the ASteCA database, within
+    some predefined tolerance.
+    '''
+
+    # Store (ra, dec) as valid coordinate object.
+    cl_coord = SkyCoord(ra*u.degree, dec*u.degree, frame='icrs')
+    # Find closest match in ASteCA catalog to (ra, dec) coordinates.
+    i, sep2d, dist3d = match_coordinates_sky(cl_coord, cat_ra_dec,
+                                             nthneighbor=1)
+
+    # Distance to closest match in degrees.
+    dist_deg = float(sep2d[0].to_string(decimal=True))
+
+    # Match within a given tolerance.
+    # 1 arcsec ~ 0.000278 deg
+    if dist_deg < 0.002778:  # 10 arcsec ~ 0.002778 (24 clusters)
+    # if dist_deg < 0.004167:  # 15 arcsec ~ 0.004167 (25 clusters)
+    # if dist_deg < 0.00833:  # 30 arcsec ~ 0.00833 (26 clusters)
+    # if dist_deg < 0.0167:  # 1 arcmin ~ 0.0167 (27 clusters)
+        name = str(names_ra_dec[i])
+    else:
+        name = ''
+
+    return name, dist_deg
+
+
+def read_pietr(names_ra_dec, cat_ra_dec):
+    '''
+    Read Pietrzynski et al. (2000) database.
+
+    Return
+    ------
+
+    p00 = []
+    '''
+
+    # Path to data file.
+    p00_file = 'pietrz_00_LMC.dat'
+
+    # Read data file
+    with open(p00_file) as f:
+        p00 = []
+
+        for line in skip_comments(f):
+            # Width of columns in file.
+            col_widths = [7, 13, 14, 9, 6, 6, 11]
+            lin = list(slices(line, col_widths))
+            # convert coords to decimal degrees.
+            c = SkyCoord(lin[1] + lin[2], unit=(u.hourangle, u.deg))
+            # print c.ra.deg, c.dec.deg
+            # Find match in ASteCA database.
+            name, dist_deg = match_ra_dec_asteca(names_ra_dec, cat_ra_dec,
+                                                 c.ra.deg, c.dec.deg)
+            # Only append if a match was found.
+            if name:
+                print 'P00 match: ', name, c.ra.deg, c.dec.deg, dist_deg
+                gal = 'LMC'
+                log_age = float(lin[4])
+                e_age = float(lin[5])
+                p00.append([gal, [name], log_age, e_age])
+
+    return p00
+
+
+def read_rafel(names_ra_dec, cat_ra_dec):
+    '''
+    Read Rafelski et al. (2005) database (use GALEV model with z=0.004).
+
+    Return
+    ------
+
+    r05 = []
+    '''
+
+    # Path to data file.
+    r05_file = 'rafelski_05_SMC.dat'
+
+    # Read data file
+    with open(r05_file) as f:
+        r05 = []
+
+        for line in skip_comments(f):
+            # Width of columns in file.
+            col_widths = [5, 13, 13, 78, 21, 6, 5, 6]
+            lin = list(slices(line, col_widths))
+            # convert coords to decimal degrees.
+            c = SkyCoord(lin[1] + lin[2], unit=(u.hourangle, u.deg))
+            # print c.ra.deg, c.dec.deg
+            # Find match in ASteCA database.
+            name, dist_deg = match_ra_dec_asteca(names_ra_dec, cat_ra_dec,
+                                                 c.ra.deg, c.dec.deg)
+            # Only append if a match was found and cluster has an age assigned.
+            age = lin[5]
+            if name and age != '99999':
+                print 'R05 match: ', name, c.ra.deg, c.dec.deg, dist_deg
+                gal = 'SMC'
+                log_age = np.log10(float(lin[5]) * 10 ** 6)
+                e_age_dw = np.log10(max(float(lin[6]), 1) * 10 ** 6)
+                e_age_up = np.log10(float(lin[7].rstrip('\n')) * 10 ** 6)
+                e_age = (e_age_up - e_age_dw) / 2.
+                r05.append([gal, [name], log_age, e_age])
+
+    return r05
+
+
 def mag_2_mass(M_V_10):
     '''
-    Convert absolute magnitude at 10Myr to mass using Eq (1) in Hunter et al.
+    Convert absolute magnitude at 10 Myr to mass using Eq (1) in Hunter et al.
     2003.
     '''
     return 10 ** (6. + 0.4 * (-14.55 - M_V_10))
@@ -164,10 +317,6 @@ def h03_age_errors(gal, age):
     age_err = errs_LMC_SMC[g][i]
 
     return age_err
-
-
-def mean_lsts(a):
-    return sum(a) / len(a)
 
 
 def read_hunter():
@@ -285,17 +434,6 @@ def read_chiosi():
     return c06
 
 
-def slices(s, args):
-    '''
-    Take a long string 's', a list with column widths 'args' and return the
-    string sliced into as many smaller strings as column widths are passed.
-    '''
-    position = 0
-    for length in args:
-        yield s[position:position + length]
-        position += length
-
-
 def g10_age_errors(q):
     '''
     Assign errors to Glatt et al. (2010) age values.
@@ -349,6 +487,10 @@ def read_glatt():
             g10.append([gal, names, log_age, e_age, E_BV])
 
     return g10
+
+
+# def mean_lsts(a):
+#     return sum(a) / len(a)
 
 
 def read_popescu_h03():
@@ -424,16 +566,22 @@ def read_popescu_h03():
     return p12
 
 
-def match_clusts(as_names, as_pars, h03, c06, g10, p12):
+def match_clusts(as_names, as_pars, p00, h03, r05, c06, g10, p12):
     '''
     Cross match clusters processed by ASteCA to those published in several
     articles. The final list is ordered in the same way the 'as_params' list
     is.
 
-    match_cl = [[[h03], [g10], [p12]], ..., N_clusts]
+    match_cl = [[[p00], [h03], [g10], [p12]], ..., N_clusts]
+
+    p00 = ['P00', Gal, name, log_age, e_age, log_age_asteca, e_age, -1.,
+    -1., mass_asteca, e_mass, -1., -1.]
 
     h03 = ['H03', Gal, name, log_age, e_age, log_age_asteca, e_age, mass,
     -1., mass_asteca, e_mass, -1., quality]
+
+    r05 = ['R05', Gal, name, log_age, e_age, log_age_asteca, e_age, -1.,
+    -1., mass_asteca, e_mass, -1., -1.]
 
     c06 = ['G06', Gal, name, log_age, e_age, log_age_asteca, e_age, -1.,
     -1., mass_asteca, e_mass, E_VI, type]
@@ -446,12 +594,26 @@ def match_clusts(as_names, as_pars, h03, c06, g10, p12):
 
     '''
 
-    # Store H03, G10, P12 in each sub-list respectively.
-    match_cl = [[[], [], [], []] for _ in range(len(as_names))]
+    # Store all databases in a sub-list.
+    match_cl = [[[], [], [], [], [], []] for _ in range(len(as_names))]
 
     # Cross-match all clusters processed by ASteCA.
-    total = [0, 0, 0, 0]
+    total = [0, 0, 0, 0, 0, 0]
     for i, cl_n in enumerate(as_names):
+
+        # Match clusters in P00.
+        for cl_h in p00:
+            # For each stored cluster name.
+            for cl_h_n in cl_h[1]:
+                # If names match.
+                if cl_n == cl_h_n:
+                    # Store P00 cluster data.
+                    match_cl[i][0] = ['P00', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                                      as_pars[i][21], as_pars[i][22], -1.,
+                                      -1., as_pars[i][27], as_pars[i][28],
+                                      -1., -1.]
+                    # Increase counter.
+                    total[0] = total[0] + 1
 
         # Match clusters in H03.
         for cl_h in h03:
@@ -460,12 +622,26 @@ def match_clusts(as_names, as_pars, h03, c06, g10, p12):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store H03 cluster data.
-                    match_cl[i][0] = ['H03', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                    match_cl[i][1] = ['H03', cl_h[0], cl_n, cl_h[2], cl_h[3],
                                       as_pars[i][21], as_pars[i][22], cl_h[4],
                                       cl_h[5], as_pars[i][27], as_pars[i][28],
                                       -1., cl_h[6]]
                     # Increase counter.
-                    total[0] = total[0] + 1
+                    total[1] = total[1] + 1
+
+        # Match clusters in R05.
+        for cl_h in r05:
+            # For each stored cluster name.
+            for cl_h_n in cl_h[1]:
+                # If names match.
+                if cl_n == cl_h_n:
+                    # Store R05 cluster data.
+                    match_cl[i][2] = ['R05', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                                      as_pars[i][21], as_pars[i][22], -1.,
+                                      -1., as_pars[i][27], as_pars[i][28],
+                                      -1., -1.]
+                    # Increase counter.
+                    total[2] = total[2] + 1
 
         # Match clusters in C06.
         # [gal, names, log_age, e_age, E_VI, t]
@@ -475,12 +651,12 @@ def match_clusts(as_names, as_pars, h03, c06, g10, p12):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store C06 cluster data.
-                    match_cl[i][1] = ['C06', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                    match_cl[i][3] = ['C06', cl_h[0], cl_n, cl_h[2], cl_h[3],
                                       as_pars[i][21], as_pars[i][22], -1.,
                                       -1., as_pars[i][27], as_pars[i][28],
                                       cl_h[4], cl_h[5]]
                     # Increase counter.
-                    total[1] = total[1] + 1
+                    total[3] = total[3] + 1
 
         # Match clusters in G10.
         for cl_h in g10:
@@ -489,10 +665,10 @@ def match_clusts(as_names, as_pars, h03, c06, g10, p12):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store G10 cluster data.
-                    match_cl[i][2] = ['G10', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                    match_cl[i][4] = ['G10', cl_h[0], cl_n, cl_h[2], cl_h[3],
                                       as_pars[i][21], as_pars[i][22], -1.,
                                       -1., -1., -1., cl_h[4], '--']
-                    total[2] = total[2] + 1
+                    total[5] = total[5] + 1
 
         # Match clusters in P12.
         for cl_h in p12:
@@ -501,12 +677,12 @@ def match_clusts(as_names, as_pars, h03, c06, g10, p12):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store P12 cluster data.
-                    match_cl[i][3] = ['P12', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                    match_cl[i][5] = ['P12', cl_h[0], cl_n, cl_h[2], cl_h[3],
                                       as_pars[i][21], as_pars[i][22], cl_h[4],
                                       cl_h[5], as_pars[i][27], as_pars[i][28],
                                       -1., '--']
                     # Increase counter.
-                    total[3] = total[3] + 1
+                    total[5] = total[5] + 1
 
     print '\nTotal clusters matched in each database:', total, \
         sum(_ for _ in total)
@@ -537,8 +713,17 @@ def main():
     # Read ASteCA data.
     as_names, as_pars = get_asteca_data()
 
+    # Read literature data to match with the Pietrzynski et al. database.
+    names_ra_dec, cat_ra_dec = get_liter_data()
+
+    # Read Pietrzynski et al. (2000) data.
+    p00 = read_pietr(names_ra_dec, cat_ra_dec)
+
     # Read Hunter et al. (2003) data.
     h03 = read_hunter()
+
+    # Read Rafelski et al. (2005) data.
+    r05 = read_rafel(names_ra_dec, cat_ra_dec)
 
     # Read Chiosi et al. (2006) data.
     c06 = read_chiosi()
@@ -550,7 +735,7 @@ def main():
     p12 = read_popescu_h03()
 
     # Cross-match all clusters.
-    match_cl = match_clusts(as_names, as_pars, h03, c06, g10, p12)
+    match_cl = match_clusts(as_names, as_pars, p00, h03, r05, c06, g10, p12)
     # print np.array(as_names[:10])
     # print np.array(match_cl[:10])
 

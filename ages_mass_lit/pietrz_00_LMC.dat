@@ -1,6 +1,10 @@
 #
 # http://vizier.u-strasbg.fr/viz-bin/VizieR?-source=J/AcA/50/337
 #
+# l:    limit uncertainty error flag
+# logt: Age of cluster
+# logt2: Second value for Age
+#
 #OGLE-CL    RAJ2000      DEJ2000      Rad l   logt   e   logt2   e  
 #           "h:m:s"      "d:m:s"   arcsec     [yr]  [yr]  [yr]  [yr]
 #
