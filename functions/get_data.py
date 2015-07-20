@@ -75,7 +75,8 @@ def get_cross_match_data():
             elif lin[0] == 'P12':
                 j = 5
 
-            cross_match[j].append([lin[2]] + [float(_) for _ in lin[3:11:]])
+            cross_match[j].append([lin[1]] + [lin[2]] +
+                                  [float(_) for _ in lin[3:11:]])
 
     for i, lst in enumerate(cross_match):
         cross_match[i] = zip(*lst)

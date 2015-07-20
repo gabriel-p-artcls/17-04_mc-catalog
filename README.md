@@ -59,6 +59,11 @@ photometry.
    abs/2003AJ....126.1836H), 748 belong to the LMC and 191 to the SMC for a
    total of 939 clusters.
 
+* `rafelski_05_SMC.dat`
+
+  Ages for 195 SMC clusters from [Rafelski & Zaritsky (2005)](http://adsabs.harvard.edu/abs/2005AJ....129.2701R), obtained through
+  integrated photometry.
+
 * `chiosi_06.dat`
 
   Contains 311 SMC clusters younger than 1 Gyr (ages determined using isochrone

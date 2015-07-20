@@ -571,21 +571,12 @@ def cross_match_plot(pl_params):
     '''
     Generate plots for the cross-matched age and mass values.
     '''
-    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, cross_match = pl_params
+    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, indexes, labels, \
+        mark, cols, text_box, databases = pl_params
 
-    p00, h03, r05, c06, g10, p12 = cross_match
-    labels = ['Pietrzynski et al. 2000', 'Hunter et al. (2003)',
-              'Rafelski et al. (2005)',
-              'Chiosi et al. (2006)', 'Glatt et al. (2010)',
-              'Popescu et al. (2012)']
-    markers = ['^', '*', '<', 'v', 's', 'o']
-    cols = ['m', 'c', 'r', 'k', 'b', 'g']
-    if i == 0:
-        a, e_a, b, e_b = 3, 4, 1, 2  # means we are plotting the age.
-    else:
-        a, e_a, b, e_b = 7, 8, 5, 6   # means we are plotting the mass.
+    a, e_a, b, e_b = indexes
 
-    xy_font_s = 16
+    xy_font_s = 11
     # cm = plt.cm.get_cmap('RdYlBu_r')
 
     ax = plt.subplot(gs[i])
@@ -598,60 +589,128 @@ def cross_match_plot(pl_params):
             zorder=1)
     ax.minorticks_on()
     # Plot all clusters for each DB.
-    for j, DB in enumerate(cross_match):
-        # Plot all DBs for age, only plot H03 & P12 for mass.
-        proc_flag = True
-        if i == 1 and (j == 1 or j == 2):
-            proc_flag = False
+    for j, DB in enumerate(databases):
+        xarr, yarr = DB[a], DB[b]
+        xsigma, ysigma = DB[e_a], DB[e_b]
 
-        if proc_flag:
-            xarr, yarr = DB[a], DB[b]
-            xsigma, ysigma = DB[e_a], DB[e_b]
+        # Fit y = s*x + i line.
+        from scipy import stats
+        slope, intrcpt, r_v, p_v, std_err = stats.linregress(xarr, yarr)
+        print '\n', labels[j]
+        print 'y=a*x+b fit:', slope, intrcpt, r_v ** 2, std_err, '\n'
 
-            # Fit y = s*x + i line.
-            # from scipy import stats
-            # slope, intrcpt, r_v, p_v, std_err = stats.linregress(xarr, yarr)
-
-            # Fit y = s*x line to data, ie: x=0 --> y=0 (intercept=0).
-            # x needs to be a column vector instead of a 1D vector for this.
-            x = np.asarray(xarr)[:, np.newaxis]
-            # slope, _, _, _ = np.linalg.lstsq(x, yarr)
-            slope = np.linalg.lstsq(x, yarr)[0][0]
-            cl_num = len(xarr)
-            db_lab = labels[j] + '$\;(N={},\,s={:.2f})$'.format(cl_num, slope)
-            plt.scatter(xarr, yarr, marker=markers[j], c=cols[j], s=60.,
-                        lw=0.25, edgecolor='w', label=db_lab, zorder=3)
-            # Plot error bars.
-            for k, xy in enumerate(zip(*[xarr, yarr])):
-                y_err = ysigma[k] if ysigma[k] > 0. else 0.
-                plt.errorbar(xy[0], xy[1], xerr=xsigma[k], yerr=y_err,
-                             ls='none', color='k', elinewidth=0.2, zorder=1)
+        # Fit y = s*x line to data, ie: x=0 --> y=0 (intercept=0).
+        # x needs to be a column vector instead of a 1D vector for this.
+        x = np.asarray(xarr)[:, np.newaxis]
+        lin_fit = np.linalg.lstsq(x, yarr)
+        print lin_fit
+        slope = lin_fit[0][0]
+        cl_num = len(xarr)
+        db_lab = labels[j] + '$\;(N={},\,s={:.2f})$'.format(cl_num, slope)
+        # Star marker is too small compared to the rest.
+        siz = 60. if mark[j] != '*' else 90.
+        plt.scatter(xarr, yarr, marker=mark[j], c=cols[j], s=siz,
+                    lw=0.25, edgecolor='w', label=db_lab, zorder=3)
+        # Plot error bars.
+        for k, xy in enumerate(zip(*[xarr, yarr])):
+            y_err = ysigma[k] if ysigma[k] > 0. else 0.
+            plt.errorbar(xy[0], xy[1], xerr=xsigma[k], yerr=y_err,
+                         ls='none', color='k', elinewidth=0.2, zorder=1)
     plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
     # Legend.
-    plt.legend(loc='upper left', markerscale=0.7, scatterpoints=1, fontsize=10)
+    leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
+                     fontsize=xy_font_s)
+    # Set the alpha value of the legend.
+    leg.get_frame().set_alpha(0.85)
+    # Text box.
+    ob = offsetbox.AnchoredText(text_box, loc=4, prop=dict(size=xy_font_s + 2))
+    ob.patch.set(alpha=0.85)
+    ax.add_artist(ob)
 
 
 def make_cross_match(cross_match):
     '''
     Plot ASteCA ages and masses versus the values found in several databases.
     '''
+    # unpack databases.
+    p00, h03, r05, c06, g10, p12 = cross_match
+
+    # Labels for each defined plot.
+    # labels_integ_photo = ['Pietrzynski & Udalski (2000)',
+    #                       'Chiosi et al. (2006)', 'Glatt et al. (2010)']
+    # labels_isoch_analy = ['Hunter et al. (2003)',
+    #                       'Rafelski & Zaritsky (2005)',
+    #                       'Popescu et al. (2012)']
+    # labels_smc = ['Hunter et al. (2003)', 'Rafelski & Zaritsky (2005)',
+    #               'Chiosi et al. (2006)', 'Glatt et al. (2010)']
+    # labels_lmc = ['Pietrzynski & Udalski (2000)', 'Hunter et al. (2003)',
+    #               'Glatt et al. (2010)', 'Popescu et al. (2012)']
+    labels_integ_photo = ['P00', 'C06', 'G10']
+    labels_isoch_analy = ['H03', 'R05', 'P12']
+    labels_smc = ['H03', 'R05', 'C06', 'G10']
+    labels_lmc = ['P00', 'H03', 'G10', 'P12']
+    labels = [labels_integ_photo, labels_isoch_analy, labels_smc, labels_lmc]
+
+    mark = [['^', 's', '<'], ['v', '*', 'o'],
+            ['v', '*', 's', '<'], ['^', 'v', '<', 'o']]
+    cols = [['r', 'c', 'g'], ['m', 'k', 'b'],
+            ['m', 'k', 'c', 'g'], ['r', 'm', 'g', 'b']]
+
+    # Text boxes.
+    text_box = ['Isochrone fitting', 'Integrated photometry', 'SMC', 'LMC']
+
+    # Separate SMC from LMC clusters in H03 and G10 databases.
+    h03_smc, h03_lmc, g10_smc, g10_lmc = [], [], [], []
+    for cl in zip(*h03):
+        if cl[0] == 'SMC':
+            h03_smc.append(cl)
+        else:
+            h03_lmc.append(cl)
+    h03_smc, h03_lmc = zip(*h03_smc), zip(*h03_lmc)
+    for cl in zip(*g10):
+        if cl[0] == 'SMC':
+            g10_smc.append(cl)
+        else:
+            g10_lmc.append(cl)
+    g10_smc, g10_lmc = zip(*g10_smc), zip(*g10_lmc)
+
+    # Define data to pass.
+    databases = [[p00, c06, g10], [h03, r05, p12],
+                 [h03_smc, r05, c06, g10_smc],
+                 [p00, h03_lmc, g10_lmc, p12]]
+
+    # First set is for the ages, second for the masses.
+    indexes = [[4, 5, 2, 3], [8, 9, 6, 7]]
 
     # Define names of arrays being plotted.
     x_lab = ['$log(age/yr)_{asteca}$', '$mass_{asteca}\,[M_{\odot}]$']
     y_lab = ['$log(age/yr)_{DB}$', '$mass_{DB}\,[M_{\odot}]$']
     z_lab = ['$mass_{asteca}\,[M_{\odot}]$', '$log(age/yr)_{asteca}$']
-    xymin, xymax = [6., -69.], [10.5, 30000]
+    xymin, xymax = [5.8, -69.], [10.6, 30000]
 
     fig = plt.figure(figsize=(16, 25))
     gs = gridspec.GridSpec(4, 2)
 
     cross_match_lst = [
-        # Age cross-match
+        # Age cross-match, integrated photometry.
         [gs, 0, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[0], y_lab[0],
-            z_lab[0], cross_match],
+            z_lab[0], indexes[0], labels[0], mark[0], cols[0], text_box[0],
+            databases[0]],
+        # Age cross-match, isoch fit.
+        [gs, 1, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[0], y_lab[0],
+            z_lab[0], indexes[0], labels[1], mark[1], cols[1], text_box[1],
+            databases[1]],
+        # Age cross-match, SMC.
+        [gs, 2, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[0], y_lab[0],
+            z_lab[0], indexes[0], labels[2], mark[2], cols[2], text_box[2],
+            databases[2]],
+        # Age cross-match, LMC.
+        [gs, 3, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[0], y_lab[0],
+            z_lab[0], indexes[0], labels[3], mark[3], cols[3], text_box[3],
+            databases[3]]
         # Mass cross_match
-        [gs, 1, xymin[1], xymax[1], xymin[1], xymax[1], x_lab[1], y_lab[1],
-            z_lab[1], cross_match]
+        # [gs, 2, xymin[1], xymax[1], xymin[1], xymax[1], x_lab[1], y_lab[1],
+        #     z_lab[1], cross_match]
     ]
 
     for pl_params in cross_match_lst:

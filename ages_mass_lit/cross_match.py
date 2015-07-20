@@ -251,7 +251,9 @@ def read_rafel(names_ra_dec, cat_ra_dec):
 
         for line in skip_comments(f):
             # Width of columns in file.
-            col_widths = [5, 13, 13, 78, 21, 6, 5, 6]
+            col_widths = [5, 14, 16, 58, 10, 7, 28, 7, 7, 7, 10, 7, 28, 7,
+                          7, 7, 10, 7, 28, 7, 7, 7, 10, 7, 28, 7, 7, 7, 10, 7,
+                          28, 7, 7, 7]
             lin = list(slices(line, col_widths))
             # convert coords to decimal degrees.
             c = SkyCoord(lin[1] + lin[2], unit=(u.hourangle, u.deg))
@@ -259,15 +261,44 @@ def read_rafel(names_ra_dec, cat_ra_dec):
             # Find match in ASteCA database.
             name, dist_deg = match_ra_dec_asteca(names_ra_dec, cat_ra_dec,
                                                  c.ra.deg, c.dec.deg)
-            # Only append if a match was found and cluster has an age assigned.
-            age = lin[5]
-            if name and age != '99999':
+
+            # Only append if a match was found and the cluster has an age
+            # assigned.
+            # Use GALEv z=0.004 model age for testing if an age was assigned.
+            age = float(lin[7])
+            if name and age < 99999:
                 print 'R05 match: ', name, c.ra.deg, c.dec.deg, dist_deg
+                # For each defined age for all the models.
+                age_values, age_errors = [], [[], []]
+                for i_age in [7, 13, 19, 25, 31]:
+                    age = age = float(lin[i_age])
+                    er_age, ER_age = float(lin[i_age + 1]),\
+                        float(lin[i_age + 2].rstrip('\n'))
+                    # Store values.
+                    age_values.append(age)
+                    age_errors[0].append(er_age)
+                    age_errors[1].append(ER_age)
+
+                # Average ages and obtain error as the midpoint between the
+                # minimum lower error and the maximum upper error.
+                age_mean = np.mean(age_values)
+                # Obtain error midpoint.
+                lo_bound = np.array(age_values) - np.array(age_errors[0])
+                up_bound = np.array(age_values) + np.array(age_errors[1])
+                e_m_age = (max(up_bound) - min(lo_bound)) / 2.
+                # Obtain log age error.
+                e_age = (e_m_age / age_mean) * (1. / np.log(10))
+                log_age = np.log10(age_mean * 10 ** 6)
+
+                print name
+                print age_values
+                print age_errors[0]
+                print age_errors[1]
+                print min(lo_bound), max(up_bound)
+                print age_mean, e_m_age
+                print log_age, e_age, '\n'
+
                 gal = 'SMC'
-                log_age = np.log10(float(lin[5]) * 10 ** 6)
-                e_age_dw = np.log10(max(float(lin[6]), 1) * 10 ** 6)
-                e_age_up = np.log10(float(lin[7].rstrip('\n')) * 10 ** 6)
-                e_age = (e_age_up - e_age_dw) / 2.
                 r05.append([gal, [name], log_age, e_age])
 
     return r05
@@ -713,7 +744,7 @@ def main():
     # Read ASteCA data.
     as_names, as_pars = get_asteca_data()
 
-    # Read literature data to match with the Pietrzynski et al. database.
+    # Read RA & DEC literature data.
     names_ra_dec, cat_ra_dec = get_liter_data()
 
     # Read Pietrzynski et al. (2000) data.
