@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.offsetbox as offsetbox
+import statsmodels.api as sm
 
 from functions.ra_dec_map import ra_dec_plots
 from functions.kde_2d import kde_map
@@ -20,47 +21,67 @@ def as_vs_lit_plots(pl_params):
     cm = plt.cm.get_cmap('RdYlBu_r')
 
     ax = plt.subplot(gs[i], aspect='equal')
-    # ax.set_aspect('auto')
+    # Different limits for \delta log(age) plot.
+    if i != 4:
+        plt.ylim(xmin, xmax)
+        # 1:1 line
+        plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')
+    else:
+        # ax = plt.subplot(gs[i], aspect='auto')
+        plt.ylim(-2.4, 2.4)
+        # 0 line
+        plt.plot([5, 12], [0, 0], 'k', ls='--')
+        plt.axhspan(-0.5, 0.5, facecolor='grey', alpha=0.5, zorder=1)
+
     plt.xlim(xmin, xmax)
-    plt.ylim(xmin, xmax)
-    if x_lab == '$(m-M)_{0;\,asteca}$':
-        # Introduce random scatter.
-        # 10% of axis ranges.
-        xax_ext = (xmax - xmin) * 0.05
-        rs_x = np.random.uniform(0., xax_ext, len(xarr))
-        rs_y = np.random.uniform(0., xax_ext, len(xarr))
-        xarr = xarr + rs_x
-        yarr = yarr + rs_y
     plt.xlabel(x_lab, fontsize=xy_font_s)
     plt.ylabel(y_lab, fontsize=xy_font_s)
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
             zorder=1)
     ax.minorticks_on()
-    plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
-    # Plot all clusters in dictionary.
+
+    # Introduce random scatter.
     if x_lab == '$[Fe/H]_{asteca}$':
         # 1% of axis ranges.
         ax_ext = (xmax - xmin) * 0.01
-        # Random scatter.
-        rs_x = xarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
-        rs_y = yarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
+    elif x_lab == '$(m-M)_{0;\,asteca}$':
+        # 5% of axis ranges.
+        ax_ext = (xmax - xmin) * 0.05
     else:
-        rs_x, rs_y = xarr, yarr
+        # No scatter.
+        ax_ext = 0.
+    # Add randoms scatter.
+    rs_x = xarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
+    rs_y = yarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
+
+    # Plot all clusters in dictionary.
     SC = plt.scatter(rs_x, rs_y, marker='o', c=zarr, s=70, lw=0.25, cmap=cm,
                      zorder=3)
-    # Text box.
-    ob = offsetbox.AnchoredText(gal_name, loc=4, prop=dict(size=xy_font_s))
-    ob.patch.set(alpha=0.85)
-    ax.add_artist(ob)
-    # Only plot y error bar if it has a value assigned in the literature.
-    for j, xy in enumerate(zip(*[xarr, yarr])):
-        if ysigma:  # Check if list is not empty (radii list)
+    # Plot error bars.
+    for j, xy in enumerate(zip(*[rs_x, rs_y])):
+        # Only plot y error bar if it has a value assigned in the literature.
+        if ysigma:
             if ysigma[j] > -99.:
                 plt.errorbar(xy[0], xy[1], xerr=xsigma[j], yerr=ysigma[j],
                              ls='none', color='k', elinewidth=0.5, zorder=1)
             else:
                 plt.errorbar(xy[0], xy[1], xerr=xsigma[j], ls='none',
                              color='k', elinewidth=0.5, zorder=1)
+
+    # # Plot IDs
+    # if i == 4 and 
+    # for label, x, y in zip(labels, x_data, y_data):
+    #     plt.annotate(
+    #         label, xy=(x, y),
+    #         xytext=(4, 4),
+    #         textcoords='offset points',
+    #         ha='left', va='bottom',
+    #         fontsize=20, color='#1A5233', zorder=4)
+
+    # Text box.
+    ob = offsetbox.AnchoredText(gal_name, loc=4, prop=dict(size=xy_font_s))
+    ob.patch.set(alpha=0.85)
+    ax.add_artist(ob)
     # Position colorbar.
     the_divider = make_axes_locatable(ax)
     color_axis = the_divider.append_axes("right", size="5%", pad=0.1)
@@ -79,6 +100,9 @@ def make_as_vs_lit_plot(galax, k, in_params):
     zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, rarr = \
         [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
                                 'esigma', 'darr', 'dsigma', 'rarr']]
+
+    # \delta log(age) as ASteCA - literature values.
+    age_delta = np.array(aarr[k][0]) - np.array(aarr[k][1])
 
     # Generate ASteca vs literature plots.
     fig = plt.figure(figsize=(17, 26))  # create the top-level container
@@ -103,9 +127,13 @@ def make_as_vs_lit_plot(galax, k, in_params):
         [gs, 3, dm_min, dm_max, '$(m-M)_{0;\,asteca}$', '$(m-M)_{0;\,lit}$',
             '$log(age/yr)_{asteca}$', darr[k][0], dsigma[k][0], darr[k][1],
             dsigma[k][1], aarr[k][0], galax],
-        [gs, 4, 1., 599., '$rad_{asteca} (px)$', '$rad_{lit} (px)$',
-            '$log(age/yr)_{asteca}$', rarr[k][0], [], rarr[k][1], [],
-            aarr[k][0], galax]
+        # Asteca log(age) vs \delta log(age) with lit values.
+        [gs, 4, 5.8, 10.6, '$log(age/yr)_{asteca}$', '$\Delta log(age/yr)$',
+            '$E(B-V)_{asteca}$', aarr[k][0], asigma[k][0], age_delta,
+            [], earr[k][0], galax]
+        # [gs, 4, 1., 599., '$rad_{asteca} (px)$', '$rad_{lit} (px)$',
+        #     '$log(age/yr)_{asteca}$', rarr[k][0], [], rarr[k][1], [],
+        #     aarr[k][0], galax]
     ]
     #
     for pl_params in as_lit_pl_lst:
@@ -215,16 +243,22 @@ def make_ra_dec_plots(in_params):
     marr = marr[0][0] + marr[1][0]
     rad_pc = rad_pc[0] + rad_pc[1]
 
+    # Sort according to radius value so that larger clusters will be plotted
+    # first.
+    rad_pc, ra, dec, zarr, aarr, earr, darr, marr = \
+        map(list, zip(*sorted(zip(rad_pc, ra, dec, zarr, aarr, earr, darr,
+                                  marr), reverse=True)))
+
     fig = plt.figure(figsize=(20, 20))
     fig.clf()
 
     ra_dec_pl_lst = [
-        [fig, 321, ra, dec, zarr, '$[Fe/H]$'],
-        [fig, 322, ra, dec, aarr, '$log(age/yr)$'],
-        [fig, 323, ra, dec, earr, '$E_{(B-V)}$'],
-        [fig, 324, ra, dec, darr, '$(m-M)_0$'],
-        [fig, 325, ra, dec, marr, '$M\,(M_{\odot})$'],
-        [fig, 326, ra, dec, rad_pc, '$r_{clust}\,[pc]$']
+        [fig, 321, ra, dec, zarr, rad_pc, '$[Fe/H]$'],
+        [fig, 322, ra, dec, aarr, rad_pc, '$log(age/yr)$'],
+        [fig, 323, ra, dec, earr, rad_pc, '$E_{(B-V)}$'],
+        [fig, 324, ra, dec, darr, rad_pc, '$(m-M)_0$'],
+        [fig, 325, ra, dec, marr, rad_pc, '$M\,(M_{\odot})$'],
+        [fig, 326, ra, dec, rad_pc, rad_pc, '$r_{clust}\,[pc]$']
     ]
 
     for pl_params in ra_dec_pl_lst:
@@ -380,7 +414,7 @@ def make_concent_plot(in_params):
         # SMC
         [gs, 0, [xmin[0], xmax[0]], [], x_lab[0], y_lab, z_lab, aarr[0][0],
             asigma[0][0], conc_p[0], [], marr[0][0], rad_pc[0], 'SMC'],
-        [gs, 1, xmin[1], xmax[1], x_lab[1], y_lab, z_lab, zarr[0][0],
+        [gs, 1, [xmin[1], xmax[1]], [], x_lab[1], y_lab, z_lab, zarr[0][0],
             zsigma[0][0], conc_p[0], [], marr[0][0], rad_pc[0], 'SMC'],
         # LMC
         [gs, 2, [xmin[0], xmax[0]], [], x_lab[0], y_lab, z_lab, aarr[1][0],
@@ -576,7 +610,7 @@ def cross_match_plot(pl_params):
 
     a, e_a, b, e_b = indexes
 
-    xy_font_s = 11
+    xy_font_s = 16
     # cm = plt.cm.get_cmap('RdYlBu_r')
 
     ax = plt.subplot(gs[i])
@@ -593,20 +627,28 @@ def cross_match_plot(pl_params):
         xarr, yarr = DB[a], DB[b]
         xsigma, ysigma = DB[e_a], DB[e_b]
 
-        # Fit y = s*x + i line.
-        from scipy import stats
-        slope, intrcpt, r_v, p_v, std_err = stats.linregress(xarr, yarr)
-        print '\n', labels[j]
-        print 'y=a*x+b fit:', slope, intrcpt, r_v ** 2, std_err, '\n'
+        # # Fit y = s*x + i line.
+        # from scipy import stats
+        # slope, intrcpt, r_v, p_v, std_err = stats.linregress(xarr, yarr)
+        # print '\n', labels[j]
+        # print 'y=a*x+b fit:', slope, intrcpt, r_v ** 2, std_err, '\n'
 
-        # Fit y = s*x line to data, ie: x=0 --> y=0 (intercept=0).
-        # x needs to be a column vector instead of a 1D vector for this.
-        x = np.asarray(xarr)[:, np.newaxis]
-        lin_fit = np.linalg.lstsq(x, yarr)
-        print lin_fit
-        slope = lin_fit[0][0]
+        # # Fit y = s*x line to data, ie: x=0 --> y=0 (intercept=0).
+        # # x needs to be a column vector instead of a 1D vector for this.
+        # x = np.asarray(xarr)[:, np.newaxis]
+        # lin_fit = np.linalg.lstsq(x, yarr)
+        # print lin_fit
+        # slope = lin_fit[0][0]
+
+        # Fit y = s*x + i line.
+        model = sm.OLS(yarr, xarr)
+        results = model.fit()
+        # print results.summary()
+        slope, std_err = results.params[0], results.bse[0]
+
         cl_num = len(xarr)
-        db_lab = labels[j] + '$\;(N={},\,s={:.2f})$'.format(cl_num, slope)
+        db_lab = labels[j] + '$\;(N={},\,s={:.2f}),\,SE={:.3f}$'.format(
+            cl_num, slope, std_err)
         # Star marker is too small compared to the rest.
         siz = 60. if mark[j] != '*' else 90.
         plt.scatter(xarr, yarr, marker=mark[j], c=cols[j], s=siz,
@@ -619,11 +661,11 @@ def cross_match_plot(pl_params):
     plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
     # Legend.
     leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
-                     fontsize=xy_font_s)
+                     fontsize=xy_font_s - 5)
     # Set the alpha value of the legend.
     leg.get_frame().set_alpha(0.85)
     # Text box.
-    ob = offsetbox.AnchoredText(text_box, loc=4, prop=dict(size=xy_font_s + 2))
+    ob = offsetbox.AnchoredText(text_box, loc=4, prop=dict(size=xy_font_s - 3))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
 
@@ -649,15 +691,18 @@ def make_cross_match(cross_match):
     labels_isoch_analy = ['H03', 'R05', 'P12']
     labels_smc = ['H03', 'R05', 'C06', 'G10']
     labels_lmc = ['P00', 'H03', 'G10', 'P12']
-    labels = [labels_integ_photo, labels_isoch_analy, labels_smc, labels_lmc]
+    labels_mass = ['H03', 'P12']
+    labels = [labels_integ_photo, labels_isoch_analy, labels_smc, labels_lmc,
+              labels_mass]
 
     mark = [['^', 's', '<'], ['v', '*', 'o'],
-            ['v', '*', 's', '<'], ['^', 'v', '<', 'o']]
+            ['v', '*', 's', '<'], ['^', 'v', '<', 'o'], ['v', 'o']]
     cols = [['r', 'c', 'g'], ['m', 'k', 'b'],
-            ['m', 'k', 'c', 'g'], ['r', 'm', 'g', 'b']]
+            ['m', 'k', 'c', 'g'], ['r', 'm', 'g', 'b'], ['m', 'b']]
 
     # Text boxes.
-    text_box = ['Isochrone fitting', 'Integrated photometry', 'SMC', 'LMC']
+    text_box = ['Isochrone fitting', 'Integrated photometry', 'SMC', 'LMC',
+                'Low mass', 'Mass']
 
     # Separate SMC from LMC clusters in H03 and G10 databases.
     h03_smc, h03_lmc, g10_smc, g10_lmc = [], [], [], []
@@ -674,10 +719,22 @@ def make_cross_match(cross_match):
             g10_lmc.append(cl)
     g10_smc, g10_lmc = zip(*g10_smc), zip(*g10_lmc)
 
+    # Separate clusters with mass < 5000
+    h03_low_mass, p12_low_mass = [], []
+    for cl in zip(*h03):
+        if cl[6] <= 5000.:
+            h03_low_mass.append(cl)
+    h03_low_mass = zip(*h03_low_mass)
+    for cl in zip(*p12):
+        if cl[6] <= 5000.:
+            p12_low_mass.append(cl)
+    p12_low_mass = zip(*p12_low_mass)
+
     # Define data to pass.
     databases = [[p00, c06, g10], [h03, r05, p12],
                  [h03_smc, r05, c06, g10_smc],
-                 [p00, h03_lmc, g10_lmc, p12]]
+                 [p00, h03_lmc, g10_lmc, p12],
+                 [h03_low_mass, p12_low_mass], [h03, p12]]
 
     # First set is for the ages, second for the masses.
     indexes = [[4, 5, 2, 3], [8, 9, 6, 7]]
@@ -686,7 +743,7 @@ def make_cross_match(cross_match):
     x_lab = ['$log(age/yr)_{asteca}$', '$mass_{asteca}\,[M_{\odot}]$']
     y_lab = ['$log(age/yr)_{DB}$', '$mass_{DB}\,[M_{\odot}]$']
     z_lab = ['$mass_{asteca}\,[M_{\odot}]$', '$log(age/yr)_{asteca}$']
-    xymin, xymax = [5.8, -69.], [10.6, 30000]
+    xymin, xymax = [5.8, -69.], [10.6, 5000, 30000]
 
     fig = plt.figure(figsize=(16, 25))
     gs = gridspec.GridSpec(4, 2)
@@ -707,10 +764,15 @@ def make_cross_match(cross_match):
         # Age cross-match, LMC.
         [gs, 3, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[0], y_lab[0],
             z_lab[0], indexes[0], labels[3], mark[3], cols[3], text_box[3],
-            databases[3]]
-        # Mass cross_match
-        # [gs, 2, xymin[1], xymax[1], xymin[1], xymax[1], x_lab[1], y_lab[1],
-        #     z_lab[1], cross_match]
+            databases[3]],
+        # Mass cross_match (low mass)
+        [gs, 4, xymin[1], xymax[1], xymin[1], xymax[1], x_lab[1], y_lab[1],
+            z_lab[1], indexes[1], labels[4], mark[4], cols[4], text_box[4],
+            databases[4]],
+        # Mass cross_match (all)
+        [gs, 5, xymin[1], xymax[2], xymin[1], xymax[2], x_lab[1], y_lab[1],
+            z_lab[1], indexes[1], labels[4], mark[4], cols[4], text_box[5],
+            databases[5]]
     ]
 
     for pl_params in cross_match_lst:

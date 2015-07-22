@@ -60,14 +60,14 @@ def check_diffs(in_params):
 
             # For each parameter.
             for k, par in enumerate([aarr]):
-                diff = abs(par[j][0][i] - par[j][1][i])
+                diff = par[j][0][i] - par[j][1][i]
                 if par[j][1][i] > -99.:
 
                     # Age.
-                    if diff > 0.55:
+                    if abs(diff) > 0.4:
                         flag_cl = True
-                        # Relative Log difference.
-                        rel_diff = abs(par[j][0][i] - par[j][1][i])
+                        # AsteCA vs Literature Log(age) difference.
+                        rel_diff = par[j][0][i] - par[j][1][i]
                         print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
                             gal[j], name, par[j][0][i], par[j][1][i], rel_diff)
 
@@ -102,7 +102,7 @@ def check_diffs(in_params):
             if flag_cl:
                 cl_count += 1
 
-        print '\n* {}, total num of clusts with diffs in params: {}\n'.format(
+        print '\n* {}, Clusters with \delta log(age)>0.4: {}\n'.format(
             gal[j], cl_count)
 
 
@@ -118,8 +118,8 @@ def make_plots(in_params, cross_match):
     #     make_kde_plots(gal, j, in_params)
     #     print '{} KDE maps done.'.format(gal)
 
-    # make_ra_dec_plots(in_params)
-    # print 'RA vs DEC plots done.'
+    make_ra_dec_plots(in_params)
+    print 'RA vs DEC plots done.'
 
     # make_lit_ext_plot(in_params)
     # print 'ASteca vs MCEV vs SandF extinction plot done.'
@@ -139,8 +139,8 @@ def make_plots(in_params, cross_match):
     # make_dist_2_cents(in_params)
     # print 'Distances to center of MC done.'
 
-    make_cross_match(cross_match)
-    print 'Cross-matched clusters done.'
+    # make_cross_match(cross_match)
+    # print 'Cross-matched clusters done.'
 
 
 def main():

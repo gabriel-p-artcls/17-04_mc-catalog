@@ -73,7 +73,7 @@ def ra_dec_plots(pl_params):
     Generate RA vs DEC plots.
     '''
 
-    fig, gs, ra, dec, dens, z_lab = pl_params
+    fig, gs, ra, dec, data_arr, rad_pc, z_lab = pl_params
 
     # tr.transform_point((x, 0)) is always (0,0)
     ax1, tr = curvelinear_test2(fig, gs)
@@ -83,14 +83,18 @@ def ra_dec_plots(pl_params):
     # Define colormap.
     cm = plt.cm.get_cmap('RdYlBu_r')
 
-    # If this is the RA vs DEC radius plot, use the size of the radius instead
-    # of a fixed value.
-    if gs == 326:
-        siz = np.asarray(dens) * 2.
-    else:
-        siz = 30.
+    # Size relative to the clusters actual size in pc.
+    siz = np.asarray(rad_pc) * 4.
     SC = ax1.scatter(ra_dec_tr[:, 0], ra_dec_tr[:, 1], marker='o', s=siz,
-                     c=dens, cmap=cm, lw=0.1, zorder=9)
+                     c=data_arr, cmap=cm, lw=0.1, zorder=9)
+
+    # Plot clouds center. Central coords stored in degrees.
+    c_SMC = [13.1875, -72.82861111]
+    c_LMC = [80.2375, -69.47805556]
+    # Get transformed data.
+    clouds_cent = tr.transform([c_SMC, c_LMC])
+    plt.scatter(clouds_cent[:, 0], clouds_cent[:, 1], marker='v', s=50,
+                c='g', edgecolor='w', lw=0.5, zorder=10)
     # Colorbar
     cbar = plt.colorbar(SC, shrink=1., pad=0.05)
     cbar.ax.tick_params(labelsize=8)
