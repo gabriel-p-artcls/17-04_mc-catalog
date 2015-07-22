@@ -69,22 +69,31 @@ def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod, E_BV):
     # ^ (80.2375, -69.47805556)
 
     # S/LMC distance stored in parsecs.
-    d_SMC = 10 ** (0.2 * (18.96 + 5))  # ~ 61944.11 pc
-    d_LMC = 10 ** (0.2 * (18.49 + 5))  # ~ 49888.45 pc
+    d_SMC = 10 ** (0.2 * (18.96 + 5))  # ~ 61944.11 pc (18.96 mag)
+    d_LMC = 10 ** (0.2 * (18.49 + 5))  # ~ 49888.45 pc (18.49 mag)
 
-    # Distance (ASteCA) to cluster in parsecs.
-    d_clust = 10 ** (0.2 * (float(dist_mod) + 5 - (3.1 * float(E_BV))))
+    # *Individual* distance (ASteCA) for each cluster (in parsecs).
+    # d_clust = 10 ** (0.2 * (float(dist_mod) + 5 - (3.1 * float(E_BV))))
+
+    # *Fixed* distance for all clusters, as distance to cloud.
+    if gal == 0:  # SMC
+        d_clust = d_SMC
+    else:
+        d_clust = d_LMC
 
     if gal == 0:  # SMC
         gal_center, gal_dist = c_SMC, d_SMC
     else:  # LMC
         gal_center, gal_dist = c_LMC, d_LMC
 
+    # Galaxy center coordinate.
     c1 = SkyCoord(ra=gal_center.ra, dec=gal_center.dec,
                   distance=gal_dist*u.pc, frame='icrs')
+    # Cluster coordinate.
     c2 = SkyCoord(ra=ra_deg*u.degree, dec=dec_deg*u.degree,
                   distance=d_clust*u.pc, frame='icrs')
 
+    # 3D distance in parsecs.
     dist_pc = float(str(c1.separation_3d(c2))[:-3])
 
     return dist_pc

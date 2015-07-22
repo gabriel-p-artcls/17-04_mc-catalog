@@ -111,15 +111,15 @@ def make_plots(in_params, cross_match):
     Make each plot sequentially.
     '''
 
-    # for j, gal in enumerate(['SMC', 'LMC']):
-    #     make_as_vs_lit_plot(gal, j, in_params)
-    #     print '{} ASteCA vs literature plots done.'.format(gal)
+    for j, gal in enumerate(['SMC', 'LMC']):
+        make_as_vs_lit_plot(gal, j, in_params)
+        print '{} ASteCA vs literature plots done.'.format(gal)
 
-    #     make_kde_plots(gal, j, in_params)
-    #     print '{} KDE maps done.'.format(gal)
+        # make_kde_plots(gal, j, in_params)
+        # print '{} KDE maps done.'.format(gal)
 
-    make_ra_dec_plots(in_params)
-    print 'RA vs DEC plots done.'
+    # make_ra_dec_plots(in_params)
+    # print 'RA vs DEC plots done.'
 
     # make_lit_ext_plot(in_params)
     # print 'ASteca vs MCEV vs SandF extinction plot done.'
