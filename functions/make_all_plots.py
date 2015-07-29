@@ -275,24 +275,44 @@ def make_lit_ext_plot(in_params):
     plots for the SMC and LMC.
     '''
 
-    earr, esigma, ext_sf, ext_mcev = [in_params[_] for _ in ['earr', 'esigma',
-                                      'ext_sf', 'ext_mcev']]
+    aarr, earr, esigma, ext_sf, ext_mcev = \
+        [in_params[_] for _ in ['aarr', 'earr', 'esigma', 'ext_sf',
+                                'ext_mcev']]
+
+    # Order lists to put max distance values on top.
+    # SMC
+    ord_mcev_dist_smc, ord_earr_smc_ast, ord_esig_smc_ast, ord_mcev_smc, \
+        ord_e_mcev_smc =\
+        map(list, zip(*sorted(zip(ext_mcev[0][3], earr[0][0], esigma[0][0],
+            ext_mcev[0][0], ext_mcev[0][2]), reverse=False)))
+    # LMC
+    ord_mcev_dist_lmc, ord_earr_lmc_ast, ord_esig_lmc_ast, ord_mcev_lmc, \
+        ord_e_mcev_lmc =\
+        map(list, zip(*sorted(zip(ext_mcev[1][3], earr[1][0], esigma[1][0],
+            ext_mcev[1][0], ext_mcev[1][2]), reverse=False)))
 
     # Define values to pass.
-    xmin, xmax = -0.02, 0.4
-    x_lab, y_lab, z_lab = '$E(B-V)_{asteca}$', '$E(B-V)_{MCEV}$', \
-        '$E(B-V)_{SF}$'
+    xmin, xmax = -0.02, [0.15, 0.32, 0.4]
+    x_lab = '$E(B-V)_{asteca}$'
+    y_lab = ['$E(B-V)_{MCEV,\,closer}$', '$E(B-V)_{MCEV,\,max}$']
+    z_lab = ['$log(age/yr)_{asteca}$', '$E(B-V)_{SF}$', '$dist\,(deg)$']
 
-    fig = plt.figure(figsize=(16, 25))  # create the top-level container
-    gs = gridspec.GridSpec(4, 2)       # create a GridSpec object
+    fig = plt.figure(figsize=(16, 25))
+    gs = gridspec.GridSpec(4, 2)
 
     ext_pl_lst = [
         # SMC
-        [gs, 0, xmin, xmax, x_lab, y_lab, z_lab, earr[0][0], esigma[0][0],
-            ext_mcev[0][0], ext_mcev[0][1], ext_sf[0][0], 'SMC'],
+        [gs, 0, xmin, xmax[0], x_lab, y_lab[0], z_lab[2], ord_earr_smc_ast,
+            ord_esig_smc_ast, ord_mcev_smc, ord_e_mcev_smc, ord_mcev_dist_smc,
+            'SMC'],
+        [gs, 1, xmin, xmax[2], x_lab, y_lab[1], z_lab[1], earr[0][0],
+            esigma[0][0], ext_mcev[0][1], ext_mcev[0][2], ext_sf[0][0], 'SMC'],
         # LMC
-        [gs, 1, xmin, xmax, x_lab, y_lab, z_lab, earr[1][0], esigma[1][0],
-            ext_mcev[1][0], ext_mcev[1][1], ext_sf[1][0], 'LMC']
+        [gs, 2, xmin, xmax[1], x_lab, y_lab[0], z_lab[2], ord_earr_lmc_ast,
+            ord_esig_lmc_ast, ord_mcev_lmc, ord_e_mcev_lmc, ord_mcev_dist_lmc,
+            'LMC'],
+        [gs, 3, xmin, xmax[2], x_lab, y_lab[1], z_lab[1], earr[1][0],
+            esigma[1][0], ext_mcev[1][1], ext_mcev[1][2], ext_sf[1][0], 'LMC']
     ]
 
     for pl_params in ext_pl_lst:

@@ -111,7 +111,8 @@ def params(as_names, as_pars, cl_dict, names_idx):
 
     # Indexes of columns in .ods literature file.
     ra_i, dec_i, gal_i, l_zi, l_zei, l_ai, l_aei, l_ei, l_eei, l_di, l_dei, \
-        l_rad, l_scale, l_e_sandf, l_e_e_sandf, l_e_mcev, l_e_e_mcev = \
+        l_rad, l_scale, l_e_sandf, l_e_e_sandf, l_e_mcev, l_e_mcev_max, \
+        l_e_e_mcev, l_mcev_dist = \
         cl_dict[0].index(u'ra_deg'), cl_dict[0].index(u'dec_deg'), \
         cl_dict[0].index(u'Galaxia'), cl_dict[0].index(u'[Fe/H] (dex)'), \
         cl_dict[0].index(u'e_Fe/H'), cl_dict[0].index(u'log(age)'), \
@@ -119,8 +120,9 @@ def params(as_names, as_pars, cl_dict, names_idx):
         cl_dict[0].index(u'e_E(B-V)'), cl_dict[0].index(u'(m-M)o (mag)'), \
         cl_dict[0].index(u'e_(m-M)o'), cl_dict[0].index(u'rad (eye)'), \
         cl_dict[0].index(u'arcsec/pixel'), cl_dict[0].index(u'E_B_V_SandF'), \
-        cl_dict[0].index(u'stdev_E_B_V_SandF'), cl_dict[0].index(u'E_BV_max'),\
-        cl_dict[0].index(u'E_BV_std_dev')
+        cl_dict[0].index(u'stdev_E_B_V_SandF'), \
+        cl_dict[0].index(u'E_BV_closer_MCEV'), cl_dict[0].index(u'E_BV_max'), \
+        cl_dict[0].index(u'E_BV_std_dev'), cl_dict[0].index(u'Dist (deg)')
 
     # Initialize empty lists. The first sub-list in the parameters list
     # corresponds to clusters in the SMC and the second to those in the LMC.
@@ -130,7 +132,8 @@ def params(as_names, as_pars, cl_dict, names_idx):
     # First and 2nd sub-sublist store Schlafly & Finkbeiner extinction values
     # and their errors. Third and 4th store MCEV extinction values and their
     # errors.
-    ext_sf, ext_mcev = [[[], []], [[], []]], [[[], []], [[], []]]
+    ext_sf = [[[], []], [[], []]]
+    ext_mcev = [[[], [], [], []], [[], [], [], []]]
     # First sub-list stores ASteCA values, the second one stores literature
     # values.
     zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, marr, \
@@ -163,7 +166,9 @@ def params(as_names, as_pars, cl_dict, names_idx):
         ext_sf[j][0].append(cl_dict[names_idx[i]][l_e_sandf])
         ext_sf[j][1].append(cl_dict[names_idx[i]][l_e_e_sandf])
         ext_mcev[j][0].append(cl_dict[names_idx[i]][l_e_mcev])
-        ext_mcev[j][1].append(cl_dict[names_idx[i]][l_e_e_mcev])
+        ext_mcev[j][1].append(cl_dict[names_idx[i]][l_e_mcev_max])
+        ext_mcev[j][2].append(cl_dict[names_idx[i]][l_e_e_mcev])
+        ext_mcev[j][3].append(cl_dict[names_idx[i]][l_mcev_dist])
         # Store radius value in parsecs.
         float_lst = []
         for el in [as_p[a_rad], cl_dict[names_idx[i]][l_scale], as_p[a_di],
