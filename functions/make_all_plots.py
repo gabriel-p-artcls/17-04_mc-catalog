@@ -114,6 +114,9 @@ def make_as_vs_lit_plot(galax, k, in_params):
     else:
         dm_min, dm_max = 18.21, 18.79
 
+    # For old runs where the dist mod range was large.
+    # dm_min, dm_max = 17.8, 20.2
+
     as_lit_pl_lst = [
         [gs, 0, -2.4, 0.45, '$[Fe/H]_{asteca}$', '$[Fe/H]_{lit}$',
             '$log(age/yr)_{asteca}$', zarr[k][0], zsigma[k][0], zarr[k][1],
@@ -697,30 +700,32 @@ def make_cross_match(cross_match):
     Plot ASteCA ages and masses versus the values found in several databases.
     '''
     # unpack databases.
-    p00, h03, r05, c06, g10, p12 = cross_match
+    p99, p00, h03, r05, c06, g10, p12 = cross_match
 
     # Labels for each defined plot.
-    # labels_integ_photo = ['Pietrzynski & Udalski (2000)',
+    # labels_isoch_analy = ['Pietrzynski & Udalski (1999)',
+    #                       'Pietrzynski & Udalski (2000)',
     #                       'Chiosi et al. (2006)', 'Glatt et al. (2010)']
-    # labels_isoch_analy = ['Hunter et al. (2003)',
+    # labels_integ_photo = ['Hunter et al. (2003)',
     #                       'Rafelski & Zaritsky (2005)',
     #                       'Popescu et al. (2012)']
     # labels_smc = ['Hunter et al. (2003)', 'Rafelski & Zaritsky (2005)',
     #               'Chiosi et al. (2006)', 'Glatt et al. (2010)']
     # labels_lmc = ['Pietrzynski & Udalski (2000)', 'Hunter et al. (2003)',
     #               'Glatt et al. (2010)', 'Popescu et al. (2012)']
-    labels_integ_photo = ['P00', 'C06', 'G10']
-    labels_isoch_analy = ['H03', 'R05', 'P12']
-    labels_smc = ['H03', 'R05', 'C06', 'G10']
+    labels_isoch_analy = ['P99', 'P00', 'C06', 'G10']
+    labels_integ_photo = ['H03', 'R05', 'P12']
+    labels_smc = ['P99', 'H03', 'R05', 'C06', 'G10']
     labels_lmc = ['P00', 'H03', 'G10', 'P12']
     labels_mass = ['H03', 'P12']
-    labels = [labels_integ_photo, labels_isoch_analy, labels_smc, labels_lmc,
+    labels = [labels_isoch_analy, labels_integ_photo, labels_smc, labels_lmc,
               labels_mass]
 
-    mark = [['^', 's', '<'], ['v', '*', 'o'],
-            ['v', '*', 's', '<'], ['^', 'v', '<', 'o'], ['v', 'o']]
-    cols = [['r', 'c', 'g'], ['m', 'k', 'b'],
-            ['m', 'k', 'c', 'g'], ['r', 'm', 'g', 'b'], ['m', 'b']]
+    mark = [['>', '^', 'v', '<'], ['v', '*', 'o'],
+            ['>', 'v', '*', 'v', '<'], ['^', 'v', '<', 'o'], ['v', 'o']]
+    cols = [['dodgerblue', 'r', 'c', 'g'], ['m', 'k', 'b'],
+            ['dodgerblue', 'm', 'k', 'c', 'g'], ['r', 'm', 'g', 'b'],
+            ['m', 'b']]
 
     # Text boxes.
     text_box = ['Isochrone fitting', 'Integrated photometry', 'SMC', 'LMC',
@@ -753,8 +758,8 @@ def make_cross_match(cross_match):
     p12_low_mass = zip(*p12_low_mass)
 
     # Define data to pass.
-    databases = [[p00, c06, g10], [h03, r05, p12],
-                 [h03_smc, r05, c06, g10_smc],
+    databases = [[p99, p00, c06, g10], [h03, r05, p12],
+                 [p99, h03_smc, r05, c06, g10_smc],
                  [p00, h03_lmc, g10_lmc, p12],
                  [h03_low_mass, p12_low_mass], [h03, p12]]
 

@@ -73,13 +73,15 @@ def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod, E_BV):
     d_LMC = 10 ** (0.2 * (18.49 + 5))  # ~ 49888.45 pc (18.49 mag)
 
     # *Individual* distance (ASteCA) for each cluster (in parsecs).
-    # d_clust = 10 ** (0.2 * (float(dist_mod) + 5 - (3.1 * float(E_BV))))
+    # ASteCA gives the distance modulus as dm = -5 + 5*log(d), so to transform
+    # that into the distance in parsecs 'd', we do:
+    d_clust = 10 ** (0.2 * (float(dist_mod) + 5))
 
     # *Fixed* distance for all clusters, as distance to cloud.
-    if gal == 0:  # SMC
-        d_clust = d_SMC
-    else:
-        d_clust = d_LMC
+    # if gal == 0:  # SMC
+    #     d_clust = d_SMC
+    # else:
+    #     d_clust = d_LMC
 
     if gal == 0:  # SMC
         gal_center, gal_dist = c_SMC, d_SMC

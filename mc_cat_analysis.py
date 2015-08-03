@@ -121,8 +121,8 @@ def make_plots(in_params, cross_match):
     # make_ra_dec_plots(in_params)
     # print 'RA vs DEC plots done.'
 
-    make_lit_ext_plot(in_params)
-    print 'ASteca vs MCEV vs SandF extinction plot done.'
+    # make_lit_ext_plot(in_params)
+    # print 'ASteca vs MCEV vs SandF extinction plot done.'
 
     # make_int_cols_plot(in_params)
     # print 'Integrated colors plot done.'
@@ -139,14 +139,20 @@ def make_plots(in_params, cross_match):
     # make_dist_2_cents(in_params)
     # print 'Distances to center of MC done.'
 
-    # make_cross_match(cross_match)
-    # print 'Cross-matched clusters done.'
+    make_cross_match(cross_match)
+    print 'Cross-matched clusters done.'
 
 
 def main():
     '''
     Call each function.
     '''
+
+    # import sys
+    # print(sys.version)
+    # import pip
+    # pip.get_installed_distributions(local_only=False)
+    # raw_input
 
     # Read data from ASteca output file.
     as_names, as_pars = get_asteca_data()

@@ -1,3 +1,7 @@
+#
+# centeralpha, centerdelta: coords of the MCEV region.
+# ra_deg, dec_deg: coords of the cluster.
+#
 # centeralpha   centerdelta   ev_i   sig_ev_i   ra_deg         dec_deg        
   78.6851       -69.1324      0.07   0.1225     77.666666667   -68.753611111  
   78.6138       -69.1324      0.07   0.1315     77.666666667   -68.753611111  

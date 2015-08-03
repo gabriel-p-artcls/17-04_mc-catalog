@@ -155,8 +155,8 @@ def get_liter_data():
         names_ra_dec.append(str(cl[name_idx]))
         ra.append(cl[ra_i])
         dec.append(cl[dec_i])
-    # remove first line (column names) and last line (empty string)
-    del names_ra_dec[-1], ra[-1], dec[-1]
+    # remove first line (column names) and 4 last lines (empty string)
+    del names_ra_dec[-4:], ra[-4:], dec[-4:]
     del names_ra_dec[0], ra[0], dec[0]
 
     # Create the RA, DEC catalog.
@@ -183,15 +183,54 @@ def match_ra_dec_asteca(names_ra_dec, cat_ra_dec, ra, dec):
 
     # Match within a given tolerance.
     # 1 arcsec ~ 0.000278 deg
-    if dist_deg < 0.002778:  # 10 arcsec ~ 0.002778 (24 clusters)
     # if dist_deg < 0.004167:  # 15 arcsec ~ 0.004167 (25 clusters)
     # if dist_deg < 0.00833:  # 30 arcsec ~ 0.00833 (26 clusters)
     # if dist_deg < 0.0167:  # 1 arcmin ~ 0.0167 (27 clusters)
+    # if dist_deg < 0.002778:  # 10 arcsec ~ 0.002778 (24 clusters)
+    if dist_deg < 0.00556:  # 20 arcsec ~ 0.00556
         name = str(names_ra_dec[i])
     else:
         name = ''
 
     return name, dist_deg
+
+
+def read_pietr99(names_ra_dec, cat_ra_dec):
+    '''
+    Read Pietrzynski et al. (1999) database.
+
+    Return
+    ------
+
+    p99 = []
+    '''
+
+    # Path to data file.
+    p99_file = 'pietrz_99_SMC.dat'
+
+    # Read data file
+    with open(p99_file) as f:
+        p99 = []
+
+        for line in skip_comments(f):
+            # Width of columns in file.
+            col_widths = [7, 13, 14, 5, 7, 5, 4]
+            lin = list(slices(line, col_widths))
+            # convert coords to decimal degrees.
+            c = SkyCoord(lin[1] + lin[2], unit=(u.hourangle, u.deg))
+            # print c.ra.deg, c.dec.deg
+            # Find match in ASteCA database.
+            name, dist_deg = match_ra_dec_asteca(names_ra_dec, cat_ra_dec,
+                                                 c.ra.deg, c.dec.deg)
+            # Only append if a match was found.
+            if name:
+                print 'P99 match: ', name, c.ra.deg, c.dec.deg, dist_deg
+                gal = 'SMC'
+                log_age = float(lin[5])
+                e_age = float(lin[6])
+                p99.append([gal, [name], log_age, e_age])
+
+    return p99
 
 
 def read_pietr(names_ra_dec, cat_ra_dec):
@@ -597,13 +636,16 @@ def read_popescu_h03():
     return p12
 
 
-def match_clusts(as_names, as_pars, p00, h03, r05, c06, g10, p12):
+def match_clusts(as_names, as_pars, p99, p00, h03, r05, c06, g10, p12):
     '''
     Cross match clusters processed by ASteCA to those published in several
     articles. The final list is ordered in the same way the 'as_params' list
     is.
 
-    match_cl = [[[p00], [h03], [g10], [p12]], ..., N_clusts]
+    match_cl = [[[p00], [p00], [h03], [g10], [p12]], ..., N_clusts]
+
+    p99 = ['P00', Gal, name, log_age, e_age, log_age_asteca, e_age, -1.,
+    -1., mass_asteca, e_mass, -1., -1.]
 
     p00 = ['P00', Gal, name, log_age, e_age, log_age_asteca, e_age, -1.,
     -1., mass_asteca, e_mass, -1., -1.]
@@ -626,11 +668,25 @@ def match_clusts(as_names, as_pars, p00, h03, r05, c06, g10, p12):
     '''
 
     # Store all databases in a sub-list.
-    match_cl = [[[], [], [], [], [], []] for _ in range(len(as_names))]
+    match_cl = [[[], [], [], [], [], [], []] for _ in range(len(as_names))]
 
     # Cross-match all clusters processed by ASteCA.
-    total = [0, 0, 0, 0, 0, 0]
+    total = [0, 0, 0, 0, 0, 0, 0]
     for i, cl_n in enumerate(as_names):
+
+        # Match clusters in P99.
+        for cl_h in p99:
+            # For each stored cluster name.
+            for cl_h_n in cl_h[1]:
+                # If names match.
+                if cl_n == cl_h_n:
+                    # Store P00 cluster data.
+                    match_cl[i][0] = ['P99', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                                      as_pars[i][21], as_pars[i][22], -1.,
+                                      -1., as_pars[i][27], as_pars[i][28],
+                                      -1., -1.]
+                    # Increase counter.
+                    total[0] = total[0] + 1
 
         # Match clusters in P00.
         for cl_h in p00:
@@ -639,12 +695,12 @@ def match_clusts(as_names, as_pars, p00, h03, r05, c06, g10, p12):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store P00 cluster data.
-                    match_cl[i][0] = ['P00', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                    match_cl[i][1] = ['P00', cl_h[0], cl_n, cl_h[2], cl_h[3],
                                       as_pars[i][21], as_pars[i][22], -1.,
                                       -1., as_pars[i][27], as_pars[i][28],
                                       -1., -1.]
                     # Increase counter.
-                    total[0] = total[0] + 1
+                    total[1] = total[1] + 1
 
         # Match clusters in H03.
         for cl_h in h03:
@@ -653,12 +709,12 @@ def match_clusts(as_names, as_pars, p00, h03, r05, c06, g10, p12):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store H03 cluster data.
-                    match_cl[i][1] = ['H03', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                    match_cl[i][2] = ['H03', cl_h[0], cl_n, cl_h[2], cl_h[3],
                                       as_pars[i][21], as_pars[i][22], cl_h[4],
                                       cl_h[5], as_pars[i][27], as_pars[i][28],
                                       -1., cl_h[6]]
                     # Increase counter.
-                    total[1] = total[1] + 1
+                    total[2] = total[2] + 1
 
         # Match clusters in R05.
         for cl_h in r05:
@@ -667,12 +723,12 @@ def match_clusts(as_names, as_pars, p00, h03, r05, c06, g10, p12):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store R05 cluster data.
-                    match_cl[i][2] = ['R05', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                    match_cl[i][3] = ['R05', cl_h[0], cl_n, cl_h[2], cl_h[3],
                                       as_pars[i][21], as_pars[i][22], -1.,
                                       -1., as_pars[i][27], as_pars[i][28],
                                       -1., -1.]
                     # Increase counter.
-                    total[2] = total[2] + 1
+                    total[3] = total[3] + 1
 
         # Match clusters in C06.
         # [gal, names, log_age, e_age, E_VI, t]
@@ -682,12 +738,12 @@ def match_clusts(as_names, as_pars, p00, h03, r05, c06, g10, p12):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store C06 cluster data.
-                    match_cl[i][3] = ['C06', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                    match_cl[i][4] = ['C06', cl_h[0], cl_n, cl_h[2], cl_h[3],
                                       as_pars[i][21], as_pars[i][22], -1.,
                                       -1., as_pars[i][27], as_pars[i][28],
                                       cl_h[4], cl_h[5]]
                     # Increase counter.
-                    total[3] = total[3] + 1
+                    total[4] = total[4] + 1
 
         # Match clusters in G10.
         for cl_h in g10:
@@ -696,7 +752,7 @@ def match_clusts(as_names, as_pars, p00, h03, r05, c06, g10, p12):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store G10 cluster data.
-                    match_cl[i][4] = ['G10', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                    match_cl[i][5] = ['G10', cl_h[0], cl_n, cl_h[2], cl_h[3],
                                       as_pars[i][21], as_pars[i][22], -1.,
                                       -1., -1., -1., cl_h[4], '--']
                     total[5] = total[5] + 1
@@ -708,12 +764,12 @@ def match_clusts(as_names, as_pars, p00, h03, r05, c06, g10, p12):
                 # If names match.
                 if cl_n == cl_h_n:
                     # Store P12 cluster data.
-                    match_cl[i][5] = ['P12', cl_h[0], cl_n, cl_h[2], cl_h[3],
+                    match_cl[i][6] = ['P12', cl_h[0], cl_n, cl_h[2], cl_h[3],
                                       as_pars[i][21], as_pars[i][22], cl_h[4],
                                       cl_h[5], as_pars[i][27], as_pars[i][28],
                                       -1., '--']
                     # Increase counter.
-                    total[5] = total[5] + 1
+                    total[6] = total[6] + 1
 
     print '\nTotal clusters matched in each database:', total, \
         sum(_ for _ in total)
@@ -747,6 +803,9 @@ def main():
     # Read RA & DEC literature data.
     names_ra_dec, cat_ra_dec = get_liter_data()
 
+    # Read Pietrzynski et al. (1999) data.
+    p99 = read_pietr99(names_ra_dec, cat_ra_dec)
+
     # Read Pietrzynski et al. (2000) data.
     p00 = read_pietr(names_ra_dec, cat_ra_dec)
 
@@ -766,7 +825,8 @@ def main():
     p12 = read_popescu_h03()
 
     # Cross-match all clusters.
-    match_cl = match_clusts(as_names, as_pars, p00, h03, r05, c06, g10, p12)
+    match_cl = match_clusts(as_names, as_pars, p99, p00, h03, r05, c06, g10,
+                            p12)
     # print np.array(as_names[:10])
     # print np.array(match_cl[:10])
 

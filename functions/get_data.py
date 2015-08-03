@@ -57,23 +57,25 @@ def get_cross_match_data():
 
     # Read data file
     with open(os.path.dirname(__file__) + in_file, 'r') as f:
-        cross_match = [[], [], [], [], [], []]
+        cross_match = [[], [], [], [], [], [], []]
 
         for line in skip_comments(f):
             lin = line.split()
 
-            if lin[0] == 'P00':
+            if lin[0] == 'P99':
                 j = 0
-            elif lin[0] == 'H03':
+            elif lin[0] == 'P00':
                 j = 1
-            elif lin[0] == 'R05':
+            elif lin[0] == 'H03':
                 j = 2
-            elif lin[0] == 'C06':
+            elif lin[0] == 'R05':
                 j = 3
-            elif lin[0] == 'G10':
+            elif lin[0] == 'C06':
                 j = 4
-            elif lin[0] == 'P12':
+            elif lin[0] == 'G10':
                 j = 5
+            elif lin[0] == 'P12':
+                j = 6
 
             cross_match[j].append([lin[1]] + [lin[2]] +
                                   [float(_) for _ in lin[3:11:]])
