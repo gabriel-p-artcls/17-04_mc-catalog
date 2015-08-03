@@ -63,6 +63,10 @@ def check_diffs(in_params):
                 diff = par[j][0][i] - par[j][1][i]
                 if par[j][1][i] > -99.:
 
+                    # # Age diffs.
+                    # print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
+                    #     gal[j], name, par[j][0][i], par[j][1][i], diff)
+
                     # Age.
                     if abs(diff) > 0.4:
                         flag_cl = True

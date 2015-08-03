@@ -644,7 +644,7 @@ def match_clusts(as_names, as_pars, p99, p00, h03, r05, c06, g10, p12):
 
     match_cl = [[[p00], [p00], [h03], [g10], [p12]], ..., N_clusts]
 
-    p99 = ['P00', Gal, name, log_age, e_age, log_age_asteca, e_age, -1.,
+    p99 = ['P99', Gal, name, log_age, e_age, log_age_asteca, e_age, -1.,
     -1., mass_asteca, e_mass, -1., -1.]
 
     p00 = ['P00', Gal, name, log_age, e_age, log_age_asteca, e_age, -1.,
