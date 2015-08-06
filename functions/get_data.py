@@ -78,7 +78,7 @@ def get_cross_match_data():
                 j = 6
 
             cross_match[j].append([lin[1]] + [lin[2]] +
-                                  [float(_) for _ in lin[3:11:]])
+                                  [float(_) for _ in lin[3:13:]])
 
     for i, lst in enumerate(cross_match):
         cross_match[i] = zip(*lst)

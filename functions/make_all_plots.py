@@ -5,6 +5,7 @@ import matplotlib.gridspec as gridspec
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.offsetbox as offsetbox
 import statsmodels.api as sm
+from scipy import stats
 
 from functions.ra_dec_map import ra_dec_plots
 from functions.kde_2d import kde_map
@@ -723,8 +724,8 @@ def make_cross_match(cross_match):
 
     mark = [['>', '^', 'v', '<'], ['v', '*', 'o'],
             ['>', 'v', '*', 'v', '<'], ['^', 'v', '<', 'o'], ['v', 'o']]
-    cols = [['dodgerblue', 'r', 'c', 'g'], ['m', 'k', 'b'],
-            ['dodgerblue', 'm', 'k', 'c', 'g'], ['r', 'm', 'g', 'b'],
+    cols = [['chocolate', 'r', 'c', 'g'], ['m', 'k', 'b'],
+            ['chocolate', 'm', 'k', 'c', 'g'], ['r', 'm', 'g', 'b'],
             ['m', 'b']]
 
     # Text boxes.
@@ -808,3 +809,135 @@ def make_cross_match(cross_match):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/cross_match.png', dpi=300)
+
+
+def cross_match_age_ext_plot(pl_params):
+    '''
+    Generate plots for the cross-matched age and mass values.
+    '''
+    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, data, labels, mark, cols, \
+        kde_cont = pl_params
+
+    x, y, kde = kde_cont
+    xy_font_s = 16
+
+    ax = plt.subplot(gs[i])
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    plt.xlabel(x_lab, fontsize=xy_font_s)
+    plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+            zorder=1)
+    ax.minorticks_on()
+    # Origin lines.
+    plt.plot([-10, 10], [0., 0.], 'k', ls='--')
+    plt.plot([0., 0.], [-10, 10], 'k', ls='--')
+    # Plot all clusters for each DB.
+    for j, DB in enumerate(data):
+        xarr, yarr = DB[0], DB[1]
+        plt.scatter(xarr, yarr, marker=mark[j], c=cols[j], s=60,
+                    lw=0.25, edgecolor='w', label=labels[j], zorder=3)
+        # Plot KDE.
+        # plt.imshow(np.rot90(kde), cmap=plt.cm.YlOrBr, extent=ext_range)
+        plt.contour(x, y, kde, 5, colors='k', linewidths=0.6)
+
+    # Legend.
+    leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
+                     fontsize=xy_font_s - 5)
+    # Set the alpha value of the legend.
+    leg.get_frame().set_alpha(0.65)
+    ax.set_aspect('auto')
+
+
+def make_cross_match_age_ext(cross_match, in_params):
+    '''
+    Plot the differences between extinction and age for ASteCA values versus
+    Washington values (ie: Piatti et al. values) and ASteCA values versus
+    the databases where the isochrone fitting method was used.
+    '''
+    # unpack databases.
+    p99, p00, h03, r05, c06, g10, p12 = cross_match
+
+    aarr, asigma, earr, esigma = \
+        [in_params[_] for _ in ['aarr', 'asigma', 'earr', 'esigma']]
+
+    # Define lists of ASteCA minus literature values.
+    # SMC ASteCA minus literature diffs.
+    diffs_lit_ages_smc = np.array(aarr[0][0]) - np.array(aarr[0][1])
+    diffs_lit_exts_smc = np.array(earr[0][0]) - np.array(earr[0][1])
+    # LMC ASteCA minus literature diffs.
+    diffs_lit_ages_lmc, diffs_lit_exts_lmc = [], []
+    for i, lit_ext in enumerate(earr[1][1]):
+        # Remove 99.9 values from 'M' reference that contains no extinction
+        # estimates.
+        if abs(lit_ext) < 5:
+            diffs_lit_ages_lmc.append(aarr[1][0][i] - aarr[1][1][i])
+            diffs_lit_exts_lmc.append(earr[1][0][i] - earr[1][1][i])
+
+    # Define lists of ASteCA minus databases values.
+    # P99 ASteCA minus database diffs.
+    diffs_db_ages_p99 = np.array(p99[4]) - np.array(p99[2])
+    diffs_db_exts_p99 = np.array(p99[11]) - np.array(p99[10])
+    # C06 ASteCA minus database diffs.
+    diffs_db_ages_c06 = np.array(c06[4]) - np.array(c06[2])
+    diffs_db_exts_c06 = np.array(c06[11]) - np.array(c06[10])
+    # G10 ASteCA minus database diffs.
+    diffs_db_ages_g10 = np.array(g10[4]) - np.array(g10[2])
+    diffs_db_exts_g10 = np.array(g10[11]) - np.array(g10[10])
+
+    # Obtain a Gaussian KDE for each plot.
+    # Define x,y grid.
+    gd_c = complex(0, 100)
+    kde_cont = []
+    for xarr, yarr in [
+            [list(diffs_db_ages_p99) + list(diffs_db_ages_c06) +
+             list(diffs_db_ages_g10), list(diffs_db_exts_p99) +
+             list(diffs_db_exts_c06) + list(diffs_db_exts_g10)],
+            [list(diffs_lit_ages_smc) + list(diffs_lit_ages_lmc),
+             list(diffs_lit_exts_smc) + list(diffs_lit_exts_lmc)]]:
+        values = np.vstack([xarr, yarr])
+        kernel = stats.gaussian_kde(values)
+        xmin, xmax, ymin, ymax = min(xarr), max(xarr), min(yarr), max(yarr)
+        x, y = np.mgrid[xmin:xmax:gd_c, ymin:ymax:gd_c]
+        positions = np.vstack([x.ravel(), y.ravel()])
+        # Evaluate kernel in grid positions.
+        k_pos = kernel(positions)
+        # ext_range = [xmin, xmax, ymin, ymax]
+        kde = np.reshape(k_pos.T, x.shape)
+        kde_cont.append([x, y, kde])
+
+    # Order data to plot.
+    lit_data = [[diffs_lit_ages_smc, diffs_lit_exts_smc],
+                [diffs_lit_ages_lmc, diffs_lit_exts_lmc]]
+    db_data = [[diffs_db_ages_p99, diffs_db_exts_p99],
+               [diffs_db_ages_c06, diffs_db_exts_c06],
+               [diffs_db_ages_g10, diffs_db_exts_g10]]
+
+    labels = [['P99', 'C06', 'G10'], ['SMC', 'LMC']]
+    mark = [['s', 'v', '*'], ['>', '^']]
+    cols = [['m', 'c', 'g'], ['r', 'b']]
+
+    # Define names of arrays being plotted.
+    x_lab = ['$\Delta log(age/yr)_{asteca-lit}$',
+             '$\Delta log(age/yr)_{asteca-DB}$']
+    y_lab = ['$\Delta E(B-V)_{asteca-lit}$', '$\Delta E(B-V)_{asteca-DB}$']
+    xmm, ymm = [-1.5, 1.5], [-0.25, 0.25]
+
+    fig = plt.figure(figsize=(14, 25))
+    gs = gridspec.GridSpec(4, 2)
+
+    cross_match_lst = [
+        # Age vs ext diff for ASteCA vs databases.
+        [gs, 0, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[0], y_lab[0],
+            db_data, labels[0], mark[0], cols[0], kde_cont[0]],
+        # Age vs ext diff for ASteCA vs literature.
+        [gs, 1, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[0], y_lab[0],
+            lit_data, labels[1], mark[1], cols[1], kde_cont[1]]
+    ]
+
+    for pl_params in cross_match_lst:
+        cross_match_age_ext_plot(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    plt.savefig('figures/cross_match_age_ext.png', dpi=300)
