@@ -654,23 +654,28 @@ def match_clusts(as_names, as_pars, names_lit, lit_ages, lit_ext, p99, p00,
     log_age_lit, -1., -1., mass_asteca, e_mass, E_BV, E_BV_asteca, E_BV_lit,
     -1.]
 
-    p00 = ['P00', Gal, name, log_age, e_age, log_age_asteca, e_age, -1.,
-    -1., mass_asteca, e_mass, -1., E_BV_asteca, -1.]
+    p00 = ['P00', Gal, name, log_age, e_age, log_age_asteca, e_age,
+    log_age_lit, -1., -1., mass_asteca, e_mass, -1., E_BV_asteca, E_BV_lit,
+    -1.]
 
-    h03 = ['H03', Gal, name, log_age, e_age, log_age_asteca, e_age, mass,
-    -1., mass_asteca, e_mass, -1., E_BV_asteca, quality]
+    h03 = ['H03', Gal, name, log_age, e_age, log_age_asteca, e_age,
+    log_age_lit, mass, -1., mass_asteca, e_mass, -1., E_BV_asteca, E_BV_lit,
+    quality]
 
-    r05 = ['R05', Gal, name, log_age, e_age, log_age_asteca, e_age, -1.,
-    -1., mass_asteca, e_mass, -1., E_BV_asteca, -1.]
+    r05 = ['R05', Gal, name, log_age, e_age, log_age_asteca, e_age,
+    log_age_lit, -1., -1., mass_asteca, e_mass, -1., E_BV_asteca, E_BV_lit,
+    -1.]
 
-    c06 = ['G06', Gal, name, log_age, e_age, log_age_asteca, e_age, -1.,
-    -1., mass_asteca, e_mass, E_BV, E_BV_asteca, type]
+    c06 = ['G06', Gal, name, log_age, e_age, log_age_asteca, e_age,
+    log_age_lit, -1., -1., mass_asteca, e_mass, E_BV, E_BV_asteca, E_BV_lit,
+    type]
 
-    g10 = ['G10', Gal, name, log_age, e_age, log_age_asteca, e_age, -1., -1.,
-    -1., -1., E_BV, E_BV_asteca, -1.]
+    g10 = ['G10', Gal, name, log_age, e_age, log_age_asteca, e_age,
+    log_age_lit, -1., -1., -1., -1., E_BV, E_BV_asteca, E_BV_lit, -1.]
 
-    p12 = ['P12', Gal, name, log_age, e_age, log_age_asteca, e_age, mass,
-    e_mass, mass_asteca, e_mass, -1., E_BV_asteca, -1.]
+    p12 = ['P12', Gal, name, log_age, e_age, log_age_asteca, e_age,
+    log_age_lit, mass, e_mass, mass_asteca, e_mass, -1., E_BV_asteca, E_BV_lit,
+    -1.]
 
     '''
 
