@@ -146,27 +146,32 @@ def get_liter_data():
     cl_dict = cl_file.sheets()["S-LMC"]
 
     # Indexes of coord, age and extinction columns in .ods literature file.
-    ra_i, dec_i, age_i, ext_i = cl_dict[0].index(u'ra_deg'), \
+    ra_i, dec_i, age_i, e_age_i, ext_i, e_ext_i = cl_dict[0].index(u'ra_deg'),\
         cl_dict[0].index(u'dec_deg'), cl_dict[0].index(u'log(age)'), \
-        cl_dict[0].index(u'E(B-V) (lit)')
+        cl_dict[0].index(u'e_log(age)'), cl_dict[0].index(u'E(B-V) (lit)'), \
+        cl_dict[0].index(u'e_E(B-V)')
     # Index of the cluster's name in the .ods file.
     name_idx = cl_dict[0].index(u'Name')
 
-    names_ra_dec, ra, dec, ages, exti = [], [], [], [], []
+    names_ra_dec, ra, dec, ages, e_age, exti, e_exti = [], [], [], [], [], [],\
+        []
     for cl in cl_dict:
         names_ra_dec.append(str(cl[name_idx]))
         ra.append(cl[ra_i])
         dec.append(cl[dec_i])
         ages.append(cl[age_i])
+        e_age.append(cl[e_age_i])
         exti.append(cl[ext_i])
+        e_exti.append(cl[e_ext_i])
     # remove first line (column names) and 4 last lines (empty string)
-    del names_ra_dec[-4:], ra[-4:], dec[-4:], ages[-4:], exti[-4:]
-    del names_ra_dec[0], ra[0], dec[0], ages[0], exti[0]
+    del names_ra_dec[-4:], ra[-4:], dec[-4:], ages[-4:], e_age[-4:], \
+        exti[-4:], e_exti[-4:]
+    del names_ra_dec[0], ra[0], dec[0], ages[0], e_age[0], exti[0], e_exti[0]
 
     # Create the RA, DEC catalog.
     cat_ra_dec = SkyCoord(ra*u.degree, dec*u.degree, frame='icrs')
 
-    return names_ra_dec, cat_ra_dec, ages, exti
+    return names_ra_dec, cat_ra_dec, ages, e_age, exti, e_exti
 
 
 def match_ra_dec_asteca(names_ra_dec, cat_ra_dec, ra, dec):
@@ -445,8 +450,7 @@ def read_hunter():
             M_V_10 = float(lin[22])
             # Convert absolute magnitude to mass.
             mass = mag_2_mass(M_V_10)
-            quality = int(lin[23])
-            h03.append([gal, names, log_age, e_age, mass, -1., quality])
+            h03.append([gal, names, log_age, e_age, mass, -1.])
 
     h03 = find_dup_cls_in_database('H03', h03)
 
@@ -500,11 +504,9 @@ def read_chiosi():
             log_age = float(lin[4])
             c = int(lin[7])
             e_age = c06_age_errors(c)
-            # Type
-            t = str(lin[6])
             # E(V-I) = 1.244*E(B-V)
             E_BV = float(lin[5]) / 1.244
-            c06.append([gal, names, log_age, e_age, E_BV, t])
+            c06.append([gal, names, log_age, e_age, E_BV])
 
     return c06
 
@@ -641,8 +643,8 @@ def read_popescu_h03():
     return p12
 
 
-def match_clusts(as_names, as_pars, names_lit, lit_ages, lit_ext, p99, p00,
-                 h03, r05, c06, g10, p12):
+def match_clusts(as_names, as_pars, names_lit, lit_ages, lit_e_age, lit_ext,
+                 lit_e_ext, p99, p00, h03, r05, c06, g10, p12):
     '''
     Cross match clusters processed by ASteCA to those published in several
     articles. The final list is ordered in the same way the 'as_params' list
@@ -650,32 +652,9 @@ def match_clusts(as_names, as_pars, names_lit, lit_ages, lit_ext, p99, p00,
 
     match_cl = [[[p00], [p00], [h03], [g10], [p12]], ..., N_clusts]
 
-    p99 = ['P99', Gal, name, log_age, e_age, log_age_asteca, e_age,
-    log_age_lit, -1., -1., mass_asteca, e_mass, E_BV, E_BV_asteca, E_BV_lit,
-    -1.]
-
-    p00 = ['P00', Gal, name, log_age, e_age, log_age_asteca, e_age,
-    log_age_lit, -1., -1., mass_asteca, e_mass, -1., E_BV_asteca, E_BV_lit,
-    -1.]
-
-    h03 = ['H03', Gal, name, log_age, e_age, log_age_asteca, e_age,
-    log_age_lit, mass, -1., mass_asteca, e_mass, -1., E_BV_asteca, E_BV_lit,
-    quality]
-
-    r05 = ['R05', Gal, name, log_age, e_age, log_age_asteca, e_age,
-    log_age_lit, -1., -1., mass_asteca, e_mass, -1., E_BV_asteca, E_BV_lit,
-    -1.]
-
-    c06 = ['G06', Gal, name, log_age, e_age, log_age_asteca, e_age,
-    log_age_lit, -1., -1., mass_asteca, e_mass, E_BV, E_BV_asteca, E_BV_lit,
-    type]
-
-    g10 = ['G10', Gal, name, log_age, e_age, log_age_asteca, e_age,
-    log_age_lit, -1., -1., -1., -1., E_BV, E_BV_asteca, E_BV_lit, -1.]
-
-    p12 = ['P12', Gal, name, log_age, e_age, log_age_asteca, e_age,
-    log_age_lit, mass, e_mass, mass_asteca, e_mass, -1., E_BV_asteca, E_BV_lit,
-    -1.]
+    DB = ['XXX', Gal, name, log_DB_age, e_DB_age, log_age_asteca, e_age_asteca,
+    log_age_lit, e_log_age_lit, mass_DB, e_mass_DB, mass_asteca, e_mass_asteca,
+    E_BV_DB, E_BV_asteca, e_E_BV_asteca, E_BV_lit, e_E_BV_lit]
 
     '''
 
@@ -684,163 +663,55 @@ def match_clusts(as_names, as_pars, names_lit, lit_ages, lit_ext, p99, p00,
 
     # Cross-match all clusters processed by ASteCA.
     total = [0, 0, 0, 0, 0, 0, 0]
+    db_names = ['P99', 'P00', 'H03', 'R05', 'C06', 'G10', 'P12']
+    # For each cluster processed by ASteCA.
     for i, cl_n in enumerate(as_names):
 
-        # Match clusters in P99.
-        for cl_h in p99:
-            # For each stored cluster name.
-            for cl_h_n in cl_h[1]:
-                # If names match.
-                if cl_n == cl_h_n:
-                    # Check match in literature (Piatti et al. values)
-                    for j, cl_l in enumerate(names_lit):
-                        if cl_l == cl_n:
-                            l_ext, l_age = lit_ext[j], lit_ages[j]
-                            l_ext = -1. if isinstance(l_ext, basestring) else \
-                                l_ext
+        # For each database.
+        for k, db in enumerate([p99, p00, h03, r05, c06, g10, p12]):
+            # For each cluster cross-matched and stored in database.
+            for cl_db in db:
+                # For each cluster name associated to each cluster.
+                for cl_h_n in cl_db[1]:
 
-                            # Store P00 cluster data.
-                            match_cl[i][0] =\
-                                ['P99', cl_h[0], cl_n, cl_h[2], cl_h[3],
-                                    as_pars[i][21], as_pars[i][22], l_age,
-                                    -1., -1., as_pars[i][27], as_pars[i][28],
-                                    cl_h[4], as_pars[i][23], l_ext, -1.]
-                            # Increase counter.
-                            total[0] = total[0] + 1
+                    # Only H03 and P12 have defined masses.
+                    if k in [2, 6]:
+                        m_DB, e_m_DB = cl_db[4], cl_db[5]
+                    else:
+                        m_DB, e_m_DB = -1., -1.
+                    # Only P99, C06 and G10 have defined extinctions.
+                    if k in [0, 4, 5]:
+                        ext_DB = cl_db[4]
+                    else:
+                        ext_DB = -1.
 
-        # Match clusters in P00.
-        for cl_h in p00:
-            # For each stored cluster name.
-            for cl_h_n in cl_h[1]:
-                # If names match.
-                if cl_n == cl_h_n:
-                    # Check match in literature (Piatti et al. values)
-                    for j, cl_l in enumerate(names_lit):
-                        if cl_l == cl_n:
-                            l_ext, l_age = lit_ext[j], lit_ages[j]
-                            l_ext = -1. if isinstance(l_ext, basestring) else \
-                                l_ext
+                    # If names match.
+                    if cl_n == cl_h_n:
+                        # For each cluster with literature values (Piatti et
+                        # al.)
+                        for j, cl_l in enumerate(names_lit):
+                            # Check match in literature.
+                            if cl_l == cl_n:
+                                l_ext, l_age = lit_ext[j], lit_ages[j]
+                                l_e_age, l_e_ext = lit_e_age[j], lit_e_ext[j]
 
-                            # Store P00 cluster data.
-                            match_cl[i][1] = \
-                                ['P00', cl_h[0], cl_n, cl_h[2], cl_h[3],
-                                    as_pars[i][21], as_pars[i][22], l_age, -1.,
-                                    -1., as_pars[i][27], as_pars[i][28], -1.,
-                                    as_pars[i][23], l_ext, -1.]
-                            # Increase counter.
-                            total[1] = total[1] + 1
+                                # Convert '--' strings into -1. values.
+                                l_ext = -1. if isinstance(l_ext, basestring) \
+                                    else l_ext
+                                l_e_ext = -1. if \
+                                    isinstance(l_e_ext, basestring) else \
+                                    l_e_ext
 
-        # Match clusters in H03.
-        for cl_h in h03:
-            # For each stored cluster name.
-            for cl_h_n in cl_h[1]:
-                # If names match.
-                if cl_n == cl_h_n:
-                    # Check match in literature (Piatti et al. values)
-                    for j, cl_l in enumerate(names_lit):
-                        if cl_l == cl_n:
-                            l_ext, l_age = lit_ext[j], lit_ages[j]
-                            l_ext = -1. if isinstance(l_ext, basestring) else \
-                                l_ext
-
-                            # Store H03 cluster data.
-                            match_cl[i][2] = \
-                                ['H03', cl_h[0], cl_n, cl_h[2], cl_h[3],
-                                    as_pars[i][21], as_pars[i][22], l_age,
-                                    cl_h[4], cl_h[5], as_pars[i][27],
-                                    as_pars[i][28], -1., as_pars[i][23], l_ext,
-                                    cl_h[6]]
-                            # Increase counter.
-                            total[2] = total[2] + 1
-
-        # Match clusters in R05.
-        for cl_h in r05:
-            # For each stored cluster name.
-            for cl_h_n in cl_h[1]:
-                # If names match.
-                if cl_n == cl_h_n:
-                    # Check match in literature (Piatti et al. values)
-                    for j, cl_l in enumerate(names_lit):
-                        if cl_l == cl_n:
-                            l_ext, l_age = lit_ext[j], lit_ages[j]
-                            l_ext = -1. if isinstance(l_ext, basestring) else \
-                                l_ext
-
-                            # Store R05 cluster data.
-                            match_cl[i][3] = \
-                                ['R05', cl_h[0], cl_n, cl_h[2], cl_h[3],
-                                    as_pars[i][21], as_pars[i][22], l_age, -1.,
-                                    -1., as_pars[i][27], as_pars[i][28],
-                                    -1., as_pars[i][23], l_ext, -1.]
-                            # Increase counter.
-                            total[3] = total[3] + 1
-
-        # Match clusters in C06.
-        # [gal, names, log_age, e_age, E_BV, t]
-        for cl_h in c06:
-            # For each stored cluster name.
-            for cl_h_n in cl_h[1]:
-                # If names match.
-                if cl_n == cl_h_n:
-                    # Check match in literature (Piatti et al. values)
-                    for j, cl_l in enumerate(names_lit):
-                        if cl_l == cl_n:
-                            l_ext, l_age = lit_ext[j], lit_ages[j]
-                            l_ext = -1. if isinstance(l_ext, basestring) else \
-                                l_ext
-
-                            # Store C06 cluster data.
-                            match_cl[i][4] = \
-                                ['C06', cl_h[0], cl_n, cl_h[2], cl_h[3],
-                                    as_pars[i][21], as_pars[i][22], l_age, -1.,
-                                    -1., as_pars[i][27], as_pars[i][28],
-                                    cl_h[4], as_pars[i][23], l_ext, cl_h[5]]
-                            # Increase counter.
-                            total[4] = total[4] + 1
-
-        # Match clusters in G10.
-        for cl_h in g10:
-            # For each stored cluster name.
-            for cl_h_n in cl_h[1]:
-                # If names match.
-                if cl_n == cl_h_n:
-                    # Check match in literature (Piatti et al. values)
-                    for j, cl_l in enumerate(names_lit):
-                        if cl_l == cl_n:
-                            l_ext, l_age = lit_ext[j], lit_ages[j]
-                            l_ext = -1. if isinstance(l_ext, basestring) else \
-                                l_ext
-
-                            # Store G10 cluster data.
-                            match_cl[i][5] = \
-                                ['G10', cl_h[0], cl_n, cl_h[2], cl_h[3],
-                                    as_pars[i][21], as_pars[i][22], l_age, -1.,
-                                    -1., -1., -1., cl_h[4], as_pars[i][23],
-                                    l_ext, -1.]
-                            total[5] = total[5] + 1
-
-        # Match clusters in P12.
-        for cl_h in p12:
-            # For each stored cluster name.
-            for cl_h_n in cl_h[1]:
-                # If names match.
-                if cl_n == cl_h_n:
-                    # Check match in literature (Piatti et al. values)
-                    for j, cl_l in enumerate(names_lit):
-                        if cl_l == cl_n:
-                            l_ext, l_age = lit_ext[j], lit_ages[j]
-                            l_ext = -1. if isinstance(l_ext, basestring) else \
-                                l_ext
-
-                            # Store P12 cluster data.
-                            match_cl[i][6] = \
-                                ['P12', cl_h[0], cl_n, cl_h[2], cl_h[3],
-                                    as_pars[i][21], as_pars[i][22], l_age,
-                                    cl_h[4], cl_h[5], as_pars[i][27],
-                                    as_pars[i][28], -1., as_pars[i][23], l_ext,
-                                    -1.]
-                            # Increase counter.
-                            total[6] = total[6] + 1
+                                # Store cluster data.
+                                match_cl[i][k] =\
+                                    [db_names[k], cl_db[0], cl_n, cl_db[2],
+                                        cl_db[3], as_pars[i][21],
+                                        as_pars[i][22], l_age, l_e_age, m_DB,
+                                        e_m_DB, as_pars[i][27], as_pars[i][28],
+                                        ext_DB, as_pars[i][23], as_pars[i][24],
+                                        l_ext, l_e_ext]
+                                # Increase counter.
+                                total[k] = total[k] + 1
 
     print '\nTotal clusters matched in each database:', total, \
         sum(_ for _ in total)
@@ -861,14 +732,14 @@ def write_out_data(match_cl):
                     "# E_BV3: E_BV_lit\n")
         f_out.write("#\n# Mass1: Mass_DB\n# Mass2: Mass_asteca\n#\n")
         f_out.write("#DB   GAL      NAME   Age1  e_age  Age2  \
-e_age   Age3      Mass1   e_mass    Mass2   e_mass    E_BV1    E_BV2    E_BV3\
-   quality/class\n#\n")
+e_age   Age3  e_age      Mass1   e_mass    Mass2   e_mass    E_BV1    \
+E_BV2   e_E_BV    E_BV3   e_E_BV\n")
         for data_base in zip(*match_cl):
             for clust in data_base:
                 if clust:  # Check that list is not empty.
                     f_out.write('''{:<4} {:>4} {:>9} {:>6.2f} {:>6.2f} {:>5} \
-{:>6} {:>6.2f} {:>10.2f} {:>8.0f} {:>8} {:>8} {:>8.2f} {:>8} {:>8.2f} \
-{:>8}\n'''.format(*clust))
+{:>6} {:>6.2f} {:>6.2f} {:>10.2f} {:>8.0f} {:>8} {:>8} {:>8.2f} {:>8} {:>8}\
+ {:>8.2f} {:>8.2f}\n'''.format(*clust))
 
 
 def main():
@@ -877,7 +748,8 @@ def main():
     as_names, as_pars = get_asteca_data()
 
     # Read RA & DEC literature data.
-    names_ra_dec, cat_ra_dec, lit_ages, lit_ext = get_liter_data()
+    names_ra_dec, cat_ra_dec, lit_ages, lit_e_age, lit_ext, lit_e_ext = \
+        get_liter_data()
 
     # Read Pietrzynski et al. (1999) data.
     p99 = read_pietr99(names_ra_dec, cat_ra_dec)
@@ -894,15 +766,16 @@ def main():
     # Read Chiosi et al. (2006) data.
     c06 = read_chiosi()
 
-    # Read Glatt  et. al (2010) data.
+    # Read Glatt  et al. (2010) data.
     g10 = read_glatt()
 
-    # Read Popescu  et. al (2012) data correlated with H03.
+    # Read Popescu et al. (2012) data.
     p12 = read_popescu_h03()
 
     # Cross-match all clusters.
     match_cl = match_clusts(as_names, as_pars, names_ra_dec, lit_ages,
-                            lit_ext, p99, p00, h03, r05, c06, g10, p12)
+                            lit_e_age, lit_ext, lit_e_ext, p99, p00, h03, r05,
+                            c06, g10, p12)
 
     # Write to file.
     write_out_data(match_cl)
