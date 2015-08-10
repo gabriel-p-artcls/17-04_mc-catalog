@@ -566,6 +566,58 @@ def read_glatt():
     return g10
 
 
+def get_G10_asteca_data():
+    '''
+    Read Glatt et al. (2010) database and return using ASteCA-like list.
+
+    Return
+    ------
+
+    g10 = []
+    '''
+
+    # Path to data file.
+    g10_file = 'glatt_10.dat'
+
+    # Read data file
+    with open(g10_file) as f:
+        as_names, as_params, names_ra_dec, cat_ra_dec, lit_ages, lit_e_age, \
+            lit_ext, lit_e_ext = [], [], [], [], [], [], [], []
+        ra_lst, dec_lst = [], []
+
+        for line in skip_comments(f):
+            # Width of columns in file.
+            col_widths = [12, 6, 8, 1, 7, 3, 7, 10, 11, 30, 60]
+            lin = list(slices(line, col_widths))
+            names = [_.upper().strip() for _ in lin[10].split(',')]
+            c = SkyCoord(lin[7] + lin[8], unit=(u.hourangle, u.deg))
+            ra_val, dec_val = c.ra.deg, c.dec.deg
+            ra_lst.append(ra_val)
+            dec_lst.append(dec_val)
+            E_BV = float(lin[1])
+            log_age = float(lin[4])
+            q = int(lin[5])
+            e_age = g10_age_errors(q)
+
+            # Names lists.
+            as_names.append(names[0])
+            names_ra_dec.append(names[0])
+            # Params lists.
+            lit_ages.append(log_age)
+            lit_e_age.append(e_age)
+            lit_ext.append(E_BV)
+            lit_e_ext.append(0.)
+            as_params.append([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+                              0., 0., 0., 0., 0., 0., 0., 0., 0., log_age,
+                              e_age, E_BV, 0., 0., 0., 0., 0.])
+
+    # Create the RA, DEC catalog.
+    cat_ra_dec = SkyCoord(ra_lst*u.degree, dec_lst*u.degree, frame='icrs')
+
+    return as_names, as_params, names_ra_dec, cat_ra_dec, lit_ages, lit_e_age,\
+        lit_ext, lit_e_ext
+
+
 # def mean_lsts(a):
 #     return sum(a) / len(a)
 
@@ -744,12 +796,16 @@ E_BV2   e_E_BV    E_BV3   e_E_BV\n")
 
 def main():
 
-    # Read ASteCA data.
-    as_names, as_pars = get_asteca_data()
+    # # Read ASteCA data.
+    # as_names, as_pars = get_asteca_data()
 
-    # Read RA & DEC literature data.
-    names_ra_dec, cat_ra_dec, lit_ages, lit_e_age, lit_ext, lit_e_ext = \
-        get_liter_data()
+    # # Read RA & DEC literature data.
+    # names_ra_dec, cat_ra_dec, lit_ages, lit_e_age, lit_ext, lit_e_ext = \
+    #     get_liter_data()
+
+    # Read Glatt et al. (2010) as if it were ASteCA data.
+    as_names, as_pars, names_ra_dec, cat_ra_dec, lit_ages, lit_e_age, lit_ext,\
+        lit_e_ext = get_G10_asteca_data()
 
     # Read Pietrzynski et al. (1999) data.
     p99 = read_pietr99(names_ra_dec, cat_ra_dec)

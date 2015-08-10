@@ -143,11 +143,11 @@ def make_plots(in_params, cross_match):
     # make_dist_2_cents(in_params)
     # print 'Distances to center of MC done.'
 
-    # make_cross_match(cross_match)
-    # print 'Cross-matched clusters done.'
+    make_cross_match(cross_match)
+    print 'Cross-matched clusters done.'
 
-    make_cross_match_age_ext(cross_match, in_params)
-    print 'Age and extinction diffs for cross-matched clusters done.'
+    # make_cross_match_age_ext(cross_match, in_params)
+    # print 'Age and extinction diffs for cross-matched clusters done.'
 
 
 def main():

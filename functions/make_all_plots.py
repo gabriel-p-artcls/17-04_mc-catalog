@@ -650,46 +650,46 @@ def cross_match_plot(pl_params):
     ax.minorticks_on()
     # Plot all clusters for each DB.
     for j, DB in enumerate(databases):
-        xarr, yarr = DB[a], DB[b]
-        xsigma, ysigma = DB[e_a], DB[e_b]
+        if DB:
+            xarr, yarr = DB[a], DB[b]
+            xsigma, ysigma = DB[e_a], DB[e_b]
 
-        # # Fit y = s*x + i line.
-        # from scipy import stats
-        # slope, intrcpt, r_v, p_v, std_err = stats.linregress(xarr, yarr)
-        # print '\n', labels[j]
-        # print 'y=a*x+b fit:', slope, intrcpt, r_v ** 2, std_err, '\n'
+            # # Fit y = s*x + i line.
+            # from scipy import stats
+            # slope, intrcpt, r_v, p_v, std_err = stats.linregress(xarr, yarr)
+            # print '\n', labels[j]
+            # print 'y=a*x+b fit:', slope, intrcpt, r_v ** 2, std_err, '\n'
 
-        # # Fit y = s*x line to data, ie: x=0 --> y=0 (intercept=0).
-        # # x needs to be a column vector instead of a 1D vector for this.
-        # x = np.asarray(xarr)[:, np.newaxis]
-        # lin_fit = np.linalg.lstsq(x, yarr)
-        # print lin_fit
-        # slope = lin_fit[0][0]
+            # # Fit y = s*x line to data, ie: x=0 --> y=0 (intercept=0).
+            # # x needs to be a column vector instead of a 1D vector for this.
+            # x = np.asarray(xarr)[:, np.newaxis]
+            # lin_fit = np.linalg.lstsq(x, yarr)
+            # print lin_fit
+            # slope = lin_fit[0][0]
 
-        # # Fit y = s*x + i line.
-        # model = sm.OLS(yarr, xarr)
-        # results = model.fit()
-        # # print results.summary()
-        # slope, std_err = results.params[0], results.bse[0]
-        # db_lab = labels[j] + '$\;(N={},\,s={:.2f}),\,SE={:.3f}$'.format(
-        #     len(xarr), slope, std_err)
+            # # Fit y = s*x + i line.
+            # model = sm.OLS(yarr, xarr)
+            # results = model.fit()
+            # # print results.summary()
+            # slope, std_err = results.params[0], results.bse[0]
+            # db_lab = labels[j] + '$\;(N={},\,s={:.2f}),\,SE={:.3f}$'.format(
+            #     len(xarr), slope, std_err)
 
-        db_lab = labels[j] + '$\;(N={})$'.format(len(xarr))
-        # Star marker is too small compared to the rest.
-        siz = 60. if mark[j] != '*' else 90.
-        plt.scatter(xarr, yarr, marker=mark[j], c=cols[j], s=siz,
-                    lw=0.25, edgecolor='w', label=db_lab, zorder=3)
-        # Plot error bars.
-        for k, xy in enumerate(zip(*[xarr, yarr])):
-            y_err = ysigma[k] if 0. < ysigma[k] < 5. else 0.
-            plt.errorbar(xy[0], xy[1], xerr=xsigma[k], yerr=y_err,
-                         ls='none', color='k', elinewidth=0.2, zorder=1)
+            db_lab = labels[j] + '$\;(N={})$'.format(len(xarr))
+            # Star marker is too small compared to the rest.
+            siz = 60. if mark[j] != '*' else 90.
+            plt.scatter(xarr, yarr, marker=mark[j], c=cols[j], s=siz,
+                        lw=0.25, edgecolor='w', label=db_lab, zorder=3)
+            # Plot error bars.
+            for k, xy in enumerate(zip(*[xarr, yarr])):
+                y_err = ysigma[k] if 0. < ysigma[k] < 5. else 0.
+                plt.errorbar(xy[0], xy[1], xerr=xsigma[k], yerr=y_err,
+                             ls='none', color='k', elinewidth=0.2, zorder=1)
+            # Legend.
+            leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
+                             fontsize=xy_font_s - 5)
+            leg.get_frame().set_alpha(0.85)
     plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
-    # Legend.
-    leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
-                     fontsize=xy_font_s - 5)
-    # Set the alpha value of the legend.
-    leg.get_frame().set_alpha(0.85)
     # Text box.
     ob = offsetbox.AnchoredText(text_box, loc=4, prop=dict(size=xy_font_s - 3))
     ob.patch.set(alpha=0.85)
@@ -768,9 +768,9 @@ def make_cross_match(cross_match):
     indexes = [[4, 5, 2, 3], [10, 11, 8, 9]]
 
     # Define names of arrays being plotted.
-    x_lab = ['$log(age/yr)_{asteca}$', '$mass_{asteca}\,[M_{\odot}]$']
+    x_lab = ['$log(age/yr)_{ASteCA}$', '$mass_{ASteCA}\,[M_{\odot}]$']
     y_lab = ['$log(age/yr)_{DB}$', '$mass_{DB}\,[M_{\odot}]$']
-    z_lab = ['$mass_{asteca}\,[M_{\odot}]$', '$log(age/yr)_{asteca}$']
+    z_lab = ['$mass_{ASteCA}\,[M_{\odot}]$', '$log(age/yr)_{ASteCA}$']
     xymin, xymax = [5.8, -69.], [10.6, 5000, 30000]
 
     fig = plt.figure(figsize=(16, 25))
