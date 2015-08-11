@@ -103,6 +103,11 @@ photometry.
   Final data file with all matched clusters between **ASteCA** and the
   databases in the literature.
 
+* `matched_clusters_G10.dat`
+
+  Idem above but using the G10 data as input to match with the P99, P00, and
+  C06 databases, and compare their ages.
+
 ### `aux_funcs/`
 
 * `move_files_sizes.py`
@@ -302,3 +307,7 @@ The following clusters were left un-processed (no reason, just didn't bother):
  * n_el = 1
  * n_ei = 25
  * n_es = 70
+
+#### `13th_run`
+
+ Re-process all clusters using a binary fraction of 0.
