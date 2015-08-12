@@ -60,13 +60,16 @@ def as_vs_lit_plots(pl_params):
                      zorder=3)
     # Plot error bars.
     for j, xy in enumerate(zip(*[rs_x, rs_y])):
-        # Only plot y error bar if it has a value assigned in the literature.
+        # Only plot error bar if it has a value assigned in the literature.
         if ysigma:
-            if ysigma[j] > -99.:
+            if ysigma[j] > 0. and xsigma[j] > 0.:
                 plt.errorbar(xy[0], xy[1], xerr=xsigma[j], yerr=ysigma[j],
                              ls='none', color='k', elinewidth=0.5, zorder=1)
-            else:
-                plt.errorbar(xy[0], xy[1], xerr=xsigma[j], ls='none',
+            elif xsigma[j] > 0. and ysigma[j] < 0.:
+                plt.errorbar(xy[0], xy[1], xerr=xsigma[j],
+                             ls='none', color='k', elinewidth=0.5, zorder=1)
+            elif ysigma[j] > 0. and xsigma[j] < 0.:
+                plt.errorbar(xy[0], xy[1], yerr=ysigma[j], ls='none',
                              color='k', elinewidth=0.5, zorder=1)
 
     # # Plot IDs

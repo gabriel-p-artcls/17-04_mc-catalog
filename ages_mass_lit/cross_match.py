@@ -796,16 +796,16 @@ E_BV2   e_E_BV    E_BV3   e_E_BV\n")
 
 def main():
 
-    # # Read ASteCA data.
-    # as_names, as_pars = get_asteca_data()
+    # Read ASteCA data.
+    as_names, as_pars = get_asteca_data()
 
-    # # Read RA & DEC literature data.
-    # names_ra_dec, cat_ra_dec, lit_ages, lit_e_age, lit_ext, lit_e_ext = \
-    #     get_liter_data()
+    # Read RA & DEC literature data.
+    names_ra_dec, cat_ra_dec, lit_ages, lit_e_age, lit_ext, lit_e_ext = \
+        get_liter_data()
 
-    # Read Glatt et al. (2010) as if it were ASteCA data.
-    as_names, as_pars, names_ra_dec, cat_ra_dec, lit_ages, lit_e_age, lit_ext,\
-        lit_e_ext = get_G10_asteca_data()
+    # # Read Glatt et al. (2010) as if it were ASteCA data.
+    # as_names, as_pars, names_ra_dec, cat_ra_dec, lit_ages, lit_e_age,\
+    #     lit_ext, lit_e_ext = get_G10_asteca_data()
 
     # Read Pietrzynski et al. (1999) data.
     p99 = read_pietr99(names_ra_dec, cat_ra_dec)
