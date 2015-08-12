@@ -782,11 +782,12 @@ def make_cross_match(cross_match):
             z_lab[0], indexes[0], labels[0], mark[0], cols[0], text_box[0],
             databases[0]],
 
-        # # Extinction G10 vs P99, P00, C06.
+        # # Extinction G10 vs P99, P00, C06. This block needs the
+        # # 'matched_clusters_G10.dat' file to be used as
+        # # 'matched_clusters.dat', to produce the correct plot.
         # [gs, 1, -0.01, 0.31, -0.01, 0.321, '$E(B-V)_{G10}$', '$E(B-V)_{DB}$',
-        #     z_lab[0], [13, 14, 12, 14], ['P99', 'P00', 'C06'],
-        #     ['>', '^', 'v'], ['chocolate', 'r', 'c'], text_box[0],
-        #     [p99, p00, c06]]
+        #     z_lab[0], [13, 14, 12, 14], ['P99', 'C06'], ['>', 'v'],
+        #     ['chocolate', 'c'], text_box[0], [p99, c06]]
 
         # Age cross-match, integrated photometry.
         [gs, 1, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[0], y_lab[0],
