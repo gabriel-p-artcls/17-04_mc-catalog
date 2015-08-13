@@ -684,10 +684,16 @@ def cross_match_plot(pl_params):
             plt.scatter(xarr, yarr, marker=mark[j], c=cols[j], s=siz,
                         lw=0.25, edgecolor='w', label=db_lab, zorder=3)
             # Plot error bars.
-            for k, xy in enumerate(zip(*[xarr, yarr])):
-                y_err = ysigma[k] if 0. < ysigma[k] < 5. else 0.
-                plt.errorbar(xy[0], xy[1], xerr=xsigma[k], yerr=y_err,
-                             ls='none', color='k', elinewidth=0.2, zorder=1)
+            if xsigma:
+                for k, xy in enumerate(zip(*[xarr, yarr])):
+                    x_err = xsigma[k] if 0. < xsigma[k] < 5. else 0.
+                    plt.errorbar(xy[0], xy[1], xerr=x_err, ls='none',
+                                 color='k', elinewidth=0.2, zorder=1)
+            if ysigma:
+                for k, xy in enumerate(zip(*[xarr, yarr])):
+                    y_err = ysigma[k] if 0. < ysigma[k] < 5. else 0.
+                    plt.errorbar(xy[0], xy[1], yerr=y_err, ls='none',
+                                 color='k', elinewidth=0.2, zorder=1)
             # Legend.
             leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
                              fontsize=xy_font_s - 5)
