@@ -311,3 +311,8 @@ The following clusters were left un-processed (no reason, just didn't bother):
 #### `13th_run`
 
  Re-process all clusters using a binary fraction of 0.
+
+ #### `14th_run`
+
+  Re-process all clusters using fixed distance moduli (18.49/18.96, S/LMC) and
+  increasing the maximum extinction by 0.05.

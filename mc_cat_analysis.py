@@ -115,9 +115,9 @@ def make_plots(in_params, cross_match):
     Make each plot sequentially.
     '''
 
-    # for j, gal in enumerate(['SMC', 'LMC']):
-    #     make_as_vs_lit_plot(gal, j, in_params)
-    #     print '{} ASteCA vs literature plots done.'.format(gal)
+    for j, gal in enumerate(['SMC', 'LMC']):
+        make_as_vs_lit_plot(gal, j, in_params)
+        print '{} ASteCA vs literature plots done.'.format(gal)
 
     #     make_kde_plots(gal, j, in_params)
     #     print '{} KDE maps done.'.format(gal)
@@ -146,8 +146,8 @@ def make_plots(in_params, cross_match):
     make_cross_match(cross_match)
     print 'Cross-matched clusters done.'
 
-    # make_cross_match_age_ext(cross_match, in_params)
-    # print 'Age and extinction diffs for cross-matched clusters done.'
+    make_cross_match_age_ext(cross_match, in_params)
+    print 'Age and extinction diffs for cross-matched clusters done.'
 
 
 def main():
