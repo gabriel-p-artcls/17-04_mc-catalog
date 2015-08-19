@@ -172,7 +172,7 @@ photometry.
 
 #### `1st_run/`
 
-First batch of data obtained using the following parameters:
+  First batch of data obtained using the following parameters:
 
   - Semi mode.
   - Center found with 100px search area.
@@ -187,14 +187,14 @@ First batch of data obtained using the following parameters:
 
 #### `2nd_run/`
 
-Second batch of data for 83 clusters (60 LMC, 23 SMC) from the 1st run,
-marked to be re-processed. The data was obtained using the same extinction and
-distance modulus range, and changing the following parameters:
+  Second batch of data for 83 clusters (60 LMC, 23 SMC) from the 1st run,
+  marked to be re-processed. The data was obtained using the same extinction
+  and distance modulus range, and changing the following parameters:
 
   * Center, radius, number of field regions, max E(B-V) and binning of red_memb
    and best_fit, as described in `README.dat`.
 
-The following clusters were left un-processed (no reason, just didn't bother):
+  The following clusters were left un-processed (no reason, just didn't bother):
 
   * NGC1917, SL579, SL588, LW54, NGC419, SL244
 
@@ -315,4 +315,13 @@ The following clusters were left un-processed (no reason, just didn't bother):
 #### `14th_run`
 
   Re-process all clusters using fixed distance moduli (18.49/18.96, S/LMC) and
-  increasing the maximum extinction by 0.05.
+  increasing the maximum extinction by 0.05. Maximum mass increased to 30000.
+
+#### `15th_run`
+
+  Re-process all clusters using:
+
+  * Range in extinction: **MCEV max + 0.1** for all clusters.
+  * Restricted distance modulus:  SMC, [18.86, 19.061, 0.02] ;
+    LMC, [18.4, 18.601, 0.02]
+  * Maximum mass: 30000.
