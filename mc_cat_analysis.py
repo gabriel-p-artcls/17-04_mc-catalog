@@ -1,6 +1,6 @@
 
 from functions.get_data import get_asteca_data, get_liter_data, \
-    get_cross_match_data
+    get_bica_database, get_cross_match_data
 from functions.get_params import params
 from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
     make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
@@ -110,7 +110,7 @@ def check_diffs(in_params):
             gal[j], cl_count)
 
 
-def make_plots(in_params, cross_match):
+def make_plots(in_params, bica_coords, cross_match):
     '''
     Make each plot sequentially.
     '''
@@ -122,7 +122,7 @@ def make_plots(in_params, cross_match):
     #     make_kde_plots(gal, j, in_params)
     #     print '{} KDE maps done.'.format(gal)
 
-    # make_ra_dec_plots(in_params)
+    # make_ra_dec_plots(in_params, bica_coords)
     # print 'RA vs DEC plots done.'
 
     # make_lit_ext_plot(in_params)
@@ -161,6 +161,9 @@ def main():
     # pip.get_installed_distributions(local_only=False)
     # raw_input
 
+    # Read Bica et al. (2008) database.
+    bica_coords = get_bica_database()
+
     # Read data from ASteca output file.
     as_names, as_pars = get_asteca_data()
     print 'ASteCA data read from output file.'
@@ -185,7 +188,7 @@ def main():
     check_diffs(in_params)
 
     # Make final plots.
-    make_plots(in_params, cross_match)
+    make_plots(in_params, bica_coords, cross_match)
 
     print '\nEnd.'
 

@@ -325,3 +325,8 @@ photometry.
   * Restricted distance modulus:  SMC, [18.86, 19.061, 0.02] ;
     LMC, [18.4, 18.601, 0.02]
   * Maximum mass: 30000.
+
+#### `16th_run`
+
+  Equal to 15th run but using a fixed mass of 1500 Mo and `Tolstoy` likelihood
+  instead of `Dolphin`.

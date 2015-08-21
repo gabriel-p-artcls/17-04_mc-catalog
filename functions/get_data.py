@@ -33,6 +33,22 @@ def get_asteca_data():
     return as_names, as_pars
 
 
+def get_bica_database():
+    '''
+    '''
+    # Path to data file.
+    bb_file = 'bb_cat.dat'
+
+    # Read data file
+    with open(bb_file) as f:
+        bica_database = []
+        for line in skip_comments(f):
+            # Read coordinates.
+                bica_database.append([float(_) for _ in line.split()])
+
+    return bica_database
+
+
 def get_liter_data():
     '''
     Read the data file with the literature values for each cluster as a

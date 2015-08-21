@@ -73,20 +73,35 @@ def ra_dec_plots(pl_params):
     Generate RA vs DEC plots.
     '''
 
-    fig, gs, ra, dec, data_arr, rad_pc, z_lab = pl_params
+    fig, gs, ra, dec, bb_ra, bb_dec, data_arr, rad_pc, z_lab = pl_params
 
     # tr.transform_point((x, 0)) is always (0,0)
     ax1, tr = curvelinear_test2(fig, gs)
-    # Get transformed data.
-    ra_dec_tr = tr.transform(zip(ra, dec))
 
     # Define colormap.
     cm = plt.cm.get_cmap('RdYlBu_r')
 
+    # Plot Bica database.
+    bb_ra_dec_tr = tr.transform(zip(bb_ra, bb_dec))
+    plt.scatter(bb_ra_dec_tr[:, 0], bb_ra_dec_tr[:, 1], marker='.', s=8,
+                c='k', lw=0.5, zorder=1)
+
+    # Plot literature clusters.
+    # Get transformed data.
+    ra_dec_tr = tr.transform(zip(ra, dec))
     # Size relative to the clusters actual size in pc.
-    siz = np.asarray(rad_pc) * 4.
-    SC = ax1.scatter(ra_dec_tr[:, 0], ra_dec_tr[:, 1], marker='o', s=siz,
-                     c=data_arr, cmap=cm, lw=0.1, zorder=9)
+    if gs == 326:
+        SC = ax1.scatter(ra_dec_tr[:, 0], ra_dec_tr[:, 1], marker='o', s=20,
+                         c='r', lw=0.1, zorder=9)
+    else:
+        siz = np.asarray(rad_pc) * 4.
+        SC = ax1.scatter(ra_dec_tr[:, 0], ra_dec_tr[:, 1], marker='o', s=siz,
+                         c=data_arr, cmap=cm, lw=0.1, zorder=9)
+        # Colorbar
+        cbar = plt.colorbar(SC, shrink=1., pad=0.05)
+        cbar.ax.tick_params(labelsize=8)
+        # cbar.set_clim(0., 0.4)
+        cbar.set_label(z_lab, fontsize=12)
 
     # Plot clouds center. Central coords stored in degrees.
     c_SMC = [13.1875, -72.82861111]
@@ -95,8 +110,3 @@ def ra_dec_plots(pl_params):
     clouds_cent = tr.transform([c_SMC, c_LMC])
     plt.scatter(clouds_cent[:, 0], clouds_cent[:, 1], marker='v', s=50,
                 c='g', edgecolor='w', lw=0.5, zorder=10)
-    # Colorbar
-    cbar = plt.colorbar(SC, shrink=1., pad=0.05)
-    cbar.ax.tick_params(labelsize=8)
-    # cbar.set_clim(0., 0.4)
-    cbar.set_label(z_lab, fontsize=12)

@@ -230,7 +230,7 @@ def make_kde_plots(galax, k, in_params):
     plt.savefig('figures/as_kde_maps_' + galax + '.png', dpi=300)
 
 
-def make_ra_dec_plots(in_params):
+def make_ra_dec_plots(in_params, bica_coords):
     '''
     Prepare parameters and call function to generate RA vs DEC positional
     plots for the SMC and LMC.
@@ -256,16 +256,19 @@ def make_ra_dec_plots(in_params):
         map(list, zip(*sorted(zip(rad_pc, ra, dec, zarr, aarr, earr, darr,
                                   marr), reverse=True)))
 
-    fig = plt.figure(figsize=(20, 20))
+    # Bica coords.
+    bb_ra, bb_dec = zip(*bica_coords)
+
+    fig = plt.figure(figsize=(15, 20))
     fig.clf()
 
     ra_dec_pl_lst = [
-        [fig, 321, ra, dec, zarr, rad_pc, '$[Fe/H]$'],
-        [fig, 322, ra, dec, aarr, rad_pc, '$log(age/yr)$'],
-        [fig, 323, ra, dec, earr, rad_pc, '$E_{(B-V)}$'],
-        [fig, 324, ra, dec, darr, rad_pc, '$(m-M)_0$'],
-        [fig, 325, ra, dec, marr, rad_pc, '$M\,(M_{\odot})$'],
-        [fig, 326, ra, dec, rad_pc, rad_pc, '$r_{clust}\,[pc]$']
+        [fig, 321, ra, dec, bb_ra, bb_dec, zarr, rad_pc, '$[Fe/H]$'],
+        [fig, 322, ra, dec, bb_ra, bb_dec, aarr, rad_pc, '$log(age/yr)$'],
+        [fig, 323, ra, dec, bb_ra, bb_dec, earr, rad_pc, '$E_{(B-V)}$'],
+        [fig, 324, ra, dec, bb_ra, bb_dec, darr, rad_pc, '$(m-M)_0$'],
+        [fig, 325, ra, dec, bb_ra, bb_dec, marr, rad_pc, '$M\,(M_{\odot})$'],
+        [fig, 326, ra, dec, bb_ra, bb_dec, rad_pc, rad_pc, '$r_{clust}\,[pc]$']
     ]
 
     for pl_params in ra_dec_pl_lst:
