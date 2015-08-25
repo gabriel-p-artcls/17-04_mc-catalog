@@ -312,6 +312,9 @@ photometry.
 
  Re-process all clusters using a binary fraction of 0.
 
+ Eight clusters from the SMC are missing (got lost somewhere in the FTP moving).
+ These clusters will not be present in the runs: 14, 15, 16.
+
 #### `14th_run`
 
   Re-process all clusters using fixed distance moduli (18.49/18.96, S/LMC) and
