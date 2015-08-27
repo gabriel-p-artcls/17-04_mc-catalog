@@ -4,11 +4,13 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.offsetbox as offsetbox
-import statsmodels.api as sm
+from matplotlib.ticker import MultipleLocator
+# import statsmodels.api as sm
 from scipy import stats
 
 from functions.ra_dec_map import ra_dec_plots
 from functions.kde_2d import kde_map
+import functions.CMD_obs_vs_asteca as cmd
 
 
 def as_vs_lit_plots(pl_params):
@@ -1068,3 +1070,192 @@ def make_cross_match_age_ext(cross_match, in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/cross_match_age_ext.png', dpi=300)
+
+
+def pl_DBs_ASteCA_CMDs(pl_params):
+    '''
+    Star's membership probabilities on cluster's photom diagram.
+    '''
+    gs, i, x_min_cmd, x_max_cmd, y_min_cmd, y_max_cmd, x_ax, y_ax, cl, db,\
+        gal, cl_reg_fit, cl_reg_no_fit, lit_isoch, asteca_isoch, db_z, db_a,\
+        db_e, db_d, as_z, as_a, as_e, as_d = pl_params
+
+    # DB isoch fit.
+    ax = plt.subplot(gs[i])
+    # Set plot limits
+    plt.xlim(x_min_cmd, x_max_cmd)
+    plt.ylim(y_min_cmd, y_max_cmd)
+    # Set axis labels
+    plt.xlabel('$' + x_ax + '$', fontsize=18)
+    plt.ylabel('$' + y_ax + '$', fontsize=18)
+    # Add text box.
+    text = '$' + cl + '-' + gal + '\,({})$'.format(db)
+    ob1 = offsetbox.AnchoredText(text, loc=1, prop=dict(size=11))
+    ob1.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
+    ax.add_artist(ob1)
+    text1 = r'$z={}$'.format(db_z)
+    text2 = '\n' + r'$log(age/yr)={}$'.format(float(db_a))
+    text3 = '\n' + r'$E_{{(B-V)}}={}$'.format(db_e)
+    text4 = '\n' + r'$dm={}$'.format(db_d)
+    text = text1 + text2 + text3 + text4
+    ob2 = offsetbox.AnchoredText(text, loc=2, prop=dict(size=11))
+    ob2.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
+    ax.add_artist(ob2)
+    # Set minor ticks
+    ax.minorticks_on()
+    ax.xaxis.set_major_locator(MultipleLocator(1.0))
+    # Plot grid.
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=1,
+            zorder=1)
+    # This reversed colormap means higher prob stars will look redder.
+    cm = plt.cm.get_cmap('RdYlBu_r')
+    col_select_fit, c_iso = '#4682b4', 'r'
+    # Plot stars used in the best fit process.
+    cl_reg_x = cl_reg_fit[0] + cl_reg_no_fit[0]
+    cl_reg_y = cl_reg_fit[1] + cl_reg_no_fit[1]
+    plt.scatter(cl_reg_x, cl_reg_y, marker='o',
+                c=col_select_fit, s=40, cmap=cm, lw=0.5, zorder=4)
+    # Plot isochrone.
+    plt.plot(lit_isoch[0], lit_isoch[1], c=c_iso, lw=1.2, zorder=5)
+
+    # ASteCA isoch fit.
+    ax = plt.subplot(gs[i + 1])
+    # Set plot limits
+    plt.xlim(x_min_cmd, x_max_cmd)
+    plt.ylim(y_min_cmd, y_max_cmd)
+    # Set axis labels
+    plt.xlabel('$' + x_ax + '$', fontsize=18)
+    plt.ylabel('$' + y_ax + '$', fontsize=18)
+    # Add text box.
+    text = '$' + cl + '-' + gal + '\,(ASteCA)$'
+    ob1 = offsetbox.AnchoredText(text, loc=1, prop=dict(size=11))
+    ob1.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
+    ax.add_artist(ob1)
+    text1 = r'$z={}$'.format(as_z)
+    text2 = '\n' + r'$log(age/yr)={}$'.format(as_a)
+    text3 = '\n' + r'$E_{{(B-V)}}={}$'.format(as_e)
+    text4 = '\n' + r'$dm={}$'.format(as_d)
+    text = text1 + text2 + text3 + text4
+    ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=11))
+    ob.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
+    ax.add_artist(ob)
+    # Set minor ticks
+    ax.minorticks_on()
+    ax.xaxis.set_major_locator(MultipleLocator(1.0))
+    # Plot grid.
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=1,
+            zorder=1)
+    # This reversed colormap means higher prob stars will look redder.
+    cm = plt.cm.get_cmap('RdYlBu_r')
+
+    # Get extreme values for colorbar.
+    lst_comb = cl_reg_fit[2] + cl_reg_no_fit[2]
+    v_min_mp, v_max_mp = round(min(lst_comb), 2), round(max(lst_comb), 2)
+    col_select_fit, col_select_no_fit, c_iso = cl_reg_fit[2], \
+        cl_reg_no_fit[2], 'g'
+    # Plot stars *not* used in the best fit process.
+    plt.scatter(cl_reg_no_fit[0], cl_reg_no_fit[1], marker='o',
+                c=col_select_no_fit, s=35, cmap=cm, lw=0.5, alpha=0.5,
+                vmin=v_min_mp, vmax=v_max_mp, zorder=2)
+    # Plot stars used in the best fit process.
+    plt.scatter(cl_reg_fit[0], cl_reg_fit[1], marker='o',
+                c=col_select_fit, s=40, cmap=cm, lw=0.5, vmin=v_min_mp,
+                vmax=v_max_mp, zorder=4)
+
+    # col_select_fit, c_iso = cl_region[2], 'g'
+    # # Plot stars used in the best fit process.
+    # plt.scatter(cl_region[0], cl_region[1], marker='o',
+    #             c=col_select_fit, s=40, cmap=cm, lw=0.5, zorder=4)
+    # Plot isochrone.
+    plt.plot(asteca_isoch[0], asteca_isoch[1], c=c_iso, lw=1.2, zorder=5)
+
+
+def make_DB_ASteCA_CMDs():
+    '''
+    '''
+
+    # db = 'G10'
+    # mc_cls = [['B112', 'SL218', 'KMHK979', 'KMHK229', 'HW22', 'HW42', 'HW63',
+    #           'KMHK378', 'SL446A', 'L91'],
+    #           ['SL674', 'SL290', 'HW40', 'HW31', 'BSDL268', 'HW41', 'SL162',
+    #           'SL230', 'SL555', 'SL132'],
+    #           ['HS264', 'BRHT4B', 'SL96', 'L63', 'HS38', 'NGC1839', 'NGC294',
+    #           'B34', 'NGC1793', 'L72'],
+    #           ['NGC2093', 'KMHK112', 'BS265', 'SL678', 'SL35', 'B39', 'L50',
+    #           'L30', 'SL397', 'NGC1863'],
+    #           ['BRHT45A', 'HW55', 'NGC1838', 'KMHK1055', 'SL444', 'L62',
+    #           'SL505', 'L34', 'H88-320', 'HS412'],
+    #           ['LW54', 'L58', 'L49', 'SL510', 'SL551', 'BSDL631', 'L45',
+    #           'H88-316', 'BS35', 'L35'],
+    #           ['SL579']]
+
+    db = 'C06'
+    mc_cls = [['B47', 'H86-70', 'L63', 'L62', 'B39', 'BS121', 'BS88',
+               'NGC294', 'L19', 'L34'],
+              ['L30', 'B34', 'L72', 'NGC419', 'BS35', 'L35']]
+
+    for k, cl_lst in enumerate(mc_cls):
+
+        fig = plt.figure(figsize=(30, 25))
+        gs = gridspec.GridSpec(5, 6)
+
+        i, j, db_sat_cmd_lst = 0, 1, []
+        for cl in cl_lst:
+
+            # Obtain CMD limits for cluster.
+            x_max_cmd, x_min_cmd, y_min_cmd, y_max_cmd = cmd.diag_limits(cl)
+
+            # Obtain age and extinction from 'matched_clusters.dat' file.
+            db_a, db_e, gal = cmd.get_DB_age_ext(cl, db)
+            if gal == 'SMC':
+                if db == 'G10':
+                    db_z, db_d = 0.004, 18.9
+                elif db == 'C06':
+                    db_z, db_d = 0.008, 18.9
+            elif gal == 'LMC' and db == 'G10':
+                db_z, db_d = 0.008, 18.5
+
+            # Fetch which run holds this cluster's membership data.
+            run = cmd.get_cl_run(cl)
+            # Fetch what 'input_XX' folder in the above run contains the
+            # membership file.
+            inpt = cmd.get_input_folder(cl, run)
+            # Path where the members file is stored.
+            cl_path = '/media/rest/github/mc-catalog/runs/' + run + \
+                '_run/output/' + inpt + '/' + cl + '_memb.dat'
+            # Membership data for cluster.
+            cl_reg_fit, cl_reg_no_fit = cmd.get_memb_data(cl_path)
+
+            # Obtain DB isochrone.
+            lit_isoch = cmd.get_isoch('DB', db_z, db_a, db_e, db_d)
+
+            # Obtain ASteCA parameters.
+            as_z, as_z_str, as_a, as_e, as_d = cmd.get_asteca_params(cl)
+            # Obtain ASteCA isochrone.
+            asteca_isoch = cmd.get_isoch('AS', as_z_str, as_a, as_e, as_d)
+
+            db_sat_cmd_lst.append(
+                [gs, i, x_min_cmd, x_max_cmd, y_min_cmd, y_max_cmd, '(C-T_1)',
+                    'T_1', cl, db, gal, cl_reg_fit, cl_reg_no_fit, lit_isoch,
+                    asteca_isoch, db_z, db_a, db_e, db_d, as_z, as_a, as_e,
+                    as_d])
+
+            print '{} plotted'.format(cl)
+            # Plotting positions.
+            if (j % 2 == 0):  # even
+                i += 4
+            else:  # odd
+                i += 2
+            j += 1
+
+        for pl_params in db_sat_cmd_lst:
+            pl_DBs_ASteCA_CMDs(pl_params)
+
+        # Output png file.
+        fig.tight_layout()
+        fig_name = 'figures/DB_fit/' + db + '_VS_asteca_' + str(k) + '.png'
+        plt.savefig(fig_name, dpi=150)
+
+        # Crop image.
+        cmd.save_crop_img(fig_name)
+        print 'Fig {} done\n'.format(k)

@@ -5,7 +5,8 @@ from functions.get_params import params
 from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
     make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
     make_concent_plot, make_radius_plot, make_probs_CI_plot, \
-    make_dist_2_cents, make_cross_match, make_cross_match_age_ext
+    make_dist_2_cents, make_cross_match, make_cross_match_age_ext, \
+    make_DB_ASteCA_CMDs
 
 
 def d_search(dat_lst, cl_name, name_idx):
@@ -68,7 +69,7 @@ def check_diffs(in_params):
                     #     gal[j], name, par[j][0][i], par[j][1][i], diff)
 
                     # Age.
-                    if abs(diff) > 0.4:
+                    if abs(diff) > 0.55:
                         flag_cl = True
                         # AsteCA vs Literature Log(age) difference.
                         rel_diff = par[j][0][i] - par[j][1][i]
@@ -106,7 +107,7 @@ def check_diffs(in_params):
             if flag_cl:
                 cl_count += 1
 
-        print '\n* {}, Clusters with \delta log(age)>0.4: {}\n'.format(
+        print '\n* {}, Clusters with \delta log(age)>0.55: {}\n'.format(
             gal[j], cl_count)
 
 
@@ -115,9 +116,9 @@ def make_plots(in_params, bica_coords, cross_match):
     Make each plot sequentially.
     '''
 
-    for j, gal in enumerate(['SMC', 'LMC']):
-        make_as_vs_lit_plot(gal, j, in_params)
-        print '{} ASteCA vs literature plots done.'.format(gal)
+    # for j, gal in enumerate(['SMC', 'LMC']):
+    #     make_as_vs_lit_plot(gal, j, in_params)
+    #     print '{} ASteCA vs literature plots done.'.format(gal)
 
     #     make_kde_plots(gal, j, in_params)
     #     print '{} KDE maps done.'.format(gal)
@@ -143,24 +144,20 @@ def make_plots(in_params, bica_coords, cross_match):
     # make_dist_2_cents(in_params)
     # print 'Distances to center of MC done.'
 
-    make_cross_match(cross_match)
-    print 'Cross-matched clusters done.'
+    # make_cross_match(cross_match)
+    # print 'Cross-matched clusters done.'
 
-    make_cross_match_age_ext(cross_match, in_params)
-    print 'Age and extinction diffs for cross-matched clusters done.'
+    # make_cross_match_age_ext(cross_match, in_params)
+    # print 'Age and extinction diffs for cross-matched clusters done.'
+
+    # make_DB_ASteCA_CMDs()
+    # print 'CMDs for matched DB and ASteCA clusters done.'
 
 
 def main():
     '''
     Call each function.
     '''
-
-    # import sys
-    # print(sys.version)
-    # import pip
-    # pip.get_installed_distributions(local_only=False)
-    # raw_input
-
     # Read Bica et al. (2008) database.
     bica_coords = get_bica_database()
 

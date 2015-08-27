@@ -20,100 +20,110 @@ photometry.
 
 * `README.md`
 
-  This file.
+ This file.
 
 * `lista_unica_cumulos.ods`
 
-  Literature data on each cluster.
+ Literature data on each cluster.
 
 * `bb_cat.dat`
 
-  RA & DEC positions for the 3740 clusters in the
-  [Bica et al. (2008)](http://cdsads.u-strasbg.fr/abs/2008MNRAS.389..678B)
-  catalog ([Table 3](http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=J/
-  MNRAS/389/678/table3)).
+ RA & DEC positions for the 3740 clusters in the
+ [Bica et al. (2008)](http://cdsads.u-strasbg.fr/abs/2008MNRAS.389..678B)
+ catalog ([Table 3](http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=J/
+ MNRAS/389/678/table3)).
 
 * `mc_cat_analysis.py`
 
-  Script that Produces the main figures by comparing parameters with each other
-  (KDE maps), with literature values (1:1 plots) and distributed in space
-  (RA vs DEC plots.)
+ Script that Produces the main figures by comparing parameters with each other
+ (KDE maps), with literature values (1:1 plots) and distributed in space
+ (RA vs DEC plots.)
 
-  Functions are stored in the `functions/` folder.
+ Functions are stored in the `functions/` folder.
 
 * `asteca_output_final.dat`
 
-  Combined final results for the entire sample.
+ Combined final results for the entire sample.
 
 
 ### `ages_mass_lit/`
+
+* `BB_10.dat`
+
+ List of ages for 151 SMC and 539 LMC clusters in the database presented in
+ [Bonato & Bica (2010)](http://cdsads.u-strasbg.fr/abs/2010MNRAS.403..996B).
+ Only 285 out of the 690 clusters have an age value assigned.
+
+* `chiosi_06.dat`
+
+ Contains 311 SMC clusters younger than 1 Gyr (ages determined using isochrone
+ fitting) from the work by [Chiosi et al. (2006)](http://adsabs.harvard.edu/
+ abs/2006A%26A...452..179C). Also lists several other structures/objects, ie:
+ association, supernovas, H II regions and entities in between.
+
+* `cross_match.py`
+
+ Matches the data in the above databases to those clusters processed by
+ ASteCA.
+
+* `glatt_10.dat`
+
+ CMD ages taken from the [Glatt et al. (2010)](http://www.aanda.org/10.1051/
+ 0004-6361/201014187) catalog for 1194 LMC clusters and 322 SMC clusters.
+
+* `H03_duplicated_clusters.ods`
+
+ List of duplicated entries in the H03 database.
+
+* `DBs_cross_match_analy.ods`
+
+ Analysis of the age differences between matched clusters (not important).
+
+* `hunter_03.dat`
+
+  Clusters in the S/LMC from [Hunter et al. (2003)](http://adsabs.harvard.edu/
+  abs/2003AJ....126.1836H), 748 belong to the LMC and 191 to the SMC for a
+  total of 939 clusters.
+
+* `matched_clusters.dat`
+
+ Final data file with all matched clusters between **ASteCA** and the
+ databases in the literature.
+
+* `matched_clusters_G10.dat`
+
+ Idem above but using the G10 data as input to match with the P99, P00, and
+ C06 databases, and compare their ages.
 
 * `pietrz_00_LMC.dat`
 
   Ages for 600 LMC clusters obtained in [Pietrzynski & Udalski (2000)](http://
   adsabs.harvard.edu/abs/2000AcA....50..337P).
 
-* `hunter_03.dat`
+* `pietrz_99_SMC.dat`
 
-   Clusters in the S/LMC from [Hunter et al. (2003)](http://adsabs.harvard.edu/
-   abs/2003AJ....126.1836H), 748 belong to the LMC and 191 to the SMC for a
-   total of 939 clusters.
-
-* `rafelski_05_SMC.dat`
-
-  Ages for 195 SMC clusters from [Rafelski & Zaritsky (2005)](http://adsabs.harvard.edu/abs/2005AJ....129.2701R), obtained through
-  integrated photometry.
-
-* `chiosi_06.dat`
-
-  Contains 311 SMC clusters younger than 1 Gyr (ages determined using isochrone
-  fitting) from the work by [Chiosi et al. (2006)](http://adsabs.harvard.edu/
-  abs/2006A%26A...452..179C). Also lists several other structures/objects, ie:
-  association, supernovas, H II regions and entities in between.
-
-* `BB_10.dat`
-
-  List of ages for 151 SMC and 539 LMC clusters in the database presented in
-  [Bonato & Bica (2010)](http://cdsads.u-strasbg.fr/abs/2010MNRAS.403..996B).
-  Only 285 out of the 690 clusters have an age value assigned.
-
-* `glatt_10.dat`
-
-  CMD ages taken from the [Glatt et al. (2010)](http://www.aanda.org/10.1051/
-  0004-6361/201014187) catalog for 1194 LMC clusters and 322 SMC clusters.
+ Ages for 93 SMC clusters obtained in [Pietrzynski & Udalski (1999)](http://
+ adsabs.harvard.edu/abs/1999AcA....49..157P).
 
 * `popescu_12_LMC.dat`
 
-  List of ages and masses for 632 clusters in the database presented in
-  [Popescu et al. (2012)](http://adsabs.harvard.edu/abs/2012ApJ...751..122P)
-  with ages correlated to the *Hunter et al* catalog.
+ List of ages and masses for 632 clusters in the database presented in
+ [Popescu et al. (2012)](http://adsabs.harvard.edu/abs/2012ApJ...751..122P)
+ with ages correlated to the *Hunter et al* catalog.
 
 * `popescu_12_LMC_glatt.dat`
 
-  Idem above, but also adds ages taken from the *Glatt et al.* catalog, for
-  288 clusters in the *Hunter et al.* catalog.
+ Idem above, but also adds ages taken from the *Glatt et al.* catalog, for
+ 288 clusters in the *Hunter et al.* catalog.
 
-* `cross_match.py`
+* `rafelski_05_SMC.dat`
 
-  Matches the data in the above databases to those clusters processed by
-  ASteCA.
+  Ages for 195 SMC clusters from [Rafelski & Zaritsky (2005)](http://
+  adsabs.harvard.edu/abs/2005AJ....129.2701R), obtained via
+  integrated photometry.
 
-* `matched_clusters.dat`
-
-  Final data file with all matched clusters between **ASteCA** and the
-  databases in the literature.
-
-* `matched_clusters_G10.dat`
-
-  Idem above but using the G10 data as input to match with the P99, P00, and
-  C06 databases, and compare their ages.
 
 ### `aux_funcs/`
-
-* `move_files_sizes.py`
-
-  Script to move files into `input_XX/` folders distributed so that each
-  folder has approximately the same total size.
 
 * `add_p_vals/`
 
@@ -121,8 +131,35 @@ photometry.
   to the `asteca_output.dat` file from the 1st run, since the function was
   turned off.
 
+* `move_files_names.py`
+
+ Script to move .png files from their `input_XX/` folders for each run, into
+ a single folder containing all the analyzed clusters.
+ This script uses the `asteca_output_part_XX.dat` files.
+
+* `move_files_sizes.py`
+
+ Script to move files into `input_XX/` folders distributed so that each
+ folder has approximately the same total size.
+
+* `print_runs_clust_values.py`
+
+ Prints the final parameters found in each run for a given cluster.
+
 
 ### `extinction_MCEV/`
+
+* `cls_exts_match.dat`
+
+ Output of the above script.
+
+* `extin_analysis.py`
+
+ Gets the extinction data from the table obtained via the MCEV service
+ (`ra_dec_exts_mult_matches.dat`) and produces for each of the 210 clusters a
+ value of the closest, average and maximum extinction values.
+
+ The results are stored in the `cls_exts_match.dat` file.
 
 * `IRSA_MC_ext.tbl`
 
@@ -146,29 +183,31 @@ photometry.
   needed a 6.0 deg search radius to find areas with extinction in the maps,
   making it the one furthest away from the areas studied in the MCEV maps.
 
-* `extin_analysis.py`
+* `TOPCAT_instruct.dat`
 
- Gets the extinction data from the table obtained via the MCEV service
- (`ra_dec_exts_mult_matches.dat`) and produces for each of the 210 clusters a
- value of the closest, average and maximum extinction values.
+ Instructions to perform a query using TOPCAT.
 
- The results are stored in the `cls_exts_match.dat` file.
-
-* `cls_exts_match.dat`
-
-  Output of the above script.
 
 ### `figures/`
 
    Output figures from main script.
 
+
 ### `functions/`
 
-   Functions called by the main script.
+   `*.py`: functions called by the main script.
+
+   `0.004.dat` & `0.008.dat`: Marigo isochrones used by the
+   `CMD_obs_vs_asteca.py` script to plot the G10 fitted isochrones.
+
 
 ### `runs/`
 
  Folder that contains the results for all the runs.
+
+ `large_diff_age_clusts.ods`: analysis of the obtained values in different runs
+ for those clusters that display a large age difference with the literature
+ values.
 
 #### `1st_run/`
 
@@ -212,9 +251,11 @@ photometry.
 #### `4th_run/`
 
   Fourth run, 44 clusters from 3rd run re-processed. Same parameters as in
-  3rd run but increased number of generations and mutation rate. Some clusters
-  had their parameters adjusted in `semi_input.dat`.
+  3rd run but increased number of generations and mutation rate, and skipped
+  the removal of stars post-DA.
+  Some clusters had their parameters adjusted in `semi_input.dat`.
 
+  * skip red_memb
   * gens=3000
   * mut_rate=0.2
 
