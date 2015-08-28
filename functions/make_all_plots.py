@@ -1161,78 +1161,24 @@ def pl_DBs_ASteCA_CMDs(pl_params):
     plt.scatter(cl_reg_fit[0], cl_reg_fit[1], marker='o',
                 c=col_select_fit, s=40, cmap=cm, lw=0.5, vmin=v_min_mp,
                 vmax=v_max_mp, zorder=4)
-
-    # col_select_fit, c_iso = cl_region[2], 'g'
-    # # Plot stars used in the best fit process.
-    # plt.scatter(cl_region[0], cl_region[1], marker='o',
-    #             c=col_select_fit, s=40, cmap=cm, lw=0.5, zorder=4)
     # Plot isochrone.
     plt.plot(asteca_isoch[0], asteca_isoch[1], c=c_iso, lw=1.2, zorder=5)
 
 
-def make_DB_ASteCA_CMDs():
+def make_DB_ASteCA_CMDs(db, db_cls):
     '''
     '''
-
-    # db = 'G10'
-    # mc_cls = [['B112', 'SL218', 'KMHK979', 'KMHK229', 'HW22', 'HW42', 'HW63',
-    #           'KMHK378', 'SL446A', 'L91'],
-    #           ['SL674', 'SL290', 'HW40', 'HW31', 'BSDL268', 'HW41', 'SL162',
-    #           'SL230', 'SL555', 'SL132'],
-    #           ['HS264', 'BRHT4B', 'SL96', 'L63', 'HS38', 'NGC1839', 'NGC294',
-    #           'B34', 'NGC1793', 'L72'],
-    #           ['NGC2093', 'KMHK112', 'BS265', 'SL678', 'SL35', 'B39', 'L50',
-    #           'L30', 'SL397', 'NGC1863'],
-    #           ['BRHT45A', 'HW55', 'NGC1838', 'KMHK1055', 'SL444', 'L62',
-    #           'SL505', 'L34', 'H88-320', 'HS412'],
-    #           ['LW54', 'L58', 'L49', 'SL510', 'SL551', 'BSDL631', 'L45',
-    #           'H88-316', 'BS35', 'L35'],
-    #           ['SL579']]
-
-    db = 'C06'
-    mc_cls = [['B47', 'H86-70', 'L63', 'L62', 'B39', 'BS121', 'BS88',
-               'NGC294', 'L19', 'L34'],
-              ['L30', 'B34', 'L72', 'NGC419', 'BS35', 'L35']]
-
-    for k, cl_lst in enumerate(mc_cls):
+    for k, cl_lst in enumerate(db_cls):
 
         fig = plt.figure(figsize=(30, 25))
         gs = gridspec.GridSpec(5, 6)
 
         i, j, db_sat_cmd_lst = 0, 1, []
-        for cl in cl_lst:
+        for cl_data in cl_lst:
 
-            # Obtain CMD limits for cluster.
-            x_max_cmd, x_min_cmd, y_min_cmd, y_max_cmd = cmd.diag_limits(cl)
-
-            # Obtain age and extinction from 'matched_clusters.dat' file.
-            db_a, db_e, gal = cmd.get_DB_age_ext(cl, db)
-            if gal == 'SMC':
-                if db == 'G10':
-                    db_z, db_d = 0.004, 18.9
-                elif db == 'C06':
-                    db_z, db_d = 0.008, 18.9
-            elif gal == 'LMC' and db == 'G10':
-                db_z, db_d = 0.008, 18.5
-
-            # Fetch which run holds this cluster's membership data.
-            run = cmd.get_cl_run(cl)
-            # Fetch what 'input_XX' folder in the above run contains the
-            # membership file.
-            inpt = cmd.get_input_folder(cl, run)
-            # Path where the members file is stored.
-            cl_path = '/media/rest/github/mc-catalog/runs/' + run + \
-                '_run/output/' + inpt + '/' + cl + '_memb.dat'
-            # Membership data for cluster.
-            cl_reg_fit, cl_reg_no_fit = cmd.get_memb_data(cl_path)
-
-            # Obtain DB isochrone.
-            lit_isoch = cmd.get_isoch('DB', db_z, db_a, db_e, db_d)
-
-            # Obtain ASteCA parameters.
-            as_z, as_z_str, as_a, as_e, as_d = cmd.get_asteca_params(cl)
-            # Obtain ASteCA isochrone.
-            asteca_isoch = cmd.get_isoch('AS', as_z_str, as_a, as_e, as_d)
+            x_min_cmd, x_max_cmd, y_min_cmd, y_max_cmd, cl, db, gal, \
+                cl_reg_fit, cl_reg_no_fit, lit_isoch, asteca_isoch, db_z, \
+                db_a, db_e, db_d, as_z, as_a, as_e, as_d = cl_data
 
             db_sat_cmd_lst.append(
                 [gs, i, x_min_cmd, x_max_cmd, y_min_cmd, y_max_cmd, '(C-T_1)',
@@ -1240,7 +1186,6 @@ def make_DB_ASteCA_CMDs():
                     asteca_isoch, db_z, db_a, db_e, db_d, as_z, as_a, as_e,
                     as_d])
 
-            print '{} plotted'.format(cl)
             # Plotting positions.
             if (j % 2 == 0):  # even
                 i += 4
@@ -1258,4 +1203,3 @@ def make_DB_ASteCA_CMDs():
 
         # Crop image.
         cmd.save_crop_img(fig_name)
-        print 'Fig {} done\n'.format(k)

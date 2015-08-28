@@ -89,10 +89,10 @@ def get_data(data_file):
     except ValueError:
         raise ValueError('Bad format for input data. Check input file.')
 
-    # print 'Data obtained from input file (N_stars: %d).' % len(id_star)
-    frac_reject = (float(n_old) - len(id_star)) / float(n_old)
-    if frac_reject > 0.05:
-        print ("  WARNING: {:.0f}% of stars in file were"
-               " rejected.".format(100. * frac_reject))
+    # # print 'Data obtained from input file (N_stars: %d).' % len(id_star)
+    # frac_reject = (float(n_old) - len(id_star)) / float(n_old)
+    # if frac_reject > 0.05:
+    #     print ("  WARNING: {:.0f}% of stars in file were"
+    #            " rejected.".format(100. * frac_reject))
 
     return id_star, x_data, y_data, mag_data, e_mag, col1_data, e_col1
