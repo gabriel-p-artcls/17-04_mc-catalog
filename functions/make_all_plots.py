@@ -44,10 +44,10 @@ def as_vs_lit_plots(pl_params):
     ax.minorticks_on()
 
     # Introduce random scatter.
-    if x_lab == '$[Fe/H]_{asteca}$':
+    if x_lab == '$[Fe/H]_{ASteCA}$':
         # 1% of axis ranges.
         ax_ext = (xmax - xmin) * 0.01
-    elif x_lab == '$(m-M)_{0;\,asteca}$':
+    elif x_lab == '$(m-M)_{0;\,ASteCA}$':
         # 5% of axis ranges.
         ax_ext = (xmax - xmin) * 0.05
     else:
@@ -124,24 +124,24 @@ def make_as_vs_lit_plot(galax, k, in_params):
     # dm_min, dm_max = 17.8, 20.2
 
     as_lit_pl_lst = [
-        [gs, 0, -2.4, 0.45, '$[Fe/H]_{asteca}$', '$[Fe/H]_{lit}$',
-            '$log(age/yr)_{asteca}$', zarr[k][0], zsigma[k][0], zarr[k][1],
+        [gs, 0, -2.4, 0.45, '$[Fe/H]_{ASteCA}$', '$[Fe/H]_{lit}$',
+            '$log(age/yr)_{ASteCA}$', zarr[k][0], zsigma[k][0], zarr[k][1],
             zsigma[k][1], aarr[k][0], galax],
-        [gs, 1, 5.8, 10.6, '$log(age/yr)_{asteca}$', '$log(age/yr)_{lit}$',
-            '$E(B-V)_{asteca}$', aarr[k][0], asigma[k][0], aarr[k][1],
+        [gs, 1, 5.8, 10.6, '$log(age/yr)_{ASteCA}$', '$log(age/yr)_{lit}$',
+            '$E(B-V)_{ASteCA}$', aarr[k][0], asigma[k][0], aarr[k][1],
             asigma[k][1], earr[k][0], galax],
-        [gs, 2, -0.04, 0.29, '$E(B-V)_{asteca}$', '$E(B-V)_{lit}$',
-            '$log(age/yr)_{asteca}$', earr[k][0], esigma[k][0], earr[k][1],
+        [gs, 2, -0.04, 0.29, '$E(B-V)_{ASteCA}$', '$E(B-V)_{lit}$',
+            '$log(age/yr)_{ASteCA}$', earr[k][0], esigma[k][0], earr[k][1],
             esigma[k][1], aarr[k][0], galax],
-        [gs, 3, dm_min, dm_max, '$(m-M)_{0;\,asteca}$', '$(m-M)_{0;\,lit}$',
-            '$log(age/yr)_{asteca}$', darr[k][0], dsigma[k][0], darr[k][1],
+        [gs, 3, dm_min, dm_max, '$(m-M)_{0;\,ASteCA}$', '$(m-M)_{0;\,lit}$',
+            '$log(age/yr)_{ASteCA}$', darr[k][0], dsigma[k][0], darr[k][1],
             dsigma[k][1], aarr[k][0], galax],
         # Asteca log(age) vs \delta log(age) with lit values.
-        [gs, 4, 5.8, 10.6, '$log(age/yr)_{asteca}$', '$\Delta log(age/yr)$',
-            '$E(B-V)_{asteca}$', aarr[k][0], asigma[k][0], age_delta,
+        [gs, 4, 5.8, 10.6, '$log(age/yr)_{ASteCA}$', '$\Delta log(age/yr)$',
+            '$E(B-V)_{ASteCA}$', aarr[k][0], asigma[k][0], age_delta,
             [], earr[k][0], galax]
-        # [gs, 4, 1., 599., '$rad_{asteca} (px)$', '$rad_{lit} (px)$',
-        #     '$log(age/yr)_{asteca}$', rarr[k][0], [], rarr[k][1], [],
+        # [gs, 4, 1., 599., '$rad_{ASteCA} (px)$', '$rad_{lit} (px)$',
+        #     '$log(age/yr)_{ASteCA}$', rarr[k][0], [], rarr[k][1], [],
         #     aarr[k][0], galax]
     ]
     #
@@ -305,9 +305,9 @@ def make_lit_ext_plot(in_params):
 
     # Define values to pass.
     xmin, xmax = -0.02, [0.15, 0.32, 0.4]
-    x_lab = '$E(B-V)_{asteca}$'
+    x_lab = '$E(B-V)_{ASteCA}$'
     y_lab = ['$E(B-V)_{MCEV,\,closer}$', '$E(B-V)_{MCEV,\,max}$']
-    z_lab = ['$log(age/yr)_{asteca}$', '$E(B-V)_{SF}$', '$dist\,(deg)$']
+    z_lab = ['$log(age/yr)_{ASteCA}$', '$E(B-V)_{SF}$', '$dist\,(deg)$']
 
     fig = plt.figure(figsize=(16, 25))
     gs = gridspec.GridSpec(4, 2)
@@ -394,8 +394,8 @@ def make_int_cols_plot(in_params):
 
     # Define values to pass.
     xmin, xmax = 6.5, 9.95
-    x_lab, y_lab, z_lab = '$log(age/yr)_{asteca}$', \
-        '$(C-T_{1})_{0;\,asteca}$', '$M\,(M_{\odot})$'
+    x_lab, y_lab, z_lab = '$log(age/yr)_{ASteCA}$', \
+        '$(C-T_{1})_{0;\,ASteCA}$', '$M\,(M_{\odot})$'
 
     fig = plt.figure(figsize=(16, 25))  # create the top-level container
     gs = gridspec.GridSpec(4, 1)       # create a GridSpec object
@@ -436,7 +436,7 @@ def make_concent_plot(in_params):
 
     # Define values to pass.
     xmin, xmax = [6.5, -2.3], [10.4, 0.2]
-    x_lab, y_lab, z_lab = ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$'], \
+    x_lab, y_lab, z_lab = ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$'], \
         '$Concentration\,(N_{memb}/pc^{2})$', '$M\,(M_{\odot})$'
 
     fig = plt.figure(figsize=(16, 25))  # create the top-level container
@@ -477,9 +477,9 @@ def make_radius_plot(in_params):
     # Define values to pass.
     xmin, xmax = 0., 40.
     ymin, ymax = 6., 10.
-    x_lab = ['$R_{cl;\,asteca}\,(pc)$', '$R_{core;\,asteca}\,(pc)$']
-    y_lab = ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$', '$M\,(M_{\odot})$']
-    z_lab = ['$M\,(M_{\odot})$', '$log(age/yr)_{asteca}$']
+    x_lab = ['$R_{cl;\,ASteCA}\,(pc)$', '$R_{core;\,ASteCA}\,(pc)$']
+    y_lab = ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,(M_{\odot})$']
+    z_lab = ['$M\,(M_{\odot})$', '$log(age/yr)_{ASteCA}$']
 
     for i, gal_name in enumerate(['SMC', 'LMC']):
 
@@ -557,9 +557,9 @@ def make_probs_CI_plot(in_params):
                                 'msigma', 'rad_pc', 'kde_prob', 'cont_ind']]
 
     # Define names of arrays being plotted.
-    x_lab, y_lab, z_lab = '$CI_{asteca}$', '$prob_{asteca}$', \
-        ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$', '$M\,(M_{\odot})$',
-            '$M\,(M_{\odot})$', '$log(age/yr)_{asteca}$']
+    x_lab, y_lab, z_lab = '$CI_{ASteCA}$', '$prob_{ASteCA}$', \
+        ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,(M_{\odot})$',
+            '$M\,(M_{\odot})$', '$log(age/yr)_{ASteCA}$']
     xmin, xmax, ymin, ymax = -0.01, 1.02, -0.01, 1.02
 
     fig = plt.figure(figsize=(16, 25))
@@ -597,8 +597,8 @@ def make_dist_2_cents(in_params):
 
     # Define names of arrays being plotted.
     x_lab, yz_lab = '$dist_{center}\,[pc]$', \
-        ['$log(age/yr)_{asteca}$', '$[Fe/H]_{asteca}$', '$M\,(M_{\odot})$',
-            '$E(B-V)_{asteca}$']
+        ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,(M_{\odot})$',
+            '$E(B-V)_{ASteCA}$']
     # xmax = 8000 if fixed dist_mod is used. Else xmax = 18000. Check
     # dist_2_cloud_center() in get_params.py to see which one is used.
     xmin, xmax = 0, 8000

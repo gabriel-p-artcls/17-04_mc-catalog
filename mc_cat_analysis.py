@@ -116,9 +116,9 @@ def make_plots(in_params, bica_coords, cross_match):
     Make each plot sequentially.
     '''
 
-    # for j, gal in enumerate(['SMC', 'LMC']):
-    #     make_as_vs_lit_plot(gal, j, in_params)
-    #     print '{} ASteCA vs literature plots done.'.format(gal)
+    for j, gal in enumerate(['SMC', 'LMC']):
+        make_as_vs_lit_plot(gal, j, in_params)
+        print '{} ASteCA vs literature plots done.'.format(gal)
 
     #     make_kde_plots(gal, j, in_params)
     #     print '{} KDE maps done.'.format(gal)
@@ -144,14 +144,11 @@ def make_plots(in_params, bica_coords, cross_match):
     # make_dist_2_cents(in_params)
     # print 'Distances to center of MC done.'
 
-    # make_cross_match(cross_match)
-    # print 'Cross-matched clusters done.'
+    make_cross_match(cross_match)
+    print 'Cross-matched clusters done.'
 
-    # make_cross_match_age_ext(cross_match, in_params)
-    # print 'Age and extinction diffs for cross-matched clusters done.'
-
-    # make_DB_ASteCA_CMDs()
-    # print 'CMDs for matched DB and ASteCA clusters done.'
+    make_cross_match_age_ext(cross_match, in_params)
+    print 'Age and extinction diffs for cross-matched clusters done.'
 
 
 def main():
@@ -186,6 +183,11 @@ def main():
 
     # Make final plots.
     make_plots(in_params, bica_coords, cross_match)
+
+    # Put this plot here since it does not depend on any parameter obtained
+    # here.
+    # make_DB_ASteCA_CMDs()
+    # print 'CMDs for matched DB and ASteCA clusters done.'
 
     print '\nEnd.'
 

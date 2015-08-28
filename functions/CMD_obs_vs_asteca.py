@@ -295,6 +295,8 @@ def get_asteca_params(cl):
             l = line.split()
             if l[0] == cl:
                 as_z, as_a, as_e, as_d = l[20], l[22], l[24], l[26]
+                # Replace 0. values with minimum value.
+                as_z = '0.0001' if float(as_z) < 0.0001 else as_z
                 # Find closest metallicity values from list.
                 z_idx = min(range(len(met_vals)),
                             key=lambda i: abs(float(met_vals[i]) -
