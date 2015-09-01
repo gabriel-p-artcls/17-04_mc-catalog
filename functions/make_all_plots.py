@@ -17,26 +17,24 @@ def as_vs_lit_plots(pl_params):
     '''
     Generate ASteCA vs literature values plots.
     '''
-    gs, i, xmin, xmax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, ysigma, \
-        zarr, gal_name = pl_params
+    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, \
+        ysigma, zarr, gal_name = pl_params
 
     xy_font_s = 18
     cm = plt.cm.get_cmap('RdYlBu_r')
 
     ax = plt.subplot(gs[i], aspect='equal')
-    # Different limits for \delta log(age) plot.
-    if i != 4:
-        plt.ylim(xmin, xmax)
+    # Different limits for \delta plots.
+    if i not in [2, 3]:
         # 1:1 line
-        plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')
+        plt.plot([xmin, xmax], [ymin, ymax], 'k', ls='--')
     else:
-        # ax = plt.subplot(gs[i], aspect='auto')
-        plt.ylim(-2.4, 2.4)
         # 0 line
-        plt.plot([5, 12], [0, 0], 'k', ls='--')
+        plt.plot([-5, 12], [0, 0], 'k', ls='--')
         plt.axhspan(-0.5, 0.5, facecolor='grey', alpha=0.5, zorder=1)
 
     plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
     plt.xlabel(x_lab, fontsize=xy_font_s)
     plt.ylabel(y_lab, fontsize=xy_font_s)
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
@@ -109,6 +107,8 @@ def make_as_vs_lit_plot(galax, k, in_params):
 
     # \delta log(age) as ASteCA - literature values.
     age_delta = np.array(aarr[k][0]) - np.array(aarr[k][1])
+    # \delta z as ASteCA - literature values.
+    z_delta = np.array(zarr[k][0]) - np.array(zarr[k][1])
 
     # Generate ASteca vs literature plots.
     fig = plt.figure(figsize=(16, 25))  # create the top-level container
@@ -124,25 +124,26 @@ def make_as_vs_lit_plot(galax, k, in_params):
     # dm_min, dm_max = 17.8, 20.2
 
     as_lit_pl_lst = [
-        [gs, 0, -2.4, 0.45, '$[Fe/H]_{ASteCA}$', '$[Fe/H]_{lit}$',
+        [gs, 0, -2.4, 0.45, -2.4, 0.45, '$[Fe/H]_{ASteCA}$', '$[Fe/H]_{lit}$',
             '$log(age/yr)_{ASteCA}$', zarr[k][0], zsigma[k][0], zarr[k][1],
             zsigma[k][1], aarr[k][0], galax],
-        [gs, 1, 5.8, 10.6, '$log(age/yr)_{ASteCA}$', '$log(age/yr)_{lit}$',
-            '$E(B-V)_{ASteCA}$', aarr[k][0], asigma[k][0], aarr[k][1],
-            asigma[k][1], earr[k][0], galax],
-        [gs, 2, -0.04, 0.29, '$E(B-V)_{ASteCA}$', '$E(B-V)_{lit}$',
-            '$log(age/yr)_{ASteCA}$', earr[k][0], esigma[k][0], earr[k][1],
-            esigma[k][1], aarr[k][0], galax],
-        [gs, 3, dm_min, dm_max, '$(m-M)_{0;\,ASteCA}$', '$(m-M)_{0;\,lit}$',
-            '$log(age/yr)_{ASteCA}$', darr[k][0], dsigma[k][0], darr[k][1],
-            dsigma[k][1], aarr[k][0], galax],
+        [gs, 1, 5.8, 10.6, 5.8, 10.6, '$log(age/yr)_{ASteCA}$',
+            '$log(age/yr)_{lit}$', '$E(B-V)_{ASteCA}$', aarr[k][0],
+            asigma[k][0], aarr[k][1], asigma[k][1], earr[k][0], galax],
+        # Asteca z vs \delta z with lit values.
+        [gs, 2, -2.4, 0.45, -1.43, 1.43, '$[Fe/H]_{ASteCA}$',
+            '$\Delta [Fe/H]$', '$log(age/yr)_{ASteCA}$', zarr[k][0],
+            zsigma[k][0], z_delta, [], aarr[k][0], galax],
         # Asteca log(age) vs \delta log(age) with lit values.
-        [gs, 4, 5.8, 10.6, '$log(age/yr)_{ASteCA}$', '$\Delta log(age/yr)$',
-            '$E(B-V)_{ASteCA}$', aarr[k][0], asigma[k][0], age_delta,
-            [], earr[k][0], galax]
-        # [gs, 4, 1., 599., '$rad_{ASteCA} (px)$', '$rad_{lit} (px)$',
-        #     '$log(age/yr)_{ASteCA}$', rarr[k][0], [], rarr[k][1], [],
-        #     aarr[k][0], galax]
+        [gs, 3, 5.8, 10.6, -2.4, 2.4, '$log(age/yr)_{ASteCA}$',
+            '$\Delta log(age/yr)$', '$E(B-V)_{ASteCA}$', aarr[k][0],
+            asigma[k][0], age_delta, [], earr[k][0], galax],
+        [gs, 4, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{ASteCA}$',
+            '$E(B-V)_{lit}$', '$log(age/yr)_{ASteCA}$', earr[k][0],
+            esigma[k][0], earr[k][1], esigma[k][1], aarr[k][0], galax],
+        [gs, 5, dm_min, dm_max, dm_min, dm_max, '$(m-M)_{0;\,ASteCA}$',
+            '$(m-M)_{0;\,lit}$', '$log(age/yr)_{ASteCA}$', darr[k][0],
+            dsigma[k][0], darr[k][1], dsigma[k][1], aarr[k][0], galax]
     ]
     #
     for pl_params in as_lit_pl_lst:

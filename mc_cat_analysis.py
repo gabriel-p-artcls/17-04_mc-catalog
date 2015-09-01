@@ -138,7 +138,7 @@ def check_diffs(in_params):
                     #     gal[j], name, par[j][0][i], par[j][1][i], diff)
 
                     # Age.
-                    if abs(diff) > 0.55:
+                    if abs(diff) > 0.5:
                         flag_cl = True
                         # AsteCA vs Literature Log(age) difference.
                         rel_diff = par[j][0][i] - par[j][1][i]
@@ -176,7 +176,7 @@ def check_diffs(in_params):
             if flag_cl:
                 cl_count += 1
 
-        print '\n* {}, Clusters with \delta log(age)>0.55: {}\n'.format(
+        print '\n* {}, Clusters with \delta log(age)>0.5: {}\n'.format(
             gal[j], cl_count)
 
 
@@ -213,11 +213,11 @@ def make_plots(in_params, bica_coords, cross_match):
     # make_dist_2_cents(in_params)
     # print 'Distances to center of MC done.'
 
-    make_cross_match(cross_match)
-    print 'Cross-matched clusters done.'
+    # make_cross_match(cross_match)
+    # print 'Cross-matched clusters done.'
 
-    make_cross_match_age_ext(cross_match, in_params)
-    print 'Age and extinction diffs for cross-matched clusters done.'
+    # make_cross_match_age_ext(cross_match, in_params)
+    # print 'Age and extinction diffs for cross-matched clusters done.'
 
 
 def main():
