@@ -1204,3 +1204,108 @@ def make_DB_ASteCA_CMDs(db, db_cls):
 
         # Crop image.
         cmd.save_crop_img(fig_name)
+
+
+def pl_errors(pl_params):
+    '''
+    '''
+    gs, i, xmin, xmax, ymin, ymax, x, y, z, rad, x_lab, y_lab =\
+        pl_params
+    siz = np.asarray(rad) * 1.5
+
+    xy_font_s = 16
+    ax = plt.subplot(gs[i])
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    plt.tick_params(axis='both', which='major', labelsize=10)
+    plt.xlabel(x_lab, fontsize=xy_font_s)
+    plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+            zorder=1)
+    ax.minorticks_on()
+    cm = plt.cm.get_cmap('RdYlBu_r')
+
+    # Introduce random scatter.
+    if x_lab == '$[Fe/H]_{ASteCA}$':
+        # 1% of axis ranges.
+        ax_ext = (xmax - xmin) * 0.02
+    elif x_lab == '$M_{\odot;\,ASteCA}$':
+        ax_ext = (xmax - xmin) * 0.01
+    else:
+        ax_ext = (xmax - xmin) * 0.025
+    # Add randoms scatter.
+    r_x = x + np.random.uniform(-ax_ext, ax_ext, len(x))
+    # r_y = y + np.random.uniform(-ax_ext, ax_ext, len(x))
+    SC = plt.scatter(r_x, y, marker='o', c=z, edgecolor='k', s=siz,
+                     cmap=cm, lw=0.25, vmin=0., vmax=1., zorder=4)
+    # # Text box.
+    # ob = offsetbox.AnchoredText(gal_name, loc=4, prop=dict(size=xy_font_s))
+    # ob.patch.set(alpha=0.85)
+    # ax.add_artist(ob)
+    # Position colorbar.
+    the_divider = make_axes_locatable(ax)
+    color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
+    # Colorbar.
+    cbar = plt.colorbar(SC, cax=color_axis)
+    zpad = 10
+    cbar.set_label(r'$CI$', fontsize=xy_font_s - 2, labelpad=zpad)
+    cbar.ax.tick_params(labelsize=10)
+
+
+def make_errors_plots(in_params):
+    '''
+    '''
+
+    zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, msigma,\
+        rarr, cont_ind = [
+            in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
+                                   'esigma', 'darr', 'dsigma', 'marr',
+                                   'msigma', 'rarr', 'cont_ind']]
+
+    ci = cont_ind[0] + cont_ind[1]
+    r_arr = rarr[0][0] + rarr[1][0]
+    z_arr = zarr[0][0] + zarr[1][0]
+    z_sigma = zsigma[0][0] + zsigma[1][0]
+    a_arr = aarr[0][0] + aarr[1][0]
+    a_sigma = asigma[0][0] + asigma[1][0]
+    e_arr = earr[0][0] + earr[1][0]
+    e_sigma = esigma[0][0] + esigma[1][0]
+    d_arr = darr[0][0] + darr[1][0]
+    d_sigma = dsigma[0][0] + dsigma[1][0]
+    m_arr = marr[0][0] + marr[1][0]
+    m_sigma = zsigma[0][0] + msigma[1][0]
+
+    # Order lists to put min rad values on top.
+    ord_r, ord_z, ord_zs, ord_a, ord_as, ord_e, ord_es, ord_d, ord_ds, ord_m,\
+        ord_ms, ord_ci = map(list, zip(*sorted(zip(
+            r_arr, z_arr, z_sigma, a_arr, a_sigma, e_arr, e_sigma, d_arr,
+            d_sigma, m_arr, m_sigma, ci), reverse=True)))
+
+    # ord_ci, ord_z, ord_zs, ord_a, ord_as, ord_e, ord_es, ord_d, ord_ds, ord_m,\
+    #     ord_ms, ord_r = map(list, zip(*sorted(zip(
+    #         ci, z_arr, z_sigma, a_arr, a_sigma, e_arr, e_sigma, d_arr,
+    #         d_sigma, m_arr, m_sigma, r_arr), reverse=True)))
+
+    fig = plt.figure(figsize=(10, 20))
+    gs = gridspec.GridSpec(5, 1)
+
+    errors_lst = [
+        [gs, 0, -2.4, 0.11, -0.03, 2.1, ord_z, ord_zs, ord_ci, ord_r,
+            '$[Fe/H]_{ASteCA}$', '$e_{[Fe/H]}$'],
+        [gs, 1, 6.51, 10.1, -0.03, 1.1, ord_a, ord_as, ord_ci, ord_r,
+            '$log(aye/yr)_{ASteCA}$', '$e_{log(aye/yr)}$'],
+        [gs, 2, -0.02, 0.32, -0.01, 0.11, ord_e, ord_es, ord_ci, ord_r,
+            '$E(B-V)_{ASteCA}$', '$e_{E(B-V)}$'],
+        [gs, 3, 18.28, 19.19, 0.007, 0.083, ord_d, ord_ds, ord_ci, ord_r,
+            '$(m-M)_{\circ;\,ASteCA}$', '$e_{(m-M)_{\circ}}$'],
+        [gs, 4, -210, 30000, -210, 4450, ord_m, ord_ms, ord_ci, ord_r,
+            '$M_{\odot;\,ASteCA}$', '$e_{M_{\odot}}$']
+    ]
+
+    for pl_params in errors_lst:
+        pl_errors(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    fig_name = 'figures/errors_asteca.png'
+    plt.savefig(fig_name, dpi=300)

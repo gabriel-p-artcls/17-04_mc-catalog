@@ -380,3 +380,14 @@ photometry.
   This caused the mass values in the range to be defined by
   `np.arange(10, 1500)` as `[  10,   11,   12, ..., 1497, 1498, 1499]`, ie:
   a step of 1 solar mass.
+
+#### `17th_run`
+
+ Process 8 clusters with large age differences: BSDL631, H88-131, H88-316,
+ KMHK975, KMHK979, SL218, SL579, L35.
+
+ * Range in extinction: **MCEV max** for all clusters.
+ * Restricted distance modulus:  SMC, [18.86, 19.061, 0.02] ;
+   LMC, [18.4, 18.601, 0.02]
+ * Fixed mass: 1500.
+ * `Tolstoy`.

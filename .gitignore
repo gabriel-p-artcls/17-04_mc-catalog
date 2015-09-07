@@ -58,6 +58,7 @@ target/
 
 *.png
 .~*
+runs/mc_asteca_img_all/*
 runs/1st_run/output/*
 runs/2nd_run/output/*
 runs/3rd_run/output/*
@@ -74,3 +75,5 @@ runs/13th_run/output/*
 runs/14th_run/output/*
 runs/15th_run/output/*
 runs/16th_run/output/*
+runs/17th_run/output/*
+runs/18th_run/output/*

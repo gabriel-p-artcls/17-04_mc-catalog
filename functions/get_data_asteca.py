@@ -57,7 +57,7 @@ def get_data(data_file):
         # converted into floats by np.genfromtxt. I.e.: 190 --> 190.0
         data = np.genfromtxt(data_file, dtype=str, unpack=True)
         id_star = data[id_inx]
-        n_old = len(id_star)
+        # n_old = len(id_star)
     except IndexError:
         print ("\n  ERROR: data input file contains fewer columns than\n"
                "  those given in 'params_input.dat'.")
