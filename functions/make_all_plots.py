@@ -18,20 +18,23 @@ def as_vs_lit_plots(pl_params):
     Generate ASteCA vs literature values plots.
     '''
     gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, \
-        ysigma, zarr, gal_name = pl_params
+        ysigma, zarr, v_min_mp, v_max_mp, par_mean_std, gal_name = pl_params
 
     xy_font_s = 18
     cm = plt.cm.get_cmap('RdYlBu_r')
 
-    ax = plt.subplot(gs[i], aspect='equal')
     # Different limits for \delta plots.
-    if i not in [2, 3]:
+    if i in [0, 2, 4, 6]:
+        ax = plt.subplot(gs[i], aspect='equal')
         # 1:1 line
         plt.plot([xmin, xmax], [ymin, ymax], 'k', ls='--')
     else:
+        ax = plt.subplot(gs[i], aspect='auto')
         # 0 line
-        plt.plot([-5, 12], [0, 0], 'k', ls='--')
-        plt.axhspan(-0.5, 0.5, facecolor='grey', alpha=0.5, zorder=1)
+        plt.plot([-5, 22], [par_mean_std[0], par_mean_std[0]], 'k', ls='--')
+        plt.axhspan(par_mean_std[0] - par_mean_std[1],
+                    par_mean_std[0] + par_mean_std[1], facecolor='grey',
+                    alpha=0.5, zorder=1)
 
     plt.xlim(xmin, xmax)
     plt.ylim(ymin, ymax)
@@ -57,7 +60,7 @@ def as_vs_lit_plots(pl_params):
 
     # Plot all clusters in dictionary.
     SC = plt.scatter(rs_x, rs_y, marker='o', c=zarr, s=70, lw=0.25, cmap=cm,
-                     zorder=3)
+                     vmin=v_min_mp, vmax=v_max_mp, zorder=3)
     # Plot error bars.
     for j, xy in enumerate(zip(*[rs_x, rs_y])):
         # Only plot error bar if it has a value assigned in the literature.
@@ -71,28 +74,19 @@ def as_vs_lit_plots(pl_params):
             elif ysigma[j] > 0. and xsigma[j] < 0.:
                 plt.errorbar(xy[0], xy[1], yerr=ysigma[j], ls='none',
                              color='k', elinewidth=0.5, zorder=1)
-
-    # # Plot IDs
-    # if i == 4 and 
-    # for label, x, y in zip(labels, x_data, y_data):
-    #     plt.annotate(
-    #         label, xy=(x, y),
-    #         xytext=(4, 4),
-    #         textcoords='offset points',
-    #         ha='left', va='bottom',
-    #         fontsize=20, color='#1A5233', zorder=4)
-
-    # Text box.
-    ob = offsetbox.AnchoredText(gal_name, loc=4, prop=dict(size=xy_font_s))
-    ob.patch.set(alpha=0.85)
-    ax.add_artist(ob)
-    # Position colorbar.
-    the_divider = make_axes_locatable(ax)
-    color_axis = the_divider.append_axes("right", size="5%", pad=0.1)
-    # Colorbar.
-    cbar = plt.colorbar(SC, cax=color_axis)
-    zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
-    cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=zpad)
+    if i == 0:
+        # Text box.
+        ob = offsetbox.AnchoredText(gal_name, loc=4, prop=dict(size=xy_font_s))
+        ob.patch.set(alpha=0.85)
+        ax.add_artist(ob)
+    if i in [1, 3, 5, 7]:
+        # Position colorbar.
+        the_divider = make_axes_locatable(ax)
+        color_axis = the_divider.append_axes("right", size="5%", pad=0.1)
+        # Colorbar.
+        cbar = plt.colorbar(SC, cax=color_axis)
+        zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
+        cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=zpad)
 
 
 def make_as_vs_lit_plot(galax, k, in_params):
@@ -105,13 +99,34 @@ def make_as_vs_lit_plot(galax, k, in_params):
         [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
                                 'esigma', 'darr', 'dsigma', 'rarr']]
 
-    # \delta log(age) as ASteCA - literature values.
-    age_delta = np.array(aarr[k][0]) - np.array(aarr[k][1])
     # \delta z as ASteCA - literature values.
     z_delta = np.array(zarr[k][0]) - np.array(zarr[k][1])
+    # \delta log(age) as ASteCA - literature values.
+    age_delta = np.array(aarr[k][0]) - np.array(aarr[k][1])
+    # \delta E(B-V) as ASteCA - literature values.
+    ext_delta = np.array(earr[k][0]) - np.array(earr[k][1])
+    # \delta dm as ASteCA - literature values.
+    dm_delta = np.array(darr[k][0]) - np.array(darr[k][1])
+
+    # Shaded area that contains 9X% of the clusters.
+    # par_9x_span = []
+    # idx_9x = int(68 * len(zarr[k][0]) / 100)
+    # for span in [z_delta, age_delta, ext_delta, dm_delta]:
+    #     abs_v = sorted([abs(_) for _ in span])
+    #     par_9x_span.append(abs_v[idx_9x])
+
+    par_mean_std = []
+    for span in [z_delta, age_delta, ext_delta, dm_delta]:
+        # Filter out 99.99 values.
+        span_filter = []
+        for _ in span:
+            if abs(_) < 20:
+                span_filter.append(_)
+        par_mean_std.append([np.mean(span_filter), np.std(span_filter)])
+        print k, np.mean(span_filter), np.std(span_filter)
 
     # Generate ASteca vs literature plots.
-    fig = plt.figure(figsize=(16, 25))  # create the top-level container
+    fig = plt.figure(figsize=(14, 25))  # create the top-level container
     # gs = gridspec.GridSpec(2, 4, width_ratios=[1, 0.35, 1, 0.35])
     gs = gridspec.GridSpec(4, 2)
 
@@ -119,6 +134,7 @@ def make_as_vs_lit_plot(galax, k, in_params):
         dm_min, dm_max = 18.62, 19.21
     else:
         dm_min, dm_max = 18.21, 18.79
+    dm_span = (dm_max - dm_min) / 2.
 
     # For old runs where the dist mod range was large.
     # dm_min, dm_max = 17.8, 20.2
@@ -126,24 +142,40 @@ def make_as_vs_lit_plot(galax, k, in_params):
     as_lit_pl_lst = [
         [gs, 0, -2.4, 0.45, -2.4, 0.45, '$[Fe/H]_{ASteCA}$', '$[Fe/H]_{lit}$',
             '$log(age/yr)_{ASteCA}$', zarr[k][0], zsigma[k][0], zarr[k][1],
-            zsigma[k][1], aarr[k][0], galax],
-        [gs, 1, 5.8, 10.6, 5.8, 10.6, '$log(age/yr)_{ASteCA}$',
-            '$log(age/yr)_{lit}$', '$E(B-V)_{ASteCA}$', aarr[k][0],
-            asigma[k][0], aarr[k][1], asigma[k][1], earr[k][0], galax],
+            zsigma[k][1], aarr[k][0], 6.6, 9.8, [], galax],
         # Asteca z vs \delta z with lit values.
-        [gs, 2, -2.4, 0.45, -1.43, 1.43, '$[Fe/H]_{ASteCA}$',
+        [gs, 1, -2.4, 0.45, -1.43, 1.43, '$[Fe/H]_{ASteCA}$',
             '$\Delta [Fe/H]$', '$log(age/yr)_{ASteCA}$', zarr[k][0],
-            zsigma[k][0], z_delta, [], aarr[k][0], galax],
+            zsigma[k][0], z_delta, [], aarr[k][0], 6.6, 9.8, par_mean_std[0],
+            galax],
+        [gs, 2, 5.8, 10.6, 5.8, 10.6, '$log(age/yr)_{ASteCA}$',
+            '$log(age/yr)_{lit}$', '$E(B-V)_{ASteCA}$', aarr[k][0],
+            asigma[k][0], aarr[k][1], asigma[k][1], earr[k][0], 0., 0.3, [],
+            galax],
         # Asteca log(age) vs \delta log(age) with lit values.
         [gs, 3, 5.8, 10.6, -2.4, 2.4, '$log(age/yr)_{ASteCA}$',
             '$\Delta log(age/yr)$', '$E(B-V)_{ASteCA}$', aarr[k][0],
-            asigma[k][0], age_delta, [], earr[k][0], galax],
+            asigma[k][0], age_delta, [], earr[k][0], 0., 0.3, par_mean_std[1],
+            galax],
         [gs, 4, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{ASteCA}$',
             '$E(B-V)_{lit}$', '$log(age/yr)_{ASteCA}$', earr[k][0],
-            esigma[k][0], earr[k][1], esigma[k][1], aarr[k][0], galax],
-        [gs, 5, dm_min, dm_max, dm_min, dm_max, '$(m-M)_{0;\,ASteCA}$',
+            esigma[k][0], earr[k][1], esigma[k][1], aarr[k][0], 6.6, 9.8, [],
+            galax],
+        # Asteca E(B-V) vs \delta E(B-V) with lit values.
+        [gs, 5, -0.04, 0.29, -0.21, 0.21, '$E(B-V)_{ASteCA}$',
+            '$\Delta E(B-V)$', '$log(age/yr)_{ASteCA}$', earr[k][0],
+            esigma[k][0], ext_delta, [], aarr[k][0], 6.6, 9.8, par_mean_std[2],
+            galax],
+        [gs, 6, dm_min, dm_max, dm_min, dm_max, '$(m-M)_{0;\,ASteCA}$',
             '$(m-M)_{0;\,lit}$', '$log(age/yr)_{ASteCA}$', darr[k][0],
-            dsigma[k][0], darr[k][1], dsigma[k][1], aarr[k][0], galax]
+            dsigma[k][0], darr[k][1], dsigma[k][1], aarr[k][0], 6.6, 9.8, [],
+            galax],
+        # Asteca dist_mod vs \delta dist_mod with lit values.
+        [gs, 7, dm_min, dm_max, -1. * dm_span, dm_span,
+            '$(m-M)_{0;\,ASteCA}$',
+            '$\Delta (m-M)_{0}$', '$log(age/yr)_{ASteCA}$', darr[k][0],
+            dsigma[k][0], dm_delta, [], aarr[k][0], 6.6, 9.8, par_mean_std[3],
+            galax]
     ]
     #
     for pl_params in as_lit_pl_lst:
@@ -186,7 +218,8 @@ def kde_plots(pl_params):
     rs_x = np.random.uniform(0., xax_ext, len(xarr))
     rs_y = np.random.uniform(0., yax_ext, len(xarr))
     # Clusters.
-    plt.scatter(xarr + rs_x, yarr + rs_y, marker='*', color='#6b6868', s=40,
+    # color='#6b6868'
+    plt.scatter(xarr + rs_x, yarr + rs_y, marker='*', color='r', s=40,
                 lw=0.5, facecolors='none')
     ax.set_xlim(ext[0], ext[1])
     ax.set_ylim(ext[2], ext[3])
@@ -204,21 +237,22 @@ def make_kde_plots(galax, k, in_params):
     gs = gridspec.GridSpec(4, 2)  # create a GridSpec object
 
     # Define extension for each parameter range.
-    age_rang, fe_h_rang, mass_rang = [6., 10.], [-2.4, 0.15], [-100., 30500.]
+    age_rang, fe_h_rang, mass_rang = [6.4, 10.1], [-2.4, 0.15], [-100., 30500.]
     if galax == 'SMC':
         E_bv_rang, dist_mod_rang = [-0.01, 0.15], [18.75, 19.25]
     else:
         E_bv_rang, dist_mod_rang = [-0.01, 0.3], [18.25, 18.75]
 
     kde_pl_lst = [
-        [gs, 0, '$log(age/yr)$', '$[Fe/H]$', aarr[k][0], asigma[k][0],
-            zarr[k][0], zsigma[k][0], age_rang, fe_h_rang],
-        [gs, 1, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0], asigma[k][0],
-            marr[k][0], msigma[k][0], age_rang, mass_rang],
-        [gs, 2, '$(m-M)_0$', '$E_{(B-V)}$', darr[k][0], dsigma[k][0],
-            earr[k][0], esigma[k][0], dist_mod_rang, E_bv_rang],
-        [gs, 3, '$M\,(M_{\odot})$', '$[Fe/H]$', marr[k][0], msigma[k][0],
-            zarr[k][0], zsigma[k][0], mass_rang, fe_h_rang]
+        [gs, 0, '$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', aarr[k][0],
+            asigma[k][0], zarr[k][0], zsigma[k][0], age_rang, fe_h_rang],
+        [gs, 1, '$log(age/yr)_{ASteCA}$', '$M_{ASteCA}\,(M_{\odot})$',
+            aarr[k][0], asigma[k][0], marr[k][0], msigma[k][0], age_rang,
+            mass_rang],
+        [gs, 2, '$(m-M)_{\circ;\,ASteCA}$', '$E(B-V)_{ASteCA}$', darr[k][0],
+            dsigma[k][0], earr[k][0], esigma[k][0], dist_mod_rang, E_bv_rang],
+        [gs, 3, '$M_{ASteCA}\,(M_{\odot})$', '$[Fe/H]_{ASteCA}$', marr[k][0],
+            msigma[k][0], zarr[k][0], zsigma[k][0], mass_rang, fe_h_rang]
         # [gs, 4, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0],
         # asigma[k][0], marr[k][0], msigma[k][0]],
         # [gs, 5, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0],
@@ -705,10 +739,12 @@ def cross_match_plot(pl_params):
                              fontsize=xy_font_s - 5)
             leg.get_frame().set_alpha(0.85)
     plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
-    # Text box.
-    ob = offsetbox.AnchoredText(text_box, loc=4, prop=dict(size=xy_font_s - 3))
-    ob.patch.set(alpha=0.85)
-    ax.add_artist(ob)
+    if text_box:
+        # Text box.
+        ob = offsetbox.AnchoredText(text_box, loc=4,
+                                    prop=dict(size=xy_font_s - 3))
+        ob.patch.set(alpha=0.85)
+        ax.add_artist(ob)
 
 
 def make_cross_match(cross_match):
@@ -745,7 +781,7 @@ def make_cross_match(cross_match):
 
     # Text boxes.
     text_box = ['Isochrone fitting', 'Integrated photometry', 'SMC', 'LMC',
-                'Low mass', 'Mass']
+                '$M_{\odot}<5000$']
 
     # Separate SMC from LMC clusters in H03 and G10 databases.
     h03_smc, h03_lmc, g10_smc, g10_lmc = [], [], [], []
@@ -816,14 +852,14 @@ def make_cross_match(cross_match):
         [gs, 3, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[0], y_lab[0],
             z_lab[0], indexes[0], labels[3], mark[3], cols[3], text_box[3],
             databases[3]],
-        # Mass cross_match (low mass)
-        [gs, 4, xymin[1], xymax[1], xymin[1], xymax[1], x_lab[1], y_lab[1],
-            z_lab[1], indexes[1], labels[4], mark[4], cols[4], text_box[4],
-            databases[4]],
         # Mass cross_match (all)
-        [gs, 5, xymin[1], xymax[2], xymin[1], xymax[2], x_lab[1], y_lab[1],
-            z_lab[1], indexes[1], labels[4], mark[4], cols[4], text_box[5],
-            databases[5]]
+        [gs, 4, xymin[1], xymax[2], xymin[1], xymax[2], x_lab[1], y_lab[1],
+            z_lab[1], indexes[1], labels[4], mark[4], cols[4], [],
+            databases[5]],
+        # Mass cross_match (low mass)
+        [gs, 5, xymin[1], xymax[1], xymin[1], xymax[1], x_lab[1], y_lab[1],
+            z_lab[1], indexes[1], labels[4], mark[4], cols[4], text_box[4],
+            databases[4]]
     ]
 
     for pl_params in cross_match_lst:
@@ -1035,7 +1071,9 @@ def make_cross_match_age_ext(cross_match, in_params):
              '$log(age/yr)_{DB}$']
     xmm, ymm = [-1.5, 1.5, -0.019, 0.31], [-0.19, 0.19]
 
-    fig = plt.figure(figsize=(13.5, 25))
+    # The size (13.33, 25) is set so that the fig sizes are equivalent to that
+    # of the cross_match plots.
+    fig = plt.figure(figsize=(13.33, 25))
     gs = gridspec.GridSpec(4, 2)
 
     cross_match_lst = [

@@ -127,60 +127,35 @@ def check_diffs(in_params):
     for j in [0, 1]:
 
         # For each cluster.
-        cl_count = 0
+        met_count, age_count = 0, 0
         for i, name in enumerate(gal_names[j]):
-            flag_cl = False
 
-            # For each parameter.
-            for k, par in enumerate([aarr]):
-                diff = par[j][0][i] - par[j][1][i]
-                if par[j][1][i] > -99.:
+            # Metallicity.
+            z_diff = 0.75
+            diff = zarr[j][0][i] - zarr[j][1][i]
+            if zarr[j][1][i] > -99.:
+                if abs(diff) > z_diff:
+                    met_count += 1
+                    # AsteCA vs Literature Log(age) difference.
+                    rel_diff = zarr[j][0][i] - zarr[j][1][i]
+                    print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
+                        gal[j], name, zarr[j][0][i], zarr[j][1][i], rel_diff)
 
-                    # # Age diffs.
-                    # print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
-                    #     gal[j], name, par[j][0][i], par[j][1][i], diff)
+            # Age.
+            a_diff = 0.5
+            diff = aarr[j][0][i] - aarr[j][1][i]
+            if aarr[j][1][i] > -99.:
+                if abs(diff) > a_diff:
+                    age_count += 1
+                    # AsteCA vs Literature Log(age) difference.
+                    rel_diff = aarr[j][0][i] - aarr[j][1][i]
+                    print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
+                        gal[j], name, aarr[j][0][i], aarr[j][1][i], rel_diff)
 
-                    # Age.
-                    if abs(diff) > 0.5:
-                        flag_cl = True
-                        # AsteCA vs Literature Log(age) difference.
-                        rel_diff = par[j][0][i] - par[j][1][i]
-                        print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
-                            gal[j], name, par[j][0][i], par[j][1][i], rel_diff)
-
-            #         # Extinction.
-            #         if k == 2 and diff > pars_diff[2]:
-            #             flag_cl = True
-            #             print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
-            #                 name, p_n[k], par[j][0][i], par[j][1][i])
-
-            #         # Distance.
-            #         if k == 3 and diff > pars_diff[3]:
-            #             flag_cl = True
-            #             print '{} {} {}, {:.2f} vs {:.2f}'.format(gal[j],
-            #                 name, p_n[k], par[j][0][i], par[j][1][i])
-
-            #         # Radius.
-            #         if k == 4 and diff > pars_diff[4]:
-            #             flag_cl = True
-            #             print '{} {} {}, {} vs {}'.format(gal[j], name,
-            #                 p_n[k], par[j][0][i], par[j][1][i])
-
-            # # Mass.
-            # if marr[j][0][i] > 0.:
-            #     flag_cl = True
-            #     print '{} {} {}'.format(gal[j], name, marr[j][0][i])
-
-            # # Distance to center.
-            # print '{} {} {:.2f} {} {} {}'.format(
-            #     gal[j], name, dist_cent[j][i] / 1000., darr[j][0][i],
-            #      ra[j][i], dec[j][i])
-
-            if flag_cl:
-                cl_count += 1
-
-        print '\n* {}, Clusters with \delta log(age)>0.5: {}\n'.format(
-            gal[j], cl_count)
+        print '\n* {}, Clusters with \delta z>{}: {}\n'.format(
+            gal[j], z_diff, met_count)
+        print '\n* {}, Clusters with \delta log(age)>{}: {}\n'.format(
+            gal[j], a_diff, age_count)
 
 
 def make_plots(in_params, bica_coords, cross_match):
@@ -188,15 +163,15 @@ def make_plots(in_params, bica_coords, cross_match):
     Make each plot sequentially.
     '''
 
-    # for j, gal in enumerate(['SMC', 'LMC']):
-    #     make_as_vs_lit_plot(gal, j, in_params)
-    #     print '{} ASteCA vs literature plots done.'.format(gal)
+    for j, gal in enumerate(['SMC', 'LMC']):
+        make_as_vs_lit_plot(gal, j, in_params)
+        print '{} ASteCA vs literature plots done.'.format(gal)
 
     #     make_kde_plots(gal, j, in_params)
     #     print '{} KDE maps done.'.format(gal)
 
-    make_errors_plots(in_params)
-    print 'Errors plots done.'
+    # make_errors_plots(in_params)
+    # print 'Errors plots done.'
 
     # make_ra_dec_plots(in_params, bica_coords)
     # print 'RA vs DEC plots done.'
