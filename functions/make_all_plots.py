@@ -552,7 +552,7 @@ def prob_vs_CI_plot(pl_params):
     '''
     gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, xarr, yarr, zarr, \
         rad, gal_name = pl_params
-    siz = np.asarray(rad) * 5
+    siz = np.asarray(rad) * 6
 
     xy_font_s = 16
     cm = plt.cm.get_cmap('RdYlBu_r')
@@ -569,10 +569,11 @@ def prob_vs_CI_plot(pl_params):
     # Plot all clusters in dictionary.
     SC = plt.scatter(xarr, yarr, marker='o', c=zarr, s=siz, lw=0.25, cmap=cm,
                      zorder=3)
-    # Text box.
-    ob = offsetbox.AnchoredText(gal_name, loc=2, prop=dict(size=xy_font_s))
-    ob.patch.set(alpha=0.85)
-    ax.add_artist(ob)
+    if gal_name != '':
+        # Text box.
+        ob = offsetbox.AnchoredText(gal_name, loc=2, prop=dict(size=xy_font_s))
+        ob.patch.set(alpha=0.85)
+        ax.add_artist(ob)
     # Position colorbar.
     the_divider = make_axes_locatable(ax)
     color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
@@ -621,49 +622,113 @@ def make_probs_CI_plot(in_params):
     plt.savefig('figures/as_prob_vs_CI.png', dpi=300)
 
 
+def plot_dist_2_cent(pl_params):
+    '''
+    Generate plots for KDE probabilities versus contamination indexes.
+    '''
+    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, xarr, yarr,\
+        zarr, ysigma, v_min, v_max, rad, gal_name = pl_params
+    siz = np.asarray(rad) * 6
+
+    xy_font_s = 16
+    cm = plt.cm.get_cmap('RdYlBu_r')
+
+    ax = plt.subplot(gs[i])
+    # ax.set_aspect('auto')
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    plt.xlabel(x_lab, fontsize=xy_font_s)
+    if i in [0, 2, 4, 6]:
+        plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+            zorder=1)
+    ax.minorticks_on()
+    # Plot all clusters in dictionary.
+    SC = plt.scatter(xarr, yarr, marker='o', c=zarr, s=siz, lw=0.25, cmap=cm,
+                     vmin=v_min, vmax=v_max, zorder=3)
+    # Plot y error bar if it is passed.
+    if ysigma:
+        plt.errorbar(xarr, yarr, yerr=ysigma, ls='none', color='k',
+                     elinewidth=0.4, zorder=1)
+    if gal_name != '':
+        # Text box.
+        ob = offsetbox.AnchoredText(gal_name, loc=4, prop=dict(size=xy_font_s))
+        ob.patch.set(alpha=0.85)
+        ax.add_artist(ob)
+    if i in [1, 3, 5, 7]:
+        # Position colorbar.
+        the_divider = make_axes_locatable(ax)
+        color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
+        # Colorbar.
+        cbar = plt.colorbar(SC, cax=color_axis)
+        zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
+        cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=zpad)
+
+
 def make_dist_2_cents(in_params):
     '''
     Plot ASteCA distances to center of either MC galaxy.
     '''
 
-    zarr, aarr, earr, marr, rad_pc, cont_ind, dist_cent = \
-        [in_params[_] for _ in ['zarr', 'aarr', 'earr', 'marr',
-                                'rad_pc', 'cont_ind', 'dist_cent']]
+    zarr, zsigma, aarr, asigma, earr, esigma, marr, msigma, rad_pc, cont_ind,\
+        dist_cent, gal_names, ra, dec = \
+        [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
+                                'esigma', 'marr', 'msigma', 'rad_pc',
+                                'cont_ind', 'dist_cent', 'gal_names', 'ra',
+                                'dec']]
+
+    # Print info to screen.
+    for j, gal in enumerate(['SMC', 'LMC']):
+        for i, cl in enumerate(gal_names[j]):
+            if dist_cent[j][i] > 4000 and aarr[j][0][i] < 8.5:
+                print gal, cl, ra[j][i], dec[j][i], dist_cent[j][i],\
+                    '{:.5f}'.format(zarr[j][0][i]), aarr[j][0][i]
+    raw_input()
 
     # Define names of arrays being plotted.
     x_lab, yz_lab = '$dist_{center}\,[pc]$', \
         ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,(M_{\odot})$',
             '$E(B-V)_{ASteCA}$']
-    # xmax = 8000 if fixed dist_mod is used. Else xmax = 18000. Check
-    # dist_2_cloud_center() in get_params.py to see which one is used.
-    xmin, xmax = 0, 8000
+    xmin, xmax = 0, 7500
+    vmin_met, vmax_met = -2.1, 0.29
+    vmin_mas, vmax_mas = 1000, 28000
+    vmin_ext, vmax_ext = 0., 0.3
+    vmin_age, vmax_age = 6.7, 9.7
 
-    fig = plt.figure(figsize=(16, 25))
+    fig = plt.figure(figsize=(14, 25))
     gs = gridspec.GridSpec(4, 2)
 
     prob_CI_pl_lst = [
         # SMC
-        [gs, 0, xmin, xmax, 6., 10.5, x_lab, yz_lab[0], yz_lab[1],
-            dist_cent[0], aarr[0][0], zarr[0][0], rad_pc[0], 'SMC'],
-        [gs, 1, xmin, xmax, -2.4, 0.4, x_lab, yz_lab[1], yz_lab[2],
-            dist_cent[0], zarr[0][0], marr[0][0], rad_pc[0], 'SMC'],
-        [gs, 2, xmin, xmax, 0., 30000, x_lab, yz_lab[2], yz_lab[3],
-            dist_cent[0], marr[0][0], earr[0][0], rad_pc[0], 'SMC'],
-        [gs, 3, xmin, xmax, -0.01, 0.11, x_lab, yz_lab[3], yz_lab[0],
-            dist_cent[0], earr[0][0], aarr[0][0], rad_pc[0], 'SMC'],
+        [gs, 0, xmin, xmax, 6.6, 10.1, x_lab, yz_lab[0], yz_lab[1],
+            dist_cent[0], aarr[0][0], zarr[0][0], asigma[0][0], vmin_met,
+            vmax_met, rad_pc[0], 'SMC'],
+        [gs, 2, xmin, xmax, -2.4, 0.4, x_lab, yz_lab[1], yz_lab[2],
+            dist_cent[0], zarr[0][0], marr[0][0], zsigma[0][0], vmin_mas,
+            vmax_mas, rad_pc[0], ''],
+        [gs, 4, xmin, xmax, 0., 30000, x_lab, yz_lab[2], yz_lab[3],
+            dist_cent[0], marr[0][0], earr[0][0], msigma[0][0], vmin_ext,
+            vmax_ext, rad_pc[0], ''],
+        [gs, 6, xmin, xmax, -0.01, 0.11, x_lab, yz_lab[3], yz_lab[0],
+            dist_cent[0], earr[0][0], aarr[0][0], esigma[0][0], vmin_age,
+            vmax_age, rad_pc[0], ''],
         # LMC
-        [gs, 4, xmin, xmax, 6., 10.5, x_lab, yz_lab[0], yz_lab[1],
-            dist_cent[1], aarr[1][0], zarr[1][0], rad_pc[1], 'LMC'],
-        [gs, 5, xmin, xmax, -2.4, 0.4, x_lab, yz_lab[1], yz_lab[2],
-            dist_cent[1], zarr[1][0], marr[1][0], rad_pc[1], 'LMC'],
-        [gs, 6, xmin, xmax, 0., 30000, x_lab, yz_lab[2], yz_lab[3],
-            dist_cent[1], marr[1][0], earr[1][0], rad_pc[1], 'LMC'],
+        [gs, 1, xmin, xmax, 6.6, 10.1, x_lab, yz_lab[0], yz_lab[1],
+            dist_cent[1], aarr[1][0], zarr[1][0], asigma[1][0], vmin_met,
+            vmax_met, rad_pc[1], 'LMC'],
+        [gs, 3, xmin, xmax, -2.4, 0.4, x_lab, yz_lab[1], yz_lab[2],
+            dist_cent[1], zarr[1][0], marr[1][0], zsigma[1][0], vmin_mas,
+            vmax_mas, rad_pc[1], ''],
+        [gs, 5, xmin, xmax, 0., 30000, x_lab, yz_lab[2], yz_lab[3],
+            dist_cent[1], marr[1][0], earr[1][0], msigma[1][0], vmin_ext,
+            vmax_ext, rad_pc[1], ''],
         [gs, 7, xmin, xmax, -0.01, 0.31, x_lab, yz_lab[3], yz_lab[0],
-            dist_cent[1], earr[1][0], aarr[1][0], rad_pc[1], 'LMC']
+            dist_cent[1], earr[1][0], aarr[1][0], esigma[1][0], vmin_age,
+            vmax_age, rad_pc[1], '']
     ]
 
     for pl_params in prob_CI_pl_lst:
-        prob_vs_CI_plot(pl_params)
+        plot_dist_2_cent(pl_params)
 
     # Output png file.
     fig.tight_layout()
