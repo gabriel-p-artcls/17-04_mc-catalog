@@ -73,7 +73,8 @@ def ra_dec_plots(pl_params):
     Generate RA vs DEC plots.
     '''
 
-    fig, gs, ra, dec, bb_ra, bb_dec, data_arr, rad_pc, z_lab = pl_params
+    fig, gs, ra, dec, bb_ra, bb_dec, data_arr, v_min, v_max, rad_pc, z_lab =\
+        pl_params
 
     # tr.transform_point((x, 0)) is always (0,0)
     ax1, tr = curvelinear_test2(fig, gs)
@@ -81,22 +82,22 @@ def ra_dec_plots(pl_params):
     # Define colormap.
     cm = plt.cm.get_cmap('RdYlBu_r')
 
-    # Plot Bica database.
-    bb_ra_dec_tr = tr.transform(zip(bb_ra, bb_dec))
-    plt.scatter(bb_ra_dec_tr[:, 0], bb_ra_dec_tr[:, 1], marker='.', s=8,
-                c='k', lw=0.5, zorder=1)
-
     # Plot literature clusters.
     # Get transformed data.
     ra_dec_tr = tr.transform(zip(ra, dec))
     # Size relative to the clusters actual size in pc.
     if gs == 326:
+        # Plot Bica database.
+        bb_ra_dec_tr = tr.transform(zip(bb_ra, bb_dec))
+        plt.scatter(bb_ra_dec_tr[:, 0], bb_ra_dec_tr[:, 1], marker='.', s=8,
+                    c='k', lw=0.5, zorder=1)
         SC = ax1.scatter(ra_dec_tr[:, 0], ra_dec_tr[:, 1], marker='o', s=20,
                          c='r', lw=0.1, zorder=9)
     else:
         siz = np.asarray(rad_pc) * 4.
         SC = ax1.scatter(ra_dec_tr[:, 0], ra_dec_tr[:, 1], marker='o', s=siz,
-                         c=data_arr, cmap=cm, lw=0.1, zorder=9)
+                         c=data_arr, cmap=cm, vmin=v_min, vmax=v_max, lw=0.1,
+                         zorder=9)
         # Colorbar
         cbar = plt.colorbar(SC, shrink=1., pad=0.05)
         cbar.ax.tick_params(labelsize=8)

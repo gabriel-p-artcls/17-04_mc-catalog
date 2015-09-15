@@ -300,12 +300,18 @@ def make_ra_dec_plots(in_params, bica_coords):
     fig.clf()
 
     ra_dec_pl_lst = [
-        [fig, 321, ra, dec, bb_ra, bb_dec, zarr, rad_pc, '$[Fe/H]$'],
-        [fig, 322, ra, dec, bb_ra, bb_dec, aarr, rad_pc, '$log(age/yr)$'],
-        [fig, 323, ra, dec, bb_ra, bb_dec, earr, rad_pc, '$E_{(B-V)}$'],
-        [fig, 324, ra, dec, bb_ra, bb_dec, darr, rad_pc, '$(m-M)_0$'],
-        [fig, 325, ra, dec, bb_ra, bb_dec, marr, rad_pc, '$M\,(M_{\odot})$'],
-        [fig, 326, ra, dec, bb_ra, bb_dec, rad_pc, rad_pc, '$r_{clust}\,[pc]$']
+        [fig, 321, ra, dec, bb_ra, bb_dec, zarr, -2.1, 0., rad_pc, '$[Fe/H]$'],
+        [fig, 322, ra, dec, bb_ra, bb_dec, aarr, 6.6, 10., rad_pc,
+         '$log(age/yr)$'],
+        [fig, 323, ra, dec, bb_ra, bb_dec, earr, 0., 0.3, rad_pc,
+         '$E_{(B-V)}$'],
+        [fig, 324, ra, dec, bb_ra, bb_dec, darr, 18.4, 18.6, rad_pc,
+         '$(m-M)_{\circ}$'],
+        [fig, 325, ra, dec, bb_ra, bb_dec, darr, 18.82, 19.3, rad_pc,
+         '$(m-M)_{\circ}$'],
+        [fig, 326, ra, dec, bb_ra, bb_dec, marr, 100, 30000, rad_pc,
+         '$M\,(M_{\odot})$']
+        # [fig, 326, ra, dec, bb_ra, bb_dec, rad_pc, rad_pc, '$r_{clust}\,[pc]$']
     ]
 
     for pl_params in ra_dec_pl_lst:
