@@ -598,6 +598,11 @@ def make_probs_CI_plot(in_params):
         [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'marr',
                                 'msigma', 'rad_pc', 'kde_prob', 'cont_ind']]
 
+    print '* Fraction of clusters with probability < 0.5:\n'
+    for i, gal in enumerate(['SMC', 'LMC']):
+        print gal, float(sum(_ < 0.5 for _ in kde_prob[i])) / \
+            float(len(kde_prob[i]))
+
     # Define names of arrays being plotted.
     x_lab, y_lab, z_lab = '$CI_{ASteCA}$', '$prob_{ASteCA}$', \
         ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,(M_{\odot})$',
@@ -612,12 +617,12 @@ def make_probs_CI_plot(in_params):
         [gs, 0, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab[0], cont_ind[0],
             kde_prob[0], aarr[0][0], rad_pc[0], 'SMC'],
         [gs, 1, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab[1], cont_ind[0],
-            kde_prob[0], zarr[0][0], rad_pc[0], 'SMC'],
+            kde_prob[0], zarr[0][0], rad_pc[0], ''],
         # LMC
         [gs, 2, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab[0], cont_ind[1],
             kde_prob[1], aarr[1][0], rad_pc[1], 'LMC'],
         [gs, 3, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab[1], cont_ind[1],
-            kde_prob[1], zarr[1][0], rad_pc[1], 'LMC']
+            kde_prob[1], zarr[1][0], rad_pc[1], '']
     ]
 
     for pl_params in prob_CI_pl_lst:
