@@ -243,6 +243,12 @@ def make_kde_plots(galax, k, in_params):
     else:
         E_bv_rang, dist_mod_rang = [-0.01, 0.3], [18.25, 18.75]
 
+    # Age in Gyrs.
+    age_gyr = [10 ** (np.asarray(aarr[k][0]) - 9),
+               np.asarray(asigma[k][0]) * np.asarray(aarr[k][0]) *
+               np.log(10) / 5.]
+    age_gyr_rang = [0., 6.6]
+
     kde_pl_lst = [
         [gs, 0, '$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', aarr[k][0],
             asigma[k][0], zarr[k][0], zsigma[k][0], age_rang, fe_h_rang],
@@ -252,11 +258,9 @@ def make_kde_plots(galax, k, in_params):
         [gs, 2, '$(m-M)_{\circ;\,ASteCA}$', '$E(B-V)_{ASteCA}$', darr[k][0],
             dsigma[k][0], earr[k][0], esigma[k][0], dist_mod_rang, E_bv_rang],
         [gs, 3, '$M_{ASteCA}\,(M_{\odot})$', '$[Fe/H]_{ASteCA}$', marr[k][0],
-            msigma[k][0], zarr[k][0], zsigma[k][0], mass_rang, fe_h_rang]
-        # [gs, 4, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0],
-        # asigma[k][0], marr[k][0], msigma[k][0]],
-        # [gs, 5, '$log(age/yr)$', '$M\,(M_{\odot})$', aarr[k][0],
-        # asigma[k][0], marr[k][0], msigma[k][0]]
+            msigma[k][0], zarr[k][0], zsigma[k][0], mass_rang, fe_h_rang],
+        [gs, 4, '$Age_{ASteCA}\,(Gyr)$', '$[Fe/H]_{ASteCA}$', age_gyr[0],
+            age_gyr[1], zarr[k][0], zsigma[k][0], age_gyr_rang, fe_h_rang]
     ]
     #
     for pl_params in kde_pl_lst:
