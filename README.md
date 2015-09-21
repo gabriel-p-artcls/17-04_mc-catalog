@@ -149,43 +149,55 @@ photometry.
 
 ### `extinction_MCEV/`
 
-* `cls_exts_match.dat`
-
- Output of the above script.
-
-* `extin_analysis.py`
-
- Gets the extinction data from the table obtained via the MCEV service
- (`ra_dec_exts_mult_matches.dat`) and produces for each of the 210 clusters a
- value of the closest, average and maximum extinction values.
-
- The results are stored in the `cls_exts_match.dat` file.
-
 * `IRSA_MC_ext.tbl`
 
   Output of the [IRSA](http://irsa.ipac.caltech.edu/applications/DUST/) query to
   obtain the [Schlafly & Finkbeiner
   (2011)](http://adsabs.harvard.edu/abs/2011ApJ...737..103S) corrected `E(B-V)`
-  values for the 210 clusters.
+  values for all the clusters.
 
 * `IRSA_BB_ext.tbl`
 
   Idem above for the 3740 clusters in the Bica et al. catalog.
 
-* `ra_dec_exts_mult_matches.dat`
-
-  Output of the [MCEV](http://dc.zah.uni-heidelberg.de/mcextinct/q/cone/form)
-  service query. Each of the 210 cluster's position is matched with at least
-  one area in the reddening maps containing a E(V-I) value.
-
-  The cluster [OHSC28]
-  (http://simbad.u-strasbg.fr/simbad/sim-id?Ident=OHSC+28)
-  needed a 6.0 deg search radius to find areas with extinction in the maps,
-  making it the one furthest away from the areas studied in the MCEV maps.
-
 * `TOPCAT_instruct.dat`
 
- Instructions to perform a query using TOPCAT.
+ Instructions to perform a
+ [MCEV](http://dc.zah.uni-heidelberg.de/mcextinct/q/cone/form) query using
+ TOPCAT.
+
+* `topcat-lite.jnlp`
+
+ File that downloads and runs the lite version of TOPCAT (see instructions to
+ run).
+
+* `ra_dec.dat`
+
+ RA & DEC data for all clusters in CSV format.
+
+* `ra_dec_exts_mult_matches.dat`
+
+ Output of the MCEV service query with TOPCAT. Each of the cluster's position is
+ matched with at least one area in the reddening maps containing a E(V-I) value.
+
+ The cluster [OHSC28](http://simbad.u-strasbg.fr/simbad/sim-id?Ident=OHSC+28)
+ needed a 6.0 deg search radius to find areas with extinction in the maps,
+ making it the one furthest away from the areas studied in the MCEV maps.
+
+* `extin_analysis.py`
+
+  Gets the extinction data from the table obtained via the MCEV service
+  (`ra_dec_exts_mult_matches.dat`) and produces for each of the clusters a
+  value of the closest, average and maximum E(B-V) extinction values.
+  The transformation eq1uation used is:
+
+  `E(V-I) = 1.38 * E(B-V)`.
+
+  The results are stored in the `cls_exts_match.dat` file.
+
+* `cls_exts_match.dat`
+
+   Output of the above script.
 
 
 ### `figures/`
@@ -391,3 +403,17 @@ photometry.
    LMC, [18.4, 18.601, 0.02]
  * Fixed mass: 1500.
  * `Tolstoy`.
+
+#### `18th_run`
+
+ Process the 29 SMC clusters from Maia et al. (2014). Use the same parameters
+ as in the 3rd run:
+
+ * Semi mode with center and radius fixed for several clusters.
+ * Number of field regions set individually for some clusters.
+ * Restricted range in extinction: **MCEV max for all clusters**.
+ * Restricted distance modulus:  SMC, [18.86, 19.061, 0.02] ;
+   LMC, [18.4, 18.601, 0.02].
+ * Total mass: 10000
+
+ Important: for all these clusters' data files the x,y columns are inverted.

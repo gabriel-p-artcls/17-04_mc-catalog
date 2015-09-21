@@ -39,12 +39,12 @@ def get_data():
     return ext_zip
 
 
-def match_coords(ext_pars):
+def match_coords(ext_pars, N):
     '''
     Store all the indexes pointing to each cluster in separate lists.
     '''
 
-    coords_match = [[] for _ in range(210)]
+    coords_match = [[] for _ in range(N)]
 
     ra_old, dec_old, st_indx = 0., 0., -1
     for i, ra in enumerate(ext_pars[4]):
@@ -104,7 +104,7 @@ def get_ext_values(ext_pars, coords_match):
 
         # Store all values.
         clusts_exts.append([ra, dec, ext_pars[2][closest_idx], dist_min,
-            avr_ext, std_dev, max_ext])
+                           avr_ext, std_dev, max_ext])
 
     return clusts_exts
 
@@ -116,10 +116,10 @@ def print_file(clusts_exts):
 
     with open('cls_exts_match.dat', 'w') as f:
         f.write("#RA_(deg)       DEC_(deg)    E_BV_close  dist(deg)  E_BV_avrg"
-        "  E_BV_std_dev  E_BV_max\n")
+                "  E_BV_std_dev  E_BV_max\n")
         for line in clusts_exts:
             f.write("{:<15} {:<15} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} "
-            "{:>8.3f}\n".format(*line))
+                    "{:>8.3f}\n".format(*line))
 
 
 def main():
@@ -133,7 +133,8 @@ def main():
     ext_pars = get_data()
 
     # Match values for a single coordinate.
-    coords_match = match_coords(ext_pars)
+    N_cls = 239  # Total number of clusters
+    coords_match = match_coords(ext_pars, N_cls)
 
     # Get several ext values for each star.
     clusts_exts = get_ext_values(ext_pars, coords_match)

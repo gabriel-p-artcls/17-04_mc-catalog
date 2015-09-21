@@ -1,13 +1,30 @@
-TOPCAT
+# TOPCAT instructions
 
-VO / (TAP) Query: http://dc.g-vo.org/tap
+1. Download if not installed:
+ $ sudo apt-get install icedtea-netx
 
-Query:
+2. Run topcat-lite.jnlp file:
+ $ javaws topcat-lite.jnlp
+
+3. Load RA & DEC table, indicating that it's in CSV format.
+
+4. Go to menu: VO7 Table Access Protocol (TAP) Query
+
+5. At the bottom ("TAP URL") enter: http://dc.g-vo.org/tap
+
+6. Click 'Use service'
+
+7. In the resulting dialog, enter at the bottom:
 
   SELECT centerAlpha, centerDelta, ev_i, sig_ev_i, mine.* FROM
           mcextinct.exts AS exts
           RIGHT OUTER JOIN tap_upload.t1 AS mine
           ON (1=INTERSECTS(
-            CIRCLE('ICRS', mine.ra_deg, mine.dec_deg, 0.9),
+            CIRCLE('ICRS', mine.RA, mine.DEC, 0.5),
             exts.bbox))
 
+where 'RA' & 'DEC' are the column names.
+
+8. Select maximum value for 'Max rows' and click 'Run Query'.
+
+9. A new table will be generated. Save it to disk.
