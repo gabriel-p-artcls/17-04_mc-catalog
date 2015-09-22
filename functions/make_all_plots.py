@@ -115,6 +115,8 @@ def make_as_vs_lit_plot(galax, k, in_params):
     #     abs_v = sorted([abs(_) for _ in span])
     #     par_9x_span.append(abs_v[idx_9x])
 
+    # gal = ['SMC', 'LMC']
+    # print 'Gal  Mean  StandDev'
     par_mean_std = []
     for span in [z_delta, age_delta, ext_delta, dm_delta]:
         # Filter out 99.99 values.
@@ -123,7 +125,7 @@ def make_as_vs_lit_plot(galax, k, in_params):
             if abs(_) < 20:
                 span_filter.append(_)
         par_mean_std.append([np.mean(span_filter), np.std(span_filter)])
-        print k, np.mean(span_filter), np.std(span_filter)
+        # print gal[k], np.mean(span_filter), np.std(span_filter)
 
     # Generate ASteca vs literature plots.
     fig = plt.figure(figsize=(14, 25))  # create the top-level container
@@ -315,7 +317,8 @@ def make_ra_dec_plots(in_params, bica_coords):
          '$(m-M)_{\circ}$'],
         [fig, 326, ra, dec, bb_ra, bb_dec, marr, 100, 30000, rad_pc,
          '$M\,(M_{\odot})$']
-        # [fig, 326, ra, dec, bb_ra, bb_dec, rad_pc, rad_pc, '$r_{clust}\,[pc]$']
+        # [fig, 326, ra, dec, bb_ra, bb_dec, rad_pc, rad_pc,
+        # '$r_{clust}\,[pc]$']
     ]
 
     for pl_params in ra_dec_pl_lst:
@@ -326,10 +329,70 @@ def make_ra_dec_plots(in_params, bica_coords):
     plt.savefig('figures/as_RA_DEC.png', dpi=300)
 
 
+def lit_ext_plots(pl_params):
+    '''
+    Generate ASteCA vs literature values plots.
+    '''
+    gs, i, xmin, xmax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, \
+        ysigma, zarr, v_min_mp, v_max_mp, gal_name = pl_params
+
+    xy_font_s = 18
+    cm = plt.cm.get_cmap('RdYlBu_r')
+
+    # Different limits for \delta plots.
+    ax = plt.subplot(gs[i], aspect='equal')
+    # 1:1 line
+    plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')
+
+    plt.xlim(xmin, xmax)
+    plt.ylim(xmin, xmax)
+    plt.xlabel(x_lab, fontsize=xy_font_s)
+    plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+            zorder=1)
+    ax.minorticks_on()
+
+    # # Introduce random scatter.
+    # 5% of axis ranges.
+    ax_ext = (xmax - xmin) * 0.05
+    # # Add randoms scatter.
+    rs_x = xarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
+    rs_y = yarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
+
+    # Plot all clusters in dictionary.
+    SC = plt.scatter(rs_x, rs_y, marker='o', c=zarr, s=70, lw=0.25, cmap=cm,
+                     vmin=v_min_mp, vmax=v_max_mp, zorder=3)
+    # Plot error bars.
+    for j, xy in enumerate(zip(*[rs_x, rs_y])):
+        # Only plot error bar if it has a value assigned in the literature.
+        if ysigma:
+            if ysigma[j] > 0. and xsigma[j] > 0.:
+                plt.errorbar(xy[0], xy[1], xerr=xsigma[j], yerr=ysigma[j],
+                             ls='none', color='k', elinewidth=0.5, zorder=1)
+            elif xsigma[j] > 0. and ysigma[j] < 0.:
+                plt.errorbar(xy[0], xy[1], xerr=xsigma[j],
+                             ls='none', color='k', elinewidth=0.5, zorder=1)
+            elif ysigma[j] > 0. and xsigma[j] < 0.:
+                plt.errorbar(xy[0], xy[1], yerr=ysigma[j], ls='none',
+                             color='k', elinewidth=0.5, zorder=1)
+    if gal_name != '':
+        # Text box.
+        ob = offsetbox.AnchoredText(gal_name, loc=4, prop=dict(size=xy_font_s))
+        ob.patch.set(alpha=0.85)
+        ax.add_artist(ob)
+    if i in [1, 3]:
+        # Position colorbar.
+        the_divider = make_axes_locatable(ax)
+        color_axis = the_divider.append_axes("right", size="5%", pad=0.1)
+        # Colorbar.
+        cbar = plt.colorbar(SC, cax=color_axis)
+        zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
+        cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=zpad)
+
+
 def make_lit_ext_plot(in_params):
     '''
-    Prepare parameters and call function to generate RA vs DEC positional
-    plots for the SMC and LMC.
+    ASteca vs MCEV vs SandF extinction plot done.
     '''
 
     aarr, earr, esigma, ext_sf, ext_mcev = \
@@ -349,7 +412,9 @@ def make_lit_ext_plot(in_params):
             ext_mcev[1][0], ext_mcev[1][2]), reverse=False)))
 
     # Define values to pass.
-    xmin, xmax = -0.02, [0.15, 0.32, 0.4]
+    xmin, xmax = -0.014, [0.15, 0.4]
+    vmin_sf_SMC, vmax_sf_SMC = min(ext_sf[0][0]), max(ext_sf[0][0])
+    vmin_sf_LMC, vmax_sf_LMC = min(ext_sf[1][0]), max(ext_sf[1][0])
     x_lab = '$E(B-V)_{ASteCA}$'
     y_lab = ['$E(B-V)_{MCEV,\,closer}$', '$E(B-V)_{MCEV,\,max}$']
     z_lab = ['$log(age/yr)_{ASteCA}$', '$E(B-V)_{SF}$', '$dist\,(deg)$']
@@ -359,21 +424,23 @@ def make_lit_ext_plot(in_params):
 
     ext_pl_lst = [
         # SMC
-        [gs, 0, xmin, xmax[0], x_lab, y_lab[0], z_lab[2], ord_earr_smc_ast,
-            ord_esig_smc_ast, ord_mcev_smc, ord_e_mcev_smc, ord_mcev_dist_smc,
-            'SMC'],
-        [gs, 1, xmin, xmax[2], x_lab, y_lab[1], z_lab[1], earr[0][0],
-            esigma[0][0], ext_mcev[0][1], ext_mcev[0][2], ext_sf[0][0], 'SMC'],
+        [gs, 0, xmin, xmax[0], x_lab, y_lab[0], z_lab[2],
+            ord_earr_smc_ast, ord_esig_smc_ast, ord_mcev_smc, ord_e_mcev_smc,
+            ord_mcev_dist_smc, vmin_sf_SMC, vmax_sf_SMC, 'SMC'],
+        [gs, 1, xmin, xmax[0], x_lab, y_lab[1], z_lab[1],
+            earr[0][0], esigma[0][0], ext_mcev[0][1], ext_mcev[0][2],
+            ext_sf[0][0], vmin_sf_SMC, vmax_sf_SMC, ''],
         # LMC
-        [gs, 2, xmin, xmax[1], x_lab, y_lab[0], z_lab[2], ord_earr_lmc_ast,
-            ord_esig_lmc_ast, ord_mcev_lmc, ord_e_mcev_lmc, ord_mcev_dist_lmc,
-            'LMC'],
-        [gs, 3, xmin, xmax[2], x_lab, y_lab[1], z_lab[1], earr[1][0],
-            esigma[1][0], ext_mcev[1][1], ext_mcev[1][2], ext_sf[1][0], 'LMC']
+        [gs, 2, xmin, xmax[1], x_lab, y_lab[0], z_lab[2],
+            ord_earr_lmc_ast, ord_esig_lmc_ast, ord_mcev_lmc, ord_e_mcev_lmc,
+            ord_mcev_dist_lmc, vmin_sf_LMC, vmax_sf_LMC, 'LMC'],
+        [gs, 3, xmin, xmax[1], x_lab, y_lab[1], z_lab[1],
+            earr[1][0], esigma[1][0], ext_mcev[1][1], ext_mcev[1][2],
+            ext_sf[1][0], vmin_sf_LMC, vmax_sf_LMC, '']
     ]
 
     for pl_params in ext_pl_lst:
-        as_vs_lit_plots(pl_params)
+        lit_ext_plots(pl_params)
 
     # Output png file.
     fig.tight_layout()
@@ -604,7 +671,7 @@ def make_probs_CI_plot(in_params):
 
     print '* Fraction of clusters with probability < 0.5:\n'
     for i, gal in enumerate(['SMC', 'LMC']):
-        print gal, float(sum(_ < 0.5 for _ in kde_prob[i])) / \
+        print '  ', gal, float(sum(_ < 0.5 for _ in kde_prob[i])) / \
             float(len(kde_prob[i]))
 
     # Define names of arrays being plotted.
@@ -692,13 +759,13 @@ def make_dist_2_cents(in_params):
                                 'cont_ind', 'dist_cent', 'gal_names', 'ra',
                                 'dec']]
 
-    # Print info to screen.
-    for j, gal in enumerate(['SMC', 'LMC']):
-        for i, cl in enumerate(gal_names[j]):
-            if dist_cent[j][i] > 4000 and aarr[j][0][i] < 8.5:
-                print gal, cl, ra[j][i], dec[j][i], dist_cent[j][i],\
-                    '{:.5f}'.format(zarr[j][0][i]), aarr[j][0][i]
-    raw_input()
+    # # Print info to screen.
+    # for j, gal in enumerate(['SMC', 'LMC']):
+    #     for i, cl in enumerate(gal_names[j]):
+    #         if dist_cent[j][i] > 4000 and aarr[j][0][i] < 8.5:
+    #             print gal, cl, ra[j][i], dec[j][i], dist_cent[j][i],\
+    #                 '{:.5f}'.format(zarr[j][0][i]), aarr[j][0][i]
+    # raw_input()
 
     # Define names of arrays being plotted.
     x_lab, yz_lab = '$dist_{center}\,[pc]$', \
