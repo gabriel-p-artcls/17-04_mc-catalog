@@ -163,10 +163,15 @@ def get_liter_data():
         e_age.append(cl[e_age_i])
         exti.append(cl[ext_i])
         e_exti.append(cl[e_ext_i])
-    # remove first line (column names) and 4 last lines (empty string)
-    del names_ra_dec[-4:], ra[-4:], dec[-4:], ages[-4:], e_age[-4:], \
-        exti[-4:], e_exti[-4:]
+
+    # Remove first line (column names)
     del names_ra_dec[0], ra[0], dec[0], ages[0], e_age[0], exti[0], e_exti[0]
+    # Remove i last lines (empty string)
+    i = 0
+    for el in ra:
+        i += 1 if el == '' else 0
+    del names_ra_dec[-i:], ra[-i:], dec[-i:], ages[-i:], e_age[-i:], \
+        exti[-i:], e_exti[-i:]
 
     # Create the RA, DEC catalog.
     cat_ra_dec = SkyCoord(ra*u.degree, dec*u.degree, frame='icrs')

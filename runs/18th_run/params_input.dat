@@ -301,7 +301,7 @@ RM   local    blocks                   17
 #   bootstrap process hence no errors will be assigned to the parameters.
 #
 #    flag  algorithm   likelihood  binning  bootstrap
-BF   true      genet     dolphin    knuth          10
+BF   true      genet     dolphin    knuth          0
 
 # ** WARNING **
 #
