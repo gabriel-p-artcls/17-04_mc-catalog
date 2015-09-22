@@ -24,7 +24,7 @@ def as_vs_lit_plots(pl_params):
     cm = plt.cm.get_cmap('RdYlBu_r')
 
     # Different limits for \delta plots.
-    if i in [0, 2, 4, 6]:
+    if i in [0, 2, 4, 6, 8]:
         ax = plt.subplot(gs[i], aspect='equal')
         # 1:1 line
         plt.plot([xmin, xmax], [ymin, ymax], 'k', ls='--')
@@ -79,7 +79,7 @@ def as_vs_lit_plots(pl_params):
         ob = offsetbox.AnchoredText(gal_name, loc=4, prop=dict(size=xy_font_s))
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
-    if i in [1, 3, 5, 7]:
+    if i in [1, 3, 5, 7, 9]:
         # Position colorbar.
         the_divider = make_axes_locatable(ax)
         color_axis = the_divider.append_axes("right", size="5%", pad=0.1)
@@ -95,9 +95,10 @@ def make_as_vs_lit_plot(galax, k, in_params):
     SMC and LMC plots.
     '''
 
-    zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, rarr = \
-        [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
-                                'esigma', 'darr', 'dsigma', 'rarr']]
+    zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, msigma, \
+        rarr = [in_params[_] for _ in
+                ['zarr', 'zsigma', 'aarr', 'asigma', 'earr', 'esigma', 'darr',
+                'dsigma', 'marr', 'msigma', 'rarr']]
 
     # \delta z as ASteCA - literature values.
     z_delta = np.array(zarr[k][0]) - np.array(zarr[k][1])
@@ -107,6 +108,8 @@ def make_as_vs_lit_plot(galax, k, in_params):
     ext_delta = np.array(earr[k][0]) - np.array(earr[k][1])
     # \delta dm as ASteCA - literature values.
     dm_delta = np.array(darr[k][0]) - np.array(darr[k][1])
+    # \delta mass as ASteCA - literature values.
+    ma_delta = np.array(marr[k][0]) - np.array(marr[k][1])
 
     # Shaded area that contains 9X% of the clusters.
     # par_9x_span = []
@@ -118,19 +121,19 @@ def make_as_vs_lit_plot(galax, k, in_params):
     # gal = ['SMC', 'LMC']
     # print 'Gal  Mean  StandDev'
     par_mean_std = []
-    for span in [z_delta, age_delta, ext_delta, dm_delta]:
-        # Filter out 99.99 values.
+    for span in [z_delta, age_delta, ext_delta, dm_delta, ma_delta]:
+        # Filter out -9999999999.9 values added in get_params to replace
+        # missing values in .ods file.
         span_filter = []
         for _ in span:
-            if abs(_) < 20:
+            if abs(_) < 30000:
                 span_filter.append(_)
         par_mean_std.append([np.mean(span_filter), np.std(span_filter)])
-        # print gal[k], np.mean(span_filter), np.std(span_filter)
 
     # Generate ASteca vs literature plots.
-    fig = plt.figure(figsize=(14, 25))  # create the top-level container
+    fig = plt.figure(figsize=(14, 31.25))  # create the top-level container
     # gs = gridspec.GridSpec(2, 4, width_ratios=[1, 0.35, 1, 0.35])
-    gs = gridspec.GridSpec(4, 2)
+    gs = gridspec.GridSpec(5, 2)
 
     if galax == 'SMC':
         dm_min, dm_max = 18.62, 19.21
@@ -173,10 +176,18 @@ def make_as_vs_lit_plot(galax, k, in_params):
             dsigma[k][0], darr[k][1], dsigma[k][1], aarr[k][0], 6.6, 9.8, [],
             galax],
         # Asteca dist_mod vs \delta dist_mod with lit values.
-        [gs, 7, dm_min, dm_max, -1. * dm_span, dm_span,
-            '$(m-M)_{0;\,ASteCA}$',
+        [gs, 7, dm_min, dm_max, -1. * dm_span, dm_span, '$(m-M)_{0;\,ASteCA}$',
             '$\Delta (m-M)_{0}$', '$log(age/yr)_{ASteCA}$', darr[k][0],
             dsigma[k][0], dm_delta, [], aarr[k][0], 6.6, 9.8, par_mean_std[3],
+            galax],
+        # ASteCA vs literature masses.
+        [gs, 8, 10., 5000., 10., 5000., '$M_{ASteCA}\,(M_{\odot})$',
+            '$M_{lit}\,(M_{\odot})$', '$log(age/yr)_{ASteCA}$', marr[k][0],
+            msigma[k][0], marr[k][1], msigma[k][1], aarr[k][0], 6.6, 9.8, [],
+            galax],
+        [gs, 9, 10., 4000., -1000., 1000., '$M_{ASteCA}\,(M_{\odot})$',
+            '$\Delta M_{\odot}$', '$log(age/yr)_{ASteCA}$', marr[k][0],
+            msigma[k][0], ma_delta, [], aarr[k][0], 6.6, 9.8, par_mean_std[4],
             galax]
     ]
     #

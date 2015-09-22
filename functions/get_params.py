@@ -10,7 +10,7 @@ def float_str(val):
     try:
         val_f = float(val)
     except:
-        val_f = -99.9
+        val_f = -9999999999.9
 
     return val_f
 
@@ -114,7 +114,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
     # Indexes of columns in .ods literature file.
     ra_i, dec_i, gal_i, l_zi, l_zei, l_ai, l_aei, l_ei, l_eei, l_di, l_dei, \
         l_rad, l_scale, l_e_sandf, l_e_e_sandf, l_e_mcev, l_e_mcev_max, \
-        l_e_e_mcev, l_mcev_dist = \
+        l_e_e_mcev, l_mcev_dist, l_mass, l_e_mass = \
         cl_dict[0].index(u'ra_deg'), cl_dict[0].index(u'dec_deg'), \
         cl_dict[0].index(u'Galaxia'), cl_dict[0].index(u'[Fe/H] (dex)'), \
         cl_dict[0].index(u'e_Fe/H'), cl_dict[0].index(u'log(age)'), \
@@ -124,7 +124,8 @@ def params(as_names, as_pars, cl_dict, names_idx):
         cl_dict[0].index(u'arcsec/pixel'), cl_dict[0].index(u'E_B_V_SandF'), \
         cl_dict[0].index(u'stdev_E_B_V_SandF'), \
         cl_dict[0].index(u'E_BV_closer_MCEV'), cl_dict[0].index(u'E_BV_max'), \
-        cl_dict[0].index(u'E_BV_std_dev'), cl_dict[0].index(u'Dist (deg)')
+        cl_dict[0].index(u'E_BV_std_dev'), cl_dict[0].index(u'Dist (deg)'), \
+        cl_dict[0].index(u'Mass'), cl_dict[0].index(u'e_mass')
 
     # Initialize empty lists. The first sub-list in the parameters list
     # corresponds to clusters in the SMC and the second to those in the LMC.
@@ -216,8 +217,8 @@ def params(as_names, as_pars, cl_dict, names_idx):
         sext = [as_p[a_eei], cl_dict[names_idx[i]][l_eei]]
         dis = [as_p[a_di], cl_dict[names_idx[i]][l_di]]
         sdis = [as_p[a_dei], cl_dict[names_idx[i]][l_dei]]
-        mass = [as_p[a_mi], -1.]
-        smass = [as_p[a_mei], -1.]
+        mass = [as_p[a_mi], cl_dict[names_idx[i]][l_mass]]
+        smass = [as_p[a_mei], cl_dict[names_idx[i]][l_e_mass]]
         rads = [as_p[a_rad], cl_dict[names_idx[i]][l_rad]]
 
         # Store ASteCA values (k=0) and literature values (k=1).
