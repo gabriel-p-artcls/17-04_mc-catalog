@@ -232,7 +232,7 @@ PV   auto   2
 #   - skip: all stars will be assigned an equal probability of 1.
 #
 #   mode     runs
-DA  auto      100
+DA  skip      100
 
 # Reduced membership.
 #

@@ -127,9 +127,8 @@ def check_diffs(in_params):
     for j in [0, 1]:
 
         # For each cluster.
-        met_count, age_count = 0, 0
+        met_count = 0
         for i, name in enumerate(gal_names[j]):
-
             # Metallicity.
             z_diff = 0.75
             diff = zarr[j][0][i] - zarr[j][1][i]
@@ -141,6 +140,12 @@ def check_diffs(in_params):
                     print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
                         gal[j], name, zarr[j][0][i], zarr[j][1][i], rel_diff)
 
+        print '\n* {}, Clusters with \delta z>{}: {}\n'.format(
+            gal[j], z_diff, met_count)
+
+        # For each cluster.
+        age_count = 0
+        for i, name in enumerate(gal_names[j]):
             # Age.
             a_diff = 0.5
             diff = aarr[j][0][i] - aarr[j][1][i]
@@ -152,8 +157,6 @@ def check_diffs(in_params):
                     print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
                         gal[j], name, aarr[j][0][i], aarr[j][1][i], rel_diff)
 
-        print '\n* {}, Clusters with \delta z>{}: {}\n'.format(
-            gal[j], z_diff, met_count)
         print '\n* {}, Clusters with \delta log(age)>{}: {}\n'.format(
             gal[j], a_diff, age_count)
 
@@ -231,14 +234,14 @@ def main():
     # Check for differences in ASteCA vs Lit values.
     check_diffs(in_params)
 
-    # Make final plots.
-    make_plots(in_params, bica_coords, cross_match)
+    # # Make final plots.
+    # make_plots(in_params, bica_coords, cross_match)
 
-    # Put this plot here since it does not depend on any parameter obtained
-    # previously.
-    db, db_cls = get_DBs_ASteCA_CMD_data()
-    make_DB_ASteCA_CMDs(db, db_cls)
-    print 'CMDs for matched DB and ASteCA clusters done.'
+    # # Put this plot here since it does not depend on any parameter obtained
+    # # previously.
+    # db, db_cls = get_DBs_ASteCA_CMD_data()
+    # make_DB_ASteCA_CMDs(db, db_cls)
+    # print 'CMDs for matched DB and ASteCA clusters done.'
 
     print '\nEnd.'
 

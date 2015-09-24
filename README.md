@@ -406,6 +406,8 @@ photometry.
 
 #### `18th_run`
 
+ *Important*: for all these clusters' data files the x,y columns are inverted.
+
  Process the 29 SMC clusters from Maia et al. (2014). Use the same parameters
  as in the 3rd run:
 
@@ -416,4 +418,17 @@ photometry.
    LMC, [18.4, 18.601, 0.02].
  * Total mass: 10000
 
- Important: for all these clusters' data files the x,y columns are inverted.
+Per cluster DA/GA parameters:
+
+ 1. 3000 generations
+  * H86-97
+ 1. DA: auto + local + knuth
+  * B103, H86-190, K47, NGC241, NGC242
+ 1. DA: auto + local + scott
+  * B99
+ 1. DA: skip + local + knuth
+  * B48, H86-76, H86-85, K61, SOGLE196
+ 1. DA: skip + local + scott
+  * B55, H86-87, H86-90
+ 1. DA: skip + local + blocks
+  * B134

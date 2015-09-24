@@ -267,7 +267,7 @@ DA  auto      100
 #   Otherwise this parameter is not used.
 #
 #    mode    binning     prob_min/mag_min
-RM   local    blocks                   17
+RM   local    scott                   17
 ################################################################################
 
 

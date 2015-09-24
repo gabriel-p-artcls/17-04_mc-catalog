@@ -232,7 +232,7 @@ PV   auto   2
 #   - skip: all stars will be assigned an equal probability of 1.
 #
 #   mode     runs
-DA  auto      100
+DA  skip      100
 
 # Reduced membership.
 #
@@ -267,7 +267,7 @@ DA  auto      100
 #   Otherwise this parameter is not used.
 #
 #    mode    binning     prob_min/mag_min
-RM   local    blocks                   17
+RM   local    knuth                   17
 ################################################################################
 
 
