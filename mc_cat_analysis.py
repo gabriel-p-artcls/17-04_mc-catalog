@@ -170,38 +170,38 @@ def make_plots(in_params, bica_coords, cross_match):
         make_as_vs_lit_plot(gal, j, in_params)
         print '{} ASteCA vs literature plots done.'.format(gal)
 
-        make_kde_plots(gal, j, in_params)
-        print '{} KDE maps done.'.format(gal)
+    #     make_kde_plots(gal, j, in_params)
+    #     print '{} KDE maps done.'.format(gal)
 
-    make_errors_plots(in_params)
-    print 'Errors plots done.'
+    # make_errors_plots(in_params)
+    # print 'Errors plots done.'
 
-    make_ra_dec_plots(in_params, bica_coords)
-    print 'RA vs DEC plots done.'
+    # make_ra_dec_plots(in_params, bica_coords)
+    # print 'RA vs DEC plots done.'
 
-    make_lit_ext_plot(in_params)
-    print 'ASteca vs MCEV vs SandF extinction plot done.'
+    # make_lit_ext_plot(in_params)
+    # print 'ASteca vs MCEV vs SandF extinction plot done.'
 
-    make_int_cols_plot(in_params)
-    print 'Integrated colors plot done.'
+    # make_int_cols_plot(in_params)
+    # print 'Integrated colors plot done.'
 
-    make_concent_plot(in_params)
-    print 'Concentration parameter plot done.'
+    # make_concent_plot(in_params)
+    # print 'Concentration parameter plot done.'
 
-    make_radius_plot(in_params)
-    print 'ASteCA radius (pc) vs parameters plot done.'
+    # make_radius_plot(in_params)
+    # print 'ASteCA radius (pc) vs parameters plot done.'
 
-    make_probs_CI_plot(in_params)
-    print 'ASteCA probabilities versus CI done.'
+    # make_probs_CI_plot(in_params)
+    # print 'ASteCA probabilities versus CI done.'
 
-    make_dist_2_cents(in_params)
-    print 'Distances to center of MC done.'
+    # make_dist_2_cents(in_params)
+    # print 'Distances to center of MC done.'
 
-    make_cross_match(cross_match)
-    print 'Cross-matched clusters done.'
+    # make_cross_match(cross_match)
+    # print 'Cross-matched clusters done.'
 
-    make_cross_match_age_ext(cross_match, in_params)
-    print 'Age and extinction diffs for cross-matched clusters done.'
+    # make_cross_match_age_ext(cross_match, in_params)
+    # print 'Age and extinction diffs for cross-matched clusters done.'
 
 
 def main():
@@ -234,8 +234,8 @@ def main():
     # Check for differences in ASteCA vs Lit values.
     check_diffs(in_params)
 
-    # # Make final plots.
-    # make_plots(in_params, bica_coords, cross_match)
+    # Make final plots.
+    make_plots(in_params, bica_coords, cross_match)
 
     # # Put this plot here since it does not depend on any parameter obtained
     # # previously.

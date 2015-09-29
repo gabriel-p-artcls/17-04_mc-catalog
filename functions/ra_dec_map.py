@@ -94,7 +94,7 @@ def ra_dec_plots(pl_params):
         SC = ax1.scatter(ra_dec_tr[:, 0], ra_dec_tr[:, 1], marker='o', s=20,
                          c='r', lw=0.1, zorder=9)
     else:
-        siz = np.asarray(rad_pc) * 4.
+        siz = np.asarray(rad_pc) * 4.  # if gs != 325 else 20
         SC = ax1.scatter(ra_dec_tr[:, 0], ra_dec_tr[:, 1], marker='o', s=siz,
                          c=data_arr, cmap=cm, vmin=v_min, vmax=v_max, lw=0.1,
                          zorder=9)

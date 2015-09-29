@@ -420,8 +420,9 @@ photometry.
 
 Per cluster DA/GA parameters:
 
+##### 1st run (29)
  1. 3000 generations
-  * H86-97
+  * H86-97 (crashed, got not results)
  1. DA: auto + local + knuth
   * B103, H86-190, K47, NGC241, NGC242
  1. DA: auto + local + scott
@@ -432,3 +433,33 @@ Per cluster DA/GA parameters:
   * B55, H86-87, H86-90
  1. DA: skip + local + blocks
   * B134
+
+###### Clusters kept from 1st run (12)
+ * B103, B111, BS75, BS80, H86-76, H86-174, HW52, K43, K55, K57, K63, SOGLE196
+
+##### 2nd run (17)
+1. Defaults (DA: auto + local + blocks)
+ * B124 (03), B55 (06), B99 (07), H86-188 (11), HW32 (18), NGC241 (27)
+1. DA: skip + local + knuth
+ * B134 (04)
+1. DA: auto + local + knuth
+ * B48 (05), H86-85 (14), H86-87 (15), H86-90 (16), H86-97 (17), K61 (24)
+1. DA: auto + local + sqrt
+ * H86-190 (12)
+1. DA: auto + skip
+ * K47 (21), L39 (26), NGC242 (28)
+
+###### Clusters kept from 2nd run (6)
+ * B55, B99, HW32, L39, K61, K47
+
+##### 3rd run (11)
+**All**: mut_rate = 0.35
+1. Defaults params for DA
+ * B48 (05), B124 (03), H86-188 (11), NGC241 (27), H86-97 (17), H86-190 (12),
+   NGC242 (28)
+1. DA: skip + local + knuth
+ * H86-85 (14), H86-90 (16)
+1. DA: skip + local + scott
+ * B134 (04)
+1. DA: skip + local + bb
+ * H86-87 (15)

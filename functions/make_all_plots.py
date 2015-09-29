@@ -136,8 +136,10 @@ def make_as_vs_lit_plot(galax, k, in_params):
     gs = gridspec.GridSpec(5, 2)
 
     if galax == 'SMC':
+        ext_min, ext_max = 0., 0.15
         dm_min, dm_max = 18.62, 19.21
     else:
+        ext_min, ext_max = 0., 0.3
         dm_min, dm_max = 18.21, 18.79
     dm_span = (dm_max - dm_min) / 2.
 
@@ -155,13 +157,13 @@ def make_as_vs_lit_plot(galax, k, in_params):
             galax],
         [gs, 2, 5.8, 10.6, 5.8, 10.6, '$log(age/yr)_{ASteCA}$',
             '$log(age/yr)_{lit}$', '$E(B-V)_{ASteCA}$', aarr[k][0],
-            asigma[k][0], aarr[k][1], asigma[k][1], earr[k][0], 0., 0.3, [],
-            galax],
+            asigma[k][0], aarr[k][1], asigma[k][1], earr[k][0], ext_min,
+            ext_max, [], galax],
         # Asteca log(age) vs \delta log(age) with lit values.
         [gs, 3, 5.8, 10.6, -2.4, 2.4, '$log(age/yr)_{ASteCA}$',
             '$\Delta log(age/yr)$', '$E(B-V)_{ASteCA}$', aarr[k][0],
-            asigma[k][0], age_delta, [], earr[k][0], 0., 0.3, par_mean_std[1],
-            galax],
+            asigma[k][0], age_delta, [], earr[k][0], ext_min, ext_max,
+            par_mean_std[1], galax],
         [gs, 4, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{ASteCA}$',
             '$E(B-V)_{lit}$', '$log(age/yr)_{ASteCA}$', earr[k][0],
             esigma[k][0], earr[k][1], esigma[k][1], aarr[k][0], 6.6, 9.8, [],
@@ -294,6 +296,15 @@ def make_ra_dec_plots(in_params, bica_coords):
         in_params[_] for _ in ['ra', 'dec', 'zarr', 'aarr', 'earr', 'darr',
                                'marr', 'rad_pc']]
 
+    # Check plot.
+    # cm = plt.cm.get_cmap('RdYlBu_r')
+    # bb_ra, bb_dec = zip(*bica_coords)
+    # plt.scatter(-1. * np.asarray(bb_ra), bb_dec, marker='.', s=10)
+    # plt.scatter(-1. * np.asarray(ra[0]), dec[0], c=darr[0][0], cmap=cm,
+    #             marker='o', s=50, lw=0.1, vmin=18.82, vmax=19.08)
+    # plt.show()
+    # raw_input()
+
     # Put both SMC and LMC clusters into a single list.
     ra = ra[0] + ra[1]
     dec = dec[0] + dec[1]
@@ -324,7 +335,7 @@ def make_ra_dec_plots(in_params, bica_coords):
          '$E_{(B-V)}$'],
         [fig, 324, ra, dec, bb_ra, bb_dec, darr, 18.4, 18.6, rad_pc,
          '$(m-M)_{\circ}$'],
-        [fig, 325, ra, dec, bb_ra, bb_dec, darr, 18.82, 19.3, rad_pc,
+        [fig, 325, ra, dec, bb_ra, bb_dec, darr, 18.82, 19.08, rad_pc,
          '$(m-M)_{\circ}$'],
         [fig, 326, ra, dec, bb_ra, bb_dec, marr, 100, 30000, rad_pc,
          '$M\,(M_{\odot})$']
