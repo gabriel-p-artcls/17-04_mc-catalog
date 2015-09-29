@@ -234,8 +234,8 @@ def main():
     # Check for differences in ASteCA vs Lit values.
     check_diffs(in_params)
 
-    # Make final plots.
-    make_plots(in_params, bica_coords, cross_match)
+    # # Make final plots.
+    # make_plots(in_params, bica_coords, cross_match)
 
     # # Put this plot here since it does not depend on any parameter obtained
     # # previously.

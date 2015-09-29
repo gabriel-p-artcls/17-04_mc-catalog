@@ -802,7 +802,7 @@ def make_dist_2_cents(in_params):
     fig = plt.figure(figsize=(14, 25))
     gs = gridspec.GridSpec(4, 2)
 
-    prob_CI_pl_lst = [
+    dist_2_cent_pl_lst = [
         # SMC
         [gs, 0, xmin, xmax, 6.6, 10.1, x_lab, yz_lab[0], yz_lab[1],
             dist_cent[0], aarr[0][0], zarr[0][0], asigma[0][0], vmin_met,
@@ -831,7 +831,7 @@ def make_dist_2_cents(in_params):
             vmax_age, rad_pc[1], '']
     ]
 
-    for pl_params in prob_CI_pl_lst:
+    for pl_params in dist_2_cent_pl_lst:
         plot_dist_2_cent(pl_params)
 
     # Output png file.

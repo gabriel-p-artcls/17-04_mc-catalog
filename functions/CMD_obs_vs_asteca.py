@@ -6,7 +6,7 @@ import numpy as np
 import re
 import os
 from scipy import stats
-from get_data_asteca import get_data as gd
+from read_photom_files import get_data as gd
 import glob
 
 
