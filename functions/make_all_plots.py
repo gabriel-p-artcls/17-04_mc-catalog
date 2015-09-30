@@ -211,7 +211,7 @@ def kde_plots(pl_params):
 
     # Generate maps.
     z = kde_map(np.array(xarr), np.array(xsigma), np.array(yarr),
-                np.array(ysigma), ext)
+                np.array(ysigma), ext, 100)
 
     # Make plot.
     ax = plt.subplot(gs[i])

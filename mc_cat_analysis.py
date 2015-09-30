@@ -8,6 +8,7 @@ from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
     make_concent_plot, make_radius_plot, make_probs_CI_plot, \
     make_dist_2_cents, make_cross_match, make_cross_match_age_ext, \
     make_DB_ASteCA_CMDs, make_errors_plots
+from functions.amr_kde import main as make_amr_plot
 
 
 def d_search(dat_lst, cl_name, name_idx):
@@ -167,11 +168,14 @@ def make_plots(in_params, bica_coords, cross_match):
     '''
 
     for j, gal in enumerate(['SMC', 'LMC']):
-        make_as_vs_lit_plot(gal, j, in_params)
-        print '{} ASteCA vs literature plots done.'.format(gal)
+        # make_as_vs_lit_plot(gal, j, in_params)
+        # print '{} ASteCA vs literature plots done.'.format(gal)
 
-    #     make_kde_plots(gal, j, in_params)
-    #     print '{} KDE maps done.'.format(gal)
+        # make_kde_plots(gal, j, in_params)
+        # print '{} KDE maps done.'.format(gal)
+
+        make_amr_plot(gal, j, in_params)
+        print '{} AMR map done.'.format(gal)
 
     # make_errors_plots(in_params)
     # print 'Errors plots done.'
@@ -234,8 +238,8 @@ def main():
     # Check for differences in ASteCA vs Lit values.
     check_diffs(in_params)
 
-    # # Make final plots.
-    # make_plots(in_params, bica_coords, cross_match)
+    # Make final plots.
+    make_plots(in_params, bica_coords, cross_match)
 
     # # Put this plot here since it does not depend on any parameter obtained
     # # previously.

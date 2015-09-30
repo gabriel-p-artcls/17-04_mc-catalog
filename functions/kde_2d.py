@@ -32,23 +32,31 @@ def kde_val(point, xarr, xsigma, yarr, ysigma):
     return norm_kde
 
 
-def kde_map(xarr, xsigma, yarr, ysigma, ext):
+def kde_map(xarr, xsigma, yarr, ysigma, ext, grid_dens):
     '''
     Take an array of x,y data with their errors, create a grid of points in x,y
     and return the 2D KDE density map.
     '''
 
-    # Define grid of points in x,y.
-    x, y = np.mgrid[ext[0]:ext[1]:100j, ext[2]:ext[3]:100j]
+    # Grid density (number of points).
+    gd_c = complex(0, grid_dens)
+
+    # Define grid of points in x,y where the KDE will be evaluated.
+    x, y = np.mgrid[ext[0]:ext[1]:gd_c, ext[2]:ext[3]:gd_c]
     positions = np.vstack([x.ravel(), y.ravel()])
 
     # Evaluate KDE in x,y grid.
     kde_grid = []
     for p in zip(*positions):
         kde_grid.append(kde_val(p, xarr, xsigma, yarr, ysigma))
+        print 'p, kde', p, kde_val(p, xarr, xsigma, yarr, ysigma)
 
     # Re-shape values for plotting.
+    for el in np.reshape(np.array(kde_grid).T, x.shape):
+        print 'kde_no_rot', el
     z = np.rot90(np.reshape(np.array(kde_grid).T, x.shape))
+    for el in z:
+        print 'kde_rot', el
 
     return z
 
