@@ -465,9 +465,9 @@ Per cluster DA/GA parameters:
  * H86-87 (15)
 
 ###### Clusters kept from 3rd run (1)
- * H86-190
+ * H86-190, NGC241 (27)
 
-##### 4th run (10)
+##### 4th run (10, NGC241 is run again)
 **All**: p_mut=0.5, n_ei=25, n_es=60
 1. Defaults params for DA
  * B124 (03), B134 (04), B48 (05), H86-188 (11), H86-87 (15)
