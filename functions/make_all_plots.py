@@ -11,6 +11,7 @@ from scipy import stats
 from functions.ra_dec_map import ra_dec_plots
 from functions.kde_2d import kde_map
 import functions.CMD_obs_vs_asteca as cmd
+from functions.amr_kde import age_met_rel
 
 
 def as_vs_lit_plots(pl_params):
@@ -1488,8 +1489,8 @@ def make_errors_plots(in_params):
             r_arr, z_arr, z_sigma, a_arr, a_sigma, e_arr, e_sigma, d_arr,
             d_sigma, m_arr, m_sigma, ci), reverse=True)))
 
-    # ord_ci, ord_z, ord_zs, ord_a, ord_as, ord_e, ord_es, ord_d, ord_ds, ord_m,\
-    #     ord_ms, ord_r = map(list, zip(*sorted(zip(
+    # ord_ci, ord_z, ord_zs, ord_a, ord_as, ord_e, ord_es, ord_d, ord_ds, \
+    # ord_m, ord_ms, ord_r = map(list, zip(*sorted(zip(
     #         ci, z_arr, z_sigma, a_arr, a_sigma, e_arr, e_sigma, d_arr,
     #         d_sigma, m_arr, m_sigma, r_arr), reverse=True)))
 
@@ -1515,4 +1516,72 @@ def make_errors_plots(in_params):
     # Output png file.
     fig.tight_layout()
     fig_name = 'figures/errors_asteca.png'
+    plt.savefig(fig_name, dpi=300)
+
+
+def pl_amr(pl_params):
+    '''
+    Plot AMRs.
+    '''
+
+    gs, i, age_vals, met_weighted, x_lab, y_lab = pl_params
+
+    xy_font_s = 16
+    ax = plt.subplot(gs[i])
+    plt.xlim(0., 6)
+    plt.ylim(-2.2, 0.1)
+    plt.tick_params(axis='both', which='major', labelsize=10)
+    plt.xlabel(x_lab, fontsize=xy_font_s)
+    plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+            zorder=1)
+    ax.minorticks_on()
+    col, leg = ['r', 'b'], ['SMC', 'LMC']
+    for k in [0, 1]:
+        plt.plot(age_vals[k], met_weighted[k][0], c=col[k], label=leg[k])
+        y_err_min = np.array(met_weighted[k][0]) - np.array(met_weighted[k][1])
+        y_err_max = np.array(met_weighted[k][0]) + np.array(met_weighted[k][1])
+        plt.fill_between(age_vals[k], y_err_min, y_err_max, alpha=0.1,
+                         color=col[k])
+    # Legend.
+    leg = plt.legend(loc='lower right', markerscale=1., scatterpoints=1,
+                     fontsize=xy_font_s - 3)
+    leg.get_frame().set_alpha(0.85)
+
+
+def make_amr_plot(in_params):
+    '''
+    Make age-metallicity relation plot for both galaxies.
+    '''
+
+    zarr, zsigma, aarr, asigma = [in_params[_] for _ in ['zarr', 'zsigma',
+                                                         'aarr', 'asigma']]
+
+    # First index k indicates the galaxy (0 for SMC, 1 for KMC), the second
+    # index 0 indicates ASteCA values.
+    # k=0 -> SMC, k=1 ->LMC
+    age_vals, met_weighted = [[], []], [[], []]
+    for k in [0, 1]:
+        # Age in Gyrs.
+        age_gyr = [10 ** (np.asarray(aarr[k][0]) - 9),
+                   np.asarray(asigma[k][0]) * np.asarray(aarr[k][0]) *
+                   np.log(10) / 5.]
+        # Weighted metallicity values for an array of ages.
+        age_vals[k], met_weighted[k] = age_met_rel(
+            age_gyr[0], age_gyr[1], zarr[k][0], zsigma[k][0])
+
+    fig = plt.figure(figsize=(10, 20))
+    gs = gridspec.GridSpec(4, 2)
+
+    amr_lst = [
+        [gs, 0, age_vals, met_weighted, '$Age_{ASteCA}\,(Gyr)$',
+         '$[Fe/H]_{ASteCA}$']
+    ]
+
+    for pl_params in amr_lst:
+        pl_amr(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    fig_name = 'figures/AMR_asteca.png'
     plt.savefig(fig_name, dpi=300)

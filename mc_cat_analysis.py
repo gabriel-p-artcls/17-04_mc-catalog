@@ -7,8 +7,7 @@ from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
     make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
     make_concent_plot, make_radius_plot, make_probs_CI_plot, \
     make_dist_2_cents, make_cross_match, make_cross_match_age_ext, \
-    make_DB_ASteCA_CMDs, make_errors_plots
-from functions.amr_kde import main as make_amr_plot
+    make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot
 
 
 def d_search(dat_lst, cl_name, name_idx):
@@ -48,25 +47,25 @@ def get_DBs_ASteCA_CMD_data():
     matched in the selected database.
     Un-comment the database below to produce its figures.
     '''
-    db = 'G10'
-    mc_cls = [['B112', 'SL218', 'KMHK979', 'KMHK229', 'HW22', 'HW42', 'HW63',
-              'KMHK378', 'SL446A', 'L91'],
-              ['SL674', 'SL290', 'HW40', 'HW31', 'BSDL268', 'HW41', 'SL162',
-              'SL230', 'SL555', 'SL132'],
-              ['HS264', 'BRHT4B', 'SL96', 'L63', 'HS38', 'NGC1839', 'NGC294',
-              'B34', 'NGC1793', 'L72'],
-              ['NGC2093', 'KMHK112', 'BS265', 'SL678', 'SL35', 'B39', 'L50',
-              'L30', 'SL397', 'NGC1863'],
-              ['BRHT45A', 'HW55', 'NGC1838', 'KMHK1055', 'SL444', 'L62',
-              'SL505', 'L34', 'H88-320', 'HS412'],
-              ['LW54', 'L58', 'L49', 'SL510', 'SL551', 'BSDL631', 'L45',
-              'H88-316', 'BS35', 'L35'],
-              ['SL579']]
+    # db = 'G10'
+    # mc_cls = [['B112', 'SL218', 'KMHK979', 'KMHK229', 'HW22', 'HW42', 'HW63',
+    #           'KMHK378', 'SL446A', 'L91'],
+    #           ['SL674', 'SL290', 'HW40', 'HW31', 'BSDL268', 'HW41', 'SL162',
+    #           'SL230', 'SL555', 'SL132'],
+    #           ['HS264', 'BRHT4B', 'SL96', 'L63', 'HS38', 'NGC1839', 'NGC294',
+    #           'B34', 'NGC1793', 'L72'],
+    #           ['NGC2093', 'KMHK112', 'BS265', 'SL678', 'SL35', 'B39', 'L50',
+    #           'L30', 'SL397', 'NGC1863'],
+    #           ['BRHT45A', 'HW55', 'NGC1838', 'KMHK1055', 'SL444', 'L62',
+    #           'SL505', 'L34', 'H88-320', 'HS412'],
+    #           ['LW54', 'L58', 'L49', 'SL510', 'SL551', 'BSDL631', 'L45',
+    #           'H88-316', 'BS35', 'L35'],
+    #           ['SL579']]
 
-    # db = 'C06'
-    # mc_cls = [['B47', 'H86-70', 'L63', 'L62', 'B39', 'BS121', 'BS88',
-    #            'NGC294', 'L19', 'L34'],
-    #           ['L30', 'B34', 'L72', 'NGC419', 'BS35', 'L35']]
+    db = 'C06'
+    mc_cls = [['B47', 'H86-70', 'L63', 'L62', 'B39', 'BS121', 'BS88',
+               'NGC294', 'L19', 'L34'],
+              ['L30', 'B34', 'L72', 'NGC419', 'BS35', 'L35']]
 
     db_cls = [[] for _ in mc_cls]
     for i, cl_lst in enumerate(mc_cls):
@@ -242,7 +241,7 @@ def main():
     make_plots(in_params, bica_coords, cross_match)
 
     # # Put this plot here since it does not depend on any parameter obtained
-    # # previously.
+    # # previously so it's faster to plot it separately.
     # db, db_cls = get_DBs_ASteCA_CMD_data()
     # make_DB_ASteCA_CMDs(db, db_cls)
     # print 'CMDs for matched DB and ASteCA clusters done.'

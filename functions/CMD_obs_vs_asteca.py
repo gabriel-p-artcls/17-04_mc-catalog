@@ -94,7 +94,7 @@ def get_DB_age_ext(cl, db):
         for line in skip_comments(f):
             l = line.split()
             if l[0] == db and l[2] == cl:
-                a, e, gal = line.split()[3], line.split()[13], line.split()[1]
+                a, e, gal = line.split()[3], line.split()[15], line.split()[1]
                 return a, e, gal
 
 
