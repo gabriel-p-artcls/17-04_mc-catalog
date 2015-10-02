@@ -1127,14 +1127,16 @@ def make_cross_match_age_ext(cross_match, in_params):
             diffs_lit_exts_lmc.append(earr[1][0][i] - earr[1][1][i])
 
     # Define lists of difference between ages and extinctions.
+    # Age indexes (DB, ASteCA, lit) -> 2, 4, 6
+    # Ext indexes (DB, ASteCA, lit) -> 14, 15, 17
 
     # P99 ASteCA minus database diffs.
     diffs_db_ages_p99 = np.array(p99[4]) - np.array(p99[2])
     # P99 liter minus database diffs.
     diffs_lit_db_ages_p99 = np.array(p99[6]) - np.array(p99[2])
     # Same for extinctions.
-    diffs_db_exts_p99 = np.array(p99[13]) - np.array(p99[12])
-    diffs_lit_db_exts_p99 = np.array(p99[15]) - np.array(p99[12])
+    diffs_db_exts_p99 = np.array(p99[15]) - np.array(p99[14])
+    diffs_lit_db_exts_p99 = np.array(p99[17]) - np.array(p99[14])
 
     # P00 ASteCA minus database diffs.
     diffs_db_ages_p00 = np.array(p00[4]) - np.array(p00[2])
@@ -1142,14 +1144,14 @@ def make_cross_match_age_ext(cross_match, in_params):
     # C06
     diffs_db_ages_c06 = np.array(c06[4]) - np.array(c06[2])
     diffs_lit_db_ages_c06 = np.array(c06[6]) - np.array(c06[2])
-    diffs_db_exts_c06 = np.array(c06[13]) - np.array(c06[12])
-    diffs_lit_db_exts_c06 = np.array(c06[15]) - np.array(c06[12])
+    diffs_db_exts_c06 = np.array(c06[15]) - np.array(c06[14])
+    diffs_lit_db_exts_c06 = np.array(c06[17]) - np.array(c06[14])
 
     # G10
     diffs_db_ages_g10 = np.array(g10[4]) - np.array(g10[2])
     diffs_lit_db_ages_g10 = np.array(g10[6]) - np.array(g10[2])
-    diffs_db_exts_g10 = np.array(g10[13]) - np.array(g10[12])
-    diffs_lit_db_exts_g10 = np.array(g10[15]) - np.array(g10[12])
+    diffs_db_exts_g10 = np.array(g10[15]) - np.array(g10[14])
+    diffs_lit_db_exts_g10 = np.array(g10[17]) - np.array(g10[14])
 
     # Calculate std, means and medians for the age differences.
     txt = ['SMC', 'LMC', 'P99', 'P00', 'C06', 'G10']
@@ -1215,12 +1217,12 @@ def make_cross_match_age_ext(cross_match, in_params):
     # 1:1 plots.
     ext_lit_data = [[earr[0][0], esigma[0][0], earr[0][1], esigma[0][1]],
                     [earr[1][0], esigma[1][0], earr[1][1], esigma[1][1]]]
-    ext_DB_data = [[p99[13], p99[14], p99[12], []],
-                   [c06[13], c06[14], c06[12], []],
-                   [g10[13], g10[14], g10[12], []]]
-    ext_lit_DB_data = [[p99[15], p99[16], p99[12], []],
-                       [c06[15], c06[16], c06[12], []],
-                       [g10[15], g10[16], g10[12], []]]
+    ext_DB_data = [[p99[15], p99[16], p99[14], []],
+                   [c06[15], c06[16], c06[14], []],
+                   [g10[15], g10[16], g10[14], []]]
+    ext_lit_DB_data = [[p99[17], p99[18], p99[14], []],
+                       [c06[17], c06[18], c06[14], []],
+                       [g10[17], g10[18], g10[14], []]]
     age_lit_DB_data = [[p99[6], p99[7], p99[2], p99[3]],
                        [p00[6], p00[7], p00[2], p00[3]],
                        [c06[6], c06[7], c06[2], c06[3]],
