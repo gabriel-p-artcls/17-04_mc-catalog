@@ -603,11 +603,10 @@ def make_radius_plot(in_params):
     Plot radius (in pc) versus several parameters.
     '''
 
-    zarr, zsigma, aarr, asigma, marr, msigma, n_memb, rad_pc, erad_pc, \
-        r_core_pc, e_r_core = \
-        [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma',
-                                'marr', 'msigma', 'n_memb', 'rad_pc',
-                                'erad_pc', 'r_core_pc', 'e_r_core']]
+    zarr, zsigma, aarr, asigma, marr, msigma, rad_pc, erad_pc, r_core_pc,\
+        e_r_core = [in_params[_] for _ in
+                    ['zarr', 'zsigma', 'aarr', 'asigma', 'marr', 'msigma',
+                    'rad_pc', 'erad_pc', 'r_core_pc', 'e_r_core']]
 
     # Define values to pass.
     xmin, xmax = 0., 40.
@@ -688,14 +687,23 @@ def make_probs_CI_plot(in_params):
     Plot cluster's ASteCA probabilities versus contamination indexes.
     '''
 
-    zarr, zsigma, aarr, asigma, marr, msigma, rad_pc, kde_prob, cont_ind = \
+    zarr, zsigma, aarr, asigma, marr, msigma, rad_pc, kde_prob, cont_ind,\
+        n_memb, gal_names = \
         [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'marr',
-                                'msigma', 'rad_pc', 'kde_prob', 'cont_ind']]
+                                'msigma', 'rad_pc', 'kde_prob', 'cont_ind',
+                                'n_memb', 'gal_names']]
 
     print '* Fraction of clusters with probability < 0.5:\n'
     for i, gal in enumerate(['SMC', 'LMC']):
         print '  ', gal, float(sum(_ < 0.5 for _ in kde_prob[i])) / \
             float(len(kde_prob[i]))
+
+    print '\n* Clusters with n_memb > 50 & prov < 0.5'
+    for k, gal in enumerate(['SMC', 'LMC']):
+        for i, n_m in enumerate(n_memb[k]):
+            if n_m > 50 and kde_prob[k][i] < 0.5:
+                print '', gal, gal_names[k][i], n_m, kde_prob[k][i]
+    print '\n'
 
     # Define names of arrays being plotted.
     x_lab, y_lab, z_lab = '$CI_{ASteCA}$', '$prob_{ASteCA}$', \
@@ -716,7 +724,12 @@ def make_probs_CI_plot(in_params):
         [gs, 2, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab[0], cont_ind[1],
             kde_prob[1], aarr[1][0], rad_pc[1], 'LMC'],
         [gs, 3, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab[1], cont_ind[1],
-            kde_prob[1], zarr[1][0], rad_pc[1], '']
+            kde_prob[1], zarr[1][0], rad_pc[1], ''],
+        # Memb number plots
+        [gs, 4, -9, 1000, ymin, ymax, '$N_{ASteCA}$', y_lab, z_lab[0],
+         n_memb[0], kde_prob[0], aarr[0][0], rad_pc[0], 'SMC'],
+        [gs, 5, -9, 1000, ymin, ymax, '$N_{ASteCA}$', y_lab, z_lab[0],
+         n_memb[1], kde_prob[1], aarr[1][0], rad_pc[1], 'LMC']
     ]
 
     for pl_params in prob_CI_pl_lst:
