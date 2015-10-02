@@ -167,15 +167,12 @@ def make_plots(in_params, bica_coords, cross_match):
     Make each plot sequentially.
     '''
 
-    for j, gal in enumerate(['SMC', 'LMC']):
-        # make_as_vs_lit_plot(gal, j, in_params)
-        # print '{} ASteCA vs literature plots done.'.format(gal)
+    # for j, gal in enumerate(['SMC', 'LMC']):
+    #     make_as_vs_lit_plot(gal, j, in_params)
+    #     print '{} ASteCA vs literature plots done.'.format(gal)
 
-        # make_kde_plots(gal, j, in_params)
-        # print '{} KDE maps done.'.format(gal)
-
-        make_amr_plot(gal, j, in_params)
-        print '{} AMR map done.'.format(gal)
+    #     make_kde_plots(gal, j, in_params)
+    #     print '{} KDE maps done.'.format(gal)
 
     # make_errors_plots(in_params)
     # print 'Errors plots done.'
@@ -206,6 +203,9 @@ def make_plots(in_params, bica_coords, cross_match):
 
     # make_cross_match_age_ext(cross_match, in_params)
     # print 'Age and extinction diffs for cross-matched clusters done.'
+
+    make_amr_plot(in_params)
+    print 'AMR maps done.'
 
 
 def main():

@@ -49,14 +49,9 @@ def kde_map(xarr, xsigma, yarr, ysigma, ext, grid_dens):
     kde_grid = []
     for p in zip(*positions):
         kde_grid.append(kde_val(p, xarr, xsigma, yarr, ysigma))
-        print 'p, kde', p, kde_val(p, xarr, xsigma, yarr, ysigma)
 
     # Re-shape values for plotting.
-    for el in np.reshape(np.array(kde_grid).T, x.shape):
-        print 'kde_no_rot', el
     z = np.rot90(np.reshape(np.array(kde_grid).T, x.shape))
-    for el in z:
-        print 'kde_rot', el
 
     return z
 
