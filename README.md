@@ -489,3 +489,10 @@ Per cluster DA/GA parameters:
 * H86-85 (14), H86-97 (17)
 1. DA: skip + local + knuth
  * NGC242 (28)
+
+###### Clusters kept from 5th run (3)
+ * H86-85, NGC242, H86-97
+
+##### 6th run (3)
+1. Defaults params for DA; GA: n_pop=200, n_gen=2000, p_mut=0.85, n_el=5
+ * B134 (04), H86-188 (11), H86-90 (16)

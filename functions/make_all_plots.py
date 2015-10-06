@@ -32,10 +32,12 @@ def as_vs_lit_plots(pl_params):
     else:
         ax = plt.subplot(gs[i], aspect='auto')
         # 0 line
-        plt.plot([-5, 22], [par_mean_std[0], par_mean_std[0]], 'k', ls='--')
-        plt.axhspan(par_mean_std[0] - par_mean_std[1],
-                    par_mean_std[0] + par_mean_std[1], facecolor='grey',
-                    alpha=0.5, zorder=1)
+        plt.axhline(y=par_mean_std[0], xmin=0, xmax=1, color='k', ls='--')
+        # Shaded one sigma region.
+        if par_mean_std[0] != par_mean_std[1]:
+            plt.axhspan(par_mean_std[0] - par_mean_std[1],
+                        par_mean_std[0] + par_mean_std[1], facecolor='grey',
+                        alpha=0.5, zorder=1)
 
     plt.xlim(xmin, xmax)
     plt.ylim(ymin, ymax)
@@ -81,6 +83,14 @@ def as_vs_lit_plots(pl_params):
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
     if i in [1, 3, 5, 7, 9]:
+        # Text box.
+        pres = [2, 2] if i in [1, 3, 5, 7] else [0, 0]
+        text1 = r'$\bar{{x}}={:g}$'.format(round(par_mean_std[0], pres[0]))
+        text2 = r'$\sigma={:g}$'.format(round(par_mean_std[1], pres[1]))
+        text = text1 + '\n' + text2
+        ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s - 4))
+        ob.patch.set(alpha=0.5)
+        ax.add_artist(ob)
         # Position colorbar.
         the_divider = make_axes_locatable(ax)
         color_axis = the_divider.append_axes("right", size="5%", pad=0.1)
@@ -129,7 +139,12 @@ def make_as_vs_lit_plot(galax, k, in_params):
         for _ in span:
             if abs(_) < 30000:
                 span_filter.append(_)
-        par_mean_std.append([np.mean(span_filter), np.std(span_filter)])
+        if span_filter:
+            p_mean, p_stdev = np.mean(span_filter), np.std(span_filter)
+            par_mean_std.append([p_mean, p_stdev])
+            # print p_mean, p_stdev
+        else:
+            par_mean_std.append([0., 0.])
 
     # Generate ASteca vs literature plots.
     fig = plt.figure(figsize=(14, 31.25))  # create the top-level container
@@ -188,7 +203,7 @@ def make_as_vs_lit_plot(galax, k, in_params):
             '$M_{lit}\,(M_{\odot})$', '$log(age/yr)_{ASteCA}$', marr[k][0],
             msigma[k][0], marr[k][1], msigma[k][1], aarr[k][0], 6.6, 9.8, [],
             galax],
-        [gs, 9, 10., 4000., -1000., 1000., '$M_{ASteCA}\,(M_{\odot})$',
+        [gs, 9, 10., 4000., -2000., 2000., '$M_{ASteCA}\,(M_{\odot})$',
             '$\Delta M_{\odot}$', '$log(age/yr)_{ASteCA}$', marr[k][0],
             msigma[k][0], ma_delta, [], aarr[k][0], 6.6, 9.8, par_mean_std[4],
             galax]
@@ -693,17 +708,22 @@ def make_probs_CI_plot(in_params):
                                 'msigma', 'rad_pc', 'kde_prob', 'cont_ind',
                                 'n_memb', 'gal_names']]
 
-    print '* Fraction of clusters with probability < 0.5:\n'
+    print '* Fraction of clusters with probability < 0.5:'
     for i, gal in enumerate(['SMC', 'LMC']):
         print '  ', gal, float(sum(_ < 0.5 for _ in kde_prob[i])) / \
-            float(len(kde_prob[i]))
+            float(len(kde_prob[i])), '({})'.format(sum(_ < 0.5 for _ in
+                                                       kde_prob[i]))
+    print '* Fraction of clusters with probability < 0.25:'
+    for i, gal in enumerate(['SMC', 'LMC']):
+        print '  ', gal, float(sum(_ < 0.25 for _ in kde_prob[i])) / \
+            float(len(kde_prob[i])), '({})'.format(sum(_ < 0.25 for _ in
+                                                       kde_prob[i]))
 
-    print '\n* Clusters with n_memb > 50 & prov < 0.5'
+    print '\n* Clusters with n_memb > 50 & prob < 0.5'
     for k, gal in enumerate(['SMC', 'LMC']):
         for i, n_m in enumerate(n_memb[k]):
             if n_m > 50 and kde_prob[k][i] < 0.5:
                 print '', gal, gal_names[k][i], n_m, kde_prob[k][i]
-    print '\n'
 
     # Define names of arrays being plotted.
     x_lab, y_lab, z_lab = '$CI_{ASteCA}$', '$prob_{ASteCA}$', \
