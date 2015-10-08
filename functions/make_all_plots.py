@@ -1570,12 +1570,12 @@ def pl_amr(pl_params):
     Plot AMRs.
     '''
 
-    gs, i, age_vals, met_weighted, x_lab, y_lab = pl_params
+    gs, i, age_vals, met_weighted, age_gyr, zarr, x_lab, y_lab = pl_params
 
     xy_font_s = 16
     ax = plt.subplot(gs[i])
     plt.xlim(0., 6)
-    plt.ylim(-2.2, 0.1)
+    plt.ylim(-2.3, 0.1)
     plt.tick_params(axis='both', which='major', labelsize=10)
     plt.xlabel(x_lab, fontsize=xy_font_s)
     plt.ylabel(y_lab, fontsize=xy_font_s)
@@ -1584,6 +1584,8 @@ def pl_amr(pl_params):
     ax.minorticks_on()
     col, leg = ['r', 'b'], ['SMC', 'LMC']
     for k in [0, 1]:
+        plt.scatter(age_gyr[k][0], zarr[k][0], marker='*', s=25,
+                    edgecolors=col[k], facecolor='none', lw=0.4, zorder=3)
         plt.plot(age_vals[k], met_weighted[k][0], c=col[k], label=leg[k])
         y_err_min = np.array(met_weighted[k][0]) - np.array(met_weighted[k][1])
         y_err_max = np.array(met_weighted[k][0]) + np.array(met_weighted[k][1])
@@ -1606,22 +1608,22 @@ def make_amr_plot(in_params):
     # First index k indicates the galaxy (0 for SMC, 1 for KMC), the second
     # index 0 indicates ASteCA values.
     # k=0 -> SMC, k=1 ->LMC
-    age_vals, met_weighted = [[], []], [[], []]
+    age_gyr, age_vals, met_weighted = [[], []], [[], []], [[], []]
     for k in [0, 1]:
         # Age in Gyrs.
-        age_gyr = [10 ** (np.asarray(aarr[k][0]) - 9),
-                   np.asarray(asigma[k][0]) * np.asarray(aarr[k][0]) *
-                   np.log(10) / 5.]
+        age_gyr[k] = [10 ** (np.asarray(aarr[k][0]) - 9),
+                      np.asarray(asigma[k][0]) * np.asarray(aarr[k][0]) *
+                      np.log(10) / 5.]
         # Weighted metallicity values for an array of ages.
         age_vals[k], met_weighted[k] = age_met_rel(
-            age_gyr[0], age_gyr[1], zarr[k][0], zsigma[k][0])
+            age_gyr[k][0], age_gyr[k][1], zarr[k][0], zsigma[k][0])
 
     fig = plt.figure(figsize=(10, 20))
     gs = gridspec.GridSpec(4, 2)
 
     amr_lst = [
-        [gs, 0, age_vals, met_weighted, '$Age_{ASteCA}\,(Gyr)$',
-         '$[Fe/H]_{ASteCA}$']
+        [gs, 0, age_vals, met_weighted, age_gyr, zarr,
+         '$Age_{ASteCA}\,(Gyr)$', '$[Fe/H]_{ASteCA}$']
     ]
 
     for pl_params in amr_lst:
@@ -1631,3 +1633,5 @@ def make_amr_plot(in_params):
     fig.tight_layout()
     fig_name = 'figures/AMR_asteca.png'
     plt.savefig(fig_name, dpi=300)
+    # Crop image.
+    cmd.save_crop_img(fig_name)

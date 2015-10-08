@@ -496,3 +496,10 @@ Per cluster DA/GA parameters:
 ##### 6th run (3)
 1. Defaults params for DA; GA: n_pop=200, n_gen=2000, p_mut=0.85, n_el=5
  * B134 (04), H86-188 (11), H86-90 (16)
+
+###### Clusters kept from 6th run (1)
+ * H86-90
+
+##### 7th run (2)
+1. Defaults params for DA; GA: n_pop=50, n_gen=2000, p_mut=0.5, n_el=1
+ * B134 (04), H86-188 (11)
