@@ -40,7 +40,7 @@ def main():
             '10th', '11th', '18th', '19th']
 
     # 'BSDL654' 'SL218' 'H88-131' 'KMHK975' 'BSDL631' 'L35' 'SL579'
-    clust = 'SL579'
+    clust = 'NGC294'
 
     for i, run in enumerate(runs):
         get_asteca_data((i + 1), run, clust)

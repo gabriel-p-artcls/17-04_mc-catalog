@@ -372,11 +372,13 @@ photometry.
 
   Re-process all clusters using fixed distance moduli (18.49/18.96, S/LMC) and
   increasing the maximum extinction by 0.05. Maximum mass increased to 30000.
+  * No bootstrap process is applied.
 
 #### `15th_run`
 
   Re-process all clusters using:
 
+  * No bootstrap.
   * Range in extinction: **MCEV max + 0.1** for all clusters.
   * Restricted distance modulus:  SMC, [18.86, 19.061, 0.02] ;
     LMC, [18.4, 18.601, 0.02]
@@ -490,16 +492,31 @@ Per cluster DA/GA parameters:
 1. DA: skip + local + knuth
  * NGC242 (28)
 
-###### Clusters kept from 5th run (3)
- * H86-85, NGC242, H86-97
+###### Clusters kept from 5th run (4)
+ * H86-85, NGC242, H86-97, B134
 
-##### 6th run (3)
+##### 6th run (3, B134 is processed again)
 1. Defaults params for DA; GA: n_pop=200, n_gen=2000, p_mut=0.85, n_el=5
  * B134 (04), H86-188 (11), H86-90 (16)
 
 ###### Clusters kept from 6th run (1)
  * H86-90
 
-##### 7th run (2)
+##### 7th run (1)
 1. Defaults params for DA; GA: n_pop=50, n_gen=2000, p_mut=0.5, n_el=1
- * B134 (04), H86-188 (11)
+ * H86-188 (11)
+
+##### 8th run (1)
+1. Defaults params for DA; GA: n_pop=200, n_gen=2000, p_mut=0.95, n_el=10
+ * H86-188 (11)
+
+
+#### `19th_run`
+
+Re-process these clusters to try to improve their fits. H88-131 could be better
+fitted for the age and the other two for the metallicity.
+
+1. DA: skip + local + blocks; GA: p_mut=0.35
+* H88-131
+1. DA: defaults; GA: p_mut=0.35
+* NGC294, HW85

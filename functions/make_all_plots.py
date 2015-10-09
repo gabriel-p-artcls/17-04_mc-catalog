@@ -1584,7 +1584,15 @@ def pl_amr(pl_params):
     ax.minorticks_on()
     col, leg = ['r', 'b'], ['SMC', 'LMC']
     for k in [0, 1]:
-        plt.scatter(age_gyr[k][0], zarr[k][0], marker='*', s=25,
+
+        # # Introduce random scatter in Age (Gyr).
+        # 2% of axis ranges.
+        ax_ext = max(age_gyr[k][0]) * 0.02
+        # # Add randoms scatter.
+        rs_x = age_gyr[k][0] + np.random.uniform(-ax_ext, ax_ext,
+                                                 len(age_gyr[k][0]))
+
+        plt.scatter(rs_x, zarr[k][0], marker='*', s=25,
                     edgecolors=col[k], facecolor='none', lw=0.4, zorder=3)
         plt.plot(age_vals[k], met_weighted[k][0], c=col[k], label=leg[k])
         y_err_min = np.array(met_weighted[k][0]) - np.array(met_weighted[k][1])
