@@ -1476,11 +1476,10 @@ def pl_errors(pl_params):
         ax_ext = (xmax - xmin) * 0.01
     else:
         ax_ext = (xmax - xmin) * 0.025
-    # Add randoms scatter.
+    # Add random scatter.
     r_x = x + np.random.uniform(-ax_ext, ax_ext, len(x))
-    # r_y = y + np.random.uniform(-ax_ext, ax_ext, len(x))
     SC = plt.scatter(r_x, y, marker='o', c=z, edgecolor='k', s=siz,
-                     cmap=cm, lw=0.25, vmin=0., vmax=1., zorder=4)
+                     cmap=cm, lw=0.25, zorder=4) # vmin=0., vmax=1., 
     # # Text box.
     # ob = offsetbox.AnchoredText(gal_name, loc=4, prop=dict(size=xy_font_s))
     # ob.patch.set(alpha=0.85)
@@ -1500,11 +1499,13 @@ def make_errors_plots(in_params):
     '''
 
     zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, msigma,\
-        rarr, cont_ind, kde_prob = [
+        rarr, cont_ind, kde_prob, phot_disp = [
             in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
                                    'esigma', 'darr', 'dsigma', 'marr',
-                                   'msigma', 'rarr', 'cont_ind', 'kde_prob']]
+                                   'msigma', 'rarr', 'cont_ind', 'kde_prob',
+                                   'phot_disp']]
 
+    p_disp = phot_disp[0] + phot_disp[1]
     ci = cont_ind[0] + cont_ind[1]
     probs = kde_prob[0] + kde_prob[1]
     r_arr = rarr[0][0] + rarr[1][0]
@@ -1521,39 +1522,27 @@ def make_errors_plots(in_params):
 
     # Order lists to put min rad values on top.
     ord_r, ord_z, ord_zs, ord_a, ord_as, ord_e, ord_es, ord_d, ord_ds, ord_m,\
-        ord_ms, ord_ci, ord_prob = map(list, zip(*sorted(zip(
+        ord_ms, ord_ci, ord_prob, ord_p_disp = map(list, zip(*sorted(zip(
             r_arr, z_arr, z_sigma, a_arr, a_sigma, e_arr, e_sigma, d_arr,
-            d_sigma, m_arr, m_sigma, ci, probs), reverse=True)))
+            d_sigma, m_arr, m_sigma, ci, probs, p_disp), reverse=True)))
 
-    # ord_ci, ord_z, ord_zs, ord_a, ord_as, ord_e, ord_es, ord_d, ord_ds, \
-    # ord_m, ord_ms, ord_r = map(list, zip(*sorted(zip(
-    #         ci, z_arr, z_sigma, a_arr, a_sigma, e_arr, e_sigma, d_arr,
-    #         d_sigma, m_arr, m_sigma, r_arr), reverse=True)))
+    # Select colorbar parameter.
+    ord_X = np.array(ord_prob) / np.array(ord_p_disp)
 
     fig = plt.figure(figsize=(10, 20))
     gs = gridspec.GridSpec(5, 1)
 
     errors_lst = [
-        [gs, 0, -2.4, 0.11, -0.03, 2.1, ord_z, ord_zs, ord_ci, ord_r,
+        [gs, 0, -2.4, 0.11, -0.03, 2.1, ord_z, ord_zs, ord_X, ord_r,
             '$[Fe/H]_{ASteCA}$', '$e_{[Fe/H]}$'],
-        [gs, 1, 6.51, 10.1, -0.03, 1.1, ord_a, ord_as, ord_ci, ord_r,
+        [gs, 1, 6.51, 10.1, -0.03, 1.1, ord_a, ord_as, ord_X, ord_r,
             '$log(aye/yr)_{ASteCA}$', '$e_{log(aye/yr)}$'],
-        [gs, 2, -0.02, 0.32, -0.01, 0.11, ord_e, ord_es, ord_ci, ord_r,
+        [gs, 2, -0.02, 0.32, -0.01, 0.11, ord_e, ord_es, ord_X, ord_r,
             '$E(B-V)_{ASteCA}$', '$e_{E(B-V)}$'],
-        [gs, 3, 18.28, 19.19, 0.007, 0.083, ord_d, ord_ds, ord_ci, ord_r,
+        [gs, 3, 18.28, 19.19, 0.007, 0.083, ord_d, ord_ds, ord_X, ord_r,
             '$(m-M)_{\circ;\,ASteCA}$', '$e_{(m-M)_{\circ}}$'],
-        [gs, 4, -210, 30000, -210, 4450, ord_m, ord_ms, ord_ci, ord_r,
+        [gs, 4, -210, 30000, -210, 4450, ord_m, ord_ms, ord_X, ord_r,
             '$M_{\odot;\,ASteCA}$', '$e_{M_{\odot}}$']
-        # [gs, 0, -2.4, 0.11, -0.03, 2.1, ord_z, ord_zs, ord_prob, ord_r,
-        #     '$[Fe/H]_{ASteCA}$', '$e_{[Fe/H]}$'],
-        # [gs, 1, 6.51, 10.1, -0.03, 1.1, ord_a, ord_as, ord_prob, ord_r,
-        #     '$log(aye/yr)_{ASteCA}$', '$e_{log(aye/yr)}$'],
-        # [gs, 2, -0.02, 0.32, -0.01, 0.11, ord_e, ord_es, ord_prob, ord_r,
-        #     '$E(B-V)_{ASteCA}$', '$e_{E(B-V)}$'],
-        # [gs, 3, 18.28, 19.19, 0.007, 0.083, ord_d, ord_ds, ord_prob, ord_r,
-        #     '$(m-M)_{\circ;\,ASteCA}$', '$e_{(m-M)_{\circ}}$'],
-        # [gs, 4, -210, 30000, -210, 4450, ord_m, ord_ms, ord_prob, ord_r,
-        #     '$M_{\odot;\,ASteCA}$', '$e_{M_{\odot}}$']
     ]
 
     for pl_params in errors_lst:

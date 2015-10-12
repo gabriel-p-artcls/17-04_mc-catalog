@@ -1,6 +1,8 @@
 import numpy as np
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from functions import photom_dispersion
+# from functions.photom_dispersion import main as photom_dispersion
 
 
 def float_str(val):
@@ -130,7 +132,8 @@ def params(as_names, as_pars, cl_dict, names_idx):
     # Initialize empty lists. The first sub-list in the parameters list
     # corresponds to clusters in the SMC and the second to those in the LMC.
     gal_names, int_colors, n_memb, cont_ind, kde_prob, ra, dec, rad_pc, \
-        erad_pc, dist_cent, r_core_pc, e_r_core = [[[], []] for _ in range(12)]
+        erad_pc, dist_cent, r_core_pc, e_r_core, phot_disp = \
+        [[[], []] for _ in range(13)]
     # First sub-list stores SMC values, the second one stores LMC values.
     # First and 2nd sub-sublist store Schlafly & Finkbeiner extinction values
     # and their errors. Third and 4th store MCEV extinction values and their
@@ -164,6 +167,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
         cont_ind[j].append(float_str(as_p[a_CI]))
         # Cluster KDE p-value probability.
         kde_prob[j].append(float_str(as_p[a_prob]))
+
         # Store literature E(B-V) values: Schlafly & Finkbeiner (SandF) and
         # MCEV.
         ext_sf[j][0].append(cl_dict[names_idx[i]][l_e_sandf])
@@ -172,6 +176,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
         ext_mcev[j][1].append(cl_dict[names_idx[i]][l_e_mcev_max])
         ext_mcev[j][2].append(cl_dict[names_idx[i]][l_e_e_mcev])
         ext_mcev[j][3].append(cl_dict[names_idx[i]][l_mcev_dist])
+
         # Store radius value in parsecs.
         float_lst = []
         for el in [as_p[a_rad], cl_dict[names_idx[i]][l_scale], as_p[a_di],
@@ -207,6 +212,9 @@ def params(as_names, as_pars, cl_dict, names_idx):
         # Get distance from cluster to galaxy center.
         dist_cent[j].append(dist_2_cloud_center(j, ra[j][-1], dec[j][-1],
                             as_p[a_di], as_p[a_ei]))
+
+        # Get photometric dispersion parameter.
+        phot_disp[j].append(photom_dispersion.main(as_names[i]))
 
         # Organize param values, ASteCA first, lit second.
         met = [as_p[a_zi], cl_dict[names_idx[i]][l_zi]]
@@ -252,7 +260,8 @@ def params(as_names, as_pars, cl_dict, names_idx):
         'msigma': msigma, 'rarr': rarr, 'ext_sf': ext_sf, 'ext_mcev': ext_mcev,
         'rad_pc': rad_pc, 'erad_pc': erad_pc, 'int_colors': int_colors,
         'n_memb': n_memb, 'cont_ind': cont_ind, 'kde_prob': kde_prob,
-        'dist_cent': dist_cent, 'r_core_pc': r_core_pc, 'e_r_core': e_r_core
+        'dist_cent': dist_cent, 'r_core_pc': r_core_pc, 'e_r_core': e_r_core,
+        'phot_disp': phot_disp
     }
 
     return pars_dict

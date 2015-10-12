@@ -510,6 +510,9 @@ Per cluster DA/GA parameters:
 1. Defaults params for DA; GA: n_pop=200, n_gen=2000, p_mut=0.95, n_el=10
  * H86-188 (11)
 
+##### 9th run (1)
+1. DA: skip + local + knuth; GA: n_pop=100, n_gen=2000, p_mut=0.35, n_el=1
+ * H86-188 (11)
 
 #### `19th_run`
 
