@@ -1602,7 +1602,7 @@ def make_amr_plot(in_params):
     zarr, zsigma, aarr, asigma = [in_params[_] for _ in ['zarr', 'zsigma',
                                                          'aarr', 'asigma']]
 
-    # First index k indicates the galaxy (0 for SMC, 1 for KMC), the second
+    # First index k indicates the galaxy (0 for SMC, 1 for LMC), the second
     # index 0 indicates ASteCA values.
     # k=0 -> SMC, k=1 ->LMC
     age_gyr, age_vals, met_weighted = [[], []], [[], []], [[], []]
