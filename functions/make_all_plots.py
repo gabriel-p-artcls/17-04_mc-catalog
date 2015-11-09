@@ -21,7 +21,9 @@ def as_vs_lit_plots(pl_params):
     gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, \
         ysigma, zarr, v_min_mp, v_max_mp, par_mean_std, gal_name = pl_params
 
-    xy_font_s = 18
+    xy_font_s = 21
+    plt.xticks(fontsize=15)
+    plt.yticks(fontsize=15)
     cm = plt.cm.get_cmap('RdYlBu_r')
 
     # Different limits for \delta plots.
@@ -62,7 +64,7 @@ def as_vs_lit_plots(pl_params):
     rs_y = yarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
 
     # Plot all clusters in dictionary.
-    SC = plt.scatter(rs_x, rs_y, marker='o', c=zarr, s=70, lw=0.25, cmap=cm,
+    SC = plt.scatter(rs_x, rs_y, marker='o', c=zarr, s=110, lw=0.25, cmap=cm,
                      vmin=v_min_mp, vmax=v_max_mp, zorder=3)
     # Plot error bars.
     for j, xy in enumerate(zip(*[rs_x, rs_y])):
@@ -152,7 +154,7 @@ def make_as_vs_lit_plot(galax, k, in_params):
     gs = gridspec.GridSpec(5, 2)
 
     if galax == 'SMC':
-        ext_min, ext_max = 0., 0.15
+        ext_min, ext_max = 0., 0.3 # 0.15
         dm_min, dm_max = 18.62, 19.21
     else:
         ext_min, ext_max = 0., 0.3
@@ -882,7 +884,9 @@ def cross_match_plot(pl_params):
 
     a, e_a, b, e_b = indexes
 
-    xy_font_s = 16
+    xy_font_s = 21
+    plt.xticks(fontsize=15)
+    plt.yticks(fontsize=15)
     # cm = plt.cm.get_cmap('RdYlBu_r')
 
     ax = plt.subplot(gs[i])
@@ -938,14 +942,15 @@ def cross_match_plot(pl_params):
                     plt.errorbar(xy[0], xy[1], yerr=y_err, ls='none',
                                  color='k', elinewidth=0.2, zorder=1)
             # Legend.
-            leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
-                             fontsize=xy_font_s - 5)
-            leg.get_frame().set_alpha(0.85)
+            if y_lab != '$mass_{DB}\,[M_{\odot}]$':
+                leg = plt.legend(loc='upper left', markerscale=1.,
+                                 scatterpoints=1, fontsize=xy_font_s - 7)
+                leg.get_frame().set_alpha(0.5)
     plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
     if text_box:
         # Text box.
         ob = offsetbox.AnchoredText(text_box, loc=4,
-                                    prop=dict(size=xy_font_s - 3))
+                                    prop=dict(size=xy_font_s - 5))
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
 
@@ -1080,7 +1085,9 @@ def cross_match_age_ext_plot(pl_params):
     gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, data, labels, mark, cols, \
         kde_cont = pl_params
 
-    xy_font_s = 16
+    xy_font_s = 21
+    plt.xticks(fontsize=15)
+    plt.yticks(fontsize=15)
 
     ax = plt.subplot(gs[i])
     plt.xlim(xmin, xmax)
@@ -1126,11 +1133,11 @@ def cross_match_age_ext_plot(pl_params):
             # plt.imshow(np.rot90(kde), cmap=plt.cm.YlOrBr, extent=ext_range)
             plt.contour(x, y, kde, 5, colors='k', linewidths=0.6)
 
-    # Legend.
-    leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
-                     fontsize=xy_font_s - 5)
-    # Set the alpha value of the legend.
-    leg.get_frame().set_alpha(0.65)
+    # # Legend.
+    # leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
+    #                  fontsize=xy_font_s - 7)
+    # # Set the alpha value of the legend.
+    # leg.get_frame().set_alpha(0.5)
     ax.set_aspect('auto')
 
 
@@ -1276,9 +1283,9 @@ def make_cross_match_age_ext(cross_match, in_params):
              '$log(age/yr)_{DB}$']
     xmm, ymm = [-1.5, 1.5, -0.019, 0.31], [-0.19, 0.19]
 
-    # The size (13.33, 25) is set so that the fig sizes are equivalent to that
+    # The arbitrary size is set so that the fig sizes are equivalent to that
     # of the cross_match plots.
-    fig = plt.figure(figsize=(13.33, 25))
+    fig = plt.figure(figsize=(13.77, 25.2))
     gs = gridspec.GridSpec(4, 2)
 
     cross_match_lst = [
@@ -1559,42 +1566,55 @@ def pl_amr(pl_params):
     Plot AMRs.
     '''
 
-    gs, i, age_vals, met_weighted, age_gyr, zarr, x_lab, y_lab = pl_params
+    gs, i, age_vals, met_weighted, age_gyr, age_met_lit, zarr, x_lab,\
+        y_lab = pl_params
 
     xy_font_s = 16
     ax = plt.subplot(gs[i])
-    plt.xlim(0., 6)
-    plt.ylim(-2.3, 0.1)
+    plt.xlim(-0.02, 8.2)
+    plt.ylim(-2.45, 0.4)
     plt.tick_params(axis='both', which='major', labelsize=10)
     plt.xlabel(x_lab, fontsize=xy_font_s)
-    plt.ylabel(y_lab, fontsize=xy_font_s)
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
             zorder=1)
     ax.minorticks_on()
     col, leg = ['r', 'b'], ['SMC', 'LMC']
-    for k in [0, 1]:
+    for k in [1, 0]:
 
-        # # Introduce random scatter in Age (Gyr).
-        # 2% of axis ranges.
-        ax_ext = max(age_gyr[k][0]) * 0.02
-        # # Add randoms scatter.
-        rs_x = age_gyr[k][0] + np.random.uniform(-ax_ext, ax_ext,
-                                                 len(age_gyr[k][0]))
-
-        plt.scatter(rs_x, zarr[k][0], marker='*', s=25,
-                    edgecolors=col[k], facecolor='none', lw=0.4, zorder=3)
-        plt.plot(age_vals[k], met_weighted[k][0], c=col[k], label=leg[k])
-        y_err_min = np.array(met_weighted[k][0]) - np.array(met_weighted[k][1])
-        y_err_max = np.array(met_weighted[k][0]) + np.array(met_weighted[k][1])
-        plt.fill_between(age_vals[k], y_err_min, y_err_max, alpha=0.1,
-                         color=col[k])
+        # ASteCA values.
+        plt.plot(age_vals[k], met_weighted[k][0], c=col[k],
+                 label=leg[k] + ' (ASteCA)',
+                 zorder=3)
+        if i == 0:
+            plt.ylabel(y_lab, fontsize=xy_font_s)
+            # Introduce random scatter in Age (Gyr).
+            # 2% of axis ranges.
+            ax_ext = max(age_gyr[k][0]) * 0.02
+            # Add randoms scatter.
+            rs_x = age_gyr[k][0] + np.random.uniform(-ax_ext, ax_ext,
+                                                     len(age_gyr[k][0]))
+            plt.scatter(rs_x, zarr[k][0], marker='*', s=25, edgecolors=col[k],
+                        facecolor='none', lw=0.4, label=leg[k], zorder=1)
+            # ASteCA 1 sigma error regions.
+            y_err_min = np.array(met_weighted[k][0]) -\
+                np.array(met_weighted[k][1])
+            y_err_max = np.array(met_weighted[k][0]) +\
+                np.array(met_weighted[k][1])
+            plt.fill_between(age_vals[k], y_err_min, y_err_max, alpha=0.1,
+                             color=col[k])
+        if i == 1:
+            ax.set_yticklabels([])
+            # Literature values.
+            plt.plot(age_met_lit[k][0], age_met_lit[k][1], c=col[k],
+                     label=leg[k] + ' (Pagel & T. 1998)', ls='--',
+                     zorder=3)
     # Legend.
-    leg = plt.legend(loc='lower right', markerscale=1., scatterpoints=1,
-                     fontsize=xy_font_s - 3)
+    leg = plt.legend(loc='lower right', handlelength=2.5, scatterpoints=1,
+                     fontsize=xy_font_s - 8)
     leg.get_frame().set_alpha(0.85)
 
 
-def make_amr_plot(in_params):
+def make_amr_plot(in_params, amr_lit):
     '''
     Make age-metallicity relation plot for both galaxies.
     '''
@@ -1612,15 +1632,22 @@ def make_amr_plot(in_params):
                       np.asarray(asigma[k][0]) * np.asarray(aarr[k][0]) *
                       np.log(10) / 5.]
         # Weighted metallicity values for an array of ages.
+        # Max limit on met errors.
+        zsig = [min(2., _) for _ in zsigma[k][0]]
         age_vals[k], met_weighted[k] = age_met_rel(
-            age_gyr[k][0], age_gyr[k][1], zarr[k][0], zsigma[k][0])
+            age_gyr[k][0], age_gyr[k][1], zarr[k][0], zsig)
+
+    # Literature values.
+    age_met_lit = [zip(*amr_lit[0]), zip(*amr_lit[1])]
 
     fig = plt.figure(figsize=(10, 20))
     gs = gridspec.GridSpec(4, 2)
 
     amr_lst = [
-        [gs, 0, age_vals, met_weighted, age_gyr, zarr,
-         '$Age_{ASteCA}\,(Gyr)$', '$[Fe/H]_{ASteCA}$']
+        [gs, 0, age_vals, met_weighted, age_gyr, age_met_lit, zarr,
+         '$Age\,(Gyr)$', '$[Fe/H]$'],
+        [gs, 1, age_vals, met_weighted, age_gyr, age_met_lit, zarr,
+         '$Age\,(Gyr)$', '']
     ]
 
     for pl_params in amr_lst:

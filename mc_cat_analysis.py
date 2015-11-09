@@ -1,6 +1,6 @@
 
 from functions.get_data import get_asteca_data, get_liter_data, \
-    get_bica_database, get_cross_match_data
+    get_bica_database, get_cross_match_data, get_amr_lit
 from functions.get_params import params
 import functions.CMD_obs_vs_asteca as cmd
 from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
@@ -161,7 +161,7 @@ def check_diffs(in_params):
             gal[j], a_diff, age_count)
 
 
-def make_plots(in_params, bica_coords, cross_match):
+def make_plots(in_params, bica_coords, cross_match, amr_lit):
     '''
     Make each plot sequentially.
     '''
@@ -203,8 +203,8 @@ def make_plots(in_params, bica_coords, cross_match):
     # make_cross_match_age_ext(cross_match, in_params)
     # print 'Age and extinction diffs for cross-matched clusters done.'
 
-    # make_amr_plot(in_params)
-    # print 'AMR maps done.'
+    make_amr_plot(in_params, amr_lit)
+    print 'AMR maps done.'
 
 
 def main():
@@ -237,8 +237,12 @@ def main():
     # Check for differences in ASteCA vs Lit values.
     check_diffs(in_params)
 
+    # Read AMR data from other articles.
+    amr_lit = get_amr_lit()
+
     # Make final plots.
-    make_plots(in_params, bica_coords, cross_match)
+    print 'Plotting...\n'
+    make_plots(in_params, bica_coords, cross_match, amr_lit)
 
     # # Put this plot here since it does not depend on any parameter obtained
     # # previously so it's faster to plot it separately.

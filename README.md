@@ -3,6 +3,7 @@
 - [mc-catalog](#mc-catalog)
   - [Top level](#top-level)
     - [`ages_mass_lit/`](#ages_mass_lit)
+    - [`AMRs/`](#AMRs)
     - [`aux_funcs/`](#aux_funcs)
     - [`extinction_MCEV/`](#extinction_mcev)
     - [`figures/`](#figures)
@@ -122,6 +123,10 @@ photometry.
   adsabs.harvard.edu/abs/2005AJ....129.2701R), obtained via
   integrated photometry.
 
+
+### `AMRs/`
+
+  Data files with literature AMR values.
 
 ### `aux_funcs/`
 

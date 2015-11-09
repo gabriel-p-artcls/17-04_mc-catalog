@@ -8,13 +8,22 @@ def age_met_rel(xarr, xsigma, yarr, ysigma):
     Generate an age-metallicity relation (AMR) based on the KDE of the
     age-metallicity 2D space and a weighted average of the metallicity for
     several age values.
+
+    See: http://math.stackexchange.com/q/1457390/37846
     '''
 
     # Define 2D space extension where the KDE will be obtained.
-    x_min, x_max, y_min, y_max = 0., 6., -2.2, 0.
+    x_min, x_max = min(np.array(xarr) - np.array(xsigma)), \
+        max(np.array(xarr) + np.array(xsigma))
+    y_min, y_max = min(np.array(yarr) - np.array(ysigma)), \
+        max(np.array(yarr) + np.array(ysigma))
+    # x_min, x_max, y_min, y_max = -4., 10., -7., 5.
     ext = [x_min, x_max, y_min, y_max]
     # Grid density.
-    gd = 100
+    # Metallicity step.
+    met_step = 0.02
+    gd = int((y_max - y_min) / met_step)
+
     # Generate metallicity values as in grid. Invert list so the weighted
     # average is obtained correctly.
     met_vals = np.linspace(y_min, y_max, gd)[::-1]
@@ -32,6 +41,17 @@ def age_met_rel(xarr, xsigma, yarr, ysigma):
     # Obtain metallicity weighted average for each age value.
     met_weighted = [[], []]
     for age_col in a_m_kde:
+        # # Filter out points with very small values (assign 0. value)
+        # min_w = max(age_col) / 20.
+        # age_col2 = []
+        # N = 0
+        # for _ in age_col:
+        #     if _ < min_w:
+        #         age_col2.append(0.)
+        #         N += 1
+        #     else:
+        #         age_col2.append(_)
+        # age_col = np.array(age_col2)
         age_col = np.array(age_col)
         # Obtain weighted metallicity for this age value.
         sum_age_col = sum(age_col)

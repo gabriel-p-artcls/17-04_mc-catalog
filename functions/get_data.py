@@ -35,6 +35,7 @@ def get_asteca_data():
 
 def get_bica_database():
     '''
+    Read Bica et el. (2008) database.
     '''
     # Path to data file.
     bb_file = 'bb_cat.dat'
@@ -44,9 +45,30 @@ def get_bica_database():
         bica_database = []
         for line in skip_comments(f):
             # Read coordinates.
-                bica_database.append([float(_) for _ in line.split()])
+            bica_database.append([float(_) for _ in line.split()])
 
     return bica_database
+
+
+def get_amr_lit():
+    '''
+    Read AMR literature data.
+    '''
+    # Path to data Pagel & T (1998) file.
+    in_file = 'AMRs/PT98_s-lmc_amr.dat'
+
+    # Read data file
+    with open(in_file) as f:
+        # i=0 --> SMC ; i=1 --> LMC
+        amr_lit = [[], []]
+        for line in skip_comments(f):
+            l = line.split()
+            # Read coordinates.
+            if l[2] != '--':
+                amr_lit[0].append([float(_) for _ in [l[2], l[3]]])
+            amr_lit[1].append([float(_) for _ in [l[0], l[1]]])
+
+    return amr_lit
 
 
 def get_liter_data():
