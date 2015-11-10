@@ -17,7 +17,6 @@ def age_met_rel(xarr, xsigma, yarr, ysigma):
         max(np.array(xarr) + np.array(xsigma))
     y_min, y_max = min(np.array(yarr) - np.array(ysigma)), \
         max(np.array(yarr) + np.array(ysigma))
-    # x_min, x_max, y_min, y_max = -4., 10., -7., 5.
     ext = [x_min, x_max, y_min, y_max]
     # Grid density.
     # Metallicity step.

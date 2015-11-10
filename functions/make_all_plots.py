@@ -1566,27 +1566,25 @@ def pl_amr(pl_params):
     Plot AMRs.
     '''
 
-    gs, i, age_vals, met_weighted, age_gyr, age_met_lit, zarr, x_lab,\
+    gs, i, age_vals, met_weighted, age_gyr, amr_lit, zarr, x_lab,\
         y_lab = pl_params
 
     xy_font_s = 16
     ax = plt.subplot(gs[i])
-    plt.xlim(-0.02, 8.2)
-    plt.ylim(-2.45, 0.4)
     plt.tick_params(axis='both', which='major', labelsize=10)
-    plt.xlabel(x_lab, fontsize=xy_font_s)
+    plt.ylabel(y_lab, fontsize=xy_font_s)
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
             zorder=1)
     ax.minorticks_on()
-    col, leg = ['r', 'b'], ['SMC', 'LMC']
-    for k in [1, 0]:
-
-        # ASteCA values.
-        plt.plot(age_vals[k], met_weighted[k][0], c=col[k],
-                 label=leg[k] + ' (ASteCA)',
-                 zorder=3)
-        if i == 0:
-            plt.ylabel(y_lab, fontsize=xy_font_s)
+    plt.xlim(-0.02, 8.4)
+    if i == 0:
+        plt.ylim(-2.45, 0.4)
+        ax.set_xticklabels([])
+        col, leg = ['r', 'b'], ['SMC', 'LMC']
+        for k in [1, 0]:
+            # ASteCA values.
+            plt.plot(age_vals[k], met_weighted[k][0], c=col[k],
+                     label=leg[k] + ' (ASteCA)', zorder=3)
             # Introduce random scatter in Age (Gyr).
             # 2% of axis ranges.
             ax_ext = max(age_gyr[k][0]) * 0.02
@@ -1602,16 +1600,47 @@ def pl_amr(pl_params):
                 np.array(met_weighted[k][1])
             plt.fill_between(age_vals[k], y_err_min, y_err_max, alpha=0.1,
                              color=col[k])
-        if i == 1:
-            ax.set_yticklabels([])
-            # Literature values.
-            plt.plot(age_met_lit[k][0], age_met_lit[k][1], c=col[k],
-                     label=leg[k] + ' (Pagel & T. 1998)', ls='--',
-                     zorder=3)
-    # Legend.
-    leg = plt.legend(loc='lower right', handlelength=2.5, scatterpoints=1,
-                     fontsize=xy_font_s - 8)
-    leg.get_frame().set_alpha(0.85)
+        # Legend.
+        leg0 = plt.legend(loc='lower right', handlelength=2.5, scatterpoints=1,
+                          fontsize=xy_font_s - 8)
+        leg0.get_frame().set_alpha(0.85)
+
+    # Literature values.
+    elif i == 1:
+        ax.set_xticklabels([])
+        plt.ylim(-1.23, -0.06)
+        ax.set_title("LMC", x=0.5, y=0.92, fontsize=xy_font_s - 4)
+        col = ['m', 'k', 'g', 'c']
+        c_dash = [[8, 4], [8, 4, 2, 4], [2, 2], [8, 4, 2, 4, 2, 4]]
+        amr_lab = ['PT98', 'PG03', 'HZ09', 'R12']
+        for j, amr in enumerate(amr_lit):
+            plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
+                     dashes=c_dash[j], lw=1.5, zorder=1)
+        # ASteCA values.
+        plt.plot(age_vals[1], met_weighted[1][0], c='b', label='ASteCA',
+                 zorder=3)
+        # Legend.
+        leg2 = plt.legend(loc='lower left', handlelength=3.5, scatterpoints=1,
+                          fontsize=xy_font_s - 8)
+        leg2.get_frame().set_alpha(0.85)
+    elif i == 2:
+        plt.ylim(-1.39, -0.39)
+        plt.xlabel(x_lab, fontsize=xy_font_s)
+        ax.set_title("SMC", x=0.5, y=0.92, fontsize=xy_font_s - 4)
+        col = ['m', 'k', 'g', 'c', 'y', '#b22222', '#b22222']
+        c_dash = [[8, 4], [8, 4, 2, 4], [2, 2], [8, 4, 2, 4, 2, 4], [8, 4],
+                  [2, 2], [8, 4, 2, 4]]
+        amr_lab = ['PT98', 'PG03', 'HZ04', 'N09', 'TB09', 'C13-B', 'C13-C']
+        for j, amr in enumerate(amr_lit):
+            plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
+                     dashes=c_dash[j], lw=1.5, zorder=1)
+        # ASteCA values.
+        plt.plot(age_vals[0], met_weighted[0][0], c='r', label='ASteCA',
+                 zorder=3)
+        # Legend.
+        leg1 = plt.legend(loc='lower left', handlelength=3.5, scatterpoints=1,
+                          fontsize=xy_font_s - 8)
+        leg1.get_frame().set_alpha(0.85)
 
 
 def make_amr_plot(in_params, amr_lit):
@@ -1632,22 +1661,22 @@ def make_amr_plot(in_params, amr_lit):
                       np.asarray(asigma[k][0]) * np.asarray(aarr[k][0]) *
                       np.log(10) / 5.]
         # Weighted metallicity values for an array of ages.
-        # Max limit on met errors.
+        # Max limit on very large met errors.
         zsig = [min(2., _) for _ in zsigma[k][0]]
         age_vals[k], met_weighted[k] = age_met_rel(
             age_gyr[k][0], age_gyr[k][1], zarr[k][0], zsig)
 
-    # Literature values.
-    age_met_lit = [zip(*amr_lit[0]), zip(*amr_lit[1])]
+    fig = plt.figure(figsize=(5.25, 13.5))
+    gs = gridspec.GridSpec(3, 1)
 
-    fig = plt.figure(figsize=(10, 20))
-    gs = gridspec.GridSpec(4, 2)
+    amr_lit_smc, amr_lit_lmc = amr_lit
 
     amr_lst = [
-        [gs, 0, age_vals, met_weighted, age_gyr, age_met_lit, zarr,
-         '$Age\,(Gyr)$', '$[Fe/H]$'],
-        [gs, 1, age_vals, met_weighted, age_gyr, age_met_lit, zarr,
-         '$Age\,(Gyr)$', '']
+        [gs, 0, age_vals, met_weighted, age_gyr, [], zarr, '', '$[Fe/H]$'],
+        [gs, 1, age_vals, met_weighted, age_gyr, amr_lit_lmc, zarr,
+         '', '$[Fe/H]$'],
+        [gs, 2, age_vals, met_weighted, age_gyr, amr_lit_smc, zarr,
+         '$Age\,(Gyr)$', '$[Fe/H]$']
     ]
 
     for pl_params in amr_lst:

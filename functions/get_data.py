@@ -56,17 +56,108 @@ def get_amr_lit():
     '''
     # Path to data Pagel & T (1998) file.
     in_file = 'AMRs/PT98_s-lmc_amr.dat'
-
     # Read data file
     with open(in_file) as f:
         # i=0 --> SMC ; i=1 --> LMC
-        amr_lit = [[], []]
+        amr_PT98_t = [[], []]
         for line in skip_comments(f):
             l = line.split()
             # Read coordinates.
             if l[2] != '--':
-                amr_lit[0].append([float(_) for _ in [l[2], l[3]]])
-            amr_lit[1].append([float(_) for _ in [l[0], l[1]]])
+                amr_PT98_t[0].append([float(_) for _ in [l[2], l[3]]])
+            amr_PT98_t[1].append([float(_) for _ in [l[0], l[1]]])
+
+    # Put SMC values first and LMC second.
+    amr_smc_PT98, amr_lmc_PT98 = zip(*amr_PT98_t[0]), zip(*amr_PT98_t[1])
+
+    # Path to data Piatti & Geisler (2003) file.
+    in_file = 'AMRs/PG03_s-lmc_amr.dat'
+    # Read data file
+    with open(in_file) as f:
+        # i=0 --> SMC ; i=1 --> LMC
+        amr_PG03_t = [[], []]
+        for line in skip_comments(f):
+            l = line.split()
+            # Read coordinates.
+            amr_PG03_t[0].append([float(_) for _ in [l[4], l[6]]])
+            amr_PG03_t[1].append([float(_) for _ in [l[0], l[2]]])
+
+    # Put SMC values first and LMC second.
+    amr_smc_PG03, amr_lmc_PG03 = zip(*amr_PG03_t[0]), zip(*amr_PG03_t[1])
+
+    # Path to data HZ09 file.
+    in_file = 'AMRs/HZ09_lmc_amr.dat'
+    # Read data file
+    with open(in_file) as f:
+        amr_lmc_HZ09 = [[], []]
+        for line in skip_comments(f):
+            l = line.split()
+            # Read coordinates.
+            amr_lmc_HZ09[0].append(float(l[0]))
+            amr_lmc_HZ09[1].append(float(l[1]))
+
+    # Path to data R12 file.
+    in_file = 'AMRs/R12_lmc_amr.dat'
+    # Read data file
+    with open(in_file) as f:
+        amr_lmc_R12 = [[], []]
+        for line in skip_comments(f):
+            l = line.split()
+            # Read coordinates.
+            amr_lmc_R12[0].append(float(l[0]))
+            amr_lmc_R12[1].append(float(l[1]))
+
+    # Path to data HZ04 file.
+    in_file = 'AMRs/HZ04_smc_amr.dat'
+    # Read data file
+    with open(in_file) as f:
+        amr_smc_HZ04 = [[], []]
+        for line in skip_comments(f):
+            l = line.split()
+            # Read coordinates.
+            amr_smc_HZ04[0].append(float(l[0]))
+            amr_smc_HZ04[1].append(float(l[1]))
+
+    # Path to data N09 file.
+    in_file = 'AMRs/N09_smc_amr.dat'
+    # Read data file
+    with open(in_file) as f:
+        amr_smc_N09 = [[], []]
+        for line in skip_comments(f):
+            l = line.split()
+            # Read coordinates.
+            amr_smc_N09[0].append(float(l[0]))
+            amr_smc_N09[1].append(float(l[1]))
+
+    # Path to data N09 file.
+    in_file = 'AMRs/TB09_smc_amr.dat'
+    # Read data file
+    with open(in_file) as f:
+        amr_smc_TB09 = [[], []]
+        for line in skip_comments(f):
+            l = line.split()
+            # Read coordinates.
+            amr_smc_TB09[0].append(float(l[0]))
+            amr_smc_TB09[1].append(float(l[3]))
+
+    # Path to data N09 file.
+    in_file = 'AMRs/C13_smc_amr.dat'
+    # Read data file
+    with open(in_file) as f:
+        amr_smc_C13_B, amr_smc_C13_C = [[], []], [[], []]
+        for line in skip_comments(f):
+            l = line.split()
+            # Read coordinates.
+            if l[0] != '--':
+                amr_smc_C13_B[0].append(float(l[0]))
+                amr_smc_C13_B[1].append(float(l[1]))
+            amr_smc_C13_C[0].append(float(l[2]))
+            amr_smc_C13_C[1].append(float(l[3]))
+
+    amr_lit_smc = [amr_smc_PT98, amr_smc_PG03, amr_smc_HZ04, amr_smc_N09,
+                   amr_smc_TB09, amr_smc_C13_B, amr_smc_C13_C]
+    amr_lit_lmc = [amr_lmc_PT98, amr_lmc_PG03, amr_lmc_HZ09, amr_lmc_R12]
+    amr_lit = [amr_lit_smc, amr_lit_lmc]
 
     return amr_lit
 
