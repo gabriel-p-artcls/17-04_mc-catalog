@@ -1,0 +1,126 @@
+
+import numpy as np
+import scipy
+
+
+def linear_fit(xdata, ydata, ysigma=None):
+    """
+    http://bulldog2.redlands.edu/facultyfolder/deweerd/tutorials/fitting.txt
+    http://nbviewer.ipython.org/url/bulldog2.redlands.edu/facultyfolder/
+    deweerd/tutorials/LinearRegression.txt
+
+    Performs a linear fit to data, weighted by errors in y.
+
+    Parameters
+    ----------
+    xdata : An array of length N.
+    ydata : An array of length N.
+    sigma : None or an array of length N,
+        If provided, it is the standard-deviation of ydata.
+        This vector, if given, will be used as weights in the fit.
+
+    Returns
+    -------
+    a, b   : Optimal parameter of linear fit (y = a*x + b)
+    sa, sb : Uncertainties of the parameters
+    """
+
+    if ysigma is None:
+        w = np.ones(len(ydata))  # Each point is equally weighted.
+    else:
+        w = 1.0/(ysigma**2)
+
+    sw = sum(w)
+    wx = w*xdata  # this product gets used to calculate swxy and swx2
+    swx = sum(wx)
+    swy = sum(w*ydata)
+    swxy = sum(wx*ydata)
+    swx2 = sum(wx*xdata)
+
+    a = (sw*swxy - swx * swy)/(sw * swx2 - swx * swx)
+    b = (swy*swx2 - swx*swxy)/(sw * swx2 - swx * swx)
+    sa = np.sqrt(sw / (sw * swx2 - swx * swx))
+    sb = np.sqrt(swx2 / (sw * swx2 - swx * swx))
+
+    if ysigma is None:
+        chi2 = sum(((a*xdata + b)-ydata)**2)
+    else:
+        chi2 = sum((((a*xdata + b)-ydata)/ysigma)**2)
+    dof = len(ydata) - 2
+    rchi2 = chi2/dof
+    # print 'results of linear_fit:'
+    # print '   chi squared = ', chi2
+    # print '   degrees of freedom = ', dof
+    # print '   reduced chi squared = ', rchi2
+
+    return a, b, sa, sb, rchi2, dof
+
+
+def confband(xd, yd, a, b, conf=0.95):
+    """
+    http://astropython.blogspot.com.ar/2011/12/
+    calculating-and-plotting-prediction.html
+    https://gist.github.com/rsnemmen/f2c03beb391db809c90f
+    https://gist.github.com/rsnemmen/0eb32832c657c19e4d39
+
+    Calculates the confidence band of the linear regression model at the
+    desired confidence level, using analytical methods. The 2sigma confidence
+    interval is 95% sure to contain the best-fit regression line. This is not
+    the same as saying it will contain 95% of the data points.
+
+    Arguments:
+    - xd, yd:
+        data arrays
+    - a, b:
+        linear fit parameters as in y = ax+b
+    - conf:
+        desired confidence level, by default 0.95 (2 sigma)
+
+    Returns:
+    Sequence(lcb, ucb, x) with the arrays holding the lower and upper
+    confidence bands corresponding to the[input] x array.
+
+    Usage:
+    >> > lcb, ucb, x = nemmen.confband(all.kp, all.lg, a, b, conf=0.95)
+    calculates the confidence bands for the given input arrays
+    >> > pylab.fill_between(x, lcb, ucb, alpha=0.3, facecolor='gray')
+    plots a shaded area containing the confidence band
+
+    References:
+    1. http://en.wikipedia.org/wiki/Simple_linear_regression, see Section
+       Confidence intervals
+    2. http://www.weibull.com/DOEWeb/
+       confidence_intervals_in_simple_linear_regression.htm
+
+    Author:
+        Rodrigo Nemmen
+    v1 Dec. 2011
+    v2 Jun. 2012:
+        corrected bug in computing dy
+    """
+
+    alpha = 1. - conf   # significance
+    n = xd.size   # data sample size
+    x = np.linspace(xd.min(), xd.max(), 100)
+    # Predicted values (best-fit model)
+    y = a*x+b
+
+    # Auxiliary definitions
+
+    # Std. deviation of an individual measurement (Bevington, eq. 6.15)
+    N = np.size(xd)
+    sd = 1. / (N - 2.) * np.sum((yd - a * xd - b) ** 2)
+    sd = np.sqrt(sd)
+
+    sxd = np.sum((xd - xd.mean()) ** 2)
+    sx = (x - xd.mean()) ** 2  # array
+
+    # Quantile of Student's t distribution for p=1-alpha/2
+    q = scipy.stats.t.ppf(1. - alpha / 2., n - 2)
+
+    # Confidence band
+    dy = q * sd * np.sqrt(1. / n + sx / sxd)
+    ucb = y + dy    # Upper confidence band
+    lcb = y - dy    # Lower confidence band
+
+    return lcb, ucb, x

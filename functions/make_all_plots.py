@@ -12,6 +12,7 @@ from functions.ra_dec_map import ra_dec_plots
 from functions.kde_2d import kde_map
 import functions.CMD_obs_vs_asteca as cmd
 from functions.amr_kde import age_met_rel
+from functions import lin_fit_conf_bands as lf_cb
 
 
 def as_vs_lit_plots(pl_params):
@@ -784,25 +785,57 @@ def plot_dist_2_cent(pl_params):
             zorder=1)
     ax.minorticks_on()
     # Plot all clusters in dictionary.
-    SC = plt.scatter(xarr, yarr, marker='o', c=zarr, s=siz, lw=0.25, cmap=cm,
+    # Introduce random scatter.
+    # X% of axis ranges.
+    ax_ext = (xmax - xmin) * 0.02
+    # Add randoms scatter.
+    if i in [2, 3]:
+        rs_x = xarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
+    else:
+        rs_x = xarr
+    SC = plt.scatter(rs_x, yarr, marker='o', c=zarr, s=siz, lw=0.25, cmap=cm,
                      vmin=v_min, vmax=v_max, zorder=3)
     # Plot y error bar if it is passed.
     if ysigma:
         plt.errorbar(xarr, yarr, yerr=ysigma, ls='none', color='k',
                      elinewidth=0.4, zorder=1)
-    if gal_name != '':
+
+    if i in [2, 3]:
+        # Linear regression of metallicity, NOT weighted by errors.
+        fit = np.polyfit(xarr, yarr, 1)
+        fit_nw = np.poly1d(fit)
+        plt.plot(xarr, fit_nw(xarr), '-k', lw=0.8)
+        # Linear regression and confidence bands or metallicity gradient,
+        # weighted by their errors in [Fe/H.
+        a, b, sa, sb, rchi2, dof = lf_cb.linear_fit(
+            np.array(xarr), np.array(yarr), np.array(ysigma))
+        # Confidence bands.
+        lcb, ucb, x = lf_cb.confband(np.array(xarr), np.array(yarr), a, b,
+                                     conf=0.95)
+        fit_w = np.poly1d([a, b])
+        plt.plot(x, fit_w(x), '--g')
+        plt.fill_between(x, lcb, ucb, alpha=0.3, facecolor='gray')
         # Text box.
-        ob = offsetbox.AnchoredText(gal_name, loc=4, prop=dict(size=xy_font_s))
+        text = r'$[Fe/H]_{{rg}}={:.2f}\pm{:.2f}\,dex\,kpc^{{-1}}$'.format(
+            a * 1000., sa * 1000.)
+        ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s - 3))
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
-    if i in [1, 3, 5, 7]:
-        # Position colorbar.
-        the_divider = make_axes_locatable(ax)
-        color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
-        # Colorbar.
-        cbar = plt.colorbar(SC, cax=color_axis)
-        zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
-        cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=zpad)
+
+    if gal_name != '':
+        # Text box.
+        ob = offsetbox.AnchoredText(gal_name, loc=1,
+                                    prop=dict(size=xy_font_s - 2))
+        ob.patch.set(alpha=0.85)
+        ax.add_artist(ob)
+    # if i in [1, 3, 5, 7]:
+    # Position colorbar.
+    the_divider = make_axes_locatable(ax)
+    color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
+    # Colorbar.
+    cbar = plt.colorbar(SC, cax=color_axis)
+    zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
+    cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=zpad)
 
 
 def make_dist_2_cents(in_params):
@@ -843,9 +876,9 @@ def make_dist_2_cents(in_params):
         [gs, 0, xmin, xmax, 6.6, 10.1, x_lab, yz_lab[0], yz_lab[1],
             dist_cent[0], aarr[0][0], zarr[0][0], asigma[0][0], vmin_met,
             vmax_met, rad_pc[0], 'SMC'],
-        [gs, 2, xmin, xmax, -2.4, 0.4, x_lab, yz_lab[1], yz_lab[2],
-            dist_cent[0], zarr[0][0], marr[0][0], zsigma[0][0], vmin_mas,
-            vmax_mas, rad_pc[0], ''],
+        [gs, 2, xmin, xmax, -2.4, 0.4, x_lab, yz_lab[1], yz_lab[0],
+            dist_cent[0], zarr[0][0], aarr[0][0], zsigma[0][0], vmin_age,
+            vmax_age, rad_pc[0], 'SMC'],
         [gs, 4, xmin, xmax, 0., 30000, x_lab, yz_lab[2], yz_lab[3],
             dist_cent[0], marr[0][0], earr[0][0], msigma[0][0], vmin_ext,
             vmax_ext, rad_pc[0], ''],
@@ -856,9 +889,9 @@ def make_dist_2_cents(in_params):
         [gs, 1, xmin, xmax, 6.6, 10.1, x_lab, yz_lab[0], yz_lab[1],
             dist_cent[1], aarr[1][0], zarr[1][0], asigma[1][0], vmin_met,
             vmax_met, rad_pc[1], 'LMC'],
-        [gs, 3, xmin, xmax, -2.4, 0.4, x_lab, yz_lab[1], yz_lab[2],
-            dist_cent[1], zarr[1][0], marr[1][0], zsigma[1][0], vmin_mas,
-            vmax_mas, rad_pc[1], ''],
+        [gs, 3, xmin, xmax, -2.4, 0.4, x_lab, yz_lab[1], yz_lab[0],
+            dist_cent[1], zarr[1][0], aarr[1][0], zsigma[1][0], vmin_age,
+            vmax_age, rad_pc[1], 'LMC'],
         [gs, 5, xmin, xmax, 0., 30000, x_lab, yz_lab[2], yz_lab[3],
             dist_cent[1], marr[1][0], earr[1][0], msigma[1][0], vmin_ext,
             vmax_ext, rad_pc[1], ''],
@@ -1610,9 +1643,9 @@ def pl_amr(pl_params):
         ax.set_xticklabels([])
         plt.ylim(-1.23, -0.06)
         ax.set_title("LMC", x=0.5, y=0.92, fontsize=xy_font_s - 4)
-        col = ['m', 'k', 'g', 'c']
-        c_dash = [[8, 4], [8, 4, 2, 4], [2, 2], [8, 4, 2, 4, 2, 4]]
-        amr_lab = ['PT98', 'PG03', 'HZ09', 'R12']
+        col = ['m', 'k', 'g', 'c', 'y']
+        c_dash = [[8, 4], [8, 4, 2, 4], [2, 2], [8, 4, 2, 4, 2, 4], [8, 4]]
+        amr_lab = ['PT98', 'PG03', 'C08', 'HZ09', 'R12']
         for j, amr in enumerate(amr_lit):
             plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
                      dashes=c_dash[j], lw=1.5, zorder=1)
@@ -1627,10 +1660,11 @@ def pl_amr(pl_params):
         plt.ylim(-1.39, -0.39)
         plt.xlabel(x_lab, fontsize=xy_font_s)
         ax.set_title("SMC", x=0.5, y=0.92, fontsize=xy_font_s - 4)
-        col = ['m', 'k', 'g', 'c', 'y', '#b22222', '#b22222']
-        c_dash = [[8, 4], [8, 4, 2, 4], [2, 2], [8, 4, 2, 4, 2, 4], [8, 4],
-                  [2, 2], [8, 4, 2, 4]]
-        amr_lab = ['PT98', 'PG03', 'HZ04', 'N09', 'TB09', 'C13-B', 'C13-C']
+        col = ['m', 'k', 'g', 'c', 'y', 'y', '#b22222', '#b22222']
+        c_dash = [[8, 4], [8, 4, 2, 4], [2, 2], [8, 4, 2, 4, 2, 4],
+                  [8, 4, 2, 4, 2, 4], [8, 4], [2, 2], [8, 4, 2, 4]]
+        amr_lab = ['PT98', 'PG03', 'HZ04', 'N09', 'TB09-1', 'TB09-2',
+                   'C13-B', 'C13-C']
         for j, amr in enumerate(amr_lit):
             plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
                      dashes=c_dash[j], lw=1.5, zorder=1)

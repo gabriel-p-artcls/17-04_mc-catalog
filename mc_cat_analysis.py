@@ -194,8 +194,8 @@ def make_plots(in_params, bica_coords, cross_match, amr_lit):
     # make_probs_CI_plot(in_params)
     # print 'ASteCA probabilities versus CI done.'
 
-    # make_dist_2_cents(in_params)
-    # print 'Distances to center of MC done.'
+    make_dist_2_cents(in_params)
+    print 'Distances to center of MC done.'
 
     # make_cross_match(cross_match)
     # print 'Cross-matched clusters done.'
@@ -203,8 +203,8 @@ def make_plots(in_params, bica_coords, cross_match, amr_lit):
     # make_cross_match_age_ext(cross_match, in_params)
     # print 'Age and extinction diffs for cross-matched clusters done.'
 
-    make_amr_plot(in_params, amr_lit)
-    print 'AMR maps done.'
+    # make_amr_plot(in_params, amr_lit)
+    # print 'AMR maps done.'
 
 
 def main():
