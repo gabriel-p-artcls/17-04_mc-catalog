@@ -859,7 +859,7 @@ def make_dist_2_cents(in_params):
     # raw_input()
 
     # Define names of arrays being plotted.
-    x_lab, yz_lab = '$dist_{center}\,[pc]$', \
+    x_lab, yz_lab = '$R_{GC}\,[pc]$', \
         ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,(M_{\odot})$',
             '$E(B-V)_{ASteCA}$']
     xmin, xmax = 0, 7500
