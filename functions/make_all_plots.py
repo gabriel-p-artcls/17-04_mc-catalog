@@ -15,6 +15,15 @@ from functions.amr_kde import age_met_rel
 from functions import lin_fit_conf_bands as lf_cb
 
 
+def ccc(l1, l2):
+    '''
+    Concordance correlation coefficient.
+    See: https://en.wikipedia.org/wiki/Concordance_correlation_coefficient
+    '''
+    return 2 * np.cov(l1, l2)[0, 1] / (np.var(l1) + np.var(l2) +
+                                       (np.mean(l1) - np.mean(l2)) ** 2)
+
+
 def as_vs_lit_plots(pl_params):
     '''
     Generate ASteCA vs literature values plots.
@@ -22,17 +31,8 @@ def as_vs_lit_plots(pl_params):
     gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, \
         ysigma, zarr, v_min_mp, v_max_mp, par_mean_std, gal_name = pl_params
 
-    xy_font_s = 21
-    plt.xticks(fontsize=15)
-    plt.yticks(fontsize=15)
-    cm = plt.cm.get_cmap('RdYlBu_r')
-
     # Different limits for \delta plots.
-    if i in [0, 2, 4, 6, 8]:
-        ax = plt.subplot(gs[i], aspect='equal')
-        # 1:1 line
-        plt.plot([xmin, xmax], [ymin, ymax], 'k', ls='--')
-    else:
+    if i in [2, 5, 8, 11, 14]:
         ax = plt.subplot(gs[i], aspect='auto')
         # 0 line
         plt.axhline(y=par_mean_std[0], xmin=0, xmax=1, color='k', ls='--')
@@ -41,7 +41,15 @@ def as_vs_lit_plots(pl_params):
             plt.axhspan(par_mean_std[0] - par_mean_std[1],
                         par_mean_std[0] + par_mean_std[1], facecolor='grey',
                         alpha=0.5, zorder=1)
+    else:
+        ax = plt.subplot(gs[i], aspect='equal')
+        # 1:1 line
+        plt.plot([xmin, xmax], [ymin, ymax], 'k', ls='--')
 
+    xy_font_s = 21
+    plt.xticks(fontsize=xy_font_s - 6)
+    plt.yticks(fontsize=xy_font_s - 6)
+    cm = plt.cm.get_cmap('RdYlBu_r')
     plt.xlim(xmin, xmax)
     plt.ylim(ymin, ymax)
     plt.xlabel(x_lab, fontsize=xy_font_s)
@@ -49,6 +57,8 @@ def as_vs_lit_plots(pl_params):
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
             zorder=1)
     ax.minorticks_on()
+    if i in [1, 4, 7, 10, 13]:
+        ax.set_yticklabels([])
 
     # Introduce random scatter.
     if x_lab == '$[Fe/H]_{ASteCA}$':
@@ -80,15 +90,16 @@ def as_vs_lit_plots(pl_params):
             elif ysigma[j] > 0. and xsigma[j] < 0.:
                 plt.errorbar(xy[0], xy[1], yerr=ysigma[j], ls='none',
                              color='k', elinewidth=0.5, zorder=1)
-    if i == 0:
+    if i in [0, 1]:
         # Text box.
-        ob = offsetbox.AnchoredText(gal_name, loc=4, prop=dict(size=xy_font_s))
+        ob = offsetbox.AnchoredText(gal_name, loc=4,
+                                    prop=dict(size=xy_font_s - 4))
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
-    if i in [1, 3, 5, 7, 9]:
+    if i in [2, 5, 8, 11, 14]:
         # Text box.
-        pres = [2, 2] if i in [1, 3, 5, 7] else [0, 0]
-        text1 = r'$\bar{{x}}={:g}$'.format(round(par_mean_std[0], pres[0]))
+        pres = [2, 2] if i in [2, 5, 8, 11] else [0, 0]
+        text1 = r'$\bar{{y}}={:g}$'.format(round(par_mean_std[0], pres[0]))
         text2 = r'$\sigma={:g}$'.format(round(par_mean_std[1], pres[1]))
         text = text1 + '\n' + text2
         ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s - 4))
@@ -96,14 +107,13 @@ def as_vs_lit_plots(pl_params):
         ax.add_artist(ob)
         # Position colorbar.
         the_divider = make_axes_locatable(ax)
-        color_axis = the_divider.append_axes("right", size="5%", pad=0.1)
+        color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
         # Colorbar.
         cbar = plt.colorbar(SC, cax=color_axis)
-        zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
-        cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=zpad)
+        cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=7)
 
 
-def make_as_vs_lit_plot(galax, k, in_params):
+def make_as_vs_lit_plot(in_params):
     '''
     Prepare parameters and call function to generate ASteca vs literature
     SMC and LMC plots.
@@ -114,16 +124,26 @@ def make_as_vs_lit_plot(galax, k, in_params):
                 ['zarr', 'zsigma', 'aarr', 'asigma', 'earr', 'esigma', 'darr',
                 'dsigma', 'marr', 'msigma', 'rarr']]
 
-    # \delta z as ASteCA - literature values.
-    z_delta = np.array(zarr[k][0]) - np.array(zarr[k][1])
-    # \delta log(age) as ASteCA - literature values.
-    age_delta = np.array(aarr[k][0]) - np.array(aarr[k][1])
-    # \delta E(B-V) as ASteCA - literature values.
-    ext_delta = np.array(earr[k][0]) - np.array(earr[k][1])
-    # \delta dm as ASteCA - literature values.
-    dm_delta = np.array(darr[k][0]) - np.array(darr[k][1])
-    # \delta mass as ASteCA - literature values.
-    ma_delta = np.array(marr[k][0]) - np.array(marr[k][1])
+    # SMC/LMC
+    z_all, age_all, ext_all, dm_all, ma_all = [], [], [], [], []
+    z_delta, age_delta, ext_delta, dm_delta, ma_delta = [], [], [], [], []
+    for k in [0, 1]:
+
+        # \delta z as ASteCA - literature values.
+        z_all += zarr[k][0]
+        z_delta += list(np.array(zarr[k][0]) - np.array(zarr[k][1]))
+        # \delta log(age) as ASteCA - literature values.
+        age_all += aarr[k][0]
+        age_delta += list(np.array(aarr[k][0]) - np.array(aarr[k][1]))
+        # \delta E(B-V) as ASteCA - literature values.
+        ext_all += earr[k][0]
+        ext_delta += list(np.array(earr[k][0]) - np.array(earr[k][1]))
+        # \delta dm as ASteCA - literature values.
+        dm_all += darr[k][0]
+        dm_delta += list(np.array(darr[k][0]) - np.array(darr[k][1]))
+        # \delta mass as ASteCA - literature values.
+        ma_all += marr[k][0]
+        ma_delta += list(np.array(marr[k][0]) - np.array(marr[k][1]))
 
     # Shaded area that contains 9X% of the clusters.
     # par_9x_span = []
@@ -131,8 +151,15 @@ def make_as_vs_lit_plot(galax, k, in_params):
     # for span in [z_delta, age_delta, ext_delta, dm_delta]:
     #     abs_v = sorted([abs(_) for _ in span])
     #     par_9x_span.append(abs_v[idx_9x])
+    print 'Met vals CCC, SMC:', ccc(zarr[0][0], zarr[0][1])
+    print 'Met vals PCC, SMC', np.corrcoef(zarr[0][0], zarr[0][1])[0, 1]
+    print 'Met vals CCC, LMC:', ccc(zarr[1][0], zarr[1][1])
+    print 'Met vals PCC, LMC', np.corrcoef(zarr[1][0], zarr[1][1])[0, 1]
+    print 'Age vals CCC, SMC:', ccc(aarr[0][0], aarr[0][1])
+    print 'Age vals PCC, SMC', np.corrcoef(aarr[0][0], aarr[0][1])[0, 1]
+    print 'Age vals CCC, LMC:', ccc(aarr[1][0], aarr[1][1])
+    print 'Age vals PCC, LMC', np.corrcoef(aarr[1][0], aarr[1][1])[0, 1]
 
-    # gal = ['SMC', 'LMC']
     # print 'Gal  Mean  StandDev'
     par_mean_std = []
     for span in [z_delta, age_delta, ext_delta, dm_delta, ma_delta]:
@@ -150,66 +177,80 @@ def make_as_vs_lit_plot(galax, k, in_params):
             par_mean_std.append([0., 0.])
 
     # Generate ASteca vs literature plots.
-    fig = plt.figure(figsize=(14, 31.25))  # create the top-level container
+    fig = plt.figure(figsize=(21, 31.25))  # create the top-level container
     # gs = gridspec.GridSpec(2, 4, width_ratios=[1, 0.35, 1, 0.35])
-    gs = gridspec.GridSpec(5, 2)
+    gs = gridspec.GridSpec(5, 3)
 
-    if galax == 'SMC':
-        ext_min, ext_max = 0., 0.3 # 0.15
-        dm_min, dm_max = 18.62, 19.21
-    else:
-        ext_min, ext_max = 0., 0.3
-        dm_min, dm_max = 18.21, 18.79
+    ext_min, ext_max = 0., 0.3
+    # dm_min, dm_max = 18.62, 19.21
+    # dm_min, dm_max = 18.21, 18.79
+    dm_min, dm_max = 18.21, 19.21
     dm_span = (dm_max - dm_min) / 2.
 
     # For old runs where the dist mod range was large.
     # dm_min, dm_max = 17.8, 20.2
 
     as_lit_pl_lst = [
+        # Metallicity LMC/SMC
         [gs, 0, -2.4, 0.45, -2.4, 0.45, '$[Fe/H]_{ASteCA}$', '$[Fe/H]_{lit}$',
-            '$log(age/yr)_{ASteCA}$', zarr[k][0], zsigma[k][0], zarr[k][1],
-            zsigma[k][1], aarr[k][0], 6.6, 9.8, [], galax],
+            '', zarr[1][0], zsigma[1][0], zarr[1][1],
+            zsigma[1][1], aarr[1][0], 6.6, 9.8, [], 'LMC'],
+        [gs, 1, -2.4, 0.45, -2.4, 0.45, '$[Fe/H]_{ASteCA}$', '',
+            '', zarr[0][0], zsigma[0][0], zarr[0][1],
+            zsigma[0][1], aarr[0][0], 6.6, 9.8, [], 'SMC'],
         # Asteca z vs \delta z with lit values.
-        [gs, 1, -2.4, 0.45, -1.43, 1.43, '$[Fe/H]_{ASteCA}$',
-            '$\Delta [Fe/H]$', '$log(age/yr)_{ASteCA}$', zarr[k][0],
-            zsigma[k][0], z_delta, [], aarr[k][0], 6.6, 9.8, par_mean_std[0],
-            galax],
-        [gs, 2, 5.8, 10.6, 5.8, 10.6, '$log(age/yr)_{ASteCA}$',
-            '$log(age/yr)_{lit}$', '$E(B-V)_{ASteCA}$', aarr[k][0],
-            asigma[k][0], aarr[k][1], asigma[k][1], earr[k][0], ext_min,
-            ext_max, [], galax],
+        [gs, 2, -2.4, 0.45, -1.43, 1.43, '$[Fe/H]_{ASteCA}$',
+            '$\Delta [Fe/H]$', '$log(age/yr)_{ASteCA}$', z_all,
+            [], z_delta, [], age_all, 6.6, 9.8, par_mean_std[0],
+            ''],
+
+        # Age LMC/SMC
+        [gs, 3, 5.8, 10.6, 5.8, 10.6, '$log(age/yr)_{ASteCA}$',
+            '$log(age/yr)_{lit}$', '', aarr[1][0],
+            asigma[1][0], aarr[1][1], asigma[1][1], earr[1][0], ext_min,
+            ext_max, [], ''],
+        [gs, 4, 5.8, 10.6, 5.8, 10.6, '$log(age/yr)_{ASteCA}$',
+            '', '', aarr[0][0], asigma[0][0], aarr[0][1], asigma[0][1],
+            earr[0][0], ext_min, ext_max, [], ''],
         # Asteca log(age) vs \delta log(age) with lit values.
-        [gs, 3, 5.8, 10.6, -2.4, 2.4, '$log(age/yr)_{ASteCA}$',
-            '$\Delta log(age/yr)$', '$E(B-V)_{ASteCA}$', aarr[k][0],
-            asigma[k][0], age_delta, [], earr[k][0], ext_min, ext_max,
-            par_mean_std[1], galax],
-        [gs, 4, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{ASteCA}$',
-            '$E(B-V)_{lit}$', '$log(age/yr)_{ASteCA}$', earr[k][0],
-            esigma[k][0], earr[k][1], esigma[k][1], aarr[k][0], 6.6, 9.8, [],
-            galax],
+        [gs, 5, 5.8, 10.6, -2.4, 2.4, '$log(age/yr)_{ASteCA}$',
+            '$\Delta log(age/yr)$', '$E(B-V)_{ASteCA}$', age_all,
+            [], age_delta, [], ext_all, ext_min, ext_max, par_mean_std[1], ''],
+
+        # Ext LMC/SMC
+        [gs, 6, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{ASteCA}$',
+            '$E(B-V)_{lit}$', '', earr[1][0], esigma[1][0], earr[1][1],
+            esigma[1][1], aarr[1][0], 6.6, 9.8, [], ''],
+        [gs, 7, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{ASteCA}$',
+            '', '', earr[0][0], esigma[0][0], earr[0][1], esigma[0][1],
+            aarr[0][0], 6.6, 9.8, [], ''],
         # Asteca E(B-V) vs \delta E(B-V) with lit values.
-        [gs, 5, -0.04, 0.29, -0.21, 0.21, '$E(B-V)_{ASteCA}$',
-            '$\Delta E(B-V)$', '$log(age/yr)_{ASteCA}$', earr[k][0],
-            esigma[k][0], ext_delta, [], aarr[k][0], 6.6, 9.8, par_mean_std[2],
-            galax],
-        [gs, 6, dm_min, dm_max, dm_min, dm_max, '$(m-M)_{0;\,ASteCA}$',
-            '$(m-M)_{0;\,lit}$', '$log(age/yr)_{ASteCA}$', darr[k][0],
-            dsigma[k][0], darr[k][1], dsigma[k][1], aarr[k][0], 6.6, 9.8, [],
-            galax],
+        [gs, 8, -0.04, 0.29, -0.21, 0.21, '$E(B-V)_{ASteCA}$',
+            '$\Delta E(B-V)$', '$log(age/yr)_{ASteCA}$', ext_all, [],
+            ext_delta, [], age_all, 6.6, 9.8, par_mean_std[2], ''],
+
+        # Dits mod LMC/SMC
+        [gs, 9, dm_min, dm_max, dm_min, dm_max, '$(m-M)_{0;\,ASteCA}$',
+            '$(m-M)_{0;\,lit}$', '', darr[1][0], dsigma[1][0], darr[1][1],
+            dsigma[1][1], aarr[1][0], 6.6, 9.8, [], ''],
+        [gs, 10, dm_min, dm_max, dm_min, dm_max, '$(m-M)_{0;\,ASteCA}$',
+            '', '', darr[0][0], dsigma[0][0], darr[0][1], dsigma[0][1],
+            aarr[0][0], 6.6, 9.8, [], ''],
         # Asteca dist_mod vs \delta dist_mod with lit values.
-        [gs, 7, dm_min, dm_max, -1. * dm_span, dm_span, '$(m-M)_{0;\,ASteCA}$',
-            '$\Delta (m-M)_{0}$', '$log(age/yr)_{ASteCA}$', darr[k][0],
-            dsigma[k][0], dm_delta, [], aarr[k][0], 6.6, 9.8, par_mean_std[3],
-            galax],
-        # ASteCA vs literature masses.
-        [gs, 8, 10., 5000., 10., 5000., '$M_{ASteCA}\,(M_{\odot})$',
-            '$M_{lit}\,(M_{\odot})$', '$log(age/yr)_{ASteCA}$', marr[k][0],
-            msigma[k][0], marr[k][1], msigma[k][1], aarr[k][0], 6.6, 9.8, [],
-            galax],
-        [gs, 9, 10., 4000., -2000., 2000., '$M_{ASteCA}\,(M_{\odot})$',
-            '$\Delta M_{\odot}$', '$log(age/yr)_{ASteCA}$', marr[k][0],
-            msigma[k][0], ma_delta, [], aarr[k][0], 6.6, 9.8, par_mean_std[4],
-            galax]
+        [gs, 11, dm_min, dm_max, -1. * dm_span, dm_span,
+            '$(m-M)_{0;\,ASteCA}$', '$\Delta (m-M)_{0}$',
+            '$log(age/yr)_{ASteCA}$', dm_all, [],
+            dm_delta, [], age_all, 6.6, 9.8, par_mean_std[3], ''],
+
+        # # ASteCA vs literature masses.
+        # [gs, 8, 10., 5000., 10., 5000., '$M_{ASteCA}\,(M_{\odot})$',
+        #     '$M_{lit}\,(M_{\odot})$', '$log(age/yr)_{ASteCA}$', marr[k][0],
+        #     msigma[k][0], marr[k][1], msigma[k][1], aarr[k][0], 6.6, 9.8, [],
+        #     galax],
+        # [gs, 9, 10., 4000., -2000., 2000., '$M_{ASteCA}\,(M_{\odot})$',
+        #     '$\Delta M_{\odot}$', '$log(age/yr)_{ASteCA}$', marr[k][0],
+        #     msigma[k][0], ma_delta, [], aarr[k][0], 6.6, 9.8, par_mean_std[4],
+        #     galax]
     ]
     #
     for pl_params in as_lit_pl_lst:
@@ -217,7 +258,7 @@ def make_as_vs_lit_plot(galax, k, in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/as_vs_lit_' + galax + '.png', dpi=300)
+    plt.savefig('figures/as_vs_lit_S-LMC.png', dpi=300)
 
 
 def kde_plots(pl_params):
@@ -857,6 +898,9 @@ def make_dist_2_cents(in_params):
     #             print gal, cl, ra[j][i], dec[j][i], dist_cent[j][i],\
     #                 '{:.5f}'.format(zarr[j][0][i]), aarr[j][0][i]
     # raw_input()
+    print 'SMC, ASteCA:', np.mean(zarr[0][0]), np.std(zarr[0][0])
+    print 'LMC, ASteCA:', np.mean(zarr[1][0]), np.std(zarr[1][0])
+    raw_input()
 
     # Define names of arrays being plotted.
     x_lab, yz_lab = '$R_{GC}\,[pc]$', \
@@ -1059,6 +1103,18 @@ def make_cross_match(cross_match):
     # First set is for the ages, second for the masses.
     indexes = [[4, 5, 2, 3], [10, 11, 8, 9]]
 
+    # Concordance correlation coef between AsteCA ages and DBs ages.
+    ast_if = list(p99[4]) + list(p00[4]) + list(c06[4]) + list(g10[4])
+    dbs_if = list(p99[2]) + list(p00[2]) + list(c06[2]) + list(g10[2])
+    ast_ip = list(h03[4]) + list(r05[4]) + list(p12[4])
+    dbs_ip = list(h03[2]) + list(r05[2]) + list(p12[2])
+    print 'AsteCA vs DBs (isoch fit) age conc corr coef:', ccc(ast_if, dbs_if)
+    print 'ASteCA vs DBs (isoch fit) Pearson corr coef:', np.corrcoef(
+        ast_if, dbs_if)[0, 1]
+    print 'AsteCA vs DBs (integ mag) age conc corr coef:', ccc(ast_ip, dbs_ip)
+    print 'ASteCA vs DBs (integ mag) Pearson corr coef:', np.corrcoef(
+        ast_ip, dbs_ip)[0, 1]
+
     # Define names of arrays being plotted.
     x_lab = ['$log(age/yr)_{ASteCA}$', '$mass_{ASteCA}\,[M_{\odot}]$']
     y_lab = ['$log(age/yr)_{DB}$', '$mass_{DB}\,[M_{\odot}]$']
@@ -1166,11 +1222,11 @@ def cross_match_age_ext_plot(pl_params):
             # plt.imshow(np.rot90(kde), cmap=plt.cm.YlOrBr, extent=ext_range)
             plt.contour(x, y, kde, 5, colors='k', linewidths=0.6)
 
-    # # Legend.
-    # leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
-    #                  fontsize=xy_font_s - 7)
-    # # Set the alpha value of the legend.
-    # leg.get_frame().set_alpha(0.5)
+    # Legend.
+    leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
+                     fontsize=xy_font_s - 7)
+    # Set the alpha value of the legend.
+    leg.get_frame().set_alpha(0.5)
     ax.set_aspect('auto')
 
 
@@ -1231,7 +1287,7 @@ def make_cross_match_age_ext(cross_match, in_params):
     dbs = [diffs_lit_ages_smc, diffs_lit_ages_lmc, diffs_db_ages_p99,
            diffs_db_ages_p00, diffs_db_ages_c06, diffs_db_ages_g10]
     for i, db in enumerate(dbs):
-        print '{}, std = {:.3f}'.format(txt[i], np.std(db))
+        print '{}, diff ages std = {:.3f}'.format(txt[i], np.std(db))
     #     print '{}, mean = {:.3f}'.format(txt[i], np.mean(db))
     #     print '{} median: {:.3f}'.format(txt[i], np.median(db))
 
@@ -1300,6 +1356,12 @@ def make_cross_match_age_ext(cross_match, in_params):
                        [p00[6], p00[7], p00[2], p00[3]],
                        [c06[6], c06[7], c06[2], c06[3]],
                        [g10[6], g10[7], g10[2], g10[3]]]
+
+    # Concordance correlation coef between Literature ages and DBs ages.
+    lit = list(p99[6]) + list(p00[6]) + list(c06[6]) + list(g10[6])
+    dbs = list(p99[2]) + list(p00[2]) + list(c06[2]) + list(g10[2])
+    print 'Lit vs DBs age conc corr coef:', ccc(lit, dbs)
+    print 'Lit vs DBs Pearson corr coef:', np.corrcoef(lit, dbs)[0, 1]
 
     labels = [['P99', 'C06', 'G10'], ['SMC', 'LMC'],
               ['P99', 'P00', 'C06', 'G10']]
