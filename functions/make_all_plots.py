@@ -7,6 +7,7 @@ import matplotlib.offsetbox as offsetbox
 from matplotlib.ticker import MultipleLocator
 # import statsmodels.api as sm
 from scipy import stats
+from scipy.stats import ks_2samp
 
 from functions.ra_dec_map import ra_dec_plots
 from functions.kde_2d import kde_map
@@ -151,14 +152,65 @@ def make_as_vs_lit_plot(in_params):
     # for span in [z_delta, age_delta, ext_delta, dm_delta]:
     #     abs_v = sorted([abs(_) for _ in span])
     #     par_9x_span.append(abs_v[idx_9x])
-    print 'Met vals CCC, SMC:', ccc(zarr[0][0], zarr[0][1])
-    print 'Met vals PCC, SMC', np.corrcoef(zarr[0][0], zarr[0][1])[0, 1]
-    print 'Met vals CCC, LMC:', ccc(zarr[1][0], zarr[1][1])
-    print 'Met vals PCC, LMC', np.corrcoef(zarr[1][0], zarr[1][1])[0, 1]
-    print 'Age vals CCC, SMC:', ccc(aarr[0][0], aarr[0][1])
-    print 'Age vals PCC, SMC', np.corrcoef(aarr[0][0], aarr[0][1])[0, 1]
-    print 'Age vals CCC, LMC:', ccc(aarr[1][0], aarr[1][1])
-    print 'Age vals PCC, LMC', np.corrcoef(aarr[1][0], aarr[1][1])[0, 1]
+
+    # K_S test.
+    # Null hypothesis: that 2 independent samples are drawn from the same
+    # continuous distribution (sample sizes can be different)
+    #
+    # If the K-S statistic is small or the p-value is high, then we cannot
+    # reject the hypothesis that the distributions of the two samples are the
+    # same.
+    # For two identical distributions the KS value will be small and
+    # the p-value high.
+
+    print 'SMC'
+    # Mean only for those clusters with ASteCA age values closer than 0.5
+    # to literature values.
+    age_smc_f = []
+    for a in list(np.array(aarr[0][0]) - np.array(aarr[0][1])):
+        if abs(a) <= 0.5:
+            age_smc_f.append(a)
+    print 'Age mean for Delta log(age)<0.5:', np.mean(age_smc_f)
+    print 'Met vals mean/std, AS:', np.mean(zarr[0][0]), \
+        np.std(zarr[0][0])
+    print 'Met vals mean/std, Lit:', np.mean(zarr[0][1]), \
+        np.std(zarr[0][1])
+    print 'Met vals CCC:', ccc(zarr[0][0], zarr[0][1])
+    print 'Met vals PCC', np.corrcoef(zarr[0][0], zarr[0][1])[0, 1]
+    ks, pval = ks_2samp(zarr[0][0], zarr[0][1])
+    print 'Met vals K-S:', ks, pval
+    print 'Age vals CCC:', ccc(aarr[0][0], aarr[0][1])
+    print 'Age vals PCC:', np.corrcoef(aarr[0][0], aarr[0][1])[0, 1]
+    ks, pval = ks_2samp(aarr[0][0], aarr[0][1])
+    print 'Age vals K-S:', ks, pval, '\n'
+
+    print 'LMC'
+    # Mean only for those clusters with ASteCA age values closer than 0.5
+    # to literature values.
+    age_lmc_f = []
+    for a in list(np.array(aarr[1][0]) - np.array(aarr[1][1])):
+        if abs(a) <= 0.5:
+            age_lmc_f.append(a)
+    print 'Age mean for Delta log(age)<0.5:', np.mean(age_lmc_f)
+    print 'Met vals mean/std, AS:', np.mean(zarr[1][0]), \
+        np.std(zarr[1][0])
+    # Filter out clusters with no metal values in the literature (.ods file)
+    z_lmc_lit_f, z_lmc_ast_f = [], []
+    for z_ast, z_lit in zip(*[zarr[1][0], zarr[1][1]]):
+        if abs(z_lit) < 10000:
+            z_lmc_lit_f.append(z_lit)
+            z_lmc_ast_f.append(z_ast)
+    print 'Met vals mean/std, Lit:', np.mean(z_lmc_lit_f), \
+        np.std(z_lmc_lit_f)
+    print 'Met vals CCC:', ccc(z_lmc_ast_f, z_lmc_lit_f)
+    print 'Met vals PCC:', np.corrcoef(z_lmc_ast_f, z_lmc_lit_f)[0, 1]
+    ks, pval = ks_2samp(z_lmc_ast_f, z_lmc_lit_f)
+    print 'Met vals K-S:', ks, pval
+    print 'Age vals CCC:', ccc(aarr[1][0], aarr[1][1])
+    print 'Age vals PCC:', np.corrcoef(aarr[1][0], aarr[1][1])[0, 1]
+    ks, pval = ks_2samp(aarr[1][0], aarr[1][1])
+    print 'Age vals K-S:', ks, pval
+    raw_input()
 
     # print 'Gal  Mean  StandDev'
     par_mean_std = []
