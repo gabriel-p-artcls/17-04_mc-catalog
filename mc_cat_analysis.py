@@ -2,6 +2,7 @@
 from functions.get_data import get_asteca_data, get_liter_data, \
     get_bica_database, get_cross_match_data, get_amr_lit
 from functions.get_params import params
+from functions .galax_struct_dist import main as gsd
 import functions.CMD_obs_vs_asteca as cmd
 from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
     make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
@@ -211,9 +212,6 @@ def main():
     '''
     Call each function.
     '''
-    # Read Bica et al. (2008) database.
-    bica_coords = get_bica_database()
-
     # Read data from ASteca output file.
     as_names, as_pars = get_asteca_data()
     print 'ASteCA data read from output file.'
@@ -221,10 +219,6 @@ def main():
     # Read literature data.
     cl_dict = get_liter_data()
     print 'Literature data read from .ods file.'
-
-    # Read cross-matched clusters.
-    cross_match = get_cross_match_data()
-    print 'Cross-matched data read.'
 
     # Match clusters.
     names_idx = match_clusters(as_names, cl_dict)
@@ -234,15 +228,28 @@ def main():
     in_params = params(as_names, as_pars, cl_dict, names_idx)
     print 'Dictionary of parameters obtained.\n'
 
+    ra, dec, dist_cent = [in_params[_] for _ in ['ra', 'dec', 'dist_cent']]
+    print dist_cent
+
+    gsd(in_params)
+    raw_input()
+
+    # Read cross-matched clusters.
+    cross_match = get_cross_match_data()
+    print 'Cross-matched data read.'
+
     # Check for differences in ASteCA vs Lit values.
     check_diffs(in_params)
+
+    # Read Bica et al. (2008) database.
+    bica_coords = get_bica_database()
 
     # Read AMR data from other articles.
     amr_lit = get_amr_lit()
 
     # Make final plots.
-    print 'Plotting...\n'
-    make_plots(in_params, bica_coords, cross_match, amr_lit)
+    # print 'Plotting...\n'
+    # make_plots(in_params, bica_coords, cross_match, amr_lit)
 
     # # Put this plot here since it does not depend on any parameter obtained
     # # previously so it's faster to plot it separately.

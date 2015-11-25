@@ -58,7 +58,7 @@ def z_to_feh(z, ez):
     return fe_h, e_fe_h
 
 
-def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod, E_BV):
+def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod):
     '''
     Obtain the 3D distance in parsecs between the center of a cluster and
     the center of the Magellanic cloud it belongs to.
@@ -211,7 +211,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
 
         # Get distance from cluster to galaxy center.
         dist_cent[j].append(dist_2_cloud_center(j, ra[j][-1], dec[j][-1],
-                            as_p[a_di], as_p[a_ei]))
+                            as_p[a_di]))
 
         # Get photometric dispersion parameter.
         phot_disp[j].append(photom_dispersion.main(as_names[i]))

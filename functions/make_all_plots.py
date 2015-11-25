@@ -899,7 +899,7 @@ def plot_dist_2_cent(pl_params):
         fit_nw = np.poly1d(fit)
         plt.plot(xarr, fit_nw(xarr), '-k', lw=0.8)
         # Linear regression and confidence bands or metallicity gradient,
-        # weighted by their errors in [Fe/H.
+        # weighted by their errors in [Fe/H].
         a, b, sa, sb, rchi2, dof = lf_cb.linear_fit(
             np.array(xarr), np.array(yarr), np.array(ysigma))
         # Confidence bands.
