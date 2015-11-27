@@ -66,6 +66,7 @@ def deproj_dist(coord,
     # Convert equatorial coords into angular coords.
     avg_dec = 0.5 * (glx_ctr.dec + coord.dec).radian
     if coord.ra > Angle(180., unit=u.deg):
+        # Invert to avoid negative distances.
         ra_inv = Angle((coord.ra.degree - 360.), unit=u.deg)
         x = (glx_ctr.ra - ra_inv) * np.cos(avg_dec)
     else:
@@ -82,6 +83,7 @@ def deproj_dist(coord,
     # Obtain de-projected distance in decimal degrees.
     dep_dist_rad = np.sqrt(x1.rad ** 2 + y2.rad ** 2)
     dep_dist_deg = Angle(np.rad2deg(dep_dist_rad), unit='degree')
+
     # Obtain de-projected distance in the units used for the galaxy center
     # distance.
     dep_dist_kpc = Distance(np.tan(dep_dist_deg) * glx_dist,

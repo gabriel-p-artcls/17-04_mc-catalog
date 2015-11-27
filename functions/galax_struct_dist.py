@@ -3,12 +3,51 @@ from astropy.coordinates import Distance, Angle, SkyCoord
 from astropy import units as u
 import numpy as np
 from deproj_dist import deproj_dist as dd
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+from matplotlib.ticker import MultipleLocator
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+import matplotlib.offsetbox as offsetbox
+import scipy.interpolate
 
 
-def forceAspect(ax, aspect=1):
-    im = ax.get_images()
-    extent = im[0].get_extent()
-    ax.set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/aspect)
+def make_plot(j, gal_name, xmin, xmax, ymin, ymax, N, x, y, z, xi, yi, zi):
+    '''
+    '''
+
+    fig = plt.figure(figsize=(10, 10))
+    ax = fig.add_subplot(111)
+    xy_font_s = 15
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    # Set axis labels
+    plt.xlabel(r'Inclination ($i^{\circ}$)', fontsize=xy_font_s)
+    plt.ylabel(r'Position angle ($\theta^{\circ}$)', fontsize=xy_font_s)
+    # Plot.
+    SC = plt.imshow(np.rot90(zi), vmin=z.min(), vmax=z.max(), origin='lower',
+                    extent=[x.min(), x.max(), y.min(), y.max()],
+                    cmap=cm.get_cmap('RdBu_r'))
+    curv_num = [100, 150]
+    plt.contour(xi, yi, np.rot90(zi), curv_num[j], colors='k', linewidths=0.2)
+    # Set minor ticks
+    ax.minorticks_on()
+    # Only draw units on axis (ie: 1, 2, 3)
+    ax.xaxis.set_major_locator(MultipleLocator(5.0))
+    ax.yaxis.set_major_locator(MultipleLocator(20.0))
+    # Text box.
+    ob = offsetbox.AnchoredText(gal_name, loc=2, prop=dict(size=xy_font_s))
+    ob.patch.set(alpha=0.85)
+    ax.add_artist(ob)
+    # Position colorbar.
+    the_divider = make_axes_locatable(ax)
+    color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
+    # Colorbar.
+    cbar = plt.colorbar(SC, cax=color_axis)
+    cbar.set_label(r'$CCC$', fontsize=xy_font_s, labelpad=4, y=0.5)
+
+    ax.set_aspect(aspect='auto')
+    fig.tight_layout()
+    plt.savefig('out_' + gal_name + '.png', dpi=150)
 
 
 def ccc(l1, l2):
@@ -20,6 +59,10 @@ def ccc(l1, l2):
                                        (np.mean(l1) - np.mean(l2)) ** 2)
 
 
+def xy_interp(rang, N):
+    return np.linspace(rang[0], rang[1], N)
+
+
 def main(in_params):
     '''
     '''
@@ -28,6 +71,7 @@ def main(in_params):
 
     # For SMC j=0
     j = 0
+    gal_name = ['SMC', 'LMC']
 
     # S/LMC central coords stored in degrees.
     c_SMC = SkyCoord('00h52m45s', '-72d49m43s', frame='icrs')
@@ -43,55 +87,64 @@ def main(in_params):
     d_LMC = Distance(10 ** (0.2 * (18.49 + 5)) / 1000., unit=u.kpc)
     dist = [d_SMC, d_LMC]
 
-    inc_lst = [[Angle(_, unit=u.degree) for _ in np.linspace(10., 80., 25)],
-               []]
-    pa_lst = [[Angle(_, unit=u.degree) for _ in np.linspace(10., 300., 25)],
-              []]
+    # Inclination range, (S/LMC)
+    inc_rang = [[20., 65.], [20., 65.]]
+    # Position angle range S/LMC.
+    pa_rang = [[100., 300.], [100., 300.]]
+
+    # Inclination and position angles grid.
+    N = 25  # Grid size: N x N
+    x_slmc, y_slmc = xy_interp(inc_rang[j], N), xy_interp(pa_rang[j], N)
+    # Inclination and position angles grid in degrees.
+    inc_lst = [Angle(_, unit=u.degree) for _ in x_slmc]
+    pa_lst = [Angle(_, unit=u.degree) for _ in y_slmc]
+
+    # # Obtain deprojected distances for each cluster.
+    # x, y, z = [], [], []
+    # for inc in inc_lst:
+    #     for pa in pa_lst:
+    #         dist_kpc = []
+    #         for r, d in zip(*[ra[j], dec[j]]):
+    #             c = SkyCoord(ra=r*u.degree, dec=d*u.degree)
+    #             try:
+    #                 d_kpc = dd(c, cent[j], pa, inc, dist[j])[1].value
+    #             except:
+    #                 d_kpc = 0.
+    #             dist_kpc.append(d_kpc)
+
+    #         c = ccc(dist_kpc, np.asarray(dist_cent[j]) / 1000.)
+    #         x.append(inc.degree)
+    #         y.append(pa.degree)
+    #         z.append(c)
+    #         print inc, pa, c
 
     x, y, z = [], [], []
-    for inc in inc_lst[j]:
-        for pa in pa_lst[j]:
-            dist_kpc = []
-            for r, d in zip(*[ra[j], dec[j]]):
-                c = SkyCoord(ra=r*u.degree, dec=d*u.degree)
-                try:
-                    d_kpc = dd(c, cent[j], pa, inc, dist[j])[1].value
-                except:
-                    d_kpc = 0.
-                dist_kpc.append(d_kpc)
+    with open('temp_' + gal_name[j] + '.dat') as f:
+        for line in f:
+            l = line.split()
+            x.append(Angle(l[0], unit=u.degree).degree)
+            y.append(Angle(l[1], unit=u.degree).degree)
+            z.append(float(l[2]))
+            print Angle(l[0], unit=u.degree).degree, \
+                Angle(l[1], unit=u.degree).degree, float(l[2])
+    raw_input()
 
-            c = ccc(dist_kpc, np.asarray(dist_cent[j]) / 1000.)
-            print inc, pa, c
-            x.append(inc.degree)
-            y.append(pa.degree)
-            z.append(c)
-
-    import matplotlib.pyplot as plt
-    import matplotlib.cm as cm
-    import scipy.interpolate
-
-    fig = plt.figure(figsize=(10, 10))
-    ax = fig.add_subplot(111)
-    # ax.set_aspect(aspect='equal')
-
+    # As arrays.
     x, y, z = np.asarray(x), np.asarray(y), np.asarray(z)
-    # N = int(len(z)**.5)
-    # z = z.reshape(N, N)
-    # plt.imshow(np.rot90(z), extent=(np.amin(x), np.amax(x), np.amin(y),
-    #            np.amax(y)), cmap=cm.get_cmap('RdBu_r'))
+    # Limits.
+    xmin, xmax = inc_rang[j][0] - 0.1, inc_rang[j][1] + 0.1
+    ymin, ymax = pa_rang[j][0] - 0.1, pa_rang[j][1] + 0.1
+    # Interpolating function.
+    z = z.reshape(N, N)
+    rbs = scipy.interpolate.RectBivariateSpline(x_slmc, y_slmc, z)
+    # Finer grid to interpolate on.
+    xi, yi = xy_interp(inc_rang[j], 200), xy_interp(pa_rang[j], 200)
+    # Get values on grid.
+    zi = rbs(xi, yi)
+    max_idx = np.unravel_index(zi.argmax(), zi.shape)
+    print xi[max_idx[0]], yi[max_idx[1]], zi.max()
 
-    xi, yi = np.meshgrid(x, y)
-    # Interpolate
-    rbf = scipy.interpolate.Rbf(x, y, z, function='linear')
-    zi = rbf(xi, yi)
-    plt.imshow(zi, vmin=z.min(), vmax=z.max(), origin='lower',
-               extent=[x.min(), x.max(), y.min(), y.max()],
-               cmap=cm.get_cmap('RdBu_r'))
-
-    plt.colorbar()
-    # fig.tight_layout()
-    forceAspect(ax, aspect=1)
-    plt.savefig('out.png', dpi=150)
+    # make_plot(j, gal_name[j], xmin, xmax, ymin, ymax, N, x, y, z, xi, yi, zi)
 
 
 if __name__ == "__main__":
