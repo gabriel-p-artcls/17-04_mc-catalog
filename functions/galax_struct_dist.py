@@ -7,11 +7,13 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.ticker import MultipleLocator
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from matplotlib.patches import Ellipse
 import matplotlib.offsetbox as offsetbox
 import scipy.interpolate
 
 
-def make_plot(j, gal_name, xmin, xmax, ymin, ymax, N, x, y, z, xi, yi, zi):
+def make_plot(j, gal_name, xmin, xmax, ymin, ymax, xi, yi, zi, max_idx,
+              x_std, y_std):
     '''
     '''
 
@@ -23,19 +25,36 @@ def make_plot(j, gal_name, xmin, xmax, ymin, ymax, N, x, y, z, xi, yi, zi):
     # Set axis labels
     plt.xlabel(r'Inclination ($i^{\circ}$)', fontsize=xy_font_s)
     plt.ylabel(r'Position angle ($\theta^{\circ}$)', fontsize=xy_font_s)
-    # Plot.
-    SC = plt.imshow(np.rot90(zi), vmin=z.min(), vmax=z.max(), origin='lower',
-                    extent=[x.min(), x.max(), y.min(), y.max()],
-                    cmap=cm.get_cmap('RdBu_r'))
-    curv_num = [100, 150]
-    plt.contour(xi, yi, np.rot90(zi), curv_num[j], colors='k', linewidths=0.2)
     # Set minor ticks
     ax.minorticks_on()
     # Only draw units on axis (ie: 1, 2, 3)
     ax.xaxis.set_major_locator(MultipleLocator(5.0))
     ax.yaxis.set_major_locator(MultipleLocator(20.0))
+    # Plot.
+
+    SC = plt.imshow(np.rot90(zi), vmin=zi.min(), vmax=zi.max(), origin='upper',
+                    extent=[xi.min(), xi.max(), yi.min(), yi.max()],
+                    cmap=cm.get_cmap('RdBu_r'))
+    curv_num = [100, 250]
+    plt.contour(np.rot90(zi), curv_num[j], colors='k', linewidths=0.2,
+                origin='upper',
+                extent=[xi.min(), xi.max(), yi.min(), yi.max()])
+    plt.scatter(xi[max_idx[0]], yi[max_idx[1]], c='w', s=45)
+    # Standard dev ellipse.
+    ellipse = Ellipse(xy=(xi[max_idx[0]], yi[max_idx[1]]),
+                      width=x_std * 2, height=y_std * 2,
+                      edgecolor='w', fc='None', lw=0.85, zorder=3)
+    ax.add_patch(ellipse)
     # Text box.
     ob = offsetbox.AnchoredText(gal_name, loc=2, prop=dict(size=xy_font_s))
+    ob.patch.set(alpha=0.85)
+    ax.add_artist(ob)
+    text1 = r'$i^{{\circ}}_{{max}}={:.0f}\pm{:.0f}$'.format(
+        xi[max_idx[0]], x_std)
+    text2 = r'$\theta^{{\circ}}_{{max}}={:.0f}\pm{:.0f}$'.format(
+        yi[max_idx[1]], y_std)
+    text = text1 + '\n' + text2
+    ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
     # Position colorbar.
@@ -70,7 +89,7 @@ def main(in_params):
     # ra, dec, dist_cent = [[357.245833333]], [[-72.945277778]], [[1.]]
 
     # For SMC j=0
-    j = 0
+    j = 1
     gal_name = ['SMC', 'LMC']
 
     # S/LMC central coords stored in degrees.
@@ -125,9 +144,9 @@ def main(in_params):
             x.append(Angle(l[0], unit=u.degree).degree)
             y.append(Angle(l[1], unit=u.degree).degree)
             z.append(float(l[2]))
-            print Angle(l[0], unit=u.degree).degree, \
-                Angle(l[1], unit=u.degree).degree, float(l[2])
-    raw_input()
+            # print Angle(l[0], unit=u.degree).degree, \
+            #     Angle(l[1], unit=u.degree).degree, float(l[2])
+    # raw_input()
 
     # As arrays.
     x, y, z = np.asarray(x), np.asarray(y), np.asarray(z)
@@ -141,10 +160,26 @@ def main(in_params):
     xi, yi = xy_interp(inc_rang[j], 200), xy_interp(pa_rang[j], 200)
     # Get values on grid.
     zi = rbs(xi, yi)
+
+    # Max value.
     max_idx = np.unravel_index(zi.argmax(), zi.shape)
     print xi[max_idx[0]], yi[max_idx[1]], zi.max()
+    # 10 first max values.
+    ten_perc = int(len(zi.flatten()) * 0.1)
+    # Get indices.
+    indices = np.argpartition(zi.flatten(), -ten_perc)[-ten_perc:]
+    # Get coordinates.
+    max_coords = np.vstack(np.unravel_index(indices, zi.shape)).T
+    # Store all coordinates.
+    x_lst, y_lst = [], []
+    for c in max_coords:
+        x_lst.append(xi[c[0]])
+        y_lst.append(yi[c[1]])
+    # calculate standard deviation.
+    x_std, y_std = np.std(np.asarray(x_lst)), np.std(np.asarray(y_lst))
 
-    # make_plot(j, gal_name[j], xmin, xmax, ymin, ymax, N, x, y, z, xi, yi, zi)
+    make_plot(j, gal_name[j], xmin, xmax, ymin, ymax, xi, yi, zi, max_idx,
+              x_std, y_std)
 
 
 if __name__ == "__main__":
