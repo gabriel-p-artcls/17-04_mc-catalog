@@ -5,6 +5,7 @@ import matplotlib.gridspec as gridspec
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.offsetbox as offsetbox
 from matplotlib.ticker import MultipleLocator
+from matplotlib.patches import Ellipse
 # import statsmodels.api as sm
 from scipy import stats
 from scipy.stats import ks_2samp
@@ -1836,3 +1837,118 @@ def make_amr_plot(in_params, amr_lit):
     plt.savefig(fig_name, dpi=300)
     # Crop image.
     cmd.save_crop_img(fig_name)
+
+
+def pl_angles(in_pars):
+    '''
+    '''
+
+    gs, i, xlab, ylab, ang_pars = in_pars
+    xmin, xmax, ymin, ymax, xi, yi, zi, max_idx, x_std, y_std = ang_pars
+
+    if i == 0:
+        a, b, c, d = 0, 1, 0, 2
+    elif i == 1:
+        a, b, c, d = 1, 2, 0, 2
+    elif i == 2:
+        a, b, c, d = 2, 3, 0, 1
+    elif i == 3:
+        a, b, c, d = 2, 3, 1, 2
+
+    gal_name = ['SMC', 'LMC', 'SMC', 'LMC']
+    ax = plt.subplot(gs[a:b, c:d])
+    xy_font_s = 12
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    plt.tick_params(axis='both', which='major', labelsize=xy_font_s - 3)
+    # Set axis labels
+    plt.xlabel(xlab, fontsize=xy_font_s)
+    plt.ylabel(ylab, fontsize=xy_font_s)
+
+    if i == 0:
+        ax.set_xticklabels([])
+        plt.xlabel('')
+    if i == 3:
+        ax.set_yticklabels([])
+        plt.ylabel('')
+
+    if i in [0, 1]:
+        # Set minor ticks
+        ax.minorticks_on()
+        cm = plt.cm.get_cmap('RdBu_r')
+        # Only draw units on axis (ie: 1, 2, 3)
+        ax.xaxis.set_major_locator(MultipleLocator(5.0))
+        ax.yaxis.set_major_locator(MultipleLocator(20.0))
+        # Plot.
+        SC = plt.imshow(np.rot90(zi), vmin=zi.min(), vmax=zi.max(),
+                        origin='upper',
+                        extent=[xi.min(), xi.max(), yi.min(), yi.max()],
+                        cmap=cm)
+        curv_num = 100 if i == 0 else 200
+        plt.contour(np.rot90(zi), curv_num, colors='k', linewidths=0.2,
+                    origin='upper',
+                    extent=[xi.min(), xi.max(), yi.min(), yi.max()])
+        plt.scatter(xi[max_idx[0]], yi[max_idx[1]], c='w', s=45)
+        # Standard dev ellipse.
+        ellipse = Ellipse(xy=(xi[max_idx[0]], yi[max_idx[1]]),
+                          width=x_std * 2, height=y_std * 2,
+                          edgecolor='w', fc='None', lw=0.85, zorder=3)
+        ax.add_patch(ellipse)
+        # Text box.
+        text1 = r'$i^{{\circ}}_{{max}}={:.0f}\pm{:.0f}$'.format(
+            xi[max_idx[0]], x_std)
+        text2 = r'$\theta^{{\circ}}_{{max}}={:.0f}\pm{:.0f}$'.format(
+            yi[max_idx[1]], y_std)
+        text = text1 + '\n' + text2
+    else:
+        ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.3,
+                zorder=1)
+        cm = plt.cm.get_cmap('RdYlBu_r')
+        plt.plot([xmin, xmax], [ymin, ymax], 'k', ls='--')
+        SC = plt.scatter(xi, yi, marker='o', c=zi, edgecolor='k', s=20,
+                         cmap=cm, lw=0.25, zorder=4)
+        text = r'$ccc={:.2f}$'.format(max_idx)
+    ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s - 2))
+    ob.patch.set(alpha=0.85)
+    ax.add_artist(ob)
+    # Gal name.
+    ob = offsetbox.AnchoredText(gal_name[i], loc=2, prop=dict(size=xy_font_s))
+    ob.patch.set(alpha=0.85)
+    ax.add_artist(ob)
+    cb_siz, cb_lab = ["2%", "2%", '', "5%"], ['$ccc$', '$ccc$', '',
+                                              '$log(aye/yr)_{ASteCA}$']
+    if i != 2:
+        # Position colorbar.
+        the_divider = make_axes_locatable(ax)
+        color_axis = the_divider.append_axes("right", size=cb_siz[i], pad=0.1)
+        # Colorbar.
+        cbar = plt.colorbar(SC, cax=color_axis)
+        cbar.set_label(cb_lab[i], fontsize=xy_font_s, labelpad=4, y=0.5)
+        cbar.ax.tick_params(labelsize=xy_font_s - 3)
+    if i in [0, 1]:
+        ax.set_aspect(aspect='auto')
+
+
+def make_angles_plot(gal_str_pars):
+    '''
+    '''
+
+    fig = plt.figure(figsize=(5.25, 13.5))
+    gs = gridspec.GridSpec(3, 2)
+
+    str_lst = [
+        [gs, 0, r'Inclination ($i^{\circ}$)',
+         r'Position angle ($\theta^{\circ}$)', gal_str_pars[0]],
+        [gs, 1, r'Inclination ($i^{\circ}$)',
+         r'Position angle ($\theta^{\circ}$)', gal_str_pars[1]],
+        [gs, 2, r'$d_{GC}\,(Kpc)$', r'$d_{deproj}\,(Kpc)$',
+         gal_str_pars[2]],
+        [gs, 3, r'$d_{GC}\,(Kpc)$', r'$d_{deproj}\,(Kpc)$',
+         gal_str_pars[3]]
+    ]
+
+    for pl_params in str_lst:
+        pl_angles(pl_params)
+
+    fig.tight_layout()
+    plt.savefig('figures/MCs_deproj_dist_angles.png', dpi=300)

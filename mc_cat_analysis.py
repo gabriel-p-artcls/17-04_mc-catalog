@@ -8,7 +8,7 @@ from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
     make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
     make_concent_plot, make_radius_plot, make_probs_CI_plot, \
     make_dist_2_cents, make_cross_match, make_cross_match_age_ext, \
-    make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot
+    make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot, make_angles_plot
 
 
 def d_search(dat_lst, cl_name, name_idx):
@@ -162,7 +162,7 @@ def check_diffs(in_params):
             gal[j], a_diff, age_count)
 
 
-def make_plots(in_params, bica_coords, cross_match, amr_lit):
+def make_plots(in_params, bica_coords, cross_match, amr_lit, gal_str_pars):
     '''
     Make each plot sequentially.
     '''
@@ -171,8 +171,8 @@ def make_plots(in_params, bica_coords, cross_match, amr_lit):
     #     make_kde_plots(gal, j, in_params)
     #     print '{} KDE maps done.'.format(gal)
 
-    make_as_vs_lit_plot(in_params)
-    print 'ASteCA vs literature plots done.'
+    # make_as_vs_lit_plot(in_params)
+    # print 'ASteCA vs literature plots done.'
 
     # make_errors_plots(in_params)
     # print 'Errors plots done.'
@@ -207,6 +207,9 @@ def make_plots(in_params, bica_coords, cross_match, amr_lit):
     # make_amr_plot(in_params, amr_lit)
     # print 'AMR maps done.'
 
+    make_angles_plot(gal_str_pars)
+    print 'Inclination vs position angles plot done.'
+
 
 def main():
     '''
@@ -226,13 +229,11 @@ def main():
 
     # Get data parameters arrays.
     in_params = params(as_names, as_pars, cl_dict, names_idx)
-    print 'Dictionary of parameters obtained.\n'
+    print 'Dictionary of parameters obtained.'
 
-    ra, dec, dist_cent = [in_params[_] for _ in ['ra', 'dec', 'dist_cent']]
-    print dist_cent
-
-    gsd(in_params)
-    raw_input()
+    # Obtain galactic structure (inclination + position angles) for MCs
+    gal_str_pars = gsd(in_params)
+    print 'Inclination and position angles for MCs obtained.'
 
     # Read cross-matched clusters.
     cross_match = get_cross_match_data()
@@ -248,8 +249,8 @@ def main():
     amr_lit = get_amr_lit()
 
     # Make final plots.
-    # print 'Plotting...\n'
-    # make_plots(in_params, bica_coords, cross_match, amr_lit)
+    print 'Plotting...\n'
+    make_plots(in_params, bica_coords, cross_match, amr_lit, gal_str_pars)
 
     # # Put this plot here since it does not depend on any parameter obtained
     # # previously so it's faster to plot it separately.
