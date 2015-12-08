@@ -1,6 +1,8 @@
+
+import os
 import numpy as np
 from astropy import units as u
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import SkyCoord, Distance
 from functions import photom_dispersion
 # from functions.photom_dispersion import main as photom_dispersion
 
@@ -69,15 +71,20 @@ def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod):
     # ^ (13.1875, -72.82861111)
     c_LMC = SkyCoord('05h20m57s', '-69d28m41s', frame='icrs')
     # ^ (80.2375, -69.47805556)
-
+    #
     # S/LMC distance stored in parsecs.
     d_SMC = 10 ** (0.2 * (18.96 + 5))  # ~ 61944.11 pc (18.96 mag)
     d_LMC = 10 ** (0.2 * (18.49 + 5))  # ~ 49888.45 pc (18.49 mag)
 
+    if gal == 0:  # SMC
+        gal_center, gal_dist = c_SMC, Distance(d_SMC, unit=u.pc)
+    else:  # LMC
+        gal_center, gal_dist = c_LMC, Distance(d_LMC, unit=u.pc)
+
     # *Individual* distance (ASteCA) for each cluster (in parsecs).
     # ASteCA gives the distance modulus as dm = -5 + 5*log(d), so to transform
     # that into the distance in parsecs 'd', we do:
-    d_clust = 10 ** (0.2 * (float(dist_mod) + 5))
+    d_clust = Distance(10 ** (0.2 * (float(dist_mod) + 5)), unit=u.pc)
 
     # *Fixed* distance for all clusters, as distance to cloud.
     # if gal == 0:  # SMC
@@ -85,17 +92,10 @@ def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod):
     # else:
     #     d_clust = d_LMC
 
-    if gal == 0:  # SMC
-        gal_center, gal_dist = c_SMC, d_SMC
-    else:  # LMC
-        gal_center, gal_dist = c_LMC, d_LMC
-
     # Galaxy center coordinate.
-    c1 = SkyCoord(ra=gal_center.ra, dec=gal_center.dec,
-                  distance=gal_dist*u.pc, frame='icrs')
+    c1 = SkyCoord(ra=gal_center.ra, dec=gal_center.dec, distance=gal_dist)
     # Cluster coordinate.
-    c2 = SkyCoord(ra=ra_deg*u.degree, dec=dec_deg*u.degree,
-                  distance=d_clust*u.pc, frame='icrs')
+    c2 = SkyCoord(ra=ra_deg*u.degree, dec=dec_deg*u.degree, distance=d_clust)
 
     # 3D distance in parsecs.
     dist_pc = float(str(c1.separation_3d(c2))[:-3])
@@ -107,6 +107,10 @@ def params(as_names, as_pars, cl_dict, names_idx):
     '''
     Return ASteCA output and literature parameters values.
     '''
+    # Define main path.
+    r_path = '/media/rest/'
+    if not os.path.isdir(r_path):
+        r_path = '/home/gabriel/'
 
     # Indexes of columns in ASteCA output file.
     a_zi, a_zei, a_ai, a_aei, a_ei, a_eei, a_di, a_dei, a_mi, a_mei, a_rad, \
@@ -214,7 +218,7 @@ def params(as_names, as_pars, cl_dict, names_idx):
                             as_p[a_di]))
 
         # Get photometric dispersion parameter.
-        phot_disp[j].append(photom_dispersion.main(as_names[i]))
+        phot_disp[j].append(photom_dispersion.main(r_path, as_names[i]))
 
         # Organize param values, ASteCA first, lit second.
         met = [as_p[a_zi], cl_dict[names_idx[i]][l_zi]]
@@ -264,4 +268,4 @@ def params(as_names, as_pars, cl_dict, names_idx):
         'phot_disp': phot_disp
     }
 
-    return pars_dict
+    return r_path, pars_dict

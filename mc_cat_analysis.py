@@ -42,7 +42,7 @@ def match_clusters(as_names, cl_dict):
     return names_idx
 
 
-def get_DBs_ASteCA_CMD_data():
+def get_DBs_ASteCA_CMD_data(r_path):
     '''
     Generate figures containing CMDs of databases vs ASteCA for the clusters
     matched in the selected database.
@@ -73,10 +73,11 @@ def get_DBs_ASteCA_CMD_data():
         for cl in cl_lst:
 
             # Obtain CMD limits for cluster.
-            x_max_cmd, x_min_cmd, y_min_cmd, y_max_cmd = cmd.diag_limits(cl)
+            x_max_cmd, x_min_cmd, y_min_cmd, y_max_cmd = cmd.diag_limits(
+                r_path, cl)
 
             # Obtain age and extinction from 'matched_clusters.dat' file.
-            db_a, db_e, gal = cmd.get_DB_age_ext(cl, db)
+            db_a, db_e, gal = cmd.get_DB_age_ext(r_path, cl, db)
             if gal == 'SMC':
                 if db == 'G10':
                     db_z, db_d = 0.004, 18.9
@@ -90,14 +91,12 @@ def get_DBs_ASteCA_CMD_data():
             # Fetch what 'input_XX' folder in the above run contains the
             # membership file.
             inpt = cmd.get_input_folder(cl, run)
-            # Path where the members file is stored.
-            cl_path = '/media/rest/github/mc-catalog/runs/' + run + \
-                '_run/output/' + inpt + '/' + cl + '_memb.dat'
             # Membership data for cluster.
-            cl_reg_fit, cl_reg_no_fit = cmd.get_memb_data(cl_path)
+            cl_reg_fit, cl_reg_no_fit = cmd.get_memb_data(r_path, run, inpt,
+                                                          cl)
 
             # Obtain DB isochrone.
-            lit_isoch = cmd.get_isoch('DB', db_z, db_a, db_e, db_d)
+            lit_isoch = cmd.get_isoch(r_path, 'DB', db_z, db_a, db_e, db_d)
 
             # Obtain ASteCA parameters.
             as_z, as_z_str, as_a, as_e, as_d = cmd.get_asteca_params(cl)
@@ -228,8 +227,9 @@ def main():
     print 'Cluster parameters matched.'
 
     # Get data parameters arrays.
-    in_params = params(as_names, as_pars, cl_dict, names_idx)
+    r_paty, in_params = params(as_names, as_pars, cl_dict, names_idx)
     print 'Dictionary of parameters obtained.'
+    raw_input()
 
     # Obtain galactic structure (inclination + position angles) for MCs
     gal_str_pars = gsd(in_params)
@@ -249,12 +249,12 @@ def main():
     amr_lit = get_amr_lit()
 
     # Make final plots.
-    print 'Plotting...\n'
-    make_plots(in_params, bica_coords, cross_match, amr_lit, gal_str_pars)
+    # print 'Plotting...\n'
+    # make_plots(in_params, bica_coords, cross_match, amr_lit, gal_str_pars)
 
     # # Put this plot here since it does not depend on any parameter obtained
     # # previously so it's faster to plot it separately.
-    # db, db_cls = get_DBs_ASteCA_CMD_data()
+    # db, db_cls = get_DBs_ASteCA_CMD_data(r_path)
     # make_DB_ASteCA_CMDs(db, db_cls)
     # print 'CMDs for matched DB and ASteCA clusters done.'
 

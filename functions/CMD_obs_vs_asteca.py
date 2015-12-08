@@ -45,12 +45,12 @@ def kde_limits(phot_x, phot_y):
     return x_v, y_v
 
 
-def diag_limits(cl):
+def diag_limits(r_path, cl):
     '''
     Define plot limits for *all* photometric diagrams.
     '''
     y_axis = 0
-    path_no_ext = '/media/rest/github/asteca-project/asteca/input/dont_read/'\
+    path_no_ext = r_path + 'github/asteca-project/asteca/input/dont_read/'\
         + 'MC_all/' + cl + '.*'
     data_file = glob.glob(path_no_ext)[0]
     phot_data = gd(data_file)
@@ -83,12 +83,12 @@ def skip_comments(f):
             yield line
 
 
-def get_DB_age_ext(cl, db):
+def get_DB_age_ext(r_path, cl, db):
     '''
     Read age and extinction values (and Galaxy) for the 'cl' cluster matched
     in the 'db' database.
     '''
-    f_path = '/media/rest/github/mc-catalog/ages_mass_lit/matched_clusters.dat'
+    f_path = r_path + 'github/mc-catalog/ages_mass_lit/matched_clusters.dat'
     # Read data file
     with open(f_path) as f:
         for line in skip_comments(f):
@@ -120,13 +120,13 @@ def get_cl_run(cl):
     return run
 
 
-def get_input_folder(cl, run):
+def get_input_folder(r_path, cl, run):
     '''
     Find which 'input_XX' folder for this cluster in this "run" contains
     its membership file.
     '''
     name = cl + '.png'
-    path = '/media/rest/github/mc-catalog/runs/' + run + '_run/'
+    path = r_path + 'github/mc-catalog/runs/' + run + '_run/'
     for root, dirs, files in os.walk(path):
         if name in files:
             full_path = os.path.join(root, name)
@@ -137,11 +137,14 @@ def get_input_folder(cl, run):
     return inpt
 
 
-def get_memb_data(cl_path):
+def get_memb_data(r_path, run, inpt, cl):
     '''
     Read the cluster membership file. Divide into stars used in the best fit
     process and stars that were not.
     '''
+    # Path where the members file is stored.
+    cl_path = r_path + 'github/mc-catalog/runs/' + run + \
+        '_run/output/' + inpt + '/' + cl + '_memb.dat'
     # Read data file
     with open(cl_path) as f:
         cl_reg_fit = [[], [], []]
@@ -188,14 +191,14 @@ def move_isoch(isochrone, e, d):
     return iso_moved
 
 
-def get_isoch(DB_asteca, z, a, e, d):
+def get_isoch(r_path, DB_asteca, z, a, e, d):
     '''
     Read a given metallicity file and return the isochrones for the age passed,
     moved according to the extinction and distance modulus values.
     '''
     if DB_asteca == 'DB':
         # Use Marigo isochrones.
-        met_f = '/media/rest/github/mc-catalog/functions/' + str(z) + '.dat'
+        met_f = r_path + 'github/mc-catalog/functions/' + str(z) + '.dat'
         line_start, imass_idx = "#\tIsochrone\tZ = ", 1
         # T1, C
         mag1_idx, mag2_idx = 9, 7
@@ -203,7 +206,7 @@ def get_isoch(DB_asteca, z, a, e, d):
         # Use PARSEC isochrones.
         line_start, imass_idx = "#\tIsochrone  Z = ", 2
         mag1_idx, mag2_idx = 10, 8
-        met_f = '/media/rest/github/asteca-project/asteca/isochrones/' + \
+        met_f = r_path + 'github/asteca-project/asteca/isochrones/' + \
             'parsec11_washington/' + str(z) + '.dat'
     age_format = r"Age = \t(.+?) yr"
     cmd_select = 4

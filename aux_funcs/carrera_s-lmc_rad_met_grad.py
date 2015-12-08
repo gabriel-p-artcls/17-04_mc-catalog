@@ -1,10 +1,14 @@
 
-import matplotlib.pyplot as plt
+import os
 import numpy as np
 from astropy.coordinates import Distance, Angle, SkyCoord
 from astropy import units as u
 import sys
-sys.path.insert(0, '/media/rest/github/mc-catalog/functions')
+# Define main path.
+r_path = '/media/rest/'
+if not os.path.isdir(r_path):
+    r_path = '/home/gabriel/'
+sys.path.insert(0, r_path + 'github/mc-catalog/functions/')
 from deproj_dist import deproj_dist
 from lin_fit_conf_bands import linear_fit
 
@@ -14,8 +18,8 @@ Data taken from Carrera et al. (2011); Table 1
 """
 cent = SkyCoord('05h27.6m', '-69.87d', frame='icrs')
 dist = Distance(51., unit=u.kpc)
-ra_lst = ['05h12m', '05h14m', '05h13m', '04h22m', '05h13m', '06h49m', '05h12m',
-          '03h56m', '05h11m', '07h14m']
+ra_lst = ['05h12m', '05h14m', '05h13m', '04h22m', '05h13m', '06h49m',
+          '05h12m', '03h56m', '05h11m', '07h14m']
 dec_lst = ['-66d48m', '-65d03m', '-63d33m', '-71d00m', '-61d59m', '-71d10m',
            '-61d00m', '-71d00m', '-60d00m', '-71d00m']
 inc, pa = Angle('34.7d'), Angle('189.3d')  # LMC
@@ -30,11 +34,15 @@ the Small Magellanic Cloud and Its Gradients"
 
 Inclination and position angle data taken from Cioni et al. (2009), "The
 Chemical Enrichment History of the Small Magellanic Cloud and Its Gradients"
+
+Center taken from Noel et al. (2007)
+(https://ui.adsabs.harvard.edu/#abs/2007AJ....133.2037N/abstract) which is
+'Paper I' according to Carrera et al. (2008).
 """
-# cent = SkyCoord('00h52m45s', '-72d49m43s', frame='icrs')
+# # cent = SkyCoord('00h52m45s', '-72d49m43s', frame='icrs')
+# cent = SkyCoord('00h52m42s', '-72d49m', frame='icrs')
 # dist = Distance(60.26, unit=u.kpc)
 # inc, pa = Angle('65.5d'), Angle('45.d')
-
 # ra_lst = ['00h57m', '00h37m', '00h36m', '01h11m', '01h12m', '00h35m', '01h16m',
 #           '01h00m', '00h47m', '00h33m', '00h49m', '01h02m', '00h53m']
 # dec_lst = ['-73d53m', '-72d18m', '-72d25m', '-72d49m', '-72d36m', '-72d01m',
@@ -49,8 +57,7 @@ Chemical Enrichment History of the Small Magellanic Cloud and Its Gradients"
 dist_kpc = []
 for i, (ra, dec) in enumerate(zip(*[ra_lst, dec_lst])):
     a = SkyCoord(ra, dec, unit=(u.hourangle, u.deg))
-    d_kpc = deproj_dist(a, cent, pa, inc, dist)[1]
-    print d_kpc
+    d_kpc = deproj_dist(a, cent, pa, inc, dist)
     dist_kpc.append(d_kpc.value)
 
 print '\nNon-weighted fit.'
@@ -61,5 +68,6 @@ print '\nWeighted fit.'
 a, b, sa, sb, rchi2, dof = linear_fit(np.array(dist_kpc), fe_h, sigma_feh)
 print a, sa, b, sb, rchi2, dof
 
-plt.scatter(dist_kpc, fe_h)
-plt.show()
+# import matplotlib.pyplot as plt
+# plt.scatter(dist_kpc, fe_h)
+# plt.show()

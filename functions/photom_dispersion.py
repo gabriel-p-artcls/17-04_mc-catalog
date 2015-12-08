@@ -1,5 +1,4 @@
 
-
 import numpy as np
 import CMD_obs_vs_asteca as cmd
 
@@ -17,20 +16,16 @@ def get_disp(cl_reg_fit):
     return p_disp
 
 
-def main(cl):
+def main(r_path, cl):
     '''
     '''
-
     # Fetch which run holds this cluster's membership data.
     run = cmd.get_cl_run(cl)
     # Fetch what 'input_XX' folder in the above run contains the
     # membership file.
-    inpt = cmd.get_input_folder(cl, run)
-    # Path where the members file is stored.
-    cl_path = '/media/rest/github/mc-catalog/runs/' + run + \
-        '_run/output/' + inpt + '/' + cl + '_memb.dat'
+    inpt = cmd.get_input_folder(r_path, cl, run)
     # Membership data for cluster.
-    cl_reg_fit, cl_reg_no_fit = cmd.get_memb_data(cl_path)
+    cl_reg_fit, cl_reg_no_fit = cmd.get_memb_data(r_path, run, inpt, cl)
 
     # Obtain photometric dispersion
     p_disp = get_disp(cl_reg_fit)

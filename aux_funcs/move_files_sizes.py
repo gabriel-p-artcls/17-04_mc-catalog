@@ -1,8 +1,8 @@
 
-
+import os
 import numpy as np
-from os.path import exists, join, dirname, realpath, isfile, getsize
-from os import makedirs, getcwd, listdir
+from os.path import exists, join, isfile, getsize
+from os import makedirs, listdir
 import shutil
 from itertools import cycle, chain
 
@@ -62,10 +62,13 @@ def get_files_by_file_size(mypath, reverse=False):
 
 
 def main():
-
-    # Get path where the code is running
-    # mypath = realpath(join(getcwd(), dirname(__file__)))
-    mypath = '/media/rest/github/asteca-project/asteca/input/dont_read/MC_all/'
+    '''
+    '''
+    # Define main path.
+    r_path = '/media/rest/'
+    if not os.path.isdir(r_path):
+        r_path = '/home/gabriel/'
+    mypath = r_path + 'github/asteca-project/asteca/input/dont_read/MC_all/'
 
     # Read clusters file names and get their sizes. Larger files are located
     # first in the list.

@@ -4,6 +4,144 @@ from astropy import units as u
 import numpy as np
 
 
+def rho_pa(coord, glx_ctr):
+    '''
+    Equivalent to Eqs 1, 2 & 3 from van der Marel & Cioni (2001).
+
+    Some rotations need to be applied to the 'phi' if using the equations
+    from the article instead of astropy.
+    '''
+    # Angular separation between center and coordinates.
+    rho = coord.separation(glx_ctr)
+    # Position angle between center and coordinates.
+    pa = glx_ctr.position_angle(coord)
+
+    # # Generate angular distance and position angles as those shown in
+    # # Table 1 of Carrera et al. (2011).
+
+    # # Angular distance between point and center of galaxy.
+    # cos_rho = np.cos(coord.dec.radian) * np.cos(glx_ctr.dec.radian) * \
+    #     np.cos(coord.ra.radian - glx_ctr.ra.radian) + \
+    #     np.sin(coord.dec.radian) * np.sin(glx_ctr.dec.radian)
+    # rho = Angle(np.arccos(cos_rho) * 180. / np.pi, unit=u.deg)
+    # print 'rho = ', rho.degree
+
+    # # Position angle.
+    # cos_phi = (-1. * np.cos(coord.dec.radian) * np.sin(coord.ra.radian -
+    #            glx_ctr.ra.radian)) / np.sin(rho.radian)
+    # phi = np.arccos(cos_phi) * 180. / np.pi
+
+    # # Transform phi so it will match the position of the angles in Table 1.
+    # delta_ra = coord.ra.degree - glx_ctr.ra.degree
+    # delta_dec = coord.dec.degree - glx_ctr.dec.degree
+    # if delta_ra <= 0. and delta_dec >= 0.:
+    #     # This is the N-W quadrant.
+    #     phi = phi + 360.
+    # elif delta_ra >= 0. and delta_dec >= 0.:
+    #     # N-E quadrant.
+    #     phi = phi
+    # elif delta_ra >= 0. and delta_dec <= 0.:
+    #     # S-E quadrant.
+    #     phi = 360. - phi
+    # elif delta_ra <= 0. and delta_dec <= 0.:
+    #     # S-W quadrant.
+    #     phi = 360. - phi
+    # # Obtain the position angle.
+    # pa = Angle(phi - 90., unit=u.deg)
+
+    # print 'rho, pa = {:.2f}, {:.1f}'.format(rho.degree * 60., pa.degree)
+
+    return rho, pa
+
+
+def x_y(rho, pa):
+    '''
+    Carrera, private communication.
+    '''
+    y = rho.radian * np.cos(pa.radian)
+    x = rho.radian * np.sin(pa.radian)
+    x, y = Angle(x, unit=u.rad), Angle(y, unit=u.rad)
+    print 'x =', x.radian, 'y =', y.radian
+
+    return x, y
+
+
+# def claria_dist(rho, phi, glx_PA, glx_incl, glx_dist):
+#     '''
+#     Claria et al. (2005). This Eq only appears to work if glx_PA=45(deg) so
+#     that several terms in the (more general?) expression from Cioni (2009)
+#     are simplified.
+#     '''
+#     theta = glx_PA - Angle('90d')
+#     A = 1 + np.sin((phi.radian - theta.radian)) ** 2 * \
+#         (np.tan(glx_incl)) ** 2
+#     d = float(rho.radian * np.sqrt(A))
+#     print 'R_proj =', np.rad2deg(d)
+
+#     # Added by me, not in Claria et al. (2005)
+#     dep_dist_kpc = Distance(np.tan(d) * glx_dist, unit=glx_dist.unit)
+
+#     return dep_dist_kpc
+
+
+def cioni_dist(x, y, glx_PA, glx_incl, glx_dist):
+    '''
+    Eqs 1, 2, 3 & 4 from Cioni (2009).
+    '''
+
+    theta = glx_PA - Angle('90d')
+
+    # Rotate the coords system.
+    x1 = x * np.cos(theta.radian) + y * np.sin(theta.radian)
+    y1 = y * np.cos(theta.radian) - x * np.sin(theta.radian)
+    # print 'x1 =', x1.radian, 'y1 =', y1.radian
+
+    # De-project.
+    y2 = y1 / np.cos(glx_incl.radian)
+    # print 'y2 =', y2.radian
+
+    # Obtain de-projected distance in decimal degrees.
+    dep_dist_rad = np.sqrt(x1.rad ** 2 + y2.rad ** 2)
+    dep_dist_deg = Angle(np.rad2deg(dep_dist_rad), unit='degree')
+    # print 'R_proj =', dep_dist_deg.degree
+
+    # Obtain de-projected distance in the units used for the galaxy center
+    # distance.
+    dep_dist_kpc = Distance(np.tan(dep_dist_deg) * glx_dist,
+                            unit=glx_dist.unit)
+
+    return dep_dist_kpc
+
+
+def van_der_marel_dist(rho, phi, coord, glx_ctr, glx_PA, glx_incl, glx_dist):
+    '''
+    Eqs derived from those given in van der Marel & Cioni (2001).
+    '''
+
+    theta = glx_PA - Angle('90d')
+
+    A = np.cos(glx_incl.radian) * np.cos(rho.radian) - \
+        np.sin(glx_incl.radian) * np.sin(rho.radian) * \
+        np.sin(phi.radian - theta.radian)
+
+    D_0 = glx_dist
+    D = D_0 * np.cos(glx_incl.radian) / (A)
+    # x = D * np.sin(rho.radian) * np.cos(phi.radian)
+    # y = D * np.sin(rho.radian) * np.sin(phi.radian)
+    # z = D_0 - D * np.cos(rho.radian)
+    # print 'x =', x, 'y =', y
+
+    x_p = D * np.sin(rho.radian) * np.cos(phi.radian - theta.radian)
+    y_p = D * (np.sin(rho.radian) * np.cos(glx_incl.radian) *
+               np.sin(phi.radian - theta.radian) + np.cos(rho.radian) *
+               np.sin(glx_incl.radian)) - D_0 * np.sin(glx_incl.radian)
+
+    # De-projected distance in Kpc.
+    dep_dist_kpc = Distance(np.sqrt(x_p ** 2 + y_p ** 2), unit=glx_dist.unit)
+
+    return dep_dist_kpc
+
+
 def deproj_dist(coord,
                 glx_ctr=SkyCoord('00h42m44.33s +41d16m07.5s', frame='icrs'),
                 glx_PA=Angle('37d42m54s'), glx_incl=Angle('77.5d'),
@@ -35,58 +173,13 @@ def deproj_dist(coord,
         Galactocentric distance(s) for coordinate point(s).
     """
 
-    # Angular separation between center and coordinates.
-    # a = coord.separation(glx_ctr)
-    # print a.degree, a.degree * 60.
+    rho, pa = rho_pa(coord, glx_ctr)
+    x, y = x_y(rho, pa)
 
-    # Generate angular distance and position angles as those shown in
-    # Table 1 of Carrera et al. (2011).
-    # Rho & Phi obtained following Eqs (1) and (2) in
-    # van der Marel & Cioni (2001).
+    dep_dist_kpc = van_der_marel_dist(rho, pa, coord, glx_ctr, glx_PA,
+                                      glx_incl, glx_dist)
+    print 'vdM d_proj =', dep_dist_kpc
+    dep_dist_kpc = cioni_dist(x, y, glx_PA, glx_incl, glx_dist)
+    print 'Cio d_proj =', dep_dist_kpc, '\n'
 
-    # Angular distances.
-    # cos_rho = np.cos(a.dec.radian) * np.cos(c_LMC.dec.radian) * \
-    #     np.cos(a.ra.radian - c_LMC.ra.radian) + np.sin(a.dec.radian) * \
-    #     np.sin(c_LMC.dec.radian)
-    # rho = np.arccos(cos_rho) * 180. / np.pi
-    # print 'rho = {:.4f}'.format(rho)
-
-    # Position angles.
-    # cos_phi = (-1. * np.cos(a.dec.radian) * np.sin(a.ra.radian -
-    #            c_LMC.ra.radian)) / np.sin(np.arccos(cos_rho))
-    # phi = np.arccos(cos_phi) * 180. / np.pi
-    # # This is so phi matches the values in Table 1. Not sure why.
-    # if phi < 45.:
-    #     print 'phi = {:.2f}, {:.1f}'.format(phi, 180 + (90 - phi))
-    # elif phi > 90.:
-    #     print 'phi = {:.2f}, {:.1f}'.format(phi, 360 - (90 + phi))
-    # else:
-    #     print 'phi = {:.2f}, {:.1f}'.format(phi, 360 - (90 - phi))
-
-    # Convert equatorial coords into angular coords.
-    avg_dec = 0.5 * (glx_ctr.dec + coord.dec).radian
-    if coord.ra > Angle(180., unit=u.deg):
-        # Invert to avoid negative distances.
-        ra_inv = Angle((coord.ra.degree - 360.), unit=u.deg)
-        x = (glx_ctr.ra - ra_inv) * np.cos(avg_dec)
-    else:
-        x = (glx_ctr.ra - coord.ra) * np.cos(avg_dec)
-    y = glx_ctr.dec - coord.dec
-
-    # Rotate the coords system. Eqs 1, 2, 3 & 4 from Cioni et al. (2009)
-    phi = glx_PA - Angle('90d')
-    x1 = x * np.cos(phi.radian) + y * np.sin(phi.radian)
-    y1 = y * np.cos(phi.radian) - x * np.sin(phi.radian)
-    # De-project.
-    y2 = y1 / np.cos(glx_incl.radian)
-
-    # Obtain de-projected distance in decimal degrees.
-    dep_dist_rad = np.sqrt(x1.rad ** 2 + y2.rad ** 2)
-    dep_dist_deg = Angle(np.rad2deg(dep_dist_rad), unit='degree')
-
-    # Obtain de-projected distance in the units used for the galaxy center
-    # distance.
-    dep_dist_kpc = Distance(np.tan(dep_dist_deg) * glx_dist,
-                            unit=glx_dist.unit)
-
-    return dep_dist_deg, dep_dist_kpc
+    return dep_dist_kpc
