@@ -1,4 +1,5 @@
 
+import os
 from functions.get_data import get_asteca_data, get_liter_data, \
     get_bica_database, get_cross_match_data, get_amr_lit
 from functions.get_params import params
@@ -214,6 +215,9 @@ def main():
     '''
     Call each function.
     '''
+    # Root path.
+    r_path = os.path.realpath(__file__)[:-29]
+
     # Read data from ASteca output file.
     as_names, as_pars = get_asteca_data()
     print 'ASteCA data read from output file.'
@@ -227,9 +231,8 @@ def main():
     print 'Cluster parameters matched.'
 
     # Get data parameters arrays.
-    r_paty, in_params = params(as_names, as_pars, cl_dict, names_idx)
+    in_params = params(r_path, as_names, as_pars, cl_dict, names_idx)
     print 'Dictionary of parameters obtained.'
-    raw_input()
 
     # Obtain galactic structure (inclination + position angles) for MCs
     gal_str_pars = gsd(in_params)

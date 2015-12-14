@@ -82,6 +82,7 @@ def main(in_params):
                 print inc.degree, pa.degree, c
         print '\n'
 
+        # Use data from file to speed things up.
         # x, y, z = [], [], []
         # gal_name = ['SMC', 'LMC']
         # with open('functions/temp_' + gal_name[j] + '.dat') as f:

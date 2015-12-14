@@ -103,15 +103,10 @@ def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod):
     return dist_pc
 
 
-def params(as_names, as_pars, cl_dict, names_idx):
+def params(r_path, as_names, as_pars, cl_dict, names_idx):
     '''
     Return ASteCA output and literature parameters values.
     '''
-    # Define main path.
-    r_path = '/media/rest/'
-    if not os.path.isdir(r_path):
-        r_path = '/home/gabriel/'
-
     # Indexes of columns in ASteCA output file.
     a_zi, a_zei, a_ai, a_aei, a_ei, a_eei, a_di, a_dei, a_mi, a_mei, a_rad, \
         a_erad, a_int_c, a_nmemb, a_CI, a_prob, a_r_core, a_e_r_core =\
@@ -268,4 +263,4 @@ def params(as_names, as_pars, cl_dict, names_idx):
         'phot_disp': phot_disp
     }
 
-    return r_path, pars_dict
+    return pars_dict

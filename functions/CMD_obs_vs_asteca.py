@@ -50,7 +50,7 @@ def diag_limits(r_path, cl):
     Define plot limits for *all* photometric diagrams.
     '''
     y_axis = 0
-    path_no_ext = r_path + 'github/asteca-project/asteca/input/dont_read/'\
+    path_no_ext = r_path + 'asteca-project/asteca/input/dont_read/'\
         + 'MC_all/' + cl + '.*'
     data_file = glob.glob(path_no_ext)[0]
     phot_data = gd(data_file)
@@ -88,7 +88,7 @@ def get_DB_age_ext(r_path, cl, db):
     Read age and extinction values (and Galaxy) for the 'cl' cluster matched
     in the 'db' database.
     '''
-    f_path = r_path + 'github/mc-catalog/ages_mass_lit/matched_clusters.dat'
+    f_path = r_path + 'mc-catalog/ages_mass_lit/matched_clusters.dat'
     # Read data file
     with open(f_path) as f:
         for line in skip_comments(f):
@@ -126,7 +126,7 @@ def get_input_folder(r_path, cl, run):
     its membership file.
     '''
     name = cl + '.png'
-    path = r_path + 'github/mc-catalog/runs/' + run + '_run/'
+    path = r_path + 'mc-catalog/runs/' + run + '_run/'
     for root, dirs, files in os.walk(path):
         if name in files:
             full_path = os.path.join(root, name)
@@ -143,7 +143,7 @@ def get_memb_data(r_path, run, inpt, cl):
     process and stars that were not.
     '''
     # Path where the members file is stored.
-    cl_path = r_path + 'github/mc-catalog/runs/' + run + \
+    cl_path = r_path + 'mc-catalog/runs/' + run + \
         '_run/output/' + inpt + '/' + cl + '_memb.dat'
     # Read data file
     with open(cl_path) as f:
@@ -198,7 +198,7 @@ def get_isoch(r_path, DB_asteca, z, a, e, d):
     '''
     if DB_asteca == 'DB':
         # Use Marigo isochrones.
-        met_f = r_path + 'github/mc-catalog/functions/' + str(z) + '.dat'
+        met_f = r_path + 'mc-catalog/functions/' + str(z) + '.dat'
         line_start, imass_idx = "#\tIsochrone\tZ = ", 1
         # T1, C
         mag1_idx, mag2_idx = 9, 7
@@ -206,7 +206,7 @@ def get_isoch(r_path, DB_asteca, z, a, e, d):
         # Use PARSEC isochrones.
         line_start, imass_idx = "#\tIsochrone  Z = ", 2
         mag1_idx, mag2_idx = 10, 8
-        met_f = r_path + 'github/asteca-project/asteca/isochrones/' + \
+        met_f = r_path + 'asteca-project/asteca/isochrones/' + \
             'parsec11_washington/' + str(z) + '.dat'
     age_format = r"Age = \t(.+?) yr"
     cmd_select = 4
