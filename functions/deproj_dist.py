@@ -9,22 +9,7 @@ def rho_phi(coord, glx_ctr):
     Eqs 1, 2 & 3 from van der Marel & Cioni (2001).
     '''
     # Angular distance between point and center of galaxy.
-    # cos_rho = np.cos(coord.dec.radian) * np.cos(glx_ctr.dec.radian) * \
-    #     np.cos(coord.ra.radian - glx_ctr.ra.radian) + \
-    #     np.sin(coord.dec.radian) * np.sin(glx_ctr.dec.radian)
-    # rho_0 = Angle(np.arccos(cos_rho) * 180. / np.pi, unit=u.deg)
-    # Angular separation between center and coordinates.
     rho = coord.separation(glx_ctr)
-
-    # Position angle.
-    cos_phi = (-1. * np.cos(coord.dec.radian) * np.sin(coord.ra.radian -
-               glx_ctr.ra.radian)) / np.sin(rho.radian)
-    # sin_phi = (np.sin(coord.dec.radian) * np.cos(glx_ctr.dec.radian) -
-    #            np.cos(coord.dec.radian) * np.sin(glx_ctr.dec.radian) *
-    #            np.cos(coord.ra.radian - glx_ctr.ra.radian)) / \
-    #     np.sin(rho.radian)
-    phi_palma = Angle(np.arccos(cos_phi) * 180. / np.pi, unit=u.deg)
-    Phi_palma =  phi_palma - Angle('90d')
 
     # Position angle between center and coordinates. This is the angle between
     # the positive y axis (North) counter-clockwise towards the negative x
@@ -46,6 +31,28 @@ def rho_phi(coord, glx_ctr):
     return rho, Phi, phi
 
 
+def phi_palma(coord, glx_ctr):
+    '''
+    '''
+    # Angular separation between center and coordinates.
+    cos_rho = np.cos(coord.dec.radian) * np.cos(glx_ctr.dec.radian) * \
+        np.cos(coord.ra.radian - glx_ctr.ra.radian) + \
+        np.sin(coord.dec.radian) * np.sin(glx_ctr.dec.radian)
+    rho = Angle(np.arccos(cos_rho) * 180. / np.pi, unit=u.deg)
+
+    # Position angle.
+    cos_phi = (-1. * np.cos(coord.dec.radian) * np.sin(coord.ra.radian -
+               glx_ctr.ra.radian)) / np.sin(rho.radian)
+    # sin_phi = (np.sin(coord.dec.radian) * np.cos(glx_ctr.dec.radian) -
+    #            np.cos(coord.dec.radian) * np.sin(glx_ctr.dec.radian) *
+    #            np.cos(coord.ra.radian - glx_ctr.ra.radian)) / \
+    #     np.sin(rho.radian)
+    phi_palma = Angle(np.arccos(cos_phi) * 180. / np.pi, unit=u.deg)
+    Phi_palma = phi_palma - Angle('90d')
+
+    return Phi_palma, phi_palma
+
+
 def gal_theta(glx_PA):
     '''
     PA of the galaxy, rotated 90 deg.
@@ -55,16 +62,6 @@ def gal_theta(glx_PA):
     # ???????
 
     return theta
-
-
-# def phi_rotate(coord, glx_ctr, phi):
-#     '''
-#     Rotate so that phi is located in the NW quadrant.
-#     '''
-#     phi_rot = Angle(90. * int(phi.degree / 90.0001), unit='degree')
-#     phi = phi - phi_rot
-
-#     return phi
 
 
 def vdm_2001_D(glx_incl, D_0, rho, phi, theta):
@@ -144,9 +141,10 @@ def claria_2005_dep_dist(rho, phi, glx_incl, theta):
     p = Phi & p' = PA (= theta + 90)
     '''
     A = 1 + (np.sin(phi.radian - theta.radian) * np.tan(glx_incl)) ** 2
-    dep_dist_deg = Angle(rho * np.sqrt(A), unit='degree')
+    rho_p = np.sqrt(A)
+    dep_dist_deg = Angle(rho * rho_p, unit='degree')
 
-    return dep_dist_deg
+    return rho_p, dep_dist_deg
 
 
 def cioni_2009_dep_dist(glx_incl, theta, x, y):
@@ -208,43 +206,42 @@ def deproj_dist(coord,
 
     theta = gal_theta(glx_PA)
     rho, Phi, phi = rho_phi(coord, glx_ctr)
-    D_0 = glx_dist
 
+    D_0 = glx_dist
     D = vdm_2001_D(glx_incl, D_0, rho, phi, theta)
     dep_dist_kpc_M01 = vdm_2001_dep_dist(rho, phi, theta, glx_incl, D, D_0)
     print 'd_kpc M01 = {:.5f}'.format(dep_dist_kpc_M01)
-
-    # theta = glx_PA - Angle('90d')  # Acc to Cioni (2009)
+    import pdb; pdb.set_trace()  # breakpoint 7a6db5c5 //
 
     # This gives the values for the deprojected angular distance in
     # Carrera et al. (2011).
     # x, y = carrera_2011_xy(rho, Phi)
 
-    # vdm&C01 (x,y values) + Cioni 2009 (C09).
-    x, y = vdm_2001_xy(rho, phi)
+    # # vdm&C01 (x,y values) + Cioni 2009 (C09).
+    # x, y = vdm_2001_xy(rho, phi)
+    # # theta = glx_PA - Angle('90d')  # Acc to Cioni (2009), but NOT to vdM&C01
+    # dep_dist_deg = cioni_2009_dep_dist(glx_incl, theta, x, y)
+    # print 'd_deg C09 = {:.5f}'.format(dep_dist_deg.degree)
+
+    # Claria et al. 2005 equation. Equivalent to vdM&C01 + C09.
+    rho_p, dep_dist_deg = claria_2005_dep_dist(rho, Phi, glx_incl, glx_PA)
 
     # TEST
-    X = D_0 * np.tan(x * np.pi / 180.)
-    Y = D_0 * np.tan(y * np.pi / 180.)
-    x1 = X * np.cos(theta.radian) + Y * np.sin(theta.radian)
-    y1 = Y * np.cos(theta.radian) - X * np.sin(theta.radian)
-    # De-project.
-    y2 = y1 / np.cos(glx_incl.radian)
-    # Obtain de-projected distance in decimal degrees.
-    print 'd_kpc XXX = {:.5f}'.format(np.sqrt(x1 ** 2 + y2 ** 2))
+    X = D_0 * np.tan(rho) * rho_p
+    print 'd_kpc XXX = {:.5f}'.format(X)
     # TEST
 
-    dep_dist_deg = cioni_2009_dep_dist(glx_incl, theta, x, y)
-    # print 'd_deg C11 = {:.5f}'.format(dep_dist_deg.degree)
+    # # This gives the Palma et al. values. Notice the use of the galaxy's PA
+    # # with the 'phi_p' value.
+    # Phi_p, phi_p = phi_palma(coord, glx_ctr)
+    # dep_dist_deg = claria_2005_dep_dist(rho, phi_p, glx_incl, glx_PA)
 
-    # # Claria et al. 2005 equation. Equivalent to vdM&C01 + C09.
-    # dep_dist_deg = claria_2005_dep_dist(rho, Phi, glx_incl, glx_PA)
     # print 'd_deg C05 = {:.5f}'.format(dep_dist_deg.degree)
-
     dep_dist_kpc = cioni_2009_dist_kpc(dep_dist_deg, D_0)
-    print 'd_kpc C09 = {:.5f}'.format(dep_dist_kpc), '\n'
+    print 'd_kpc C09 = {:.5f}'.format(dep_dist_kpc)
 
-    dep_dist_kpc = 0.
+    dep_dist_kpc = Angle(0., unit='degree')
+    print ''
     return dep_dist_kpc
 
 

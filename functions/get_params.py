@@ -1,10 +1,7 @@
 
-import os
 import numpy as np
-from astropy import units as u
-from astropy.coordinates import SkyCoord, Distance
-from functions import photom_dispersion
-# from functions.photom_dispersion import main as photom_dispersion
+from functions.photom_dispersion import get_disp
+from functions.dist_2_cent import dist_2_cloud_center
 
 
 def float_str(val):
@@ -58,49 +55,6 @@ def z_to_feh(z, ez):
     e_fe_h = min(e_fe_h, 2.)
 
     return fe_h, e_fe_h
-
-
-def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod):
-    '''
-    Obtain the 3D distance in parsecs between the center of a cluster and
-    the center of the Magellanic cloud it belongs to.
-    '''
-
-    # S/LMC central coords stored in degrees.
-    c_SMC = SkyCoord('00h52m45s', '-72d49m43s', frame='icrs')
-    # ^ (13.1875, -72.82861111)
-    c_LMC = SkyCoord('05h20m57s', '-69d28m41s', frame='icrs')
-    # ^ (80.2375, -69.47805556)
-    #
-    # S/LMC distance stored in parsecs.
-    d_SMC = 10 ** (0.2 * (18.96 + 5))  # ~ 61944.11 pc (18.96 mag)
-    d_LMC = 10 ** (0.2 * (18.49 + 5))  # ~ 49888.45 pc (18.49 mag)
-
-    if gal == 0:  # SMC
-        gal_center, gal_dist = c_SMC, Distance(d_SMC, unit=u.pc)
-    else:  # LMC
-        gal_center, gal_dist = c_LMC, Distance(d_LMC, unit=u.pc)
-
-    # *Individual* distance (ASteCA) for each cluster (in parsecs).
-    # ASteCA gives the distance modulus as dm = -5 + 5*log(d), so to transform
-    # that into the distance in parsecs 'd', we do:
-    d_clust = Distance(10 ** (0.2 * (float(dist_mod) + 5)), unit=u.pc)
-
-    # *Fixed* distance for all clusters, as distance to cloud.
-    # if gal == 0:  # SMC
-    #     d_clust = d_SMC
-    # else:
-    #     d_clust = d_LMC
-
-    # Galaxy center coordinate.
-    c1 = SkyCoord(ra=gal_center.ra, dec=gal_center.dec, distance=gal_dist)
-    # Cluster coordinate.
-    c2 = SkyCoord(ra=ra_deg*u.degree, dec=dec_deg*u.degree, distance=d_clust)
-
-    # 3D distance in parsecs.
-    dist_pc = float(str(c1.separation_3d(c2))[:-3])
-
-    return dist_pc
 
 
 def params(r_path, as_names, as_pars, cl_dict, names_idx):
@@ -210,10 +164,11 @@ def params(r_path, as_names, as_pars, cl_dict, names_idx):
 
         # Get distance from cluster to galaxy center.
         dist_cent[j].append(dist_2_cloud_center(j, ra[j][-1], dec[j][-1],
-                            as_p[a_di]))
+                            as_p[a_di], as_p[a_dei]))
 
         # Get photometric dispersion parameter.
-        phot_disp[j].append(photom_dispersion.main(r_path, as_names[i]))
+        # phot_disp[j].append(get_disp(r_path, as_names[i]))
+        phot_disp[j].append(0.)
 
         # Organize param values, ASteCA first, lit second.
         met = [as_p[a_zi], cl_dict[names_idx[i]][l_zi]]

@@ -234,6 +234,18 @@ def main():
     in_params = params(r_path, as_names, as_pars, cl_dict, names_idx)
     print 'Dictionary of parameters obtained.'
 
+    n_memb, marr, aarr, names = [
+        in_params[_] for _ in ['n_memb', 'marr', 'aarr', 'gal_names']]
+    import matplotlib.pyplot as plt
+    import numpy as np
+    for i, n in enumerate(n_memb[0]):
+        print names[0][i], aarr[0][0][i], n, marr[0][0][i], marr[0][0][i]/n
+    for i, n in enumerate(n_memb[1]):
+        print names[1][i], aarr[1][0][i], n, marr[1][0][i], marr[1][0][i]/n
+    plt.scatter(aarr[0][0], np.asarray(marr[0][0]) / np.asarray(n_memb[0]))
+    plt.scatter(aarr[1][0], np.asarray(marr[1][0]) / np.asarray(n_memb[1]))
+    plt.show()
+
     # Obtain galactic structure (inclination + position angles) for MCs
     gal_str_pars = gsd(in_params)
     print 'Inclination and position angles for MCs obtained.'
