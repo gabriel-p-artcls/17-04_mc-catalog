@@ -2,6 +2,7 @@
 from astropy import units as u
 from astropy.coordinates import SkyCoord, Distance
 import numpy as np
+from functions.MCs_data import MCs_data
 
 
 def dist_err_mag_2_pc(d_pc, e_dm, e_E):
@@ -70,39 +71,14 @@ def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod, e_dm):
     the center of the Magellanic cloud it belongs to.
     '''
 
-    # S/LMC central coords stored in degrees.
-    c_SMC = SkyCoord('00h52m45s', '-72d49m43s', frame='icrs')
-    # ^ (13.1875, -72.82861111)
-    c_LMC = SkyCoord('05h20m57s', '-69d28m41s', frame='icrs')
-    # ^ (80.2375, -69.47805556)
-    #
-    # S/LMC distance stored in parsecs.
-    # de Grijs et al. (2015): SMC (m-M)o = 18.96 +/- 0.02 mag
-    # de Grijs et al. (2014): LMC (m-M)o = 18.49 +/- 0.09 mag
-    #
-    # d_SMC ~ 61944.11 pc (18.96 mag)
-    d_SMC = Distance(10 ** (0.2 * (18.96 + 5)), unit=u.pc)
-    e_d_SMC = dist_err_mag_2_pc(d_SMC, 0.02, 0.)
-    # d_LMC ~ 49888.45 pc (18.49 mag)
-    d_LMC = Distance(10 ** (0.2 * (18.49 + 5)), unit=u.pc)
-    e_d_LMC = dist_err_mag_2_pc(d_LMC, 0.09, 0.)
-
-    if gal == 0:  # SMC
-        gal_center, gal_dist, e_gal_dist = c_SMC, d_SMC, e_d_SMC
-    else:  # LMC
-        gal_center, gal_dist, e_gal_dist = c_LMC, d_LMC, e_d_LMC
+    gal_center, gal_dist, gal_e_dm = MCs_data(gal)
+    e_gal_dist = dist_err_mag_2_pc(gal_dist, gal_e_dm, 0.)
 
     # *Individual* distance (ASteCA) for each cluster (in parsecs).
     # ASteCA gives the distance modulus as dm = -5 + 5*log(d), so to transform
     # that into the distance in parsecs 'd', we do:
     d_clust = Distance(10 ** (0.2 * (float(dist_mod) + 5)), unit=u.pc)
     e_d_clust = dist_err_mag_2_pc(d_clust, e_dm, 0.)
-
-    # *Fixed* distance for all clusters, as distance to cloud.
-    # if gal == 0:  # SMC
-    #     d_clust = d_SMC
-    # else:
-    #     d_clust = d_LMC
 
     # Galaxy center coordinate.
     c1 = SkyCoord(ra=gal_center.ra, dec=gal_center.dec, distance=gal_dist)
