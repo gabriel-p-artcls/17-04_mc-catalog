@@ -15,6 +15,9 @@ def rho_phi(coord, glx_ctr):
     # the positive y axis (North) counter-clockwise towards the negative x
     # axis (East).
     Phi = glx_ctr.position_angle(coord)
+
+    # This is the angle measured counter-clockwise from the x positive axis
+    # (East).
     phi = Phi + Angle('90d')
 
     # x = rho.degree * np.cos(phi)
@@ -141,10 +144,9 @@ def claria_2005_dep_dist(rho, phi, glx_incl, theta):
     p = Phi & p' = PA (= theta + 90)
     '''
     A = 1 + (np.sin(phi.radian - theta.radian) * np.tan(glx_incl)) ** 2
-    rho_p = np.sqrt(A)
-    dep_dist_deg = Angle(rho * rho_p, unit='degree')
+    dep_dist_deg = Angle(rho * np.sqrt(A), unit='degree')
 
-    return rho_p, dep_dist_deg
+    return dep_dist_deg
 
 
 def cioni_2009_dep_dist(glx_incl, theta, x, y):
@@ -211,7 +213,6 @@ def deproj_dist(coord,
     D = vdm_2001_D(glx_incl, D_0, rho, phi, theta)
     dep_dist_kpc_M01 = vdm_2001_dep_dist(rho, phi, theta, glx_incl, D, D_0)
     print 'd_kpc M01 = {:.5f}'.format(dep_dist_kpc_M01)
-    import pdb; pdb.set_trace()  # breakpoint 7a6db5c5 //
 
     # This gives the values for the deprojected angular distance in
     # Carrera et al. (2011).
@@ -219,24 +220,19 @@ def deproj_dist(coord,
 
     # # vdm&C01 (x,y values) + Cioni 2009 (C09).
     # x, y = vdm_2001_xy(rho, phi)
-    # # theta = glx_PA - Angle('90d')  # Acc to Cioni (2009), but NOT to vdM&C01
     # dep_dist_deg = cioni_2009_dep_dist(glx_incl, theta, x, y)
     # print 'd_deg C09 = {:.5f}'.format(dep_dist_deg.degree)
 
     # Claria et al. 2005 equation. Equivalent to vdM&C01 + C09.
-    rho_p, dep_dist_deg = claria_2005_dep_dist(rho, Phi, glx_incl, glx_PA)
-
-    # TEST
-    X = D_0 * np.tan(rho) * rho_p
-    print 'd_kpc XXX = {:.5f}'.format(X)
-    # TEST
+    dep_dist_deg = claria_2005_dep_dist(rho, phi, glx_incl, theta)
+    # print 'd_deg C05 = {:.5f}'.format(dep_dist_deg.degree)
 
     # # This gives the Palma et al. values. Notice the use of the galaxy's PA
     # # with the 'phi_p' value.
     # Phi_p, phi_p = phi_palma(coord, glx_ctr)
     # dep_dist_deg = claria_2005_dep_dist(rho, phi_p, glx_incl, glx_PA)
 
-    # print 'd_deg C05 = {:.5f}'.format(dep_dist_deg.degree)
+    # Convert distance value to kpc using C09 equation.
     dep_dist_kpc = cioni_2009_dist_kpc(dep_dist_deg, D_0)
     print 'd_kpc C09 = {:.5f}'.format(dep_dist_kpc)
 
