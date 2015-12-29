@@ -2,7 +2,10 @@
 from astropy import units as u
 from astropy.coordinates import SkyCoord, Distance
 import numpy as np
-from functions.MCs_data import MCs_data
+try:
+    from functions.MCs_data import MCs_data
+except:
+    from MCs_data import MCs_data
 
 
 def dist_err_mag_2_pc(d_pc, e_dm, e_E):
@@ -15,7 +18,7 @@ def dist_err_mag_2_pc(d_pc, e_dm, e_E):
     e_d_pc = sqrt((diff(d,dm)*e_dm)**2 + (diff(d,E)*e_E)**2)
 
     where: dm is distance modulus, E is E(B-V) extinction, diff(x,y) is the
-    partial derivative of x with respect to y, ena e_X is the standard
+    partial derivative of x with respect to y, and e_X is the standard
     deviation of parameter X.
     '''
 
@@ -71,24 +74,29 @@ def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod, e_dm):
     the center of the Magellanic cloud it belongs to.
     '''
 
+    # Retrieve the galaxy's center coords and distance modulus (and its error).
     gal_center, gal_dist, gal_e_dm = MCs_data(gal)
-    e_gal_dist = dist_err_mag_2_pc(gal_dist, gal_e_dm, 0.)
+    # Obtain error in distance in parsecs. Use 0. error in extinction since
+    # this is the true distance modulus.
+    e_gal_dist_pc = dist_err_mag_2_pc(gal_dist, gal_e_dm, 0.)
 
     # *Individual* distance (ASteCA) for each cluster (in parsecs).
     # ASteCA gives the distance modulus as dm = -5 + 5*log(d), so to transform
     # that into the distance in parsecs 'd', we do:
     d_clust = Distance(10 ** (0.2 * (float(dist_mod) + 5)), unit=u.pc)
-    e_d_clust = dist_err_mag_2_pc(d_clust, e_dm, 0.)
+    # Obtain error in distance in parsecs.
+    e_cl_dist_pc = dist_err_mag_2_pc(d_clust, e_dm, 0.)
 
     # Galaxy center coordinate.
     c1 = SkyCoord(ra=gal_center.ra, dec=gal_center.dec, distance=gal_dist)
     # Cluster coordinate.
     c2 = SkyCoord(ra=ra_deg*u.degree, dec=dec_deg*u.degree, distance=d_clust)
 
-    # 3D distance in parsecs.
+    # 3D distance between cluster and center of galaxy,  in parsecs.
     dist_pc = c1.separation_3d(c2)
-    # e_d_pc = dist_err_2_pts(dist_pc, c1, e_gal_dist, c2, e_d_clust)
-    # print dist_pc, e_d_pc
+    # Error for the 3D distance.
+    e_d_pc = dist_err_2_pts(dist_pc, c1, e_gal_dist_pc, c2, e_cl_dist_pc)
+    print dist_pc, e_d_pc
 
     return dist_pc
 

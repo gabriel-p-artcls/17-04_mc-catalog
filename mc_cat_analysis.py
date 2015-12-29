@@ -72,7 +72,7 @@ def main():
 
     # Read data from ASteca output file.
     as_names, as_pars = get_asteca_data()
-    print 'ASteCA data read from output file.'
+    print 'ASteCA data read from .dat output file.'
 
     # Read literature data.
     cl_dict = get_liter_data()
@@ -85,20 +85,6 @@ def main():
     # Get data parameters arrays.
     in_params = params(r_path, as_names, as_pars, cl_dict, names_idx)
     print 'Dictionary of parameters obtained.'
-
-    # TEST
-    n_memb, marr, aarr, names = [
-        in_params[_] for _ in ['n_memb', 'marr', 'aarr', 'gal_names']]
-    import matplotlib.pyplot as plt
-    import numpy as np
-    for i, n in enumerate(n_memb[0]):
-        print names[0][i], aarr[0][0][i], n, marr[0][0][i], marr[0][0][i]/n
-    for i, n in enumerate(n_memb[1]):
-        print names[1][i], aarr[1][0][i], n, marr[1][0][i], marr[1][0][i]/n
-    plt.scatter(aarr[0][0], np.asarray(marr[0][0]) / np.asarray(n_memb[0]))
-    plt.scatter(aarr[1][0], np.asarray(marr[1][0]) / np.asarray(n_memb[1]))
-    plt.show()
-    # TEST
 
     # Obtain galactic structure (inclination + position angles) for MCs
     gal_str_pars = gsd(in_params)
