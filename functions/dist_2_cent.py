@@ -44,7 +44,7 @@ def dist_err_2_pts(d_pc, c1, e_r_0, c2, e_r):
     d_pc = sqrt(r**2 + r_0**2 - 2*r*r_0*A)
 
     Error in distance between points, assuming only the distances of the
-    points contain error, not the alpha,delta coordinates.
+    points contain error, not the (alpha,delta) coordinates.
 
     e_d_pc = (1/d_pc) * sqrt([(r-r_0*A)e_r]**2 + [(r_0-r*A)e_r_0]**2)
 
@@ -96,9 +96,8 @@ def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod, e_dm):
     dist_pc = c1.separation_3d(c2)
     # Error for the 3D distance.
     e_d_pc = dist_err_2_pts(dist_pc, c1, e_gal_dist_pc, c2, e_cl_dist_pc)
-    print dist_pc, e_d_pc
 
-    return dist_pc
+    return dist_pc, e_d_pc
 
 
 if __name__ == "__main__":
