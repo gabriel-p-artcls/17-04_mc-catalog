@@ -10,11 +10,11 @@ from matplotlib.patches import Ellipse
 from scipy import stats
 from scipy.stats import ks_2samp
 
-from functions.ra_dec_map import ra_dec_plots
-from functions.kde_2d import kde_map
-import functions.CMD_obs_vs_asteca as cmd
-from functions.amr_kde import age_met_rel
-from functions import lin_fit_conf_bands as lf_cb
+# from functions.ra_dec_map import ra_dec_plots
+# from functions.kde_2d import kde_map
+# import functions.CMD_obs_vs_asteca as cmd
+# from functions.amr_kde import age_met_rel
+# from functions import lin_fit_conf_bands as lf_cb
 
 
 def ccc(l1, l2):
@@ -1842,9 +1842,9 @@ def make_amr_plot(in_params, amr_lit):
 def pl_angles(in_pars):
     '''
     '''
-
     gs, i, xlab, ylab, ang_pars = in_pars
-    xmin, xmax, ymin, ymax, xi, yi, zi, max_idx, x_std, y_std = ang_pars
+    xmin, xmax, ymin, ymax, xi, yi, zi, mean_pos, i_pa_std, e_w, e_h, theta = \
+        ang_pars
 
     if i == 0:
         a, b, c, d = 0, 1, 0, 2
@@ -1879,26 +1879,27 @@ def pl_angles(in_pars):
         # Only draw units on axis (ie: 1, 2, 3)
         ax.xaxis.set_major_locator(MultipleLocator(5.0))
         ax.yaxis.set_major_locator(MultipleLocator(20.0))
-        # Plot.
+        # Plot density map.
         SC = plt.imshow(np.rot90(zi), vmin=zi.min(), vmax=zi.max(),
                         origin='upper',
                         extent=[xi.min(), xi.max(), yi.min(), yi.max()],
                         cmap=cm)
-        curv_num = 100 if i == 0 else 200
+        # Plot contour curves.
+        curv_num = 100
         plt.contour(np.rot90(zi), curv_num, colors='k', linewidths=0.2,
                     origin='upper',
                     extent=[xi.min(), xi.max(), yi.min(), yi.max()])
-        plt.scatter(xi[max_idx[0]], yi[max_idx[1]], c='w', s=45)
+        plt.scatter(mean_pos[0], mean_pos[1], c='w', s=45, zorder=3)
         # Standard dev ellipse.
-        ellipse = Ellipse(xy=(xi[max_idx[0]], yi[max_idx[1]]),
-                          width=x_std * 2, height=y_std * 2,
+        ellipse = Ellipse(xy=(mean_pos[0], mean_pos[1]),
+                          width=e_w, height=e_h, angle=theta,
                           edgecolor='w', fc='None', lw=0.85, zorder=3)
         ax.add_patch(ellipse)
         # Text box.
         text1 = r'$i^{{\circ}}_{{max}}={:.0f}\pm{:.0f}$'.format(
-            xi[max_idx[0]], x_std)
+            mean_pos[0], i_pa_std[0])
         text2 = r'$\theta^{{\circ}}_{{max}}={:.0f}\pm{:.0f}$'.format(
-            yi[max_idx[1]], y_std)
+            mean_pos[1], i_pa_std[1])
         text = text1 + '\n' + text2
     else:
         ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.3,
@@ -1907,7 +1908,7 @@ def pl_angles(in_pars):
         plt.plot([xmin, xmax], [ymin, ymax], 'k', ls='--')
         SC = plt.scatter(xi, yi, marker='o', c=zi, edgecolor='k', s=20,
                          cmap=cm, lw=0.25, zorder=4)
-        text = r'$ccc={:.2f}$'.format(max_idx)
+        text = r'$ccc={:.2f}$'.format(mean_pos)  # max_idx
     ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s - 2))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
@@ -1931,6 +1932,7 @@ def pl_angles(in_pars):
 
 def make_angles_plot(gal_str_pars):
     '''
+    Plot inclination and position angles density maps for both galaxies.
     '''
 
     fig = plt.figure(figsize=(5.25, 13.5))
@@ -1951,4 +1953,5 @@ def make_angles_plot(gal_str_pars):
         pl_angles(pl_params)
 
     fig.tight_layout()
-    plt.savefig('figures/MCs_deproj_dist_angles.png', dpi=300)
+    # plt.savefig('figures/MCs_deproj_dist_angles.png', dpi=300)
+    plt.savefig('MCs_deproj_dist_angles.png', dpi=300)

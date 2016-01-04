@@ -37,8 +37,13 @@ def dist_err_2_pts(d_pc, c1, e_r_0, c2, e_r):
     c1 = (r_0, ra_0, dec_0)
     c2 = (r, ra, dec)
 
-    Distance between two points in spherical coordinates
-    (http://math.stackexchange.com/a/833110/37846):
+    Distance between two points in spherical coordinates as stated in:
+    http://math.stackexchange.com/a/833110/37846
+
+    The declination is rotated 90d compared to:
+    http://stackoverflow.com/q/34407678/1391441
+    and not rotated for:
+    http://math.stackexchange.com/a/1078262/37846
 
     A = cos(dec)*cos(dec_0)*cos(ra-ra_0)+sin(dec)*sin(dec_0)
     d_pc = sqrt(r**2 + r_0**2 - 2*r*r_0*A)
@@ -46,7 +51,7 @@ def dist_err_2_pts(d_pc, c1, e_r_0, c2, e_r):
     Error in distance between points, assuming only the distances of the
     points contain error, not the (alpha,delta) coordinates.
 
-    e_d_pc = (1/d_pc) * sqrt([(r-r_0*A)e_r]**2 + [(r_0-r*A)e_r_0]**2)
+    e_d_pc = (1/d_pc) * sqrt([(r-r_0*A)*e_r]**2 + [(r_0-r*A)*e_r_0]**2)
 
     where:
 
@@ -61,8 +66,10 @@ def dist_err_2_pts(d_pc, c1, e_r_0, c2, e_r):
     alpha_delta_par = np.cos(dec) * np.cos(dec_0) * np.cos(ra - ra_0) +\
         np.sin(dec) * np.sin(dec_0)
 
-    A = np.sqrt(((r - r_0 * alpha_delta_par) * e_r) ** 2 +
-                ((r_0 - r * alpha_delta_par) * e_r_0) ** 2)
+    A = np.sqrt(
+        ((r - r_0 * alpha_delta_par) * e_r) ** 2 +
+        ((r_0 - r * alpha_delta_par) * e_r_0) ** 2
+        )
     e_d_pc = A / d_pc
 
     return e_d_pc
@@ -82,7 +89,7 @@ def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod, e_dm):
 
     # *Individual* distance (ASteCA) for each cluster (in parsecs).
     # ASteCA gives the distance modulus as dm = -5 + 5*log(d), so to transform
-    # that into the distance in parsecs 'd', we do:
+    # that into the distance in parsecs 'd', we apply:
     d_clust = Distance(10 ** (0.2 * (float(dist_mod) + 5)), unit=u.pc)
     # Obtain error in distance in parsecs.
     e_cl_dist_pc = dist_err_mag_2_pc(d_clust, e_dm, 0.)
@@ -92,7 +99,7 @@ def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod, e_dm):
     # Cluster coordinate.
     c2 = SkyCoord(ra=ra_deg*u.degree, dec=dec_deg*u.degree, distance=d_clust)
 
-    # 3D distance between cluster and center of galaxy,  in parsecs.
+    # 3D distance between cluster and center of galaxy, in parsecs.
     dist_pc = c1.separation_3d(c2)
     # Error for the 3D distance.
     e_d_pc = dist_err_2_pts(dist_pc, c1, e_gal_dist_pc, c2, e_cl_dist_pc)
