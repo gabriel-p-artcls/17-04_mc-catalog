@@ -52,7 +52,6 @@ Center taken from Noel et al. (2007)
 
 '''
 Data taken from Palma et al. (2015),
-
 '''
 cent = SkyCoord('05h20m47s', '-69d28m41s', frame='icrs')
 dist = Distance(50.12, unit=u.kpc)

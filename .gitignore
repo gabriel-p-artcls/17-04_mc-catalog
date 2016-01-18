@@ -56,6 +56,10 @@ docs/_build/
 # PyBuilder
 target/
 
+# Sublime files
+*.sublime-project
+*.sublime-workspace
+
 *.png
 .~*
 runs/1st_run/output/*

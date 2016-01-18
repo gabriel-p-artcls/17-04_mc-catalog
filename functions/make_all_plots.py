@@ -1846,16 +1846,17 @@ def pl_angles(in_pars):
     xmin, xmax, ymin, ymax, xi, yi, zi, mean_pos, i_pa_std, e_w, e_h, theta = \
         ang_pars
 
+    # Define gridspec ranges.
     if i == 0:
         a, b, c, d = 0, 1, 0, 2
-    elif i == 1:
-        a, b, c, d = 1, 2, 0, 2
     elif i == 2:
+        a, b, c, d = 1, 2, 0, 2
+    elif i == 1:
         a, b, c, d = 2, 3, 0, 1
     elif i == 3:
         a, b, c, d = 2, 3, 1, 2
 
-    gal_name = ['SMC', 'LMC', 'SMC', 'LMC']
+    gal_name = ['SMC', 'SMC', 'LMC', 'LMC']
     ax = plt.subplot(gs[a:b, c:d])
     xy_font_s = 12
     plt.xlim(xmin, xmax)
@@ -1872,7 +1873,7 @@ def pl_angles(in_pars):
         ax.set_yticklabels([])
         plt.ylabel('')
 
-    if i in [0, 1]:
+    if i in [0, 2]:
         # Set minor ticks
         ax.minorticks_on()
         cm = plt.cm.get_cmap('RdBu_r')
@@ -1885,7 +1886,7 @@ def pl_angles(in_pars):
                         extent=[xi.min(), xi.max(), yi.min(), yi.max()],
                         cmap=cm)
         # Plot contour curves.
-        curv_num = 100
+        curv_num = 150
         plt.contour(np.rot90(zi), curv_num, colors='k', linewidths=0.2,
                     origin='upper',
                     extent=[xi.min(), xi.max(), yi.min(), yi.max()])
@@ -1896,9 +1897,9 @@ def pl_angles(in_pars):
                           edgecolor='w', fc='None', lw=0.85, zorder=3)
         ax.add_patch(ellipse)
         # Text box.
-        text1 = r'$i^{{\circ}}_{{max}}={:.0f}\pm{:.0f}$'.format(
+        text1 = r'$i_{{m}}={:.0f}^{{\circ}}\pm{:.0f}$'.format(
             mean_pos[0], i_pa_std[0])
-        text2 = r'$\theta^{{\circ}}_{{max}}={:.0f}\pm{:.0f}$'.format(
+        text2 = r'$\Theta_{{m}}={:.0f}^{{\circ}}\pm{:.0f}$'.format(
             mean_pos[1], i_pa_std[1])
         text = text1 + '\n' + text2
     else:
@@ -1916,9 +1917,9 @@ def pl_angles(in_pars):
     ob = offsetbox.AnchoredText(gal_name[i], loc=2, prop=dict(size=xy_font_s))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
-    cb_siz, cb_lab = ["2%", "2%", '', "5%"], ['$ccc$', '$ccc$', '',
+    cb_siz, cb_lab = ["2%", '', "2%", "5%"], ['$ccc$', '', '$ccc$',
                                               '$log(aye/yr)_{ASteCA}$']
-    if i != 2:
+    if i != 1:
         # Position colorbar.
         the_divider = make_axes_locatable(ax)
         color_axis = the_divider.append_axes("right", size=cb_siz[i], pad=0.1)
@@ -1926,7 +1927,7 @@ def pl_angles(in_pars):
         cbar = plt.colorbar(SC, cax=color_axis)
         cbar.set_label(cb_lab[i], fontsize=xy_font_s, labelpad=4, y=0.5)
         cbar.ax.tick_params(labelsize=xy_font_s - 3)
-    if i in [0, 1]:
+    if i in [0, 2]:
         ax.set_aspect(aspect='auto')
 
 
@@ -1940,12 +1941,12 @@ def make_angles_plot(gal_str_pars):
 
     str_lst = [
         [gs, 0, r'Inclination ($i^{\circ}$)',
-         r'Position angle ($\theta^{\circ}$)', gal_str_pars[0]],
-        [gs, 1, r'Inclination ($i^{\circ}$)',
-         r'Position angle ($\theta^{\circ}$)', gal_str_pars[1]],
-        [gs, 2, r'$d_{GC}\,(Kpc)$', r'$d_{deproj}\,(Kpc)$',
-         gal_str_pars[2]],
-        [gs, 3, r'$d_{GC}\,(Kpc)$', r'$d_{deproj}\,(Kpc)$',
+         r'Position angle ($\Theta^{\circ}$)', gal_str_pars[0]],
+        [gs, 1, r'$d_{GC}\,(Kpc)$', r'$d_{[\Theta_m,i_m]}\,(Kpc)$',
+         gal_str_pars[1]],
+        [gs, 2, r'Inclination ($i^{\circ}$)',
+         r'Position angle ($\Theta^{\circ}$)', gal_str_pars[2]],
+        [gs, 3, r'$d_{GC}\,(Kpc)$', r'$d_{\Theta,i}\,(Kpc)$',
          gal_str_pars[3]]
     ]
 

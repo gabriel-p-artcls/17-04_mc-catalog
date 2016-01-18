@@ -85,6 +85,9 @@ def main():
     # Get data parameters arrays.
     in_params = params(r_path, as_names, as_pars, cl_dict, names_idx)
     print 'Dictionary of parameters obtained.'
+    # darr, gal_nams = [in_params[_] for _ in ['darr', 'gal_names']]
+    # for i, _ in enumerate(darr[1][0]):
+    #     print gal_nams[1][i], _
 
     # Obtain galactic structure (inclination + position angles) for MCs
     gal_str_pars = gsd(in_params)
