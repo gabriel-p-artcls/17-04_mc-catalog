@@ -24,7 +24,6 @@ def dist_filter(d_min, d_max, ra_g, dec_g, age_g, d_g, e_d_g, gal_cent,
         if d_min < d <= d_max:
         # if Y[i] > 0.:
         # if rho[i].degree > 1.:
-            # points.append([X[i].value, Y[i].value])
             ra_p.append(ra_g[i])
             dec_p.append(dec_g[i])
             age_p.append(age_g[i])
@@ -38,26 +37,6 @@ def dist_filter(d_min, d_max, ra_g, dec_g, age_g, d_g, e_d_g, gal_cent,
     # print dec_p
     # print dm_p
     # print e_dm_p
-
-    # points = np.asarray(points)
-    # # Location of the center of the ellipse.
-    # mean_pos = points.mean(axis=0)
-    # # The 2x2 covariance matrix to base the ellipse on.
-    # cov = np.cov(points, rowvar=False)
-    # vals, vecs = eigsorted(cov)
-    # theta = np.degrees(np.arctan2(*vecs[:, 0][::-1]))
-    # # Width and height are "full" widths, not radius
-    # e_w, e_h = 2 * 2 * np.sqrt(vals)
-    # print mean_pos, e_w, e_h, theta
-
-    # import matplotlib.pyplot as plt
-    # # ax = plt.subplot(111)
-    # plt.xlim(-10., 10.)
-    # plt.ylim(-10., 10.)
-    # plt.scatter(*zip(*points), s=90, lw=0.2)
-    # plt.plot([0., 0.], [-20., 20.], 'k--')
-    # plt.plot([-20., 20.], [0., 0.], 'k--')
-    # plt.show()
 
     # rho, phi = get_rho_phi(ra_p, dec_p, gal_cent)
     # X = rho.degree * np.cos(phi)
@@ -149,7 +128,8 @@ def draw_rand_dist(d_g, e_d_g):
     '''
     rand_dist = []
     for mu, std in zip(*[d_g, e_d_g]):
-        r_dist = np.random.normal(mu, std)
+        # r_dist = np.random.normal(mu, std)
+        r_dist = mu  # FIXME
         # Don't store negative distances.
         rand_dist.append(max(0., r_dist))
 
@@ -176,13 +156,13 @@ def ccc(l1, l2):
     return ccc_val
 
 
-def ccc_map(dep_dist_i_PA_vals, rand_dist_kpc, inc_lst, pa_lst):
+def ccc_map(dep_dist_i_PA_vals, rand_dist_kpc, inc_lst, pa_lst, plane_abc, xyz_lst):
     '''
     Obtain CCC value comparing the deprojected distances calculated for
     each plane defined by an inclination and position angle, with the values
     for the same distance obtained via the distance moduli given by ASteCA.
     '''
-    z = []
+    ccc_lst = []
     for i in range(len(inc_lst)):
         for j in range(len(pa_lst)):
             # Retrieve deprojected distance values already calculated, using
@@ -194,33 +174,39 @@ def ccc_map(dep_dist_i_PA_vals, rand_dist_kpc, inc_lst, pa_lst):
             # der Marel & Cioni (2001) equations.
             c = ccc(dep_dist_kpc, rand_dist_kpc)
 
+            x, y, z = xyz_lst
+            a, b, c = plane_abc[i][j]
+            # dst = sum(abs(a*x + y*b + c*z))
+            # print inc_lst[i], pa_lst[j], c, dst.value
+            for xi, yi, zi in zip(*[x, y, z]):  # DEL
+                print xi, yi, zi, a*xi + yi*b + c*zi
+
             # Store CCC values.
-            z.append(c)
+            ccc_lst.append(c)
 
     # Pass as numpy array.
-    z = np.asarray(z)
+    ccc_lst = np.asarray(ccc_lst)
 
-    return z
+    return ccc_lst
 
 
 def xyz_coords(rho, phi, D_0, dm_g, e_dm_g):
     '''
-    Calculate coordinates in the (x,y,z) system whose x,y plane is parallel
+    Calculate coordinates in the (x,y,z) system. The x,y plane is parallel
     the the plane of the sky, and the z axis points towards the observer
-    (see van der Marel & Cioni (2001) and van der Marel (2002)).
+    (see van der Marel & Cioni (2001) and van der Marel et al. (2002)).
     '''
 
     # Draw random distance moduli assuming a normal distribution of the errors.
-    r_dist = np.random.normal(np.asarray(dm_g), np.asarray(e_dm_g))
-    # r_dist = np.asarray(dm_g)
+    # r_dist = np.random.normal(np.asarray(dm_g), np.asarray(e_dm_g))
+    r_dist = np.asarray(dm_g)  # FIXME
     # Convert to Kpc.
     d_kpc = Distance((10**((r_dist + 5.)*0.2)) / 1000., unit=u.kpc)
 
     # Obtain coordinates.
     x = d_kpc * np.sin(rho.radian) * np.cos(phi.radian)
     y = d_kpc * np.sin(rho.radian) * np.sin(phi.radian)
-    z = D_0 - d_kpc*np.cos(rho.radian)
-    z = z.kpc*u.kpc
+    z = D_0.kpc*u.kpc - d_kpc*np.cos(rho.radian)
 
     return x, y, z
 
@@ -247,7 +233,8 @@ def plane_equation(inc_lst, pa_lst):
         for j, pa in enumerate(pa_lst):
             # Assign 'degrees' units before passing.
             pa = Angle(pa, unit=u.degree)
-            # Convert PA to theta.
+
+            # Convert PA (N-->E) to theta (W-->E).
             theta = pa + Angle('90.d')
 
             # Obtain coefficients for the inclined x',y' plane.
@@ -257,7 +244,7 @@ def plane_equation(inc_lst, pa_lst):
             # This equals 1, so don't pass.
             # sq = np.sqrt(a**2 + b**2 + c**2)
 
-            # Store deprojected distance values.
+            # Store coefficients.
             plane_abc[i][j] = [a, b, c]
 
     return plane_abc
@@ -279,9 +266,6 @@ def plane_dist(inc_lst, pa_lst, plane_abc, x, y, z):
             a, b, c = plane_abc[i][j]
             # a*x + y*b + c*z = distance to plane.
             dst = sum(abs(a*x + y*b + c*z))
-            for xi, yi, zi in zip(*[x, y, z]):
-                print xi, yi, zi, a*xi + yi*b + c*zi
-
             # Store plane distances.
             pl_dists_kpc.append(dst.value)
 
@@ -405,7 +389,7 @@ def gsd(in_params):
     N_maps = 1
 
     gal_str_pars, max_ccc_avr = [], []
-    for j in [1, 0, 1]:  # SMC, LMC = 0, 1
+    for j in [0, 1]:  # SMC, LMC = 0, 1
 
         # Equatorial coordinates for clusters in this galaxy.
         ra_g, dec_g = ra[j], dec[j]
@@ -434,7 +418,7 @@ def gsd(in_params):
         dep_dist_i_PA_vals = i_PA_dist_vals(rho, phi, inc_lst, pa_lst,
                                             gal_dist)
 
-        # plane_abc = plane_equation(inc_lst, pa_lst)
+        plane_abc = plane_equation(inc_lst, pa_lst)
 
         milestones = [0.1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
         # Obtain N_maps angles-CCC density maps, by randomly sampling
@@ -443,14 +427,16 @@ def gsd(in_params):
         # for _ in tqdm(range(N_maps)):
         for _ in range(N_maps):
 
-            # Draw random distances (in Kpc)
+            # Draw random deprojected distances (in Kpc), obtained via the
+            # ASteCA distance moduli + astropy.
             rand_dist = draw_rand_dist(d_g, e_d_g)
 
-            # Obtain density map of CCC (z) values.
-            z = ccc_map(dep_dist_i_PA_vals, rand_dist, inc_lst, pa_lst)
-
-            # x, y, z = xyz_coords(rho, phi, gal_dist, dm_g, e_dm_g)
+            x, y, z = xyz_coords(rho, phi, gal_dist, dm_g, e_dm_g)
+            xyz_lst = [x, y, z]
             # z = plane_dist(inc_lst, pa_lst, plane_abc, x, y, z)
+
+            # Obtain density map of CCC (z) values.
+            z = ccc_map(dep_dist_i_PA_vals, rand_dist, inc_lst, pa_lst, plane_abc, xyz_lst)
 
             # Obtain (finer) interpolated angles-CCC density map.
             # Rows in zi correspond to inclination values.

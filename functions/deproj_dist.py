@@ -153,17 +153,12 @@ def vdm_2001_dep_dist_kpc(rho, phi, theta, glx_incl, D_0):
 
     Eq 7 from van der Marel & Cioni (2001) / Eq 2 from van der Marel (2001).
     '''
-
-    theta, glx_incl = Angle(261., unit='degree'), Angle(33., unit='degree')
-
     s = np.sin(phi.radian - theta.radian)
-    A = 0.5*((1-s) * np.cos(glx_incl.radian - rho.radian) +
-             (1+s) * np.cos(glx_incl.radian + rho.radian))
+    A = 0.5 * ((1-s)*np.cos(glx_incl.radian - rho.radian) +
+               (1+s)*np.cos(glx_incl.radian + rho.radian))
     D = np.cos(glx_incl.radian) / A
-    for _ in D:
-        print np.log10(_*D_0.value*1000.)*5. - 5.
-    import pdb; pdb.set_trace()  # breakpoint 7eec205b //
-
+    # for _ in D:  # DEL
+    #     print np.log10(_*D_0.value*1000.)*5. - 5.
 
     # The above is equivalent to using the cosine law.
     d_kpc = D_0*np.sqrt(1. + D**2 - 2*D*np.cos(rho.radian))
