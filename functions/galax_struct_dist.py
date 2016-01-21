@@ -30,14 +30,13 @@ def get_rho_phi(ra, dec, gal_cent):
     return rho, phi
 
 
-def dist_filter(d_min, d_max, ra_g, dec_g, age_g, d_d_g, e_dd_g, dm_g, e_dm_g,
+def dist_filter(r_min, r_max, ra_g, dec_g, age_g, d_d_g, e_dd_g, dm_g, e_dm_g,
                 gal_cent):
-    '''
-    Filter clusters based on their deprojected distances. Use deprojected
-    distances calculated using astropy to filter.
+    """
+    Filter clusters based on their projected angular distances 'rho'.
 
-    Values are used as: (d_min, d_max]
-    '''
+    Values are used as: (r_min, r_max]
+    """
 
     # Obtain angular projected distance and position angle for the
     # clusters in the galaxy.
@@ -46,8 +45,7 @@ def dist_filter(d_min, d_max, ra_g, dec_g, age_g, d_d_g, e_dd_g, dm_g, e_dm_g,
     ra_f, dec_f, age_f, d_d_f, e_dd_f, dm_f, e_dm_f, rho_f, phi_f =\
         [], [], [], [], [], [], [], [], []
     for i, d in enumerate(d_d_g):
-        # if d_min < d <= d_max:
-        if rho_g[i].degree > 1.5:
+        if r_min < rho_g[i].degree <= r_max:
             ra_f.append(ra_g[i])
             dec_f.append(dec_g[i])
             age_f.append(age_g[i])
@@ -421,15 +419,14 @@ def gsd(in_params):
     N_f = 200
     xi, yi = inc_PA_grid(N_f, inc_rang, pa_rang)
 
-    # Input minimum and maximum deprojected distance values to filter,
-    # according to the 3D distances found with ASteCA + astropy.
-    # These values are used as: (d_min, d_max]
-    d_min, d_max = 3.5, 20.
+    # Input minimum and maximum projected angular distance values to filter.
+    # These values are used as: (r_min, r_max]
+    r_min, r_max = 2., 50.
 
     # Number of density maps to be generated, where the distance to each
     # cluster is randomly drawn from a normal probability distribution.
     # This is used to assign errors to the best fit angle values.
-    N_maps = 100  # FIXME
+    N_maps = 500  # FIXME
 
     gal_str_pars = []
     for j in [0, 1]:  # SMC, LMC = 0, 1
@@ -450,7 +447,7 @@ def gsd(in_params):
 
         # Filter clusters by distance to center of galaxy.
         ra_f, dec_f, age_f, d_d_f, e_dd_f, dm_f, e_dm_f, rho_f, phi_f =\
-            dist_filter(d_min, d_max, ra_g, dec_g, age_g, d_d_g, e_dd_g,
+            dist_filter(r_min, r_max, ra_g, dec_g, age_g, d_d_g, e_dd_g,
                         dm_g, e_dm_g, gal_cent)
 
         # Calculate deprojected distances for all clusters in this galaxy,
@@ -466,6 +463,7 @@ def gsd(in_params):
         plane_abc = plane_equation(inc_lst, pa_lst)
 
         # Run once for each method defined.
+        inc_best, pa_best, in_mcarlo, pa_mcarlo = [], [], [], []
         for method in ['deproj_dists', 'dist_2_plane']:
             if method == 'deproj_dists':
                 # Store params used to obtain the Monte Carlo errors.
@@ -489,11 +487,20 @@ def gsd(in_params):
 
             # Best fit angles for the density map with no random sampling.
             inc_b, pa_b = angles_min_max_dens(method, xi, yi, plot_dens_map)
+            # Save best fit angles obtained with both methods. Their average
+            # is the final value for each rotation angle.
+            inc_best.append(inc_b)
+            pa_best.append(pa_b)
 
             # Obtain distribution of rotation angles via Monte Carlo random
             # sampling.
             inc_pa_mcarlo = monte_carlo_errors(N_maps, method, inc_lst,
                                                pa_lst, xi, yi, params)
+            # Save inclination and position angles obtained via the Monte
+            # Carlo process. Combining values from both methods, we calculate
+            # the combined standard deviation for each angle.
+            in_mcarlo = in_mcarlo + list(zip(*inc_pa_mcarlo)[0])
+            pa_mcarlo = pa_mcarlo + list(zip(*inc_pa_mcarlo)[1])
 
             # Calculate mean inclination and position angles, along with the
             # 1 sigma error ellipsoid (for plotting).
@@ -524,8 +531,8 @@ def gsd(in_params):
             ccc_b = ccc(dep_dist_kpc, d_d_f)
 
             # # DELETE
-            print method, 'max dens val:', inc_b, pa_b, ccc_b
-            print mean_pos
+            # print method, 'max dens val:', inc_b, pa_b, ccc_b
+            # print mean_pos
             # print zip(*inc_pa_mcarlo)[0]
             # print zip(*inc_pa_mcarlo)[1]
             # import scipy.stats as stat
@@ -541,6 +548,9 @@ def gsd(in_params):
 
             gal_str_pars.append([-0.01, 8.05, -0.01, 8.05, d_d_f, dep_dist_kpc,
                                 age_f, ccc_b, '', '', '', ''])
+
+        print 'Inclination angle:', np.mean(inc_best), np.std(in_mcarlo)
+        print 'Position angle:', np.mean(pa_best), np.std(pa_mcarlo)
 
     return gal_str_pars
 
