@@ -157,8 +157,6 @@ def vdm_2001_dep_dist_kpc(rho, phi, theta, glx_incl, D_0):
     A = 0.5 * ((1-s)*np.cos(glx_incl.radian - rho.radian) +
                (1+s)*np.cos(glx_incl.radian + rho.radian))
     D = np.cos(glx_incl.radian) / A
-    # for _ in D:  # DEL
-    #     print np.log10(_*D_0.value*1000.)*5. - 5.
 
     # The above is equivalent to using the cosine law.
     d_kpc = D_0*np.sqrt(1. + D**2 - 2*D*np.cos(rho.radian))

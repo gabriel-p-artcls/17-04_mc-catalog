@@ -1849,14 +1849,31 @@ def pl_angles(in_pars):
     # Define gridspec ranges.
     if i == 0:
         a, b, c, d = 0, 1, 0, 2
+        gal_name = 'SMC'
     elif i == 2:
+        a, b, c, d = 0, 1, 2, 4
+        gal_name = 'SMC'
+    if i == 4:
         a, b, c, d = 1, 2, 0, 2
+        gal_name = 'LMC'
+    elif i == 6:
+        a, b, c, d = 1, 2, 2, 4
+        gal_name = 'LMC'
+
     elif i == 1:
         a, b, c, d = 2, 3, 0, 1
+        gal_name = 'SMC'
     elif i == 3:
-        a, b, c, d = 2, 3, 1, 2
+        a, b, c, d = 2, 3, 2, 3
+        gal_name = 'SMC'
 
-    gal_name = ['SMC', 'SMC', 'LMC', 'LMC']
+    elif i == 5:
+        a, b, c, d = 2, 3, 1, 2
+        gal_name = 'LMC'
+    elif i == 7:
+        a, b, c, d = 2, 3, 3, 4
+        gal_name = 'LMC'
+
     ax = plt.subplot(gs[a:b, c:d])
     xy_font_s = 12
     plt.xlim(xmin, xmax)
@@ -1866,14 +1883,18 @@ def pl_angles(in_pars):
     plt.xlabel(xlab, fontsize=xy_font_s)
     plt.ylabel(ylab, fontsize=xy_font_s)
 
-    if i == 0:
+    t = ['M1: Match deprojected distances', '',
+         'M2: Minimize distance to plane']
+    if i in [0, 2]:
         ax.set_xticklabels([])
         plt.xlabel('')
-    if i == 3:
+        plt.title(t[i], fontsize=11)
+    if i in [2, 3, 5, 6, 7]:
         ax.set_yticklabels([])
         plt.ylabel('')
 
-    if i in [0, 2]:
+    sub_idx = ['1', '1', '3', '3', '2', '2', '4', '4']
+    if i in [0, 2, 4, 6]:
         # Set minor ticks
         ax.minorticks_on()
         cm = plt.cm.get_cmap('RdBu_r')
@@ -1881,8 +1902,7 @@ def pl_angles(in_pars):
         ax.xaxis.set_major_locator(MultipleLocator(5.0))
         ax.yaxis.set_major_locator(MultipleLocator(20.0))
         # Plot density map.
-        SC = plt.imshow(np.rot90(zi), vmin=zi.min(), vmax=zi.max(),
-                        origin='upper',
+        SC = plt.imshow(np.rot90(zi), vmin=0.01, vmax=0.99, origin='upper',
                         extent=[xi.min(), xi.max(), yi.min(), yi.max()],
                         cmap=cm)
         # Plot contour curves.
@@ -1897,29 +1917,33 @@ def pl_angles(in_pars):
                           edgecolor='w', fc='None', lw=0.85, zorder=3)
         ax.add_patch(ellipse)
         # Text box.
-        text1 = r'$i_{{m}}={:.0f}^{{\circ}}\pm{:.0f}$'.format(
-            mean_pos[0], i_pa_std[0])
-        text2 = r'$\Theta_{{m}}={:.0f}^{{\circ}}\pm{:.0f}$'.format(
-            mean_pos[1], i_pa_std[1])
+        text1 = r'$\Theta_{{{}}}={:.0f}^{{\circ}}\pm{:.0f}$'.format(
+            sub_idx[i], mean_pos[1], i_pa_std[1])
+        text2 = r'$i_{{{}}}={:.0f}^{{\circ}}\pm{:.0f}$'.format(
+            sub_idx[i], mean_pos[0], i_pa_std[0])
         text = text1 + '\n' + text2
     else:
         ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.3,
                 zorder=1)
         cm = plt.cm.get_cmap('RdYlBu_r')
         plt.plot([xmin, xmax], [ymin, ymax], 'k', ls='--')
-        SC = plt.scatter(xi, yi, marker='o', c=zi, edgecolor='k', s=20,
+        SC = plt.scatter(xi, yi, marker='o', c=zi, edgecolor='k', s=25,
                          cmap=cm, lw=0.25, zorder=4)
-        text = r'$ccc={:.2f}$'.format(mean_pos)  # max_idx
-    ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s - 2))
+        text1 = r'$[\Theta_{{{}}},i_{{{}}}]$'.format(sub_idx[i], sub_idx[i])
+        text2 = r'$ccc={:.2f}$'.format(mean_pos)
+        text = text1 + '\n' + text2
+    ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
     # Gal name.
-    ob = offsetbox.AnchoredText(gal_name[i], loc=2, prop=dict(size=xy_font_s))
+    l = [1, 2, 1, 2, 1, 2, 1, 2]
+    ob = offsetbox.AnchoredText(gal_name, loc=l[i], prop=dict(size=xy_font_s))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
-    cb_siz, cb_lab = ["2%", '', "2%", "5%"], ['$ccc$', '', '$ccc$',
-                                              '$log(aye/yr)_{ASteCA}$']
-    if i != 1:
+    cb_siz = ['', '', "2%", '', '', '', "2%", "5%"]
+    cb_lab = ['', '', '$ccc$ ; $d_{plane}$', '', '', '', '$ccc$ ; $d_{plane}$',
+              '$log(aye/yr)_{ASteCA}$']
+    if i in [2, 6, 7]:
         # Position colorbar.
         the_divider = make_axes_locatable(ax)
         color_axis = the_divider.append_axes("right", size=cb_siz[i], pad=0.1)
@@ -1927,7 +1951,7 @@ def pl_angles(in_pars):
         cbar = plt.colorbar(SC, cax=color_axis)
         cbar.set_label(cb_lab[i], fontsize=xy_font_s, labelpad=4, y=0.5)
         cbar.ax.tick_params(labelsize=xy_font_s - 3)
-    if i in [0, 2]:
+    if i in [0, 2, 4, 6]:
         ax.set_aspect(aspect='auto')
 
 
@@ -1936,18 +1960,23 @@ def make_angles_plot(gal_str_pars):
     Plot inclination and position angles density maps for both galaxies.
     '''
 
-    fig = plt.figure(figsize=(5.25, 13.5))
-    gs = gridspec.GridSpec(3, 2)
+    fig = plt.figure(figsize=(9.5, 13.5))
+    gs = gridspec.GridSpec(3, 4)
 
     str_lst = [
-        [gs, 0, r'Inclination ($i^{\circ}$)',
-         r'Position angle ($\Theta^{\circ}$)', gal_str_pars[0]],
+        [gs, 0, '', r'Position angle ($\Theta^{\circ}$)', gal_str_pars[0]],
         [gs, 1, r'$d_{GC}\,(Kpc)$', r'$d_{[\Theta_m,i_m]}\,(Kpc)$',
          gal_str_pars[1]],
-        [gs, 2, r'Inclination ($i^{\circ}$)',
-         r'Position angle ($\Theta^{\circ}$)', gal_str_pars[2]],
+        [gs, 2, '', '', gal_str_pars[2]],
         [gs, 3, r'$d_{GC}\,(Kpc)$', r'$d_{\Theta,i}\,(Kpc)$',
-         gal_str_pars[3]]
+         gal_str_pars[3]],
+        [gs, 4, r'Inclination ($i^{\circ}$)',
+         r'Position angle ($\Theta^{\circ}$)', gal_str_pars[4]],
+        [gs, 5, r'$d_{GC}\,(Kpc)$', r'$d_{\Theta,i}\,(Kpc)$',
+         gal_str_pars[5]],
+        [gs, 6, r'Inclination ($i^{\circ}$)', '', gal_str_pars[6]],
+        [gs, 7, r'$d_{GC}\,(Kpc)$', r'$d_{\Theta,i}\,(Kpc)$',
+         gal_str_pars[7]]
     ]
 
     for pl_params in str_lst:
@@ -1955,4 +1984,4 @@ def make_angles_plot(gal_str_pars):
 
     fig.tight_layout()
     # plt.savefig('figures/MCs_deproj_dist_angles.png', dpi=300)
-    plt.savefig('MCs_deproj_dist_angles.png', dpi=300)
+    plt.savefig('MCs_deproj_dist_angles.png', dpi=150)
