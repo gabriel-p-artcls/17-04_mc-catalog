@@ -421,7 +421,7 @@ def gsd(in_params):
 
     # Input minimum and maximum projected angular distance values to filter.
     # These values are used as: (r_min, r_max]
-    r_min, r_max = 2., 50.
+    r_min, r_max = 1., 50.
 
     # Number of density maps to be generated, where the distance to each
     # cluster is randomly drawn from a normal probability distribution.
