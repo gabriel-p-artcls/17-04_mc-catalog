@@ -18,6 +18,27 @@ def inc_PA_grid(N, inc_rang, pa_rang):
     return inc_lst, pa_lst
 
 
+def gal_data(ra, dec, dist_cent, aarr, darr, dsigma, j):
+    """
+    Return data for the selected galaxy: j=0 --> SMC ; j=1 --> LMC.
+    """
+    # Equatorial coordinates for clusters in this galaxy.
+    ra_g, dec_g = ra[j], dec[j]
+    # 3D distances from clusters to center of galaxies obtained by ASteCA
+    # + astropy, in Kpc.
+    d_d_g, e_dd_g = np.asarray(dist_cent[j]) / 1000.,\
+        np.asarray(e_d_cent[j]) / 1000.
+    # ASteCA ages for clusters that belong to this galaxy.
+    age_g = aarr[j][0]
+    # ASteCA distance moduli and their errors.
+    dm_g, e_dm_g = darr[j][0], dsigma[j][0]
+
+    # Retrieve center coordinates and distance (in parsecs) to galaxy.
+    gal_cent, gal_dist, e_dm_dist = MCs_data(j)
+
+    return ra_g, dec_g, d_d_g, e_dd_g, age_g, dm_g, e_dm_g, gal_cent, gal_dist
+
+
 def get_rho_phi(ra, dec, gal_cent):
     '''
     Obtain projected angular distance from center of galaxy to cluster, and
@@ -30,7 +51,7 @@ def get_rho_phi(ra, dec, gal_cent):
     return rho, phi
 
 
-def dist_filter(r_min, r_max, ra_g, dec_g, age_g, d_d_g, e_dd_g, dm_g, e_dm_g,
+def dist_filter(r_min, ra_g, dec_g, age_g, d_d_g, e_dd_g, dm_g, e_dm_g,
                 gal_cent):
     """
     Filter clusters based on their projected angular distances 'rho'.
@@ -45,7 +66,8 @@ def dist_filter(r_min, r_max, ra_g, dec_g, age_g, d_d_g, e_dd_g, dm_g, e_dm_g,
     ra_f, dec_f, age_f, d_d_f, e_dd_f, dm_f, e_dm_f, rho_f, phi_f =\
         [], [], [], [], [], [], [], [], []
     for i, d in enumerate(d_d_g):
-        if r_min < rho_g[i].degree <= r_max:
+        # if r_min < rho_g[i].degree <= r_max:
+        if r_min < rho_g[i].degree:
             ra_f.append(ra_g[i])
             dec_f.append(dec_g[i])
             age_f.append(age_g[i])
@@ -419,140 +441,140 @@ def gsd(in_params):
     N_f = 200
     xi, yi = inc_PA_grid(N_f, inc_rang, pa_rang)
 
-    # Input minimum and maximum projected angular distance values to filter.
-    # These values are used as: (r_min, r_max]
-    r_min, r_max = 0., 2.5  # FIXME
-
     # Number of density maps to be generated, where the distance to each
     # cluster is randomly drawn from a normal probability distribution.
     # This is used to assign errors to the best fit angle values.
-    N_maps = 500  # FIXME
+    N_maps = 20  # FIXME
 
-    gal_str_pars = []
+    # Store parameters needed for plotting the density maps and 1:1 diagonal
+    # plots of deprojected distance in Kpc, as well as the r_min plots.
+    gal_str_pars, rho_plot_pars = [], [[], []]
     for j in [0, 1]:  # SMC, LMC = 0, 1
+        print 'Galaxy:', j
 
-        # Equatorial coordinates for clusters in this galaxy.
-        ra_g, dec_g = ra[j], dec[j]
-        # 3D distances from clusters to center of galaxies obtained by ASteCA
-        # + astropy, in Kpc.
-        d_d_g, e_dd_g = np.asarray(dist_cent[j]) / 1000.,\
-            np.asarray(e_d_cent[j]) / 1000.
-        # ASteCA ages for clusters that belong to this galaxy.
-        age_g = aarr[j][0]
-        # ASteCA distance moduli and their errors.
-        dm_g, e_dm_g = darr[j][0], dsigma[j][0]
+        # Retrieve data for this galaxy.
+        ra_g, dec_g, d_d_g, e_dd_g, age_g, dm_g, e_dm_g, gal_cent, gal_dist =\
+            gal_data(ra, dec, dist_cent, aarr, darr, dsigma, j)
 
-        # Retrieve center coordinates and distance (in parsecs) to galaxy.
-        gal_cent, gal_dist, e_dm_dist = MCs_data(j)
+        # Input minimum projected angular distance values to use in filter.
+        # The value ia used as: (r_min...]
+        rho_lst = [0., 0.5, 1., 1.5, 2., 2.5, 3., 3.5, 4.]  # FIXME
+        # Select index of r_min value to plot.
+        r_idx_save = 2
+        for r_idx, r_min in enumerate(rho_lst):
 
-        # Filter clusters by distance to center of galaxy.
-        ra_f, dec_f, age_f, d_d_f, e_dd_f, dm_f, e_dm_f, rho_f, phi_f =\
-            dist_filter(r_min, r_max, ra_g, dec_g, age_g, d_d_g, e_dd_g,
-                        dm_g, e_dm_g, gal_cent)
+            # Filter clusters by distance to center of galaxy.
+            ra_f, dec_f, age_f, d_d_f, e_dd_f, dm_f, e_dm_f, rho_f, phi_f =\
+                dist_filter(r_min, ra_g, dec_g, age_g, d_d_g, e_dd_g,
+                            dm_g, e_dm_g, gal_cent)
 
-        # Calculate deprojected distances for all clusters in this galaxy,
-        # for all inclination and position angles defined in the grid.
-        # These values only depend on the coordinates of the clusters, the
-        # rotation angles that define each inclined plane, and the distance
-        # to the galaxy.
-        dep_dist_i_PA_vals = i_PA_dist_vals(rho_f, phi_f, inc_lst, pa_lst,
-                                            gal_dist)
+            # Calculate deprojected distances for all clusters in this galaxy,
+            # for all inclination and position angles defined in the grid.
+            # These values only depend on the coordinates of the clusters, the
+            # rotation angles that define each inclined plane, and the distance
+            # to the galaxy.
+            dep_dist_i_PA_vals = i_PA_dist_vals(rho_f, phi_f, inc_lst, pa_lst,
+                                                gal_dist)
 
-        # Obtain coefficients for the plane equation defined by each
-        # combination of rotation (inc, PA) angles.
-        plane_abc = plane_equation(inc_lst, pa_lst)
+            # Obtain coefficients for the plane equation defined by each
+            # combination of rotation (inc, PA) angles.
+            plane_abc = plane_equation(inc_lst, pa_lst)
 
-        # Run once for each method defined.
-        inc_best, pa_best, in_mcarlo, pa_mcarlo = [], [], [], []
-        for method in ['deproj_dists', 'dist_2_plane']:
-            if method == 'deproj_dists':
-                # Store params used to obtain the Monte Carlo errors.
-                params = [N_grid, d_d_f, e_dd_f, dep_dist_i_PA_vals]
+            # Run once for each method defined.
+            inc_best, pa_best, in_mcarlo, pa_mcarlo, ccc_best =\
+                [], [], [], [], []
+            for method in ['deproj_dists', 'dist_2_plane']:
+                if method == 'deproj_dists':
+                    # Store params used to obtain the Monte Carlo errors.
+                    params = [N_grid, d_d_f, e_dd_f, dep_dist_i_PA_vals]
 
-                # Store density map obtained using the distance values with no
-                # random sampling. It will be used for plotting.
-                z = ccc_map(dep_dist_i_PA_vals, d_d_f, N_grid)
-                plot_dens_map = interp_dens_map(inc_lst, pa_lst, xi, yi, z)
+                    # Store density map obtained using the distance values with
+                    # no random sampling. It will be used for plotting.
+                    z = ccc_map(dep_dist_i_PA_vals, d_d_f, N_grid)
+                    plot_dens_map = interp_dens_map(inc_lst, pa_lst, xi, yi, z)
 
-            elif method == 'dist_2_plane':
-                # Store params used to obtain the Monte Carlo errors.
-                params = [dm_f, e_dm_f, rho_f, phi_f, gal_dist, plane_abc]
+                elif method == 'dist_2_plane':
+                    # Store params used to obtain the Monte Carlo errors.
+                    params = [dm_f, e_dm_f, rho_f, phi_f, gal_dist, plane_abc]
 
-                # Store density map obtained using the distance values with no
-                # random sampling. It will be used for plotting.
-                x, y, z = xyz_coords(rho_f, phi_f, gal_dist, np.asarray(dm_f))
-                pl_dists_kpc = plane_dist(plane_abc, x, y, z)
-                plot_dens_map = interp_dens_map(inc_lst, pa_lst, xi, yi,
-                                                pl_dists_kpc)
+                    # Store density map obtained using the distance values with
+                    # no random sampling. It will be used for plotting.
+                    x, y, z = xyz_coords(rho_f, phi_f, gal_dist,
+                                         np.asarray(dm_f))
+                    pl_dists_kpc = plane_dist(plane_abc, x, y, z)
+                    plot_dens_map = interp_dens_map(inc_lst, pa_lst, xi, yi,
+                                                    pl_dists_kpc)
 
-            # Best fit angles for the density map with no random sampling.
-            inc_b, pa_b = angles_min_max_dens(method, xi, yi, plot_dens_map)
-            # Save best fit angles obtained with both methods. Their average
-            # is the final value for each rotation angle.
-            inc_best.append(inc_b)
-            pa_best.append(pa_b)
+                # Best fit angles for the density map with no random sampling.
+                inc_b, pa_b = angles_min_max_dens(method, xi, yi,
+                                                  plot_dens_map)
+                # Save best fit angles obtained with both methods. Their
+                # average is the final value for each rotation angle.
+                inc_best.append(inc_b)
+                pa_best.append(pa_b)
 
-            # Obtain distribution of rotation angles via Monte Carlo random
-            # sampling.
-            inc_pa_mcarlo = monte_carlo_errors(N_maps, method, inc_lst,
-                                               pa_lst, xi, yi, params)
-            # Save inclination and position angles obtained via the Monte
-            # Carlo process. Combining values from both methods, we calculate
-            # the combined standard deviation for each angle.
-            in_mcarlo = in_mcarlo + list(zip(*inc_pa_mcarlo)[0])
-            pa_mcarlo = pa_mcarlo + list(zip(*inc_pa_mcarlo)[1])
+                # Obtain distribution of rotation angles via Monte Carlo random
+                # sampling.
+                inc_pa_mcarlo = monte_carlo_errors(N_maps, method, inc_lst,
+                                                   pa_lst, xi, yi, params)
+                # Save inclination and position angles obtained via the Monte
+                # Carlo process. Combining values from both methods, we
+                # calculate the combined standard deviation for each angle.
+                in_mcarlo = in_mcarlo + list(zip(*inc_pa_mcarlo)[0])
+                pa_mcarlo = pa_mcarlo + list(zip(*inc_pa_mcarlo)[1])
 
-            # Calculate mean inclination and position angles, along with the
-            # 1 sigma error ellipsoid (for plotting).
-            # The theta angle rotates the ellipse counter-clockwise starting
-            # from the positive x axis.
-            mean_pos, width, height, theta = cov_ellipse(inc_pa_mcarlo)
-            # Calculate standard deviation for inclination and position angles.
-            i_pa_std = np.std(np.asarray(inc_pa_mcarlo), axis=0)
+                # Calculate mean inclination and position angles, along with
+                # the 1 sigma error ellipsoid (for plotting).
+                # The theta angle rotates the ellipse counter-clockwise
+                # starting from the positive x axis.
+                mean_pos, width, height, theta = cov_ellipse(inc_pa_mcarlo)
+                # Calculate standard deviation for inclination and position
+                # angles.
+                i_pa_std = np.std(np.asarray(inc_pa_mcarlo), axis=0)
 
-            # Store all necessary parameters for plotting.
-            if method == 'dist_2_plane':
-                # Linear transformation between [0, 1] so that the minimum
-                # value of the sum(abs(dist_2_plane)) is 1 and the maximum
-                # is zero.
-                plot_dens_map = linear_transf(plot_dens_map)
+                # Deprojected distances obtained using the max/best-fit
+                # angles.
+                dep_dist_kpc = get_deproj_dist(
+                    gal_dist, Angle(inc_b, unit=u.degree),
+                    Angle(pa_b, unit=u.degree), rho_f, phi_f)
+                # Retrieve the CCC value of the deprojected distances
+                # obtained with the best fit rotation angles, with the
+                # ones given by ASteCA + astropy. Used for plotting.
+                ccc_b = ccc(dep_dist_kpc, d_d_f)
+                ccc_best.append(ccc_b)
 
-            gal_str_pars.append([xmin, xmax, ymin, ymax, xi, yi, plot_dens_map,
-                                 [inc_b, pa_b], i_pa_std, width, height,
-                                 theta])
+                # Store parameters for density maps and 1:1 diagonal plots.
+                if r_idx == r_idx_save:
 
-            # Deprojected distances obtained using the max/best-fit angles.
-            dep_dist_kpc = get_deproj_dist(
-                gal_dist, Angle(inc_b, unit=u.degree),
-                Angle(pa_b, unit=u.degree), rho_f, phi_f)
-            # Retrieve the CCC value of the deprojected distances obtained
-            # with the best fit rotation angles, with the ones given by
-            # ASteCA + astropy. Used for plotting.
-            ccc_b = ccc(dep_dist_kpc, d_d_f)
+                    if method == 'dist_2_plane':
+                        # Linear transformation between [0, 1] so that the
+                        # minimum value of the sum(abs(dist_2_plane)) is 1 and
+                        # the maximum is zero.
+                        plot_dens_map = linear_transf(plot_dens_map)
 
-            # # DELETE
-            # print method, 'max dens val:', inc_b, pa_b, ccc_b
-            # print mean_pos
-            # print zip(*inc_pa_mcarlo)[0]
-            # print zip(*inc_pa_mcarlo)[1]
-            # import scipy.stats as stat
-            # import matplotlib.pyplot as plt
-            # plt.hist(zip(*inc_pa_mcarlo)[0], bins=30)
-            # plt.title("Skewness: {:.3f}".format(
-            #     stat.skew(zip(*inc_pa_mcarlo)[0])))
-            # plt.axvline(inc_b, c='r', lw=3)
-            # plt.axvline(np.mean(zip(*inc_pa_mcarlo)[0]), c='g', lw=3)
-            # # plt.show()
-            # plt.savefig('h_'+method+'_'+str(j)+'_'+str(N_maps)+'.png', dpi=150)
-            # plt.close()
+                    gal_str_pars.append([xmin, xmax, ymin, ymax, xi, yi,
+                                        plot_dens_map, [inc_b, pa_b], i_pa_std,
+                                        width, height, theta])
 
-            gal_str_pars.append([-0.01, 8.05, -0.01, 8.05, d_d_f, dep_dist_kpc,
-                                age_f, ccc_b, '', '', '', ''])
+                    # Append dummy values at the end.
+                    gal_str_pars.append([-0.01, 8.05, -0.01, 8.05, d_d_f,
+                                        dep_dist_kpc, age_f, ccc_b, '', '', '',
+                                        ''])
 
-        print 'Inclination angle:', np.mean(inc_best), np.std(in_mcarlo)
-        print 'Position angle:', np.mean(pa_best), np.std(pa_mcarlo)
+            # Mean and standard deviation for the rotation angles.
+            inc_mean, inc_std = np.mean(inc_best), np.std(in_mcarlo)
+            pa_mean, pa_std = np.mean(pa_best), np.std(pa_mcarlo)
+            ccc_mean = np.mean(ccc_best)
+            # Store parameters for plotting.
+            rho_plot_pars[j].append([r_min, inc_mean, inc_std, pa_mean,
+                                    pa_std, ccc_mean])
 
-    return gal_str_pars
+            print 'rho min=', r_min
+            print 'CCC=', ccc_mean
+            print 'Inclination angle:', inc_mean, inc_std
+            print 'Position angle:', pa_mean, pa_std
+
+    return gal_str_pars, rho_plot_pars
 
 
 if __name__ == "__main__":
@@ -576,7 +598,8 @@ if __name__ == "__main__":
                  'e_d_cent': e_d_cent, 'aarr': aarr, 'darr': darr,
                  'dsigma': dsigma, 'gal_names': gal_names}
 
-    gal_str_pars = gsd(in_params)
+    gal_str_pars, rho_plot_pars = gsd(in_params)
 
-    from make_all_plots import make_angles_plot
-    make_angles_plot(gal_str_pars)
+    from make_all_plots import make_angles_plot, make_rho_min_plot
+    # make_angles_plot(gal_str_pars)
+    make_rho_min_plot(rho_plot_pars)

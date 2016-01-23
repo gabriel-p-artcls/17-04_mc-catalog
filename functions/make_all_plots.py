@@ -1985,3 +1985,90 @@ def make_angles_plot(gal_str_pars):
     fig.tight_layout()
     # plt.savefig('figures/MCs_deproj_dist_angles.png', dpi=300)
     plt.savefig('MCs_deproj_dist_angles.png', dpi=150)
+
+
+def pl_rho_var(in_pars):
+    '''
+    '''
+    gs, i, xlab, ylab, ang_pars = in_pars
+    r_min, inc_mean, inc_std, pa_mean, pa_std, ccc_mean = zip(*ang_pars)
+    if i in [0, 2]:
+        yi, e_yi = pa_mean, pa_std
+    elif i in [1, 3]:
+        yi, e_yi = inc_mean, inc_std
+
+    # Define gridspec ranges.
+    if i == 0:
+        a, b, c, d = 0, 1, 0, 1
+        gal_name = 'SMC'
+    elif i == 1:
+        a, b, c, d = 1, 2, 0, 1
+        gal_name = 'SMC'
+    if i == 2:
+        a, b, c, d = 0, 1, 1, 2
+        gal_name = 'LMC'
+    elif i == 3:
+        a, b, c, d = 1, 2, 1, 2
+        gal_name = 'LMC'
+
+    ax = plt.subplot(gs[a:b, c:d])
+    xy_font_s = 12
+    plt.xlim(-0.2, max(r_min)+0.2)
+    # plt.ylim(ymin, ymax)
+    plt.tick_params(axis='both', which='major', labelsize=xy_font_s - 3)
+    # Set axis labels
+    plt.xlabel(xlab, fontsize=xy_font_s)
+    plt.ylabel(ylab, fontsize=xy_font_s)
+
+    if i in [0, 2]:
+        ax.set_xticklabels([])
+    # if i in [2, 3]:
+    #     ax.set_yticklabels([])
+
+    # Set minor ticks
+    ax.minorticks_on()
+    cm = plt.cm.get_cmap('RdBu_r')
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.3,
+            zorder=1)
+    plt.errorbar(r_min, yi, yerr=e_yi, ls='none', color='k', elinewidth=0.5,
+                 zorder=3)
+    SC = plt.scatter(r_min, yi, marker='o', c=ccc_mean, edgecolor='k', s=75,
+                     cmap=cm, lw=0.2, zorder=4)
+    # Gal name.
+    ob = offsetbox.AnchoredText(gal_name, loc=1, prop=dict(size=xy_font_s))
+    ob.patch.set(alpha=0.85)
+    ax.add_artist(ob)
+    # if i in [2, 3]:
+    # Position colorbar.
+    the_divider = make_axes_locatable(ax)
+    color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
+    # Colorbar.
+    cbar = plt.colorbar(SC, cax=color_axis)
+    cbar.set_label(r'$ccc$', fontsize=xy_font_s, labelpad=4, y=0.5)
+    cbar.ax.tick_params(labelsize=xy_font_s - 3)
+    ax.set_aspect(aspect='auto')
+
+
+def make_rho_min_plot(rho_plot_pars):
+    '''
+    Plot variation of the inclination and position angles with the selected
+    minimum projected angular density value, for both galaxies.
+    '''
+
+    fig = plt.figure(figsize=(9.5, 9))
+    gs = gridspec.GridSpec(2, 2)
+
+    str_lst = [
+        [gs, 0, '', r'Position angle ($\Theta^{\circ}$)', rho_plot_pars[0]],
+        [gs, 1, r'$\rho_{min}$', r'Inclination ($i^{\circ}$)',
+         rho_plot_pars[0]],
+        [gs, 2, '', '', rho_plot_pars[1]],
+        [gs, 3, r'$\rho_{min}$', '', rho_plot_pars[1]]
+    ]
+
+    for pl_params in str_lst:
+        pl_rho_var(pl_params)
+
+    fig.tight_layout()
+    # plt.savefig('figures/MCs_angles_var_w_rho.png', dpi=300)
+    plt.savefig('MCs_angles_var_w_rho.png', dpi=150)
