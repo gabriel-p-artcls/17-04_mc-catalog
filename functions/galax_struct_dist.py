@@ -561,18 +561,20 @@ def gsd(in_params):
                                         dep_dist_kpc, age_f, ccc_b, '', '', '',
                                         ''])
 
+            # Number of clusters used in this run. Used for plotting.
+            N_clust = len(ra_f)
             # Mean and standard deviation for the rotation angles.
             inc_mean, inc_std = np.mean(inc_best), np.std(in_mcarlo)
             pa_mean, pa_std = np.mean(pa_best), np.std(pa_mcarlo)
             ccc_mean = np.mean(ccc_best)
             # Store parameters for plotting.
-            rho_plot_pars[j].append([r_min, inc_mean, inc_std, pa_mean,
-                                    pa_std, ccc_mean])
+            rho_plot_pars[j].append([r_min, N_clust, inc_mean, inc_std,
+                                     pa_mean, pa_std, ccc_mean])
 
             print 'rho min=', r_min
             print 'CCC=', ccc_mean
-            print 'Inclination angle:', inc_mean, inc_std
-            print 'Position angle:', pa_mean, pa_std
+            print 'Best, mean, std inc:', inc_mean, np.mean(in_mcarlo), inc_std
+            print 'Best, mean, std PA:', pa_mean, np.mean(pa_mcarlo), pa_std
 
     return gal_str_pars, rho_plot_pars
 

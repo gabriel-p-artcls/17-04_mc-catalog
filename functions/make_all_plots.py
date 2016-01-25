@@ -1990,63 +1990,71 @@ def make_angles_plot(gal_str_pars):
 def pl_rho_var(in_pars):
     '''
     '''
-    gs, i, xlab, ylab, ang_pars = in_pars
-    r_min, inc_mean, inc_std, pa_mean, pa_std, ccc_mean = zip(*ang_pars)
-    if i in [0, 2]:
+    gs, i, xlab, ylab, gal_name, v_min, v_max, ang_pars = in_pars
+    r_min, N_clust, inc_mean, inc_std, pa_mean, pa_std, ccc_mean =\
+        zip(*ang_pars)
+
+    if i in [0, 1]:
         yi, e_yi = pa_mean, pa_std
-    elif i in [1, 3]:
+    elif i in [2, 3]:
         yi, e_yi = inc_mean, inc_std
 
-    # Define gridspec ranges.
-    if i == 0:
-        a, b, c, d = 0, 1, 0, 1
-        gal_name = 'SMC'
-    elif i == 1:
-        a, b, c, d = 1, 2, 0, 1
-        gal_name = 'SMC'
-    if i == 2:
-        a, b, c, d = 0, 1, 1, 2
-        gal_name = 'LMC'
-    elif i == 3:
-        a, b, c, d = 1, 2, 1, 2
-        gal_name = 'LMC'
+    right_gs = gridspec.GridSpecFromSubplotSpec(
+        1, 2, width_ratios=[40, 1], subplot_spec=gs[i], wspace=0.05)
+    ax = plt.subplot(right_gs[0])
+    if i in [1, 3]:
+        # Only draw subplot containing colorbar for these subplots.
+        color_axis = plt.subplot(right_gs[1])
 
-    ax = plt.subplot(gs[a:b, c:d])
+    ax2 = ax.twiny()
     xy_font_s = 12
-    plt.xlim(-0.2, max(r_min)+0.2)
-    # plt.ylim(ymin, ymax)
-    plt.tick_params(axis='both', which='major', labelsize=xy_font_s - 3)
-    # Set axis labels
-    plt.xlabel(xlab, fontsize=xy_font_s)
-    plt.ylabel(ylab, fontsize=xy_font_s)
-
-    if i in [0, 2]:
-        ax.set_xticklabels([])
-    # if i in [2, 3]:
-    #     ax.set_yticklabels([])
-
+    ax.set_xlim(-0.5, max(r_min)+0.5)
+    if i in [0, 1]:
+        plt.ylim(40., 260.)
+    else:
+        plt.ylim(1., 89.)
+    # Increase font since it's LaTeX and it looks small.
+    ax.set_xlabel(xlab, fontsize=xy_font_s+3)
+    ax.set_ylabel(ylab, fontsize=xy_font_s)
     # Set minor ticks
     ax.minorticks_on()
-    cm = plt.cm.get_cmap('RdBu_r')
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.3,
             zorder=1)
     plt.errorbar(r_min, yi, yerr=e_yi, ls='none', color='k', elinewidth=0.5,
                  zorder=3)
-    SC = plt.scatter(r_min, yi, marker='o', c=ccc_mean, edgecolor='k', s=75,
-                     cmap=cm, lw=0.2, zorder=4)
+    cm = plt.cm.get_cmap('RdBu_r')
+    SC = plt.scatter(r_min, yi, marker='o', c=ccc_mean, edgecolor='k', s=80,
+                     cmap=cm, lw=0.2, vmin=v_min, vmax=v_max, zorder=4)
+    # Set font size for the three axes.
+    ax.set_xticklabels(ax.get_xticks(), fontsize=xy_font_s-3)
+    ax.set_yticklabels(ax.get_yticks(), fontsize=xy_font_s-3)
+    ax2.set_xticklabels(ax2.get_yticks(), fontsize=xy_font_s-3)
+    # Set range, ticks, and label for the second x axis.
+    # Second x axis.
+    ax2.set_xlim(ax.get_xlim())
+    ax2.set_xticks(r_min)
+    if i in [0, 1]:
+        ax.set_xticklabels([])
+        ax2.set_xticklabels(N_clust)
+        ax2.set_xlabel(r"$N_{clusters}$", fontsize=xy_font_s+3, labelpad=10.5)
+    else:
+        ax2.set_xticklabels([])
+    if i in [1, 3]:
+        ax.set_yticklabels([])
+    # Filling that shows the range of values in the literature.
+    f = [[120., 161.6], [114.2, 175.], [38., 83.], [16., 39.7]]
+    plt.fill_between([-9., 9.], f[i][0], f[i][1], color='grey', alpha='0.25',
+                     zorder=1)
     # Gal name.
     ob = offsetbox.AnchoredText(gal_name, loc=1, prop=dict(size=xy_font_s))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
-    # if i in [2, 3]:
     # Position colorbar.
-    the_divider = make_axes_locatable(ax)
-    color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
-    # Colorbar.
-    cbar = plt.colorbar(SC, cax=color_axis)
-    cbar.set_label(r'$ccc$', fontsize=xy_font_s, labelpad=4, y=0.5)
-    cbar.ax.tick_params(labelsize=xy_font_s - 3)
-    ax.set_aspect(aspect='auto')
+    if i in [1, 3]:
+        cbar = plt.colorbar(SC, cax=color_axis)
+        cb_lab = ['', r'$ccc$', '', r'$ccc$']
+        cbar.set_label(cb_lab[i], fontsize=xy_font_s, labelpad=4, y=0.5)
+        cbar.ax.tick_params(labelsize=xy_font_s - 3)
 
 
 def make_rho_min_plot(rho_plot_pars):
@@ -2055,20 +2063,26 @@ def make_rho_min_plot(rho_plot_pars):
     minimum projected angular density value, for both galaxies.
     '''
 
-    fig = plt.figure(figsize=(9.5, 9))
+    plt.figure(figsize=(11.5, 11))
     gs = gridspec.GridSpec(2, 2)
 
+    labels = [r'Inclination ($i^{\circ}$)',
+              r'Position angle ($\Theta^{\circ}$)', r'$\rho_{min}$']
+
+    # Extract min and max CCC values.
+    ccc_mean = zip(*rho_plot_pars[0])[-1] + zip(*rho_plot_pars[1])[-1]
+    v_min, v_max = min(ccc_mean), max(ccc_mean)
+
     str_lst = [
-        [gs, 0, '', r'Position angle ($\Theta^{\circ}$)', rho_plot_pars[0]],
-        [gs, 1, r'$\rho_{min}$', r'Inclination ($i^{\circ}$)',
-         rho_plot_pars[0]],
-        [gs, 2, '', '', rho_plot_pars[1]],
-        [gs, 3, r'$\rho_{min}$', '', rho_plot_pars[1]]
+        [gs, 0, '', labels[1], 'SMC', v_min, v_max, rho_plot_pars[0]],
+        [gs, 1, '', '', 'LMC', v_min, v_max, rho_plot_pars[1]],
+        [gs, 2, labels[2], labels[0], 'SMC', v_min, v_max, rho_plot_pars[0]],
+        [gs, 3, labels[2], '', 'LMC', v_min, v_max, rho_plot_pars[1]]
     ]
 
     for pl_params in str_lst:
         pl_rho_var(pl_params)
 
-    fig.tight_layout()
+    # fig.tight_layout()
     # plt.savefig('figures/MCs_angles_var_w_rho.png', dpi=300)
-    plt.savefig('MCs_angles_var_w_rho.png', dpi=150)
+    plt.savefig('MCs_angles_var_w_rho.png', dpi=300)
