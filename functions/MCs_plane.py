@@ -252,36 +252,6 @@ def make_plot(D_0, inc, theta, rho_f, phi_f, dm_f, x_e, y_e, z_e,
     # Bottom half of inclined plane.
     ax.plot_surface(X3_b, Z3_b, Y3_b, color='g', alpha=.2, lw=0, zorder=-1)
 
-    # # Axis of x,y plane.
-    # dim = 10.
-    # ax_min, ax_max = -1.*dim, dim
-    # # x axis.
-    # ax.plot([ax_min, ax_max], [0., 0.], [0., 0.], ls='--', c='k', zorder=4)
-    # # Arrow head pointing in the positive x direction.
-    # ax.quiver(ax_max, 0., 0., ax_max, 0., 0., length=0.3,
-    #           arrow_length_ratio=1., color='k')
-    # # y axis.
-    # ax.plot([0., 0.], [0., 0.], [0., ax_max], ls='--', c='k')
-    # # Arrow head pointing in the positive y direction.
-    # ax.quiver(0., 0., ax_max, 0., 0., ax_max, length=0.3,
-    #           arrow_length_ratio=1., color='k')
-    # ax.plot([0., 0.], [0., 0.], [ax_min, 0.], ls='--', c='k')
-
-    # # x',y' plane, x' axis.
-    # x_min, y_min, z_min = inv_trans_eqs(-1.*dim, 0., 0., theta, inc)
-    # x_max, y_max, z_max = inv_trans_eqs(dim, 0., 0., theta, inc)
-    # ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='b')
-    # # Arrow head pointing in the positive x' direction.
-    # ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
-    #           arrow_length_ratio=1.2)
-    # # x',y' plane, y' axis.
-    # x_min, y_min, z_min = inv_trans_eqs(0., -1.*dim, 0., theta, inc)
-    # x_max, y_max, z_max = inv_trans_eqs(0., dim, 0., theta, inc)
-    # ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='g')
-    # # Arrow head pointing in the positive y' direction.
-    # ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
-    #           arrow_length_ratio=1.2, color='g')
-
     # Axis of x,y plane.
     # x axis.
     ax.plot([min_X, max_X], [0., 0.], [0., 0.], ls='--', c='k', zorder=4)
