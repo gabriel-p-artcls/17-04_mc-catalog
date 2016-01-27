@@ -2063,7 +2063,7 @@ def make_rho_min_plot(rho_plot_pars):
     minimum projected angular density value, for both galaxies.
     '''
 
-    plt.figure(figsize=(11.5, 11))
+    fig = plt.figure(figsize=(11.5, 11))
     gs = gridspec.GridSpec(2, 2)
 
     labels = [r'Inclination ($i^{\circ}$)',
@@ -2083,6 +2083,6 @@ def make_rho_min_plot(rho_plot_pars):
     for pl_params in str_lst:
         pl_rho_var(pl_params)
 
-    # fig.tight_layout()
+    fig.tight_layout()
     # plt.savefig('figures/MCs_angles_var_w_rho.png', dpi=300)
     plt.savefig('MCs_angles_var_w_rho.png', dpi=300)
