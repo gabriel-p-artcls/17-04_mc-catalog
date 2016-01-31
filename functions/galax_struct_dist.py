@@ -227,10 +227,14 @@ def xyz_coords(rho, phi, D_0, r_dist):
 def plane_dist(plane_abc, x, y, z):
     '''
     Calculate the distance to each inclined plane for all the clusters in
-    the galaxy being analysed.
+    the galaxy being analysed. Plane equation in the form:
+
+    a*x + b*y + c*z + d = 0
 
     Pass the sum of the absolute values of each distance, for each inclination
     and position angle values.
+
+    http://mathworld.wolfram.com/Point-PlaneDistance.html
     '''
     # Unpack lists of inclined planes coefficients.
     a_lst, b_lst, c_lst = plane_abc
@@ -254,7 +258,7 @@ def angles_min_max_dens(method, xi, yi, zi):
         # Max CCC value in map.
         # z_b = np.amax(zi)
     elif method == 'dist_2_plane':
-        # Obtain index of minimum density value.
+        # Obtain index of minimum sum of absolute distances to plane value.
         min_d_idx = np.unravel_index(zi.argmin(), zi.shape)
         # Calculate "best" angle values.
         x_b, y_b = xi[min_d_idx[0]], yi[min_d_idx[1]]
@@ -427,7 +431,7 @@ def gsd(in_params):
                                'e_d_cent', 'darr', 'dsigma']]
 
     # Define ranges for the grid of inclination and position angles.
-    inc_rang, pa_rang = [1., 89.], [1., 179]  # FIXME
+    inc_rang, pa_rang = [-89., 89.], [1., 179]  # FIXME
 
     # Grid limits (for plotting).
     xmin, xmax = inc_rang[0] - 0.1, inc_rang[1] + 0.1
@@ -603,5 +607,5 @@ if __name__ == "__main__":
     gal_str_pars, rho_plot_pars = gsd(in_params)
 
     from make_all_plots import make_angles_plot, make_rho_min_plot
-    # make_angles_plot(gal_str_pars)
+    make_angles_plot(gal_str_pars)
     make_rho_min_plot(rho_plot_pars)

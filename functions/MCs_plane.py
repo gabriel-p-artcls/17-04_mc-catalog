@@ -1,5 +1,6 @@
 
 import numpy as np
+import scipy.linalg
 from MCs_data import MCs_data
 from astropy.coordinates import Distance, Angle, SkyCoord
 from astropy import units as u
@@ -33,13 +34,13 @@ def dist_filter(r_min, r_max, ra_g, dec_g, dm_g, e_dm_g, gal_cent):
     coords = SkyCoord(zip(*[ra_g, dec_g]), unit=(u.deg, u.deg))
     rho_g, phi_g = rho_phi(coords, gal_cent)
 
-    # ra_f, dec_f, age_f, d_d_f, e_dd_f
-    dm_f, e_dm_f, rho_f, phi_f = [], [], [], []
+    # age_f, d_d_f, e_dd_f
+    ra_f, dec_f, dm_f, e_dm_f, rho_f, phi_f = [], [], [], [], [], []
     dm_nf, rho_nf, phi_nf = [], [], []
     for i, d in enumerate(ra_g):
         if r_min < rho_g[i].degree <= r_max:
-            # ra_f.append(ra_g[i])
-            # dec_f.append(dec_g[i])
+            ra_f.append(ra_g[i])
+            dec_f.append(dec_g[i])
             dm_f.append(dm_g[i])
             e_dm_f.append(e_dm_g[i])
             rho_f.append(rho_g[i].degree)
@@ -54,17 +55,14 @@ def dist_filter(r_min, r_max, ra_g, dec_g, dm_g, e_dm_g, gal_cent):
     rho_nf = Angle(rho_nf, unit=u.deg)
     phi_nf = Angle(phi_nf, unit=u.deg)
 
-    return rho_f, phi_f, dm_f, e_dm_f, rho_nf, phi_nf, dm_nf
+    return ra_f, dec_f, rho_f, phi_f, dm_f, e_dm_f, rho_nf, phi_nf, dm_nf
 
 
-def xyz_coords(rho, phi, D_0, r_dist, transf=True):
+def xyz_coords(rho, phi, D_0, r_dist):
     '''
     Obtain coordinates in the (x,y,z) system of van der Marel & Cioni (2001)
     '''
-    if transf:
-        d_kpc = Distance((10**(0.2*(r_dist + 5.)))/1000., unit=u.kpc)
-    else:
-        d_kpc = r_dist
+    d_kpc = Distance((10**(0.2*(np.asarray(r_dist) + 5.)))/1000., unit=u.kpc)
 
     x = d_kpc * np.sin(rho.radian) * np.cos(phi.radian)
     y = d_kpc * np.sin(rho.radian) * np.sin(phi.radian)
@@ -148,34 +146,132 @@ def get_ellipse(N_ran, rho, phi, D_0, dm_g, e_dm_g):
     return x_e, y_e, z_e
 
 
-def plane_abcd(p1, p2, p3):
+# def cartesian_coords(c):
+#     """
+#     Transform coordinates to cartesian x,y,z system.
+#     """
+#     data = SkyCoord(c, representation='cartesian')
+#     if np.array(data.x.value).size > 1:
+#         data = np.array(zip(*[data.x.value, data.y.value, data.z.value]))
+#     else:
+#         data = np.array([data.x.value, data.y.value, data.z.value])
+
+#     return data
+
+
+def fit_surface(cl_xyz):
     """
-    Obtain the a,b,c,d coefficients of the plane equation:
+    Find coefficients of best plane fit to given points. Plane equation is
+    in the form:
 
-    a*x+b*y+c*z+d=0
+    Z = a*X + b*Y + c
 
-    from three points that belong to the plane.
+    Source: https://gist.github.com/amroamroamro/1db8d69b4b65e8bc66a6
 
-    Source: http://kitchingroup.cheme.cmu.edu/blog/2015/01/18/
-            Equation-of-a-plane-through-three-points/
-
-    Another way: http://stackoverflow.com/a/25809052/1391441
+    Another way to do this: http://stackoverflow.com/q/20699821/1391441
     """
-    v1 = p3 - p1
-    v2 = p2 - p1
-    # The cross product is a vector normal to the plane
-    cp = np.cross(v1, v2)
-    a, b, c = cp
-    # This evaluates a*x3 + b*y3 + c*z3 which equals -d, so we mult by -1.
-    d = -1.*np.dot(cp, p3)
 
-    return a, b, c, d
+    # Best-fit linear plane, for the Eq: Z = a*X + b*Y + c
+    A = np.c_[cl_xyz[:, 0], cl_xyz[:, 1],
+              np.ones(cl_xyz.shape[0])]
+    C, _, _, _ = scipy.linalg.lstsq(A, cl_xyz[:, 2])  # coefficients
+
+    # Transform coefficients into a*x+b*y+c*z+d=0 form.
+    a, b, c, d = C[0], C[1], -1., C[2]
+    pts123_abcd = [a, b, c, d]
+
+    # Regular grid covering the domain of the data
+    min_X, max_X = min(cl_xyz[:, 0]) - 2., max(cl_xyz[:, 0]) + 2.
+    min_Y, max_Y = min(cl_xyz[:, 1]) - 2., max(cl_xyz[:, 1]) + 2.
+
+    # x,y,z coordinates of 3 random points that belong to the fitted plane,
+    # in the (x,y,z) system. Just for plotting.
+    xy1, xy2, xy3 = [[np.random.uniform(min_X, max_X),
+                      np.random.uniform(min_Y, max_Y)] for _ in range(3)]
+    # Obtain Z values using best fit coefficients.
+    z1 = C[0]*xy1[0] + C[1]*xy1[1] + C[2]
+    z2 = C[0]*xy2[0] + C[1]*xy2[1] + C[2]
+    z3 = C[0]*xy3[0] + C[1]*xy3[1] + C[2]
+
+    p1p2p3 = [[xy1[0], xy2[0], xy3[0]], [xy1[1], xy2[1], xy3[1]], [z1, z2, z3]]
+
+    # # Store points with cartesian coordinates.
+    # p1_c = SkyCoord(x=xy1[0], y=xy1[1], z=z1, unit='kpc',
+    #                 representation='cartesian')
+    # p2_c = SkyCoord(x=xy2[0], y=xy2[1], z=z2, unit='kpc',
+    #                 representation='cartesian')
+    # p3_c = SkyCoord(x=xy3[0], y=xy3[1], z=z3, unit='kpc',
+    #                 representation='cartesian')
+
+    # # Transform to equatorial coordinates.
+    # p1_e = p1_c.transform_to(frame='icrs')
+    # p2_e = p2_c.transform_to(frame='icrs')
+    # p3_e = p3_c.transform_to(frame='icrs')
+
+    # # Store RA,DEC coordinates and distances separately.
+    # p123_coord = SkyCoord([p1_e.ra, p2_e.ra, p3_e.ra],
+    #                       [p1_e.dec, p2_e.dec, p3_e.dec])
+    # p123_dist = Distance([p1_e.distance, p2_e.distance, p3_e.distance])
+
+    return p1p2p3, pts123_abcd
+
+
+# def plane_abcd(p1, p2, p3):
+#     """
+#     Obtain the a,b,c,d coefficients of the plane equation:
+
+#     a*x+b*y+c*z+d=0
+
+#     from three points that belong to the plane.
+
+#     Source: http://kitchingroup.cheme.cmu.edu/blog/2015/01/18/
+#             Equation-of-a-plane-through-three-points/
+
+#     Another way: http://stackoverflow.com/a/25809052/1391441
+#     """
+#     v1 = p3 - p1
+#     v2 = p2 - p1
+#     # The cross product is a vector normal to the plane
+#     cp = np.cross(v1, v2)
+#     a, b, c = cp
+#     # This evaluates a*x3 + b*y3 + c*z3 which equals -d, so we mult by -1.
+#     d = -1.*np.dot(cp, p3)
+
+#     return a, b, c, d
+
+
+def angle_betw_planes(pts123_abcd):
+    """
+    The dihedral angle is the angle theta between two planes
+
+    http://mathworld.wolfram.com/DihedralAngle.html
+
+    http://stackoverflow.com/q/2827393/1391441
+    """
+
+    # Normal vector to the a,b,c,d plane.
+    a, b, c, d = pts123_abcd
+    v1 = [a, b, c]
+    # Vector normal to the z=0 plane, ie: the x,y plane.
+    v2 = [0, 0, 1]
+
+    # Rotation angle between the x axis.
+    x_int, y_int = -d/a, -d/b
+    t = np.arctan2(y_int, x_int)
+    theta = Angle(t*u.radian, unit='degree')
+
+    # Inclination angle between the x axis.
+    i = np.arccos(np.dot(v1, v2) / np.sqrt(np.dot(v1, v1)*np.dot(v2, v2)))
+    inc = Angle(i*u.radian, unit='degree')
+    print 'i, theta (2nd fit)', inc.degree, theta.degree
+
+    return inc, theta
 
 
 def inv_trans_eqs(x_p, y_p, z_p, theta, inc):
     """
-    Inverse set of equations. Transform inclined plane system (x', y', z')
-    into face on sky system (x, y, z).
+    Inverse set of equations. Transform inclined plane system (x',y',z')
+    into face on sky system (x,y,z).
     """
     x = x_p*np.cos(theta.radian) -\
         y_p*np.cos(inc.radian)*np.sin(theta.radian) -\
@@ -188,8 +284,8 @@ def inv_trans_eqs(x_p, y_p, z_p, theta, inc):
     return x, y, z
 
 
-def make_plot(D_0, inc, theta, rho_f, phi_f, dm_f, x_e, y_e, z_e,
-              rho_nf, phi_nf, dm_nf, p1p2p3, pts123_abcd):
+def make_plot(D_0, inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
+              cl_xyz_nf, dm_nf, p1p2p3, pts123_abcd, inc_pl, theta_pl):
     """
     Original link for plotting intersecting planes:
     http://stackoverflow.com/a/14825951/1391441
@@ -201,21 +297,21 @@ def make_plot(D_0, inc, theta, rho_f, phi_f, dm_f, x_e, y_e, z_e,
     # Plot ellipse.
     # ax.plot_surface(x_e, z_e, y_e, cstride=1, rstride=1, alpha=0.05)
 
-    coords = zip(*p1p2p3)
-    ax.scatter(coords[0], coords[2], coords[1], c='k', marker='s')
+    ax.scatter(p1p2p3[0], p1p2p3[2], p1p2p3[1], c='k', marker='s')
 
     # Plot points inside the ellipse, with no random displacement.
-    coords = xyz_coords(rho_f, phi_f, D_0, np.asarray(dm_f))
-    if coords.size:
-        SC = ax.scatter(coords[:, 0], coords[:, 2], coords[:, 1], c=dm_f, s=50)
+    x_cl, y_cl, z_cl = cl_xyz[:, 0], cl_xyz[:, 1], cl_xyz[:, 2]
+    if cl_xyz.size:
+        SC = ax.scatter(x_cl, z_cl, y_cl, c=dm_f, s=50)
 
-    min_X, max_X = min(coords[:, 0]) - 2., max(coords[:, 0]) + 2.
-    min_Y, max_Y = min(coords[:, 1]) - 2., max(coords[:, 1]) + 2.
+    min_X, max_X = min(x_cl) - 2., max(x_cl) + 2.
+    min_Y, max_Y = min(y_cl) - 2., max(y_cl) + 2.
 
-    # Plot points *outside* the ellipse, with no random displacement.
-    coords = xyz_coords(rho_nf, phi_nf, D_0, np.asarray(dm_nf))
-    if coords.size:
-        SC = ax.scatter(coords[:, 0], coords[:, 2], coords[:, 1], c=dm_f, s=50)
+    # # Plot points *outside* the ellipse, with no random displacement.
+    # x_cl_nf, y_cl_nf, z_cl_nf = cl_xyz_nf[:, 0], cl_xyz_nf[:, 1],\
+    #     cl_xyz_nf[:, 2]
+    # if cl_xyz_nf.size:
+    #     SC = ax.scatter(x_cl, z_cl_nf, y_cl_nf, c=dm_f, s=50)
 
     # x,y plane.
     X, Y = np.meshgrid([min_X, max_X], [min_Y, max_Y])
@@ -225,6 +321,8 @@ def make_plot(D_0, inc, theta, rho_f, phi_f, dm_f, x_e, y_e, z_e,
     a, b, c = -1.*np.sin(theta.radian)*np.sin(inc.radian),\
         np.cos(theta.radian)*np.sin(inc.radian),\
         np.cos(inc.radian)
+    print 'a,b,c,d', a, b, c
+    print np.sum(abs(a*x_cl + b*y_cl + c*z_cl)/np.sqrt(a**2+b**2+c**2), axis=0)
     # Rotated plane.
     X2_t, Y2_t = np.meshgrid([min_X, max_X], [0, max_Y])
     Z2_t = (-a*X2_t - b*Y2_t) / c
@@ -232,50 +330,64 @@ def make_plot(D_0, inc, theta, rho_f, phi_f, dm_f, x_e, y_e, z_e,
     Z2_b = (-a*X2_b - b*Y2_b) / c
 
     a, b, c, d = pts123_abcd
-    print a, b, c, d
+    print 'a,b,c,d', a, b, c, d
+    print np.sum(abs(a*x_cl + b*y_cl + c*z_cl + d)/np.sqrt(a**2+b**2+c**2), axis=0)
     # Plane obtained fitting cloud of clusters.
     X3_t, Y3_t = np.meshgrid([min_X, max_X], [0, max_Y])
     Z3_t = (-a*X3_t - b*Y3_t - d) / c
     X3_b, Y3_b = np.meshgrid([min_X, max_X], [min_Y, 0])
     Z3_b = (-a*X3_b - b*Y3_b - d) / c
 
-    # Plot x,y plane.
-    ax.plot_surface(X, Z, Y, color='gray', alpha=.2, linewidth=0, zorder=1)
+    # # Plot x,y plane.
+    # ax.plot_surface(X, Z, Y, color='gray', alpha=.2, linewidth=0, zorder=1)
+    # # Axis of x,y plane.
+    # # x axis.
+    # ax.plot([min_X, max_X], [0., 0.], [0., 0.], ls='--', c='k', zorder=4)
+    # # Arrow head pointing in the positive x direction.
+    # ax.quiver(max_X, 0., 0., max_X, 0., 0., length=0.3,
+    #           arrow_length_ratio=1., color='k')
+    # # y axis.
+    # ax.plot([0., 0.], [0., 0.], [0., max_Y], ls='--', c='k')
+    # # Arrow head pointing in the positive y direction.
+    # ax.quiver(0., 0., max_Y, 0., 0., max_Y, length=0.3,
+    #           arrow_length_ratio=1., color='k')
+    # ax.plot([0., 0.], [0., 0.], [min_Y, 0.], ls='--', c='k')
 
-    # Top half of inclined plane.
-    ax.plot_surface(X2_t, Z2_t, Y2_t, color='red', alpha=.2, lw=0, zorder=3)
-    # Bottom half of inclined plane.
-    ax.plot_surface(X2_t, Z2_b, Y2_b, color='red', alpha=.2, lw=0, zorder=-1)
+    # # Top half of first x',y' inclined plane.
+    # ax.plot_surface(X2_t, Z2_t, Y2_t, color='red', alpha=.2, lw=0, zorder=3)
+    # # Bottom half of inclined plane.
+    # ax.plot_surface(X2_t, Z2_b, Y2_b, color='red', alpha=.2, lw=0, zorder=-1)
+    # # Axis of x',y' plane.
+    # # x' axis.
+    # x_min, y_min, z_min = inv_trans_eqs(min_X, 0., 0., theta, inc)
+    # x_max, y_max, z_max = inv_trans_eqs(max_X, 0., 0., theta, inc)
+    # ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='b')
+    # # Arrow head pointing in the positive x' direction.
+    # ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
+    #           arrow_length_ratio=1.2)
+    # # y' axis.
+    # x_min, y_min, z_min = inv_trans_eqs(0., min_Y, 0., theta, inc)
+    # x_max, y_max, z_max = inv_trans_eqs(0., max_Y, 0., theta, inc)
+    # ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='g')
+    # # Arrow head pointing in the positive y' direction.
+    # ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
+    #           arrow_length_ratio=1.2, color='g')
 
-    # Top half of inclined plane.
+    # Top half of second x',y' inclined plane.
     ax.plot_surface(X3_t, Z3_t, Y3_t, color='g', alpha=.2, lw=0, zorder=3)
     # Bottom half of inclined plane.
     ax.plot_surface(X3_b, Z3_b, Y3_b, color='g', alpha=.2, lw=0, zorder=-1)
-
-    # Axis of x,y plane.
-    # x axis.
-    ax.plot([min_X, max_X], [0., 0.], [0., 0.], ls='--', c='k', zorder=4)
-    # Arrow head pointing in the positive x direction.
-    ax.quiver(max_X, 0., 0., max_X, 0., 0., length=0.3,
-              arrow_length_ratio=1., color='k')
-    # y axis.
-    ax.plot([0., 0.], [0., 0.], [0., max_Y], ls='--', c='k')
-    # Arrow head pointing in the positive y direction.
-    ax.quiver(0., 0., max_Y, 0., 0., max_Y, length=0.3,
-              arrow_length_ratio=1., color='k')
-    ax.plot([0., 0.], [0., 0.], [min_Y, 0.], ls='--', c='k')
-
     # Axis of x',y' plane.
     # x' axis.
-    x_min, y_min, z_min = inv_trans_eqs(min_X, 0., 0., theta, inc)
-    x_max, y_max, z_max = inv_trans_eqs(max_X, 0., 0., theta, inc)
+    x_min, y_min, z_min = inv_trans_eqs(min_X, 0., 0., theta_pl, inc_pl)
+    x_max, y_max, z_max = inv_trans_eqs(max_X, 0., 0., theta_pl, inc_pl)
     ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='b')
     # Arrow head pointing in the positive x' direction.
     ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
               arrow_length_ratio=1.2)
     # y' axis.
-    x_min, y_min, z_min = inv_trans_eqs(0., min_Y, 0., theta, inc)
-    x_max, y_max, z_max = inv_trans_eqs(0., max_Y, 0., theta, inc)
+    x_min, y_min, z_min = inv_trans_eqs(0., min_Y, 0., theta_pl, inc_pl)
+    x_max, y_max, z_max = inv_trans_eqs(0., max_Y, 0., theta_pl, inc_pl)
     ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='g')
     # Arrow head pointing in the positive y' direction.
     ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
@@ -286,7 +398,7 @@ def make_plot(D_0, inc, theta, rho_f, phi_f, dm_f, x_e, y_e, z_e,
     ax.set_ylim(max_Y, min_Y)
     ax.set_zlabel('y (Kpc)')
 
-    plt.colorbar(SC, shrink=0.9, aspect=25)
+    # plt.colorbar(SC, shrink=0.9, aspect=25)
     ax.axis('equal')
     ax.axis('tight')
     # ax.view_init(elev=35., azim=-25.)
@@ -294,30 +406,40 @@ def make_plot(D_0, inc, theta, rho_f, phi_f, dm_f, x_e, y_e, z_e,
     # plt.savefig('MCs_bulge_plane.png', dpi=150)
 
 
-def plot_bulge_plane(ra_g, dec_g, dm_g, e_dm_g, D_0, gal_cent, glx_inc, theta,
-                     p123_coord, p123_dist):
+def plot_bulge_plane(ra_g, dec_g, dm_g, e_dm_g, D_0, gal_cent, glx_inc, theta):
     """
     """
     # Projected angular distance filter.
     r_min, r_max = 0., 20.
-    rho_f, phi_f, dm_f, e_dm_f, rho_nf, phi_nf, dm_nf =\
+    ra_f, dec_f, rho_f, phi_f, dm_f, e_dm_f, rho_nf, phi_nf, dm_nf =\
         dist_filter(r_min, r_max, ra_g, dec_g, dm_g, e_dm_g, gal_cent)
 
-    # Number of times the ellipse will be obtained after randomly shifting
-    # the distance moduli.
+    cl_xyz = xyz_coords(rho_f, phi_f, D_0, dm_f)
+    cl_xyz_nf = xyz_coords(rho_nf, phi_nf, D_0, dm_nf)
+
+    # Number of times the error ellipse will be obtained after randomly
+    # shifting the distance moduli.
     N_ran = 2
     x_e, y_e, z_e = get_ellipse(N_ran, rho_f, phi_f, D_0, dm_f, e_dm_f)
 
-    # Get rho, phi for the 3 plane points.
-    rho_pts, phi_pts = rho_phi(p123_coord, gal_cent)
-    # Transform to (x,y,z) system coordinates.
-    p1, p2, p3 = xyz_coords(rho_pts, phi_pts, D_0, p123_dist, False)
-    p1p2p3 = [p1, p2, p3]
-    # Obtain a,b,c,d coefficients from these 3 points.
-    pts123_abcd = plane_abcd(p1, p2, p3)
+    # Obtain a,b,c,d coefficients and 3 points that belong to the best fit
+    # plane, for the set of clusters passed in the (x,y,z) system.
+    p1p2p3, pts123_abcd = fit_surface(cl_xyz)
 
-    make_plot(D_0, glx_inc, theta, rho_f, phi_f, dm_f, x_e, y_e, z_e,
-              rho_nf, phi_nf, dm_nf, p1p2p3, pts123_abcd)
+    # # Get rho, phi for the 3 plane points.
+    # rho_pts, phi_pts = rho_phi(p123_coord, gal_cent)
+    # # Transform to (x,y,z) sky system coordinates.
+    # p1, p2, p3 = xyz_coords(rho_pts, phi_pts, D_0, p123_dist, False)
+    # p1p2p3 = [p1, p2, p3]
+    # # Obtain a,b,c,d coefficients from these 3 points.
+    # pts123_abcd = plane_abcd(p1, p2, p3)
+
+    # Obtain the inclination and rotation angles for this plane.
+    print 'i, theta (1st fit)', glx_inc.degree, theta.degree
+    inc_pl, theta_pl = angle_betw_planes(pts123_abcd)
+
+    make_plot(D_0, glx_inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
+              cl_xyz_nf, dm_nf, p1p2p3, pts123_abcd, inc_pl, theta_pl)
 
 if __name__ == "__main__":
 
@@ -330,15 +452,9 @@ if __name__ == "__main__":
     dsigma = [[[0.05, 0.05, 0.06, 0.07, 0.03, 0.05, 0.06, 0.05, 0.05, 0.07, 0.06, 0.06, 0.05, 0.04, 0.06, 0.04, 0.05, 0.06, 0.07, 0.05, 0.05, 0.07, 0.07, 0.06, 0.06, 0.05, 0.07, 0.05, 0.05, 0.06, 0.04, 0.05, 0.06, 0.04, 0.06, 0.05, 0.05, 0.06, 0.04, 0.07, 0.05, 0.06, 0.04, 0.03, 0.06, 0.05, 0.04, 0.05, 0.05, 0.05, 0.06, 0.06, 0.04, 0.06, 0.05, 0.05, 0.06, 0.05, 0.03, 0.06, 0.04, 0.04, 0.06, 0.05, 0.05, 0.04, 0.05, 0.06, 0.04, 0.06, 0.05, 0.04, 0.04, 0.06, 0.04, 0.03, 0.07, 0.07, 0.06, 0.04, 0.06, 0.06, 0.05, 0.07, 0.06, 0.06, 0.03, 0.05, 0.06], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]], [[0.05, 0.05, 0.06, 0.05, 0.06, 0.07, 0.06, 0.04, 0.07, 0.05, 0.06, 0.04, 0.06, 0.05, 0.06, 0.06, 0.05, 0.06, 0.05, 0.06, 0.04, 0.05, 0.05, 0.06, 0.06, 0.05, 0.04, 0.05, 0.06, 0.06, 0.05, 0.03, 0.05, 0.06, 0.06, 0.03, 0.05, 0.06, 0.06, 0.06, 0.05, 0.04, 0.07, 0.04, 0.06, 0.03, 0.06, 0.06, 0.04, 0.06, 0.04, 0.05, 0.04, 0.06, 0.04, 0.06, 0.06, 0.03, 0.07, 0.07, 0.07, 0.05, 0.06, 0.03, 0.04, 0.06, 0.06, 0.06, 0.05, 0.06, 0.06, 0.06, 0.06, 0.04, 0.04, 0.06, 0.06, 0.06, 0.04, 0.06, 0.05, 0.05, 0.06, 0.05, 0.06, 0.06, 0.06, 0.05, 0.05, 0.07, 0.05, 0.07, 0.06, 0.05, 0.04, 0.07, 0.05, 0.07, 0.05, 0.06, 0.03, 0.05, 0.06, 0.05, 0.05, 0.06, 0.06, 0.07, 0.03, 0.04, 0.06, 0.05, 0.07, 0.06, 0.04, 0.05, 0.03, 0.04, 0.04, 0.07, 0.04, 0.07, 0.06, 0.02, 0.05, 0.06, 0.06, 0.04, 0.06, 0.04, 0.06, 0.06, 0.05, 0.04, 0.06, 0.05, 0.05, 0.02, 0.07, 0.05, 0.06, 0.06, 0.06, 0.06, 0.05, 0.05, 0.05, 0.04, 0.06, 0.03], [0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, -9999999999.9, 0.1, -9999999999.9, 0.1, -9999999999.9, -9999999999.9, -9999999999.9, 0.1, 0.1, 0.1, -9999999999.9, 0.1, -9999999999.9, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, -9999999999.9, 0.1, -9999999999.9, 0.1, -9999999999.9, 0.1, -9999999999.9, 0.1, 0.1, 0.1, -9999999999.9, 0.1, -9999999999.9, -9999999999.9, -9999999999.9, 0.1, -9999999999.9, -9999999999.9, -9999999999.9, -9999999999.9, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, -9999999999.9, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]]
     gal_names = [['B112', 'B47', 'H86-70', 'HW59', 'L63', 'L62', 'BS265', 'L50', 'AM3', 'HW40', 'B39', 'BS121', 'BS88', 'HW55', 'L106', 'L19', 'H86-197', 'HW67', 'L49', 'L112', 'HW22', 'L111', 'L109', 'HW63', 'HW84', 'L3', 'L100', 'HW86', 'L34', 'HW42', 'L102', 'L30', 'L115', 'HW66', 'L5', 'K38', 'L108', 'L58', 'NGC294', 'HW85', 'B34', 'L45', 'L28', 'HW31', 'L72', 'NGC339', 'L7', 'HW79', 'L91', 'L113', 'L4', 'L27', 'L110', 'L6', 'NGC419', 'HW41', 'L114', 'BS35', 'HW47', 'SOGLE196', 'K63', 'B103', 'B111', 'H86-76', 'H86-174', 'K43', 'K57', 'BS80', 'K55', 'HW52', 'BS75', 'B55', 'HW32', 'B99', 'K61', 'L39', 'H86-190', 'NGC241', 'B48', 'H86-87', 'B124', 'H86-85', 'NGC242', 'H86-97', 'H86-90', 'L35', 'K47', 'B134', 'H86-188'], ['BRHT4B', 'BRHT45A', 'BRHT38B', 'BSDL1035', 'BSDL527', 'BSDL3158', 'KMHK128', 'HS114', 'BSDL1024', 'C11', 'BSDL665', 'HS131', 'KMHK505', 'BSDL716', 'H88-33', 'HS411', 'BSDL675', 'H3', 'HS38', 'HS154', 'H88-331', 'KMHK112', 'KMHK151', 'HS151', 'H88-334', 'KMHK95', 'BSDL77', 'H88-235', 'BSDL677', 'H88-67', 'BSDL2995', 'H88-26', 'KMHK123', 'KMHK1719', 'NGC1838', 'LW397', 'H88-55', 'KMHK1702', 'NGC1697', 'KMHK58', 'KMHK229', 'NGC1917', 'HS116', 'KMHK1023', 'H88-52', 'HS121', 'NGC1865', 'SL133', 'SL230', 'NGC2108', 'KMHK907', 'NGC1795', 'SL13', 'H88-265', 'NGC1997', 'NGC1793', 'SL505', 'LW469', 'SL359', 'HS8', 'HS156', 'HS390', 'SL269', 'BSDL594', 'NGC1644', 'NGC1839', 'SL154', 'SL229', 'SL678', 'LW224', 'SL35', 'SL293', 'HS178', 'KMHK506', 'SL555', 'SL73', 'SL548', 'SL54', 'KMHK1668', 'SL874', 'OHSC28', 'SL674', 'H88-40', 'LW263', 'SL397', 'LW69', 'NGC1751', 'LW54', 'NGC1852', 'SL300', 'SL290', 'LW211', 'SL151', 'SL446A', 'SL351', 'SL444', 'SL5', 'SL870', 'LW393', 'SL132', 'SL96', 'SL549', 'SL707', 'SL869', 'SL162', 'NGC1846', 'OGLE298', 'H88-244', 'NGC1863', 'HS329', 'HS130', 'KMHK1055', 'BSDL761', 'SL588', 'BSDL341', 'HS247', 'H88-269', 'H88-320', 'SL33', 'SL72', 'SL244', 'NGC1836', 'HS412', 'H88-307', 'NGC1860', 'KMHK378', 'H88-188', 'BSDL268', 'SL510', 'NGC2093', 'BSDL779', 'H88-245', 'H88-279', 'SL41', 'NGC2161', 'SL663', 'IC2146', 'H88-333', 'HS264', 'KMHK1045', 'KMHK586', 'SL551', 'BSDL654', 'H88-131', 'SL579', 'KMHK975', 'H88-316', 'KMHK979', 'SL218', 'BSDL631']]
 
-    # Points that belong to the plane fitted to the cloud of 3D points
-    # represented by the cluster (ie: no assumptions made to obtain it)
-    ra_pts = [[354.28940686250036, 12.528807709151511, 33.690067525979785], [56.309932474020215, 79.992020198558663, 92.602562202499797]]
-    dec_pts = [[-71.393849050477854, -72.76347986118779, -76.047764235987586], [-73.359737571783754, -69.77504754572395, -64.169034263471076]]
-    dst_pts = [[62.996567456660955, 62.227601888201598, 59.815145663529208], [50.363592679344094, 49.934431121654136, 50.543550915858312]]
-
     j = 1
-    inc_pa_fit_angles = [[Angle('41.d'), Angle('108.d')],
-                         [Angle('20.d'), Angle('150.d')]]
+    inc_pa_fit_angles = [[Angle('42.487d'), Angle('109.23d')],
+                         [Angle('18.336d'), Angle('153.06d')]]
     glx_inc, glx_PA = inc_pa_fit_angles[j]
 
     # Equatorial coordinates for clusters in this galaxy.
@@ -358,10 +474,26 @@ if __name__ == "__main__":
 
     theta = glx_PA + Angle('90d')
 
-    # Ra,Dec coordinates and distance of 3 the points that determine the plane
-    # obtained by fitting the cloud clusters.
-    p123_coord = SkyCoord(zip(*[ra_pts[j], dec_pts[j]]), unit=(u.deg, u.deg))
-    p123_dist = Distance(dst_pts[j], unit='kpc')
+    # # Ra,Dec coordinates of 3 points in the plane fitted via the dist_2_plane
+    # # method, in the (x,y,z) system of the sky.
+    # # Start by setting some random rho,phi values.
+    # rp_plane = [[0.5, 22.], [1.5, 137.], [1., 226.]]
+    # # Obtain the distance to each point in the inclined plane.
+    # D_rp = []
+    # for rp in rp_plane:
+    #     rho, phi = [Angle(_, unit='degree') for _ in rp]
+    #     # Distance of points over inclined plane.
+    #     A = np.cos(glx_inc.radian) * np.cos(rho.radian) - \
+    #         np.sin(glx_inc.radian) * np.sin(rho.radian) * \
+    #         np.sin(phi.radian - theta.radian)
+    #     D = gal_dist * np.cos(glx_inc.radian) / A
+    #     # x,y,z coordinates of points
+    #     x = D*np.sin(rho.radian)*np.cos(phi.radian)
+    #     y = D*np.sin(rho.radian)*np.sin(phi.radian)
+    #     z = gal_dist - D*np.cos(rho.radian)
+    #     # Parameters, function of (ra,dec) and (ra_0,dec_0)
+    #     P, Q, R = x/D, y/D, (gal_dist - z)/D
+    #     D_rp.append(D)
 
     plot_bulge_plane(ra_g, dec_g, dm_g, e_dm_g, gal_dist, gal_cent,
-                     glx_inc, theta, p123_coord, p123_dist)
+                     glx_inc, theta)
