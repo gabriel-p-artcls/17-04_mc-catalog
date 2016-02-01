@@ -1,6 +1,7 @@
 
 import numpy as np
 import scipy.linalg
+import scipy.optimize as optimize
 from MCs_data import MCs_data
 from astropy.coordinates import Distance, Angle, SkyCoord
 from astropy import units as u
@@ -159,6 +160,26 @@ def get_ellipse(N_ran, rho, phi, D_0, dm_g, e_dm_g):
 #     return data
 
 
+def minimize_perp_distance(x, y, z):
+    def model(params, xyz):
+        a, b, c, d = params
+        x, y, z = xyz
+        length = np.sqrt(a**2+b**2+c**2)
+        return ((np.abs(a*x + b*y + c*z + d))**2).sum()/length
+
+    def unit_length(params):
+        a, b, c, d = params
+        return a**2 + b**2 + c**2 - 1
+
+    initial_guess = np.random.uniform(-10., 10., 4)
+
+    # constrain the vector perpendicular to the plane be of unit length
+    cons = ({'type': 'eq', 'fun': unit_length})
+    sol = optimize.minimize(model, initial_guess, args=[x, y, z],
+                            constraints=cons)
+    return tuple(sol.x)
+
+
 def fit_surface(cl_xyz):
     """
     Find coefficients of best plane fit to given points. Plane equation is
@@ -171,14 +192,17 @@ def fit_surface(cl_xyz):
     Another way to do this: http://stackoverflow.com/q/20699821/1391441
     """
 
-    # Best-fit linear plane, for the Eq: Z = a*X + b*Y + c
-    A = np.c_[cl_xyz[:, 0], cl_xyz[:, 1],
-              np.ones(cl_xyz.shape[0])]
-    C, _, _, _ = scipy.linalg.lstsq(A, cl_xyz[:, 2])  # coefficients
+    # # Best-fit linear plane, for the Eq: Z = a*X + b*Y + c
+    # A = np.c_[cl_xyz[:, 0], cl_xyz[:, 1],
+    #           np.ones(cl_xyz.shape[0])]
+    # C, _, _, _ = scipy.linalg.lstsq(A, cl_xyz[:, 2])  # coefficients
 
-    # Transform coefficients into a*x+b*y+c*z+d=0 form.
-    a, b, c, d = C[0], C[1], -1., C[2]
-    pts123_abcd = [a, b, c, d]
+    # # Transform coefficients into a*x+b*y+c*z+d=0 form.
+    # a, b, c, d = C[0], C[1], -1., C[2]
+    # pts123_abcd = [a, b, c, d]
+
+    pts123_abcd = minimize_perp_distance(cl_xyz[:, 0], cl_xyz[:, 1], cl_xyz[:, 2])
+    a, b, c, d = pts123_abcd
 
     # Regular grid covering the domain of the data
     min_X, max_X = min(cl_xyz[:, 0]) - 2., max(cl_xyz[:, 0]) + 2.
@@ -189,9 +213,9 @@ def fit_surface(cl_xyz):
     xy1, xy2, xy3 = [[np.random.uniform(min_X, max_X),
                       np.random.uniform(min_Y, max_Y)] for _ in range(3)]
     # Obtain Z values using best fit coefficients.
-    z1 = C[0]*xy1[0] + C[1]*xy1[1] + C[2]
-    z2 = C[0]*xy2[0] + C[1]*xy2[1] + C[2]
-    z3 = C[0]*xy3[0] + C[1]*xy3[1] + C[2]
+    z1 = a*xy1[0] + b*xy1[1] + d
+    z2 = a*xy2[0] + b*xy2[1] + d
+    z3 = a*xy3[0] + b*xy3[1] + d
 
     p1p2p3 = [[xy1[0], xy2[0], xy3[0]], [xy1[1], xy2[1], xy3[1]], [z1, z2, z3]]
 
@@ -322,7 +346,6 @@ def make_plot(D_0, inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
         np.cos(theta.radian)*np.sin(inc.radian),\
         np.cos(inc.radian)
     print 'a,b,c,d', a, b, c
-    print np.sum(abs(a*x_cl + b*y_cl + c*z_cl)/np.sqrt(a**2+b**2+c**2), axis=0)
     # Rotated plane.
     X2_t, Y2_t = np.meshgrid([min_X, max_X], [0, max_Y])
     Z2_t = (-a*X2_t - b*Y2_t) / c
@@ -331,67 +354,66 @@ def make_plot(D_0, inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
 
     a, b, c, d = pts123_abcd
     print 'a,b,c,d', a, b, c, d
-    print np.sum(abs(a*x_cl + b*y_cl + c*z_cl + d)/np.sqrt(a**2+b**2+c**2), axis=0)
     # Plane obtained fitting cloud of clusters.
     X3_t, Y3_t = np.meshgrid([min_X, max_X], [0, max_Y])
     Z3_t = (-a*X3_t - b*Y3_t - d) / c
     X3_b, Y3_b = np.meshgrid([min_X, max_X], [min_Y, 0])
     Z3_b = (-a*X3_b - b*Y3_b - d) / c
 
-    # # Plot x,y plane.
-    # ax.plot_surface(X, Z, Y, color='gray', alpha=.2, linewidth=0, zorder=1)
-    # # Axis of x,y plane.
-    # # x axis.
-    # ax.plot([min_X, max_X], [0., 0.], [0., 0.], ls='--', c='k', zorder=4)
-    # # Arrow head pointing in the positive x direction.
-    # ax.quiver(max_X, 0., 0., max_X, 0., 0., length=0.3,
-    #           arrow_length_ratio=1., color='k')
-    # # y axis.
-    # ax.plot([0., 0.], [0., 0.], [0., max_Y], ls='--', c='k')
-    # # Arrow head pointing in the positive y direction.
-    # ax.quiver(0., 0., max_Y, 0., 0., max_Y, length=0.3,
-    #           arrow_length_ratio=1., color='k')
-    # ax.plot([0., 0.], [0., 0.], [min_Y, 0.], ls='--', c='k')
+    # Plot x,y plane.
+    ax.plot_surface(X, Z, Y, color='gray', alpha=.2, linewidth=0, zorder=1)
+    # Axis of x,y plane.
+    # x axis.
+    ax.plot([min_X, max_X], [0., 0.], [0., 0.], ls='--', c='k', zorder=4)
+    # Arrow head pointing in the positive x direction.
+    ax.quiver(max_X, 0., 0., max_X, 0., 0., length=0.3,
+              arrow_length_ratio=1., color='k')
+    # y axis.
+    ax.plot([0., 0.], [0., 0.], [0., max_Y], ls='--', c='k')
+    # Arrow head pointing in the positive y direction.
+    ax.quiver(0., 0., max_Y, 0., 0., max_Y, length=0.3,
+              arrow_length_ratio=1., color='k')
+    ax.plot([0., 0.], [0., 0.], [min_Y, 0.], ls='--', c='k')
 
-    # # Top half of first x',y' inclined plane.
-    # ax.plot_surface(X2_t, Z2_t, Y2_t, color='red', alpha=.2, lw=0, zorder=3)
-    # # Bottom half of inclined plane.
-    # ax.plot_surface(X2_t, Z2_b, Y2_b, color='red', alpha=.2, lw=0, zorder=-1)
-    # # Axis of x',y' plane.
-    # # x' axis.
-    # x_min, y_min, z_min = inv_trans_eqs(min_X, 0., 0., theta, inc)
-    # x_max, y_max, z_max = inv_trans_eqs(max_X, 0., 0., theta, inc)
-    # ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='b')
-    # # Arrow head pointing in the positive x' direction.
-    # ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
-    #           arrow_length_ratio=1.2)
-    # # y' axis.
-    # x_min, y_min, z_min = inv_trans_eqs(0., min_Y, 0., theta, inc)
-    # x_max, y_max, z_max = inv_trans_eqs(0., max_Y, 0., theta, inc)
-    # ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='g')
-    # # Arrow head pointing in the positive y' direction.
-    # ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
-    #           arrow_length_ratio=1.2, color='g')
-
-    # Top half of second x',y' inclined plane.
-    ax.plot_surface(X3_t, Z3_t, Y3_t, color='g', alpha=.2, lw=0, zorder=3)
+    # Top half of first x',y' inclined plane.
+    ax.plot_surface(X2_t, Z2_t, Y2_t, color='red', alpha=.2, lw=0, zorder=3)
     # Bottom half of inclined plane.
-    ax.plot_surface(X3_b, Z3_b, Y3_b, color='g', alpha=.2, lw=0, zorder=-1)
+    ax.plot_surface(X2_t, Z2_b, Y2_b, color='red', alpha=.2, lw=0, zorder=-1)
     # Axis of x',y' plane.
     # x' axis.
-    x_min, y_min, z_min = inv_trans_eqs(min_X, 0., 0., theta_pl, inc_pl)
-    x_max, y_max, z_max = inv_trans_eqs(max_X, 0., 0., theta_pl, inc_pl)
+    x_min, y_min, z_min = inv_trans_eqs(min_X, 0., 0., theta, inc)
+    x_max, y_max, z_max = inv_trans_eqs(max_X, 0., 0., theta, inc)
     ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='b')
     # Arrow head pointing in the positive x' direction.
     ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
               arrow_length_ratio=1.2)
     # y' axis.
-    x_min, y_min, z_min = inv_trans_eqs(0., min_Y, 0., theta_pl, inc_pl)
-    x_max, y_max, z_max = inv_trans_eqs(0., max_Y, 0., theta_pl, inc_pl)
+    x_min, y_min, z_min = inv_trans_eqs(0., min_Y, 0., theta, inc)
+    x_max, y_max, z_max = inv_trans_eqs(0., max_Y, 0., theta, inc)
     ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='g')
     # Arrow head pointing in the positive y' direction.
     ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
               arrow_length_ratio=1.2, color='g')
+
+    # Top half of second x',y' inclined plane.
+    ax.plot_surface(X3_t, Z3_t, Y3_t, color='g', alpha=.2, lw=0, zorder=3)
+    # Bottom half of inclined plane.
+    ax.plot_surface(X3_b, Z3_b, Y3_b, color='g', alpha=.2, lw=0, zorder=-1)
+    # # Axis of x',y' plane.
+    # # x' axis.
+    # x_min, y_min, z_min = inv_trans_eqs(min_X, 0., 0., theta_pl, inc_pl)
+    # x_max, y_max, z_max = inv_trans_eqs(max_X, 0., 0., theta_pl, inc_pl)
+    # ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='b')
+    # # Arrow head pointing in the positive x' direction.
+    # ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
+    #           arrow_length_ratio=1.2)
+    # # y' axis.
+    # x_min, y_min, z_min = inv_trans_eqs(0., min_Y, 0., theta_pl, inc_pl)
+    # x_max, y_max, z_max = inv_trans_eqs(0., max_Y, 0., theta_pl, inc_pl)
+    # ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='g')
+    # # Arrow head pointing in the positive y' direction.
+    # ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
+    #           arrow_length_ratio=1.2, color='g')
 
     ax.set_xlabel('x (Kpc)')
     ax.set_ylabel('z (Kpc)')
