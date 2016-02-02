@@ -202,30 +202,6 @@ def fit_surface(cl_xyz):
     return p1p2p3, pts123_abcd
 
 
-# def plane_abcd(p1, p2, p3):
-#     """
-#     Obtain the a,b,c,d coefficients of the plane equation:
-
-#     a*x+b*y+c*z+d=0
-
-#     from three points that belong to the plane.
-
-#     Source: http://kitchingroup.cheme.cmu.edu/blog/2015/01/18/
-#             Equation-of-a-plane-through-three-points/
-
-#     Another way: http://stackoverflow.com/a/25809052/1391441
-#     """
-#     v1 = p3 - p1
-#     v2 = p2 - p1
-#     # The cross product is a vector normal to the plane
-#     cp = np.cross(v1, v2)
-#     a, b, c = cp
-#     # This evaluates a*x3 + b*y3 + c*z3 which equals -d, so we mult by -1.
-#     d = -1.*np.dot(cp, p3)
-
-#     return a, b, c, d
-
-
 def angle_betw_planes(pts123_abcd):
     """
     The dihedral angle is the angle theta between two planes
