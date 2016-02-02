@@ -161,6 +161,9 @@ def get_ellipse(N_ran, rho, phi, D_0, dm_g, e_dm_g):
 
 
 def minimize_perp_distance(x, y, z):
+    """
+    http://stackoverflow.com/a/35118683/1391441
+    """
     def model(params, xyz):
         a, b, c, d = params
         x, y, z = xyz
