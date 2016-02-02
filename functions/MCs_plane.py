@@ -1,6 +1,5 @@
 
 import numpy as np
-import scipy.linalg
 import scipy.optimize as optimize
 from MCs_data import MCs_data
 from astropy.coordinates import Distance, Angle, SkyCoord
@@ -147,19 +146,6 @@ def get_ellipse(N_ran, rho, phi, D_0, dm_g, e_dm_g):
     return x_e, y_e, z_e
 
 
-# def cartesian_coords(c):
-#     """
-#     Transform coordinates to cartesian x,y,z system.
-#     """
-#     data = SkyCoord(c, representation='cartesian')
-#     if np.array(data.x.value).size > 1:
-#         data = np.array(zip(*[data.x.value, data.y.value, data.z.value]))
-#     else:
-#         data = np.array([data.x.value, data.y.value, data.z.value])
-
-#     return data
-
-
 def minimize_perp_distance(x, y, z):
     """
     http://stackoverflow.com/a/35118683/1391441
@@ -195,15 +181,6 @@ def fit_surface(cl_xyz):
     Another way to do this: http://stackoverflow.com/q/20699821/1391441
     """
 
-    # # Best-fit linear plane, for the Eq: Z = a*X + b*Y + c
-    # A = np.c_[cl_xyz[:, 0], cl_xyz[:, 1],
-    #           np.ones(cl_xyz.shape[0])]
-    # C, _, _, _ = scipy.linalg.lstsq(A, cl_xyz[:, 2])  # coefficients
-
-    # # Transform coefficients into a*x+b*y+c*z+d=0 form.
-    # a, b, c, d = C[0], C[1], -1., C[2]
-    # pts123_abcd = [a, b, c, d]
-
     pts123_abcd = minimize_perp_distance(cl_xyz[:, 0], cl_xyz[:, 1], cl_xyz[:, 2])
     a, b, c, d = pts123_abcd
 
@@ -221,24 +198,6 @@ def fit_surface(cl_xyz):
     z3 = a*xy3[0] + b*xy3[1] + d
 
     p1p2p3 = [[xy1[0], xy2[0], xy3[0]], [xy1[1], xy2[1], xy3[1]], [z1, z2, z3]]
-
-    # # Store points with cartesian coordinates.
-    # p1_c = SkyCoord(x=xy1[0], y=xy1[1], z=z1, unit='kpc',
-    #                 representation='cartesian')
-    # p2_c = SkyCoord(x=xy2[0], y=xy2[1], z=z2, unit='kpc',
-    #                 representation='cartesian')
-    # p3_c = SkyCoord(x=xy3[0], y=xy3[1], z=z3, unit='kpc',
-    #                 representation='cartesian')
-
-    # # Transform to equatorial coordinates.
-    # p1_e = p1_c.transform_to(frame='icrs')
-    # p2_e = p2_c.transform_to(frame='icrs')
-    # p3_e = p3_c.transform_to(frame='icrs')
-
-    # # Store RA,DEC coordinates and distances separately.
-    # p123_coord = SkyCoord([p1_e.ra, p2_e.ra, p3_e.ra],
-    #                       [p1_e.dec, p2_e.dec, p3_e.dec])
-    # p123_dist = Distance([p1_e.distance, p2_e.distance, p3_e.distance])
 
     return p1p2p3, pts123_abcd
 
@@ -498,27 +457,6 @@ if __name__ == "__main__":
     gal_dist = gal_dist.kpc*u.kpc
 
     theta = glx_PA + Angle('90d')
-
-    # # Ra,Dec coordinates of 3 points in the plane fitted via the dist_2_plane
-    # # method, in the (x,y,z) system of the sky.
-    # # Start by setting some random rho,phi values.
-    # rp_plane = [[0.5, 22.], [1.5, 137.], [1., 226.]]
-    # # Obtain the distance to each point in the inclined plane.
-    # D_rp = []
-    # for rp in rp_plane:
-    #     rho, phi = [Angle(_, unit='degree') for _ in rp]
-    #     # Distance of points over inclined plane.
-    #     A = np.cos(glx_inc.radian) * np.cos(rho.radian) - \
-    #         np.sin(glx_inc.radian) * np.sin(rho.radian) * \
-    #         np.sin(phi.radian - theta.radian)
-    #     D = gal_dist * np.cos(glx_inc.radian) / A
-    #     # x,y,z coordinates of points
-    #     x = D*np.sin(rho.radian)*np.cos(phi.radian)
-    #     y = D*np.sin(rho.radian)*np.sin(phi.radian)
-    #     z = gal_dist - D*np.cos(rho.radian)
-    #     # Parameters, function of (ra,dec) and (ra_0,dec_0)
-    #     P, Q, R = x/D, y/D, (gal_dist - z)/D
-    #     D_rp.append(D)
 
     plot_bulge_plane(ra_g, dec_g, dm_g, e_dm_g, gal_dist, gal_cent,
                      glx_inc, theta)
