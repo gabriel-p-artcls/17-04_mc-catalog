@@ -184,34 +184,6 @@ def perp_error(x, y, z, a, b, c, d):
     return ((np.abs(a*x + b*y + c*z + d))**2).sum()/length
 
 
-def plane_points(plane_abcd):
-    """
-    Find three points that belong to a plane defined by its coefficients in
-    the form:
-
-    a*x + b*t + c*z + d = 0
-    """
-    a, b, c, d = plane_abcd
-
-    # Regular grid covering the domain of the data
-    min_X, max_X = -1., 1.
-    min_Y, max_Y = -1., 1.
-
-    # x,y,z coordinates of 3 random points that belong to the fitted plane,
-    # in the (x,y,z) system. Just for plotting.
-    xy1, xy2, xy3 = [[np.random.uniform(min_X, max_X),
-                      np.random.uniform(min_Y, max_Y)] for _ in range(3)]
-    # Obtain Z values using best fit coefficients.
-    A, B, C = -a/c, -b/c, -d/c
-    z1 = A*xy1[0] + B*xy1[1] + C
-    z2 = A*xy2[0] + B*xy2[1] + C
-    z3 = A*xy3[0] + B*xy3[1] + C
-
-    p1p2p3 = [[xy1[0], xy2[0], xy3[0]], [xy1[1], xy2[1], xy3[1]], [z1, z2, z3]]
-
-    return p1p2p3
-
-
 def angle_betw_planes(pts123_abcd):
     """
     The dihedral angle is the angle theta between two planes
@@ -268,7 +240,7 @@ def inv_trans_eqs(x_p, y_p, z_p, theta, inc):
 
 
 def make_plot(D_0, inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
-              cl_xyz_nf, dm_nf, p1p2p3, pts123_abcd, inc_pl, theta_pl):
+              cl_xyz_nf, dm_nf, pts123_abcd, inc_pl, theta_pl):
     """
     Original link for plotting intersecting planes:
     http://stackoverflow.com/a/14825951/1391441
@@ -354,7 +326,6 @@ def make_plot(D_0, inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
     ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
               arrow_length_ratio=1.2, color='g')
 
-    # ax.scatter(p1p2p3[0], p1p2p3[2], p1p2p3[1], c='k', marker='s')
     # Top half of second x',y' inclined plane.
     ax.plot_surface(X3_t, Z3_t, Y3_t, color='g', alpha=.2, lw=0, zorder=3)
     # Bottom half of inclined plane.
@@ -402,8 +373,6 @@ def plot_bulge_plane(ra_g, dec_g, dm_g, e_dm_g, D_0, gal_cent, glx_inc, theta):
     # clusters passed in the (x,y,z) system. The best fit is obtained
     # minimizing the perpendicular distance to the plane.
     plane_abcd = minimize_perp_distance(cl_xyz)
-    # Obtain 3 points that belong to the best fit plane.
-    p1p2p3 = plane_points(plane_abcd)
 
     # Number of times the error ellipse will be obtained after randomly
     # shifting the distance moduli.
@@ -416,7 +385,7 @@ def plot_bulge_plane(ra_g, dec_g, dm_g, e_dm_g, D_0, gal_cent, glx_inc, theta):
     print 'i, theta (2nd fit)', inc_pl.degree, theta_pl.degree
 
     make_plot(D_0, glx_inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
-              cl_xyz_nf, dm_nf, p1p2p3, plane_abcd, inc_pl, theta_pl)
+              cl_xyz_nf, dm_nf, plane_abcd, inc_pl, theta_pl)
 
 if __name__ == "__main__":
 
