@@ -431,7 +431,7 @@ def gsd(in_params):
                                'e_d_cent', 'darr', 'dsigma']]
 
     # Define ranges for the grid of inclination and position angles.
-    inc_rang, pa_rang = [-89., 89.], [1., 179]  # FIXME
+    inc_rang, pa_rang = [-89., 89.], [1., 179.]  # FIXME
 
     # Grid limits (for plotting).
     xmin, xmax = inc_rang[0] - 0.1, inc_rang[1] + 0.1
@@ -577,8 +577,8 @@ def gsd(in_params):
 
             print 'rho min=', r_min
             print 'CCC=', ccc_mean
-            print 'Best, mean, std inc:', inc_mean, np.mean(in_mcarlo), inc_std
-            print 'Best, mean, std PA:', pa_mean, np.mean(pa_mcarlo), pa_std
+            print 'Best, mean, MC mean, std inc:', inc_best, inc_mean, np.mean(in_mcarlo), inc_std
+            print 'Best, mean, MC mean, std PA:', pa_best, pa_mean, np.mean(pa_mcarlo), pa_std
 
     return gal_str_pars, rho_plot_pars
 

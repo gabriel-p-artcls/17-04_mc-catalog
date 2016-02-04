@@ -2010,9 +2010,9 @@ def pl_rho_var(in_pars):
     xy_font_s = 12
     ax.set_xlim(-0.5, max(r_min)+0.5)
     if i in [0, 1]:
-        plt.ylim(40., 260.)
+        plt.ylim(0., 230.)
     else:
-        plt.ylim(1., 89.)
+        plt.ylim(-89., 89.)
     # Increase font since it's LaTeX and it looks small.
     ax.set_xlabel(xlab, fontsize=xy_font_s+3)
     ax.set_ylabel(ylab, fontsize=xy_font_s)
