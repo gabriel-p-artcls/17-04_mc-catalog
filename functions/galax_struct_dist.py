@@ -439,28 +439,6 @@ def monte_carlo_errors(N_maps, method, params):
 
         inc_pa_mcarlo.append([inc_b, pa_b])
 
-        # DELETE
-        # print inc_b, pa_b, dens_b
-        # import matplotlib.pyplot as plt
-        # cm = plt.cm.get_cmap('RdBu_r')
-        # ax = plt.subplot(111)
-        # SC = plt.imshow(np.rot90(zi), vmin=zi.min(), vmax=zi.max(),
-        #                 origin='upper',
-        #                 extent=[xi.min(), xi.max(), yi.min(), yi.max()],
-        #                 cmap=cm)
-        # plt.contour(np.rot90(zi), 100, colors='k', linewidths=0.2,
-        #             origin='upper',
-        #             extent=[xi.min(), xi.max(), yi.min(), yi.max()])
-        # plt.colorbar(SC)
-        # ax.set_aspect(aspect='auto')
-        # # Position pyplot window.
-        # mngr = plt.get_current_fig_manager()
-        # # get the QTCore PyRect object
-        # geom = mngr.window.geometry()
-        # x, y, dx, dy = geom.getRect()
-        # mngr.window.setGeometry(x, y, dx, dy)
-        # plt.show()
-
         # Print percentage done.
         percentage_complete = (100. * (_ + 1) / N_maps)
         while len(milestones) > 0 and \
@@ -646,6 +624,7 @@ def gsd(in_params):
                 # Obtain distribution of rotation angles via Monte Carlo random
                 # sampling.
                 inc_pa_mcarlo = monte_carlo_errors(N_maps, method, params)
+
                 # Save inclination and position angles obtained via the Monte
                 # Carlo process. Combining values from all methods, we
                 # calculate the combined standard deviation for each angle.
