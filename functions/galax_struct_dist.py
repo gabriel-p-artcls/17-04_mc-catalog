@@ -5,6 +5,7 @@ import numpy as np
 import deproj_dist as dd
 from MCs_data import MCs_data
 import scipy.interpolate
+import scipy.optimize as optimize
 
 
 def inc_PA_grid(N, inc_rang, pa_rang):
@@ -224,7 +225,7 @@ def xyz_coords(rho, phi, D_0, r_dist):
     return x, y, z
 
 
-def plane_dist(plane_abc, x, y, z):
+def fix_plane_perp_dist(plane_abc, x, y, z):
     '''
     Calculate the distance to each inclined plane for all the clusters in
     the galaxy being analysed. Plane equation in the form:
@@ -245,7 +246,85 @@ def plane_dist(plane_abc, x, y, z):
     return pl_dists_kpc
 
 
-def angles_min_max_dens(method, xi, yi, zi):
+def perp_error(params, xyz):
+    """
+    Return sum of the absolute values for the perpendicular distance of the
+    points in 'xyz', to the plane defined by the coefficients 'a,b,c,d'.
+    """
+    a, b, c, d = params
+    x, y, z = xyz
+    length = np.sqrt(a**2+b**2+c**2)
+    return ((np.abs(a*x + b*y + c*z + d))**2).sum()/length
+
+
+def minimize_perp_distance(x, y, z):
+    """
+    Find coefficients of best plane fit to given points. Plane equation is
+    in the form:
+
+    a*x + b*t + c*z + d = 0
+
+    and the minimization is done for perpendicular distances to the plane.
+
+    Source: http://stackoverflow.com/a/35118683/1391441
+    """
+
+    def unit_length(params):
+        a, b, c, d = params
+        return a**2 + b**2 + c**2 - 1
+
+    # # x,y,z coordinates of the points passed.
+    # x, y, z = xyz[:, 0], xyz[:, 1], xyz[:, 2]
+    # Random initial guess for the coefficients.
+    initial_guess = np.random.uniform(-10., 10., 4)
+
+    # constrain the vector perpendicular to the plane be of unit length
+    cons = ({'type': 'eq', 'fun': unit_length})
+    sol = optimize.minimize(perp_error, initial_guess, args=[x, y, z],
+                            constraints=cons)
+    return tuple(sol.x)
+
+
+def angle_betw_planes(plane_abcd):
+    """
+    The dihedral angle is the angle theta between two planes
+
+    http://mathworld.wolfram.com/DihedralAngle.html
+
+    http://stackoverflow.com/q/2827393/1391441
+    """
+
+    # Normal vector to the a,b,c,d plane.
+    a, b, c, d = plane_abcd
+    v1 = [a/c, b/c, 1.]
+    # Vector normal to the z=0 plane, ie: the x,y plane.
+    v2 = [0, 0, 1]
+
+    # Inclination angle between the x axis.
+    i = np.arccos(np.dot(v1, v2) / np.sqrt(np.dot(v1, v1)*np.dot(v2, v2)))
+    inc = Angle(i*u.radian, unit='degree')
+
+    # Rotation angle between the x axis.
+    x_int, y_int = -d/a, -d/b
+    t = np.arctan2(y_int, x_int)
+    theta = Angle(t*u.radian, unit='degree')
+
+    # Set angles to correct ranges: [-90, 90] for the inclination and
+    # [90., 270.] for theta (given that the position angle's range is
+    # [0., 180.])
+    if inc.degree > 90.:
+        inc = Angle(i*u.radian, unit='degree') - Angle('180.d')
+
+    if theta.degree > 270.:
+        theta = theta - Angle('180.d')
+    if theta.degree - 90. < 90.:
+        n = int((90. - theta.degree)/180.) + 1
+        theta = theta + n*Angle('180.d')
+
+    return inc, theta
+
+
+def best_fit_angles(method, xi, yi, zi):
     '''
     Obtain inclination and position angles associated with the maximum CCC
     value in this map.
@@ -257,13 +336,15 @@ def angles_min_max_dens(method, xi, yi, zi):
         x_b, y_b = xi[max_ccc_idx[0]], yi[max_ccc_idx[1]]
         # Max CCC value in map.
         # z_b = np.amax(zi)
-    elif method == 'dist_2_plane':
+    elif method == 'perp_d_fix_plane':
         # Obtain index of minimum sum of absolute distances to plane value.
         min_d_idx = np.unravel_index(zi.argmin(), zi.shape)
         # Calculate "best" angle values.
         x_b, y_b = xi[min_d_idx[0]], yi[min_d_idx[1]]
         # Min sum of abs(distances 2 plane) value in map.
         # z_b = np.amin(zi)
+    elif method == 'perp_d_free_plane':
+        inc_b, theta_b = angle_betw_planes(plane_abcd)
 
     return x_b, y_b
 
@@ -300,7 +381,7 @@ def monte_carlo_errors(N_maps, method, inc_lst, pa_lst, xi, yi, params):
     # Unpack params.
     if method == 'deproj_dists':
         N_grid, d_g, e_d_g, dep_dist_i_PA_vals = params
-    elif method == 'dist_2_plane':
+    elif method == 'perp_d_fix_plane':
         dm_g, e_dm_g, rho, phi, gal_dist, plane_abc = params
 
     inc_pa_mcarlo = []
@@ -313,14 +394,14 @@ def monte_carlo_errors(N_maps, method, inc_lst, pa_lst, xi, yi, params):
             rand_dist = draw_rand_dep_dist(d_g, e_d_g)
             # Obtain density map of CCC (z) values.
             z = ccc_map(dep_dist_i_PA_vals, rand_dist, N_grid)
-        elif method == 'dist_2_plane':
+        elif method == 'perp_d_fix_plane':
             # Draw random distances moduli, obtained via ASteCA.
             rand_dist = draw_rand_dist_mod(dm_g, e_dm_g)
             # Positions in the (x,y,z) system.
             x, y, z = xyz_coords(rho, phi, gal_dist, rand_dist)
             # Obtain density map (z), composed of the sum of the absolute
             # values of the distances to each plane.
-            z = plane_dist(plane_abc, x, y, z)
+            z = fix_plane_perp_dist(plane_abc, x, y, z)
 
         # Obtain (finer) interpolated angles-CCC density map.
         # Rows in zi correspond to inclination values.
@@ -329,7 +410,7 @@ def monte_carlo_errors(N_maps, method, inc_lst, pa_lst, xi, yi, params):
 
         # Store values of inclination and position angles associated to
         # the minimum/maximum density value in this map.
-        inc_b, pa_b = angles_min_max_dens(method, xi, yi, zi)
+        inc_b, pa_b = best_fit_angles(method, xi, yi, zi)
 
         inc_pa_mcarlo.append([inc_b, pa_b])
 
@@ -484,10 +565,15 @@ def gsd(in_params):
             # combination of rotation (inc, PA) angles.
             plane_abc = plane_equation(inc_lst, pa_lst)
 
+            # Obtain coordinates of filtered clusters in the (x,y,z) system.
+            # Used by two of the methods below.
+            x, y, z = xyz_coords(rho_f, phi_f, gal_dist, np.asarray(dm_f))
+
             # Run once for each method defined.
             inc_best, pa_best, in_mcarlo, pa_mcarlo, ccc_best =\
                 [], [], [], [], []
-            for method in ['deproj_dists', 'dist_2_plane']:
+            for method in ['deproj_dists', 'perp_d_fix_plane',
+                           'perp_d_free_plane']:
                 if method == 'deproj_dists':
                     # Store params used to obtain the Monte Carlo errors.
                     params = [N_grid, d_d_f, e_dd_f, dep_dist_i_PA_vals]
@@ -497,20 +583,26 @@ def gsd(in_params):
                     z = ccc_map(dep_dist_i_PA_vals, d_d_f, N_grid)
                     plot_dens_map = interp_dens_map(inc_lst, pa_lst, xi, yi, z)
 
-                elif method == 'dist_2_plane':
+                elif method == 'perp_d_fix_plane':
                     # Store params used to obtain the Monte Carlo errors.
                     params = [dm_f, e_dm_f, rho_f, phi_f, gal_dist, plane_abc]
 
                     # Store density map obtained using the distance values with
                     # no random sampling. It will be used for plotting.
-                    x, y, z = xyz_coords(rho_f, phi_f, gal_dist,
-                                         np.asarray(dm_f))
-                    pl_dists_kpc = plane_dist(plane_abc, x, y, z)
+                    pl_dists_kpc = fix_plane_perp_dist(plane_abc, x, y, z)
                     plot_dens_map = interp_dens_map(inc_lst, pa_lst, xi, yi,
                                                     pl_dists_kpc)
 
+                elif method == 'perp_d_free_plane':
+                    # Store params used to obtain the Monte Carlo errors.
+                    params = [dm_f, e_dm_f, rho_f, phi_f, gal_dist, plane_abc]
+
+                    # Store density map obtained using the distance values with
+                    # no random sampling. It will be used for plotting.
+                    plane_abcd = minimize_perp_distance(x, y, z)
+
                 # Best fit angles for the density map with no random sampling.
-                inc_b, pa_b = angles_min_max_dens(method, xi, yi,
+                inc_b, pa_b = best_fit_angles(method, xi, yi,
                                                   plot_dens_map)
                 # Save best fit angles obtained with both methods. Their
                 # average is the final value for each rotation angle.
@@ -550,10 +642,10 @@ def gsd(in_params):
                 # Store parameters for density maps and 1:1 diagonal plots.
                 if r_idx == r_idx_save:
 
-                    if method == 'dist_2_plane':
+                    if method == 'perp_d_fix_plane':
                         # Linear transformation between [0, 1] so that the
-                        # minimum value of the sum(abs(dist_2_plane)) is 1 and
-                        # the maximum is zero.
+                        # minimum value of the sum(abs(perp_d_fix_plane)) is
+                        # 1 and the maximum is zero.
                         plot_dens_map = linear_transf(plot_dens_map)
 
                     gal_str_pars.append([xmin, xmax, ymin, ymax, xi, yi,

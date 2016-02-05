@@ -1,6 +1,5 @@
 
 import numpy as np
-import scipy.optimize as optimize
 from MCs_data import MCs_data
 from astropy.coordinates import Distance, Angle, SkyCoord
 from astropy import units as u
@@ -144,84 +143,6 @@ def get_ellipse(N_ran, rho, phi, D_0, dm_g, e_dm_g):
     x_e, y_e, z_e = np.rollaxis(E, axis=-1)
 
     return x_e, y_e, z_e
-
-
-def perp_error(params, xyz):
-    """
-    Return sum of the absolute values for the perpendicular distance of the
-    points in 'xyz', to the plane defined by the coefficients 'a,b,c,d'.
-    """
-    a, b, c, d = params
-    x, y, z = xyz
-    length = np.sqrt(a**2+b**2+c**2)
-    return ((np.abs(a*x + b*y + c*z + d))**2).sum()/length
-
-
-def minimize_perp_distance(xyz):
-    """
-    Find coefficients of best plane fit to given points. Plane equation is
-    in the form:
-
-    a*x + b*t + c*z + d = 0
-
-    and the minimization is done for perpendicular distances to the plane.
-
-    Source: http://stackoverflow.com/a/35118683/1391441
-    """
-
-    def unit_length(params):
-        a, b, c, d = params
-        return a**2 + b**2 + c**2 - 1
-
-    # x,y,z coordinates of the points passed.
-    x, y, z = xyz[:, 0], xyz[:, 1], xyz[:, 2]
-    # Random initial guess for the coefficients.
-    initial_guess = np.random.uniform(-10., 10., 4)
-
-    # constrain the vector perpendicular to the plane be of unit length
-    cons = ({'type': 'eq', 'fun': unit_length})
-    sol = optimize.minimize(perp_error, initial_guess, args=[x, y, z],
-                            constraints=cons)
-    return tuple(sol.x)
-
-
-def angle_betw_planes(pts123_abcd):
-    """
-    The dihedral angle is the angle theta between two planes
-
-    http://mathworld.wolfram.com/DihedralAngle.html
-
-    http://stackoverflow.com/q/2827393/1391441
-    """
-
-    # Normal vector to the a,b,c,d plane.
-    a, b, c, d = pts123_abcd
-    v1 = [a/c, b/c, 1.]
-    # Vector normal to the z=0 plane, ie: the x,y plane.
-    v2 = [0, 0, 1]
-
-    # Inclination angle between the x axis.
-    i = np.arccos(np.dot(v1, v2) / np.sqrt(np.dot(v1, v1)*np.dot(v2, v2)))
-    inc = Angle(i*u.radian, unit='degree')
-
-    # Rotation angle between the x axis.
-    x_int, y_int = -d/a, -d/b
-    t = np.arctan2(y_int, x_int)
-    theta = Angle(t*u.radian, unit='degree')
-
-    # Set angles to correct ranges: [-90, 90] fir the inclination and
-    # [90., 270.] for theta (given that the position angle's range is
-    # [0., 180.])
-    if inc.degree > 90.:
-        inc = Angle(i*u.radian, unit='degree') - Angle('180.d')
-
-    if theta.degree > 270.:
-        theta = theta - Angle('180.d')
-    if theta.degree - 90. < 90.:
-        n = int((90. - theta.degree)/180.) + 1
-        theta = theta + n*Angle('180.d')
-
-    return inc, theta
 
 
 def inv_trans_eqs(x_p, y_p, z_p, theta, inc):
