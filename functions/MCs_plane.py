@@ -67,9 +67,8 @@ def xyz_coords(rho, phi, D_0, r_dist):
     y = d_kpc * np.sin(rho.radian) * np.sin(phi.radian)
     z = D_0 - d_kpc*np.cos(rho.radian)
     x, y, z = x.value, y.value, z.value
-    coords = np.asarray(zip(*[x, y, z]))
 
-    return coords
+    return x, y, z
 
 
 def mvee(points, tol=0.001):
@@ -117,7 +116,8 @@ def get_ellipse(N_ran, rho, phi, D_0, dm_g, e_dm_g):
         # Random draw.
         r_dist = np.random.normal(np.asarray(dm_g), np.asarray(e_dm_g))
         # r_dist = np.asarray(dm_g)  # DEL
-        coords = xyz_coords(rho, phi, D_0, r_dist)
+        x, y, z = xyz_coords(rho, phi, D_0, r_dist)
+        coords = np.asarray(zip(*[x, y, z]))
         # A : (d x d) matrix of the ellipse equation in the 'center form':
         # (x-c)' * A * (x-c) = 1
         # 'centroid' is the center coordinates of the ellipse.
@@ -161,8 +161,7 @@ def inv_trans_eqs(x_p, y_p, z_p, theta, inc):
     return x, y, z
 
 
-def make_plot(D_0, inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
-              cl_xyz_nf, dm_nf, pts123_abcd, inc_pl, theta_pl):
+def make_plot(D_0, inc, theta, cl_xyz, cl_xyz_nf, dm_f, dm_nf, x_e, y_e, z_e):
     """
     Original link for plotting intersecting planes:
     http://stackoverflow.com/a/14825951/1391441
@@ -175,7 +174,7 @@ def make_plot(D_0, inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
     # ax.plot_surface(x_e, z_e, y_e, cstride=1, rstride=1, alpha=0.05)
 
     # Plot points inside the ellipse, with no random displacement.
-    x_cl, y_cl, z_cl = cl_xyz[:, 0], cl_xyz[:, 1], cl_xyz[:, 2]
+    x_cl, y_cl, z_cl = cl_xyz
     if cl_xyz.size:
         SC = ax.scatter(x_cl, z_cl, y_cl, c=dm_f, s=50)
 
@@ -183,35 +182,13 @@ def make_plot(D_0, inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
     min_Y, max_Y = min(y_cl) - 2., max(y_cl) + 2.
 
     # # Plot points *outside* the ellipse, with no random displacement.
-    # x_cl_nf, y_cl_nf, z_cl_nf = cl_xyz_nf[:, 0], cl_xyz_nf[:, 1],\
-    #     cl_xyz_nf[:, 2]
+    # x_cl_nf, y_cl_nf, z_cl_nf = cl_xyz_nf
     # if cl_xyz_nf.size:
     #     SC = ax.scatter(x_cl, z_cl_nf, y_cl_nf, c=dm_f, s=50)
 
     # x,y plane.
     X, Y = np.meshgrid([min_X, max_X], [min_Y, max_Y])
     Z = np.zeros((2, 2))
-
-    # A plane is a*x+b*y+c*z+d=0, [a,b,c] is the normal.
-    a, b, c, d = -1.*np.sin(theta.radian)*np.sin(inc.radian),\
-        np.cos(theta.radian)*np.sin(inc.radian),\
-        np.cos(inc.radian), 0.
-    print 'a/c,b/c,1,d/c:', a/c, b/c, 1., 0.
-    print 'Perp error', perp_error([a, b, c, d], [x_cl, y_cl, z_cl])
-    # Rotated plane.
-    X2_t, Y2_t = np.meshgrid([min_X, max_X], [0, max_Y])
-    Z2_t = (-a*X2_t - b*Y2_t) / c
-    X2_b, Y2_b = np.meshgrid([min_X, max_X], [min_Y, 0])
-    Z2_b = (-a*X2_b - b*Y2_b) / c
-
-    a, b, c, d = pts123_abcd
-    print 'a/c,b/c,1,d/c:', a/c, b/c, 1., d/c
-    print 'Perp error', perp_error([a, b, c, d], [x_cl, y_cl, z_cl])
-    # Plane obtained fitting cloud of clusters.
-    X3_t, Y3_t = np.meshgrid([min_X, max_X], [0, max_Y])
-    Z3_t = (-a*X3_t - b*Y3_t - d) / c
-    X3_b, Y3_b = np.meshgrid([min_X, max_X], [min_Y, 0])
-    Z3_b = (-a*X3_b - b*Y3_b - d) / c
 
     # Plot x,y plane.
     ax.plot_surface(X, Z, Y, color='gray', alpha=.2, linewidth=0, zorder=1)
@@ -227,6 +204,19 @@ def make_plot(D_0, inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
     ax.quiver(0., 0., max_Y, 0., 0., max_Y, length=0.3,
               arrow_length_ratio=1., color='k')
     ax.plot([0., 0.], [0., 0.], [min_Y, 0.], ls='--', c='k')
+
+    #
+    #
+    # A plane is a*x+b*y+c*z+d=0, [a,b,c] is the normal.
+    a, b, c, d = -1.*np.sin(theta.radian)*np.sin(inc.radian),\
+        np.cos(theta.radian)*np.sin(inc.radian),\
+        np.cos(inc.radian), 0.
+    print 'a/c,b/c,1,d/c:', a/c, b/c, 1., 0.
+    # Rotated plane.
+    X2_t, Y2_t = np.meshgrid([min_X, max_X], [0, max_Y])
+    Z2_t = (-a*X2_t - b*Y2_t) / c
+    X2_b, Y2_b = np.meshgrid([min_X, max_X], [min_Y, 0])
+    Z2_b = (-a*X2_b - b*Y2_b) / c
 
     # Top half of first x',y' inclined plane.
     ax.plot_surface(X2_t, Z2_t, Y2_t, color='red', alpha=.2, lw=0, zorder=3)
@@ -248,31 +238,41 @@ def make_plot(D_0, inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
     ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
               arrow_length_ratio=1.2, color='g')
 
+    #
+    #
+    a, b, c, d = pts123_abcd
+    print 'a/c,b/c,1,d/c:', a/c, b/c, 1., d/c
+    # Plane obtained fitting cloud of clusters.
+    X3_t, Y3_t = np.meshgrid([min_X, max_X], [0, max_Y])
+    Z3_t = (-a*X3_t - b*Y3_t - d) / c
+    X3_b, Y3_b = np.meshgrid([min_X, max_X], [min_Y, 0])
+    Z3_b = (-a*X3_b - b*Y3_b - d) / c
+
     # Top half of second x',y' inclined plane.
     ax.plot_surface(X3_t, Z3_t, Y3_t, color='g', alpha=.2, lw=0, zorder=3)
     # Bottom half of inclined plane.
     ax.plot_surface(X3_b, Z3_b, Y3_b, color='g', alpha=.2, lw=0, zorder=-1)
-    # # Axis of x',y' plane.
-    # # x' axis.
-    # x_min, y_min, z_min = inv_trans_eqs(min_X, 0., 0., theta_pl, inc_pl)
-    # x_max, y_max, z_max = inv_trans_eqs(max_X, 0., 0., theta_pl, inc_pl)
-    # ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='b')
-    # # Arrow head pointing in the positive x' direction.
-    # ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
-    #           arrow_length_ratio=1.2)
-    # # y' axis.
-    # x_min, y_min, z_min = inv_trans_eqs(0., min_Y, 0., theta_pl, inc_pl)
-    # x_max, y_max, z_max = inv_trans_eqs(0., max_Y, 0., theta_pl, inc_pl)
-    # ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='g')
-    # # Arrow head pointing in the positive y' direction.
-    # ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
-    #           arrow_length_ratio=1.2, color='g')
+    # Axis of x',y' plane.
+    # x' axis.
+    x_min, y_min, z_min = inv_trans_eqs(min_X, 0., 0., theta_pl, inc_pl)
+    x_max, y_max, z_max = inv_trans_eqs(max_X, 0., 0., theta_pl, inc_pl)
+    ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='b')
+    # Arrow head pointing in the positive x' direction.
+    ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
+              arrow_length_ratio=1.2)
+    # y' axis.
+    x_min, y_min, z_min = inv_trans_eqs(0., min_Y, 0., theta_pl, inc_pl)
+    x_max, y_max, z_max = inv_trans_eqs(0., max_Y, 0., theta_pl, inc_pl)
+    ax.plot([x_min, x_max], [z_min, z_max], [y_min, y_max], ls='--', c='g')
+    # Arrow head pointing in the positive y' direction.
+    ax.quiver(x_max, z_max, y_max, x_max, z_max, y_max, length=0.3,
+              arrow_length_ratio=1.2, color='g')
 
     ax.set_xlabel('x (Kpc)')
     ax.set_ylabel('z (Kpc)')
     ax.set_ylim(max_Y, min_Y)
     ax.set_zlabel('y (Kpc)')
-    # plt.colorbar(SC, shrink=0.9, aspect=25)
+    plt.colorbar(SC, shrink=0.9, aspect=25)
     ax.axis('equal')
     ax.axis('tight')
     # ax.view_init(elev=35., azim=-25.)
@@ -291,23 +291,13 @@ def plot_bulge_plane(ra_g, dec_g, dm_g, e_dm_g, D_0, gal_cent, glx_inc, theta):
     cl_xyz = xyz_coords(rho_f, phi_f, D_0, dm_f)
     cl_xyz_nf = xyz_coords(rho_nf, phi_nf, D_0, dm_nf)
 
-    # Obtain a,b,c,d coefficients for the best fit plane, given the set of
-    # clusters passed in the (x,y,z) system. The best fit is obtained
-    # minimizing the perpendicular distance to the plane.
-    plane_abcd = minimize_perp_distance(cl_xyz)
-
     # Number of times the error ellipse will be obtained after randomly
     # shifting the distance moduli.
     N_ran = 2
     x_e, y_e, z_e = get_ellipse(N_ran, rho_f, phi_f, D_0, dm_f, e_dm_f)
 
-    # Obtain the inclination and rotation angles for this plane.
-    print 'i, theta (1st fit)', glx_inc.degree, theta.degree
-    inc_pl, theta_pl = angle_betw_planes(plane_abcd)
-    print 'i, theta (2nd fit)', inc_pl.degree, theta_pl.degree
-
-    make_plot(D_0, glx_inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
-              cl_xyz_nf, dm_nf, plane_abcd, inc_pl, theta_pl)
+    make_plot(D_0, glx_inc, theta, cl_xyz, cl_xyz_nf, dm_f, dm_nf,
+              x_e, y_e, z_e)
 
 if __name__ == "__main__":
 

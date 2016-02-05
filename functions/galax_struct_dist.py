@@ -273,8 +273,9 @@ def minimize_perp_distance(x, y, z):
         a, b, c, d = params
         return a**2 + b**2 + c**2 - 1
 
-    # # x,y,z coordinates of the points passed.
-    # x, y, z = xyz[:, 0], xyz[:, 1], xyz[:, 2]
+    # Remove units from the x,y,z coordinates of the points passed.
+    x, y, z = x.value, y.value, z.value
+
     # Random initial guess for the coefficients.
     initial_guess = np.random.uniform(-10., 10., 4)
 
@@ -287,7 +288,7 @@ def minimize_perp_distance(x, y, z):
 
 def angle_betw_planes(plane_abcd):
     """
-    The dihedral angle is the angle theta between two planes
+    The dihedral angle (inclination) is the angle between two planes
 
     http://mathworld.wolfram.com/DihedralAngle.html
 
@@ -321,32 +322,39 @@ def angle_betw_planes(plane_abcd):
         n = int((90. - theta.degree)/180.) + 1
         theta = theta + n*Angle('180.d')
 
-    return inc, theta
+    # Pass position angle (PA) instead of theta, to match the other methods.
+    # We use the theta = PA + 90 convention.
+    PA = theta - Angle('90.d')
+
+    return inc.degree, PA.degree
 
 
-def best_fit_angles(method, xi, yi, zi):
+def best_fit_angles(method, best_angles_pars):
     '''
     Obtain inclination and position angles associated with the maximum CCC
     value in this map.
     '''
     if method == 'deproj_dists':
+        xi, yi, zi = best_angles_pars
         # Obtain index of maximum density value.
         max_ccc_idx = np.unravel_index(zi.argmax(), zi.shape)
         # Calculate "best" angle values.
-        x_b, y_b = xi[max_ccc_idx[0]], yi[max_ccc_idx[1]]
+        inc_b, pa_b = xi[max_ccc_idx[0]], yi[max_ccc_idx[1]]
         # Max CCC value in map.
         # z_b = np.amax(zi)
     elif method == 'perp_d_fix_plane':
+        xi, yi, zi = best_angles_pars
         # Obtain index of minimum sum of absolute distances to plane value.
         min_d_idx = np.unravel_index(zi.argmin(), zi.shape)
         # Calculate "best" angle values.
-        x_b, y_b = xi[min_d_idx[0]], yi[min_d_idx[1]]
+        inc_b, pa_b = xi[min_d_idx[0]], yi[min_d_idx[1]]
         # Min sum of abs(distances 2 plane) value in map.
         # z_b = np.amin(zi)
     elif method == 'perp_d_free_plane':
-        inc_b, theta_b = angle_betw_planes(plane_abcd)
+        plane_abcd = best_angles_pars
+        inc_b, pa_b = angle_betw_planes(plane_abcd)
 
-    return x_b, y_b
+    return inc_b, pa_b
 
 
 def draw_rand_dep_dist(d_g, e_d_g):
@@ -372,7 +380,7 @@ def draw_rand_dist_mod(dm_g, e_dm_g):
     return r_dist
 
 
-def monte_carlo_errors(N_maps, method, inc_lst, pa_lst, xi, yi, params):
+def monte_carlo_errors(N_maps, method, params):
     """
     Obtain N_maps angles-CCC density maps, by randomly sampling
     the distance to each cluster before calculating the CCC.
@@ -380,9 +388,13 @@ def monte_carlo_errors(N_maps, method, inc_lst, pa_lst, xi, yi, params):
 
     # Unpack params.
     if method == 'deproj_dists':
-        N_grid, d_g, e_d_g, dep_dist_i_PA_vals = params
+        N_grid, inc_lst, pa_lst, xi, yi, d_f, e_d_f, dep_dist_i_PA_vals =\
+            params
     elif method == 'perp_d_fix_plane':
-        dm_g, e_dm_g, rho, phi, gal_dist, plane_abc = params
+        inc_lst, pa_lst, xi, yi, dm_f, e_dm_f, rho_f, phi_f, gal_dist,\
+            plane_abc = params
+    elif method == 'perp_d_free_plane':
+        dm_f, e_dm_f, rho_f, phi_f, gal_dist = params
 
     inc_pa_mcarlo = []
     milestones = [0.1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -391,26 +403,39 @@ def monte_carlo_errors(N_maps, method, inc_lst, pa_lst, xi, yi, params):
         if method == 'deproj_dists':
             # Draw random deprojected distances (in Kpc), obtained via the
             # ASteCA distance moduli + astropy.
-            rand_dist = draw_rand_dep_dist(d_g, e_d_g)
+            rand_dist = draw_rand_dep_dist(d_f, e_d_f)
             # Obtain density map of CCC (z) values.
             z = ccc_map(dep_dist_i_PA_vals, rand_dist, N_grid)
+
+            # Obtain (finer) interpolated angles-CCC density map.
+            # Rows in zi correspond to inclination values.
+            # Columns correspond to position angle values.
+            zi = interp_dens_map(inc_lst, pa_lst, xi, yi, z)
+
+            # Store values of inclination and position angles for the
+            # interpolated map.
+            best_angles_pars = [xi, yi, zi]
+
         elif method == 'perp_d_fix_plane':
             # Draw random distances moduli, obtained via ASteCA.
-            rand_dist = draw_rand_dist_mod(dm_g, e_dm_g)
+            rand_dist = draw_rand_dist_mod(dm_f, e_dm_f)
             # Positions in the (x,y,z) system.
-            x, y, z = xyz_coords(rho, phi, gal_dist, rand_dist)
+            x, y, z = xyz_coords(rho_f, phi_f, gal_dist, rand_dist)
             # Obtain density map (z), composed of the sum of the absolute
             # values of the distances to each plane.
             z = fix_plane_perp_dist(plane_abc, x, y, z)
+            zi = interp_dens_map(inc_lst, pa_lst, xi, yi, z)
+            best_angles_pars = [xi, yi, zi]
 
-        # Obtain (finer) interpolated angles-CCC density map.
-        # Rows in zi correspond to inclination values.
-        # Columns correspond to position angle values.
-        zi = interp_dens_map(inc_lst, pa_lst, xi, yi, z)
+        elif method == 'perp_d_free_plane':
+            # Draw random distances moduli, obtained via ASteCA.
+            rand_dist = draw_rand_dist_mod(dm_f, e_dm_f)
+            # Obtain randomly drawn coords in the (x, y, z) sustem.
+            x, y, z = xyz_coords(rho_f, phi_f, gal_dist, rand_dist)
+            # Store params used to obtain the Monte Carlo errors.
+            best_angles_pars = minimize_perp_distance(x, y, z)
 
-        # Store values of inclination and position angles associated to
-        # the minimum/maximum density value in this map.
-        inc_b, pa_b = best_fit_angles(method, xi, yi, zi)
+        inc_b, pa_b = best_fit_angles(method, best_angles_pars)
 
         inc_pa_mcarlo.append([inc_b, pa_b])
 
@@ -469,7 +494,6 @@ def cov_ellipse(points, nstd=1):
         nstd : The radius of the ellipse in numbers of standard deviations.
                Defaults to 1 standard deviations.
     """
-
     points = np.asarray(points)
 
     # Location of the center of the ellipse.
@@ -576,45 +600,54 @@ def gsd(in_params):
                            'perp_d_free_plane']:
                 if method == 'deproj_dists':
                     # Store params used to obtain the Monte Carlo errors.
-                    params = [N_grid, d_d_f, e_dd_f, dep_dist_i_PA_vals]
+                    params = [N_grid, inc_lst, pa_lst, xi, yi, d_d_f, e_dd_f,
+                              dep_dist_i_PA_vals]
 
-                    # Store density map obtained using the distance values with
-                    # no random sampling. It will be used for plotting.
-                    z = ccc_map(dep_dist_i_PA_vals, d_d_f, N_grid)
-                    plot_dens_map = interp_dens_map(inc_lst, pa_lst, xi, yi, z)
+                    # Store CCC density map obtained using the distance values
+                    # with no random sampling.
+                    ccc_vals = ccc_map(dep_dist_i_PA_vals, d_d_f, N_grid)
+                    # Interpolate density map into finer/denser grid.
+                    dens_vals_interp = interp_dens_map(inc_lst, pa_lst, xi, yi,
+                                                       ccc_vals)
+                    # Data to pass to extract best fit angles.
+                    best_angles_pars = [xi, yi, dens_vals_interp]
 
                 elif method == 'perp_d_fix_plane':
                     # Store params used to obtain the Monte Carlo errors.
-                    params = [dm_f, e_dm_f, rho_f, phi_f, gal_dist, plane_abc]
+                    params = [inc_lst, pa_lst, xi, yi, dm_f, e_dm_f, rho_f,
+                              phi_f, gal_dist, plane_abc]
 
                     # Store density map obtained using the distance values with
-                    # no random sampling. It will be used for plotting.
+                    # no random sampling.
                     pl_dists_kpc = fix_plane_perp_dist(plane_abc, x, y, z)
-                    plot_dens_map = interp_dens_map(inc_lst, pa_lst, xi, yi,
-                                                    pl_dists_kpc)
+                    # Interpolate density map into finer/denser grid.
+                    dens_vals_interp = interp_dens_map(inc_lst, pa_lst, xi, yi,
+                                                       pl_dists_kpc)
+                    # Data to pass to extract best fit angles.
+                    best_angles_pars = [xi, yi, dens_vals_interp]
 
                 elif method == 'perp_d_free_plane':
                     # Store params used to obtain the Monte Carlo errors.
-                    params = [dm_f, e_dm_f, rho_f, phi_f, gal_dist, plane_abc]
+                    params = [dm_f, e_dm_f, rho_f, phi_f, gal_dist]
 
-                    # Store density map obtained using the distance values with
-                    # no random sampling. It will be used for plotting.
-                    plane_abcd = minimize_perp_distance(x, y, z)
+                    # Obtain a,b,c,d coefficients for the best fit plane,
+                    # given the set of clusters passed in the (x,y,z) system.
+                    # The best fit is obtained minimizing the perpendicular
+                    # distance to the plane.
+                    best_angles_pars = minimize_perp_distance(x, y, z)
 
                 # Best fit angles for the density map with no random sampling.
-                inc_b, pa_b = best_fit_angles(method, xi, yi,
-                                                  plot_dens_map)
-                # Save best fit angles obtained with both methods. Their
+                inc_b, pa_b = best_fit_angles(method, best_angles_pars)
+                # Save best fit angles obtained with all methods. Their
                 # average is the final value for each rotation angle.
                 inc_best.append(inc_b)
                 pa_best.append(pa_b)
 
                 # Obtain distribution of rotation angles via Monte Carlo random
                 # sampling.
-                inc_pa_mcarlo = monte_carlo_errors(N_maps, method, inc_lst,
-                                                   pa_lst, xi, yi, params)
+                inc_pa_mcarlo = monte_carlo_errors(N_maps, method, params)
                 # Save inclination and position angles obtained via the Monte
-                # Carlo process. Combining values from both methods, we
+                # Carlo process. Combining values from all methods, we
                 # calculate the combined standard deviation for each angle.
                 in_mcarlo = in_mcarlo + list(zip(*inc_pa_mcarlo)[0])
                 pa_mcarlo = pa_mcarlo + list(zip(*inc_pa_mcarlo)[1])
@@ -642,15 +675,15 @@ def gsd(in_params):
                 # Store parameters for density maps and 1:1 diagonal plots.
                 if r_idx == r_idx_save:
 
-                    if method == 'perp_d_fix_plane':
-                        # Linear transformation between [0, 1] so that the
-                        # minimum value of the sum(abs(perp_d_fix_plane)) is
-                        # 1 and the maximum is zero.
-                        plot_dens_map = linear_transf(plot_dens_map)
+                    # if method == 'perp_d_fix_plane':
+                    #     # Linear transformation between [0, 1] so that the
+                    #     # minimum value of the sum(abs(perp_d_fix_plane)) is
+                    #     # 1 and the maximum is zero.
+                    #     plot_dens_map = linear_transf(plot_dens_map)
 
                     gal_str_pars.append([xmin, xmax, ymin, ymax, xi, yi,
-                                        plot_dens_map, [inc_b, pa_b], i_pa_std,
-                                        width, height, theta])
+                                        dens_vals_interp, [inc_b, pa_b],
+                                        i_pa_std, width, height, theta])
 
                     # Append dummy values at the end.
                     gal_str_pars.append([-0.01, 8.05, -0.01, 8.05, d_d_f,
@@ -669,8 +702,10 @@ def gsd(in_params):
 
             print 'rho min=', r_min
             print 'CCC=', ccc_mean
-            print 'Best, mean, MC mean, std inc:', inc_best, inc_mean, np.mean(in_mcarlo), inc_std
-            print 'Best, mean, MC mean, std PA:', pa_best, pa_mean, np.mean(pa_mcarlo), pa_std
+            print 'Inc best, mean, MC mean, std:', inc_best, inc_mean,\
+                np.mean(in_mcarlo), inc_std
+            print 'PA Best, mean, MC mean, std:', pa_best, pa_mean,\
+                np.mean(pa_mcarlo), pa_std
 
     return gal_str_pars, rho_plot_pars
 
