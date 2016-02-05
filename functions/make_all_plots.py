@@ -2028,14 +2028,13 @@ def pl_rho_var(in_pars):
     # Set font size for the three axes.
     ax.set_xticklabels(ax.get_xticks(), fontsize=xy_font_s-3)
     ax.set_yticklabels(ax.get_yticks(), fontsize=xy_font_s-3)
-    ax2.set_xticklabels(ax2.get_yticks(), fontsize=xy_font_s-3)
     # Set range, ticks, and label for the second x axis.
     # Second x axis.
     ax2.set_xlim(ax.get_xlim())
     ax2.set_xticks(r_min)
     if i in [0, 1]:
         ax.set_xticklabels([])
-        ax2.set_xticklabels(N_clust)
+        ax2.set_xticklabels(N_clust, fontsize=xy_font_s-3)
         ax2.set_xlabel(r"$N_{clusters}$", fontsize=xy_font_s+3, labelpad=10.5)
     else:
         ax2.set_xticklabels([])
@@ -2043,7 +2042,7 @@ def pl_rho_var(in_pars):
         ax.set_yticklabels([])
     # Filling that shows the range of values in the literature.
     f = [[120., 161.6], [114.2, 175.], [38., 83.], [16., 39.7]]
-    plt.fill_between([-9., 9.], f[i][0], f[i][1], color='grey', alpha='0.25',
+    plt.fill_between([-9., 9.], f[i][0], f[i][1], color='grey', alpha='0.2',
                      zorder=1)
     # Gal name.
     ob = offsetbox.AnchoredText(gal_name, loc=1, prop=dict(size=xy_font_s))

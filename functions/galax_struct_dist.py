@@ -462,7 +462,7 @@ def gsd(in_params):
 
         # Input minimum projected angular distance values to use in filter.
         # The value ia used as: (r_min...]
-        rho_lst = [0., 0.5, 1., 1.5, 2., 2.5, 3., 3.5, 4.]  # FIXME
+        rho_lst = [0., 0.5, 1., 1.5, 2., 2.5, 3., 3.5, 4.]
         # Select index of r_min value to plot.
         r_idx_save = 2
         for r_idx, r_min in enumerate(rho_lst):

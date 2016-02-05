@@ -146,6 +146,17 @@ def get_ellipse(N_ran, rho, phi, D_0, dm_g, e_dm_g):
     return x_e, y_e, z_e
 
 
+def perp_error(params, xyz):
+    """
+    Return sum of the absolute values for the perpendicular distance of the
+    points in 'xyz', to the plane defined by the coefficients 'a,b,c,d'.
+    """
+    a, b, c, d = params
+    x, y, z = xyz
+    length = np.sqrt(a**2+b**2+c**2)
+    return ((np.abs(a*x + b*y + c*z + d))**2).sum()/length
+
+
 def minimize_perp_distance(xyz):
     """
     Find coefficients of best plane fit to given points. Plane equation is
@@ -158,30 +169,20 @@ def minimize_perp_distance(xyz):
     Source: http://stackoverflow.com/a/35118683/1391441
     """
 
-    def model(params, xyz):
-        a, b, c, d = params
-        x, y, z = xyz
-        length = np.sqrt(a**2+b**2+c**2)
-        return ((np.abs(a*x + b*y + c*z + d))**2).sum()/length
-
     def unit_length(params):
         a, b, c, d = params
         return a**2 + b**2 + c**2 - 1
 
+    # x,y,z coordinates of the points passed.
     x, y, z = xyz[:, 0], xyz[:, 1], xyz[:, 2]
-
+    # Random initial guess for the coefficients.
     initial_guess = np.random.uniform(-10., 10., 4)
 
     # constrain the vector perpendicular to the plane be of unit length
     cons = ({'type': 'eq', 'fun': unit_length})
-    sol = optimize.minimize(model, initial_guess, args=[x, y, z],
+    sol = optimize.minimize(perp_error, initial_guess, args=[x, y, z],
                             constraints=cons)
     return tuple(sol.x)
-
-
-def perp_error(x, y, z, a, b, c, d):
-    length = np.sqrt(a**2+b**2+c**2)
-    return ((np.abs(a*x + b*y + c*z + d))**2).sum()/length
 
 
 def angle_betw_planes(pts123_abcd):
@@ -275,7 +276,7 @@ def make_plot(D_0, inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
         np.cos(theta.radian)*np.sin(inc.radian),\
         np.cos(inc.radian), 0.
     print 'a/c,b/c,1,d/c:', a/c, b/c, 1., 0.
-    print 'Perp error', perp_error(x_cl, y_cl, z_cl, a, b, c, d)
+    print 'Perp error', perp_error([a, b, c, d], [x_cl, y_cl, z_cl])
     # Rotated plane.
     X2_t, Y2_t = np.meshgrid([min_X, max_X], [0, max_Y])
     Z2_t = (-a*X2_t - b*Y2_t) / c
@@ -284,7 +285,7 @@ def make_plot(D_0, inc, theta, cl_xyz, dm_f, x_e, y_e, z_e,
 
     a, b, c, d = pts123_abcd
     print 'a/c,b/c,1,d/c:', a/c, b/c, 1., d/c
-    print 'Perp error', perp_error(x_cl, y_cl, z_cl, a, b, c, d)
+    print 'Perp error', perp_error([a, b, c, d], [x_cl, y_cl, z_cl])
     # Plane obtained fitting cloud of clusters.
     X3_t, Y3_t = np.meshgrid([min_X, max_X], [0, max_Y])
     Z3_t = (-a*X3_t - b*Y3_t - d) / c
