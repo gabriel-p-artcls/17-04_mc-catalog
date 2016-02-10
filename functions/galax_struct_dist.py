@@ -257,7 +257,7 @@ def perp_error(params, xyz):
     return np.abs(a*x + b*y + c*z + d).sum()/length
 
 
-def minimize_perp_distance(x, y, z):
+def minimize_perp_distance(x, y, z, N_min):
     """
     Find coefficients of best plane fit to given points. Plane equation is
     in the form:
@@ -311,7 +311,7 @@ def minimize_perp_distance(x, y, z):
     cons = ({'type': 'eq', 'fun': unit_length})
     min_kwargs = {"constraints": cons, "args": [x, y, z]}
     sol = optimize.basinhopping(
-        perp_error, initial_guess, minimizer_kwargs=min_kwargs, niter=10)
+        perp_error, initial_guess, minimizer_kwargs=min_kwargs, niter=N_min)
     abcd = list(sol.x)
 
     return abcd
@@ -427,7 +427,7 @@ def monte_carlo_errors(N_maps, method, params):
         inc_lst, pa_lst, xi, yi, dm_f, e_dm_f, rho_f, phi_f, gal_dist,\
             plane_abc = params
     elif method == 'perp_d_free_plane':
-        dm_f, e_dm_f, rho_f, phi_f, gal_dist = params
+        dm_f, e_dm_f, rho_f, phi_f, gal_dist, N_min = params
 
     inc_pa_mcarlo = []
     milestones = [0.1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -466,7 +466,7 @@ def monte_carlo_errors(N_maps, method, params):
             # Obtain randomly drawn coords in the (x, y, z) sustem.
             x, y, z = xyz_coords(rho_f, phi_f, gal_dist, rand_dist)
             # Store params used to obtain the Monte Carlo errors.
-            best_angles_pars = minimize_perp_distance(x, y, z)
+            best_angles_pars = minimize_perp_distance(x, y, z, N_min)
 
         inc_b, pa_b = best_fit_angles(method, best_angles_pars)
 
@@ -586,6 +586,10 @@ def gsd(in_params):
     N_f = 200
     xi, yi = inc_PA_grid(N_f, inc_rang, pa_rang)
 
+    # Number of iterations for the minimization algorithm that searches for the
+    # best plane fit to the clusters, with no constrains imposed.
+    N_min = 10  # FIXME
+
     # Number of density maps to be generated, where the distance to each
     # cluster is randomly drawn from a normal probability distribution.
     # This is used to assign errors to the best fit angle values.
@@ -666,13 +670,14 @@ def gsd(in_params):
 
                 elif method == 'perp_d_free_plane':
                     # Store params used to obtain the Monte Carlo errors.
-                    params = [dm_f, e_dm_f, rho_f, phi_f, gal_dist]
+                    params = [dm_f, e_dm_f, rho_f, phi_f, gal_dist, N_min]
 
                     # Obtain a,b,c,d coefficients for the best fit plane,
                     # given the set of clusters passed in the (x,y,z) system.
                     # The best fit is obtained minimizing the perpendicular
                     # distance to the plane.
-                    best_angles_pars = minimize_perp_distance(cl_x, cl_y, cl_z)
+                    best_angles_pars = minimize_perp_distance(cl_x, cl_y,
+                                                              cl_z, N_min)
 
                     # Obtain density map from the 'perp_d_fix_plane' method.
                     # Used for plotting since this method doesn't generate a
