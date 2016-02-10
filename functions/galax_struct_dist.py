@@ -562,21 +562,6 @@ def ccc_sum_d_for_best_fit(gal_dist, rho_f, phi_f, d_d_f, cl_x, cl_y, cl_z,
     return dep_dist_kpc, ccc_b, sum_d_b
 
 
-# def linear_transf(plot_dist_2_pl_map):
-#     """
-#     Transform the sum of the absolute values of the distances to an inclined
-#     plane for all clusters, from [d_min, d_max] to [1, 0].
-#     """
-#     d_min, d_max = np.amin(plot_dist_2_pl_map), np.amax(plot_dist_2_pl_map)
-#     delta_d = d_max - d_min
-
-#     m, b = -1./(delta_d), d_max/delta_d
-
-#     plot_dist_2_pl_map_transf = m*plot_dist_2_pl_map + b
-
-#     return plot_dist_2_pl_map_transf
-
-
 def gsd(in_params):
     '''
     Calculate the best match for the inclination and position angles of the
@@ -735,12 +720,6 @@ def gsd(in_params):
 
                 # Store parameters for density maps and 1:1 diagonal plots.
                 if r_idx == r_idx_save:
-
-                    # if method == 'perp_d_fix_plane':
-                    #     # Linear transformation between [0, 1] so that the
-                    #     # minimum value of the sum(abs(perp_d_fix_plane)) is
-                    #     # 1 and the maximum is zero.
-                    #     plot_dens_map = linear_transf(plot_dens_map)
 
                     gal_str_pars[0].append([xmin, xmax, ymin, ymax, xi, yi,
                                            dens_vals_interp, [inc_b, pa_b],
