@@ -254,7 +254,7 @@ def perp_error(params, xyz):
     a, b, c, d = params
     x, y, z = xyz
     length = np.sqrt(a**2+b**2+c**2)
-    return ((np.abs(a*x + b*y + c*z + d))**2).sum()/length
+    return np.abs(a*x + b*y + c*z + d).sum()/length
 
 
 def minimize_perp_distance(x, y, z):
@@ -268,7 +268,6 @@ def minimize_perp_distance(x, y, z):
 
     Source: http://stackoverflow.com/a/35118683/1391441
     """
-
     def unit_length(params):
         a, b, c, d = params
         return a**2 + b**2 + c**2 - 1
@@ -279,11 +278,43 @@ def minimize_perp_distance(x, y, z):
     # Random initial guess for the coefficients.
     initial_guess = np.random.uniform(-10., 10., 4)
 
-    # constrain the vector perpendicular to the plane be of unit length
+    # # Similar as the block below, but using a simpler random sampling
+    # # algorithm. In several tests both methods gave the same coefficients,
+    # # with this one occasionally failing.
+    # # This algorithm is 4-5 times faster than the Basin-Hopping one.
+    # # Leave it here to remember I tried.
+
+    # results = []
+    # for _ in xrange(50):
+
+    #     # Generate a new random initial guess every 10 runs.
+    #     if _ in [10, 20, 30, 40]:
+    #         initial_guess = np.random.uniform(-10., 10., 4)
+
+    #     # Constrain the vector perpendicular to the plane be of unit length
+    #     cons = ({'type': 'eq', 'fun': unit_length})
+    #     sol = optimize.minimize(perp_error, initial_guess, args=[x, y, z],
+    #                             constraints=cons)
+
+    #     # Extract minimized coefficients.
+    #     abcd = list(sol.x)
+    #     # Update initial guess.
+    #     initial_guess = abcd
+    #     # Save coefficients and the summed abs distance to the plane.
+    #     results.append([abcd, perp_error(list(sol.x), [x, y, z])])
+
+    # # Select the coefficients with the minimum value for the summed absolute
+    # # distance to plane.
+    # abcd = min(results, key=lambda x: x[1])[0]
+
+    # Use Basin-Hopping to obtain the best fir coefficients.
     cons = ({'type': 'eq', 'fun': unit_length})
-    sol = optimize.minimize(perp_error, initial_guess, args=[x, y, z],
-                            constraints=cons)
-    return tuple(sol.x)
+    min_kwargs = {"constraints": cons, "args": [x, y, z]}
+    sol = optimize.basinhopping(
+        perp_error, initial_guess, minimizer_kwargs=min_kwargs, niter=10)
+    abcd = list(sol.x)
+
+    return abcd
 
 
 def angle_betw_planes(plane_abcd):
@@ -297,34 +328,36 @@ def angle_betw_planes(plane_abcd):
 
     # Normal vector to the a,b,c,d plane.
     a, b, c, d = plane_abcd
-    v1 = [a/c, b/c, 1.]
-    # Vector normal to the z=0 plane, ie: the x,y plane.
-    v2 = [0, 0, 1]
 
-    # Inclination angle between the x axis.
-    i = np.arccos(np.dot(v1, v2) / np.sqrt(np.dot(v1, v1)*np.dot(v2, v2)))
-    inc = Angle(i*u.radian, unit='degree')
-
-    # Rotation angle between the x axis.
+    # Counter clockwise rotation angle around the z axis.
     x_int, y_int = -d/a, -d/b
-    t = np.arctan2(y_int, x_int)
-    theta = Angle(t*u.radian, unit='degree')
+    if y_int > 0.:
+        t = 180. - np.arctan2(y_int, x_int)*180./np.pi
+    elif y_int < 0.:
+        t = abs(np.arctan2(y_int, x_int)*180./np.pi)
+    # 0. <= theta <= 180.
+    theta = Angle(t, unit='degree')
 
-    # Set angles to correct ranges: [-90, 90] for the inclination and
-    # [90., 270.] for theta (given that the position angle's range is
-    # [0., 180.])
-    if inc.degree > 90.:
-        inc = Angle(i*u.radian, unit='degree') - Angle('180.d')
-
-    if theta.degree > 270.:
-        theta = theta - Angle('180.d')
-    if theta.degree - 90. < 90.:
+    # Set theta to correct range [90., 270.] (given that the position angle's
+    # range is [0., 180.])
+    if theta.degree < 90.:
         n = int((90. - theta.degree)/180.) + 1
         theta = theta + n*Angle('180.d')
 
     # Pass position angle (PA) instead of theta, to match the other methods.
     # We use the theta = PA + 90 convention.
     PA = theta - Angle('90.d')
+
+    # Clockwise rotation angle around the x' axis.
+    v1 = [a/c, b/c, 1.]
+    # Vector normal to the z=0 plane, ie: the x,y plane.
+    v2 = [0, 0, 1]
+    i = np.arccos(np.dot(v1, v2) / np.sqrt(np.dot(v1, v1)*np.dot(v2, v2)))
+    inc = Angle(i*u.radian, unit='degree')
+
+    # Set inclination angles to correct ranges [-90, 90]
+    if inc.degree > 90.:
+        inc = Angle(i*u.radian, unit='degree') - Angle('180.d')
 
     return inc.degree, PA.degree
 
@@ -489,19 +522,59 @@ def cov_ellipse(points, nstd=1):
     return mean_pos, width, height, theta
 
 
-def linear_transf(plot_dist_2_pl_map):
+def ccc_sum_d_for_best_fit(gal_dist, rho_f, phi_f, d_d_f, cl_x, cl_y, cl_z,
+                           best_angles_pars, inc_b, pa_b, method):
     """
-    Transform the sum of the absolute values of the distances to an inclined
-    plane for all clusters, from [d_min, d_max] to [1, 0].
+    For the best fit angles obtained with this method, calculate:
+
+    1. The CCC coefficient comparing the deprojected distances on the fitted
+    plane with the ASteCA+astropy distances.
+    2. The sum of absolute values of the perpendicular distances to the plane.
+
+    Return also the deprojected distances on the fitted plane, for plotting.
     """
-    d_min, d_max = np.amin(plot_dist_2_pl_map), np.amax(plot_dist_2_pl_map)
-    delta_d = d_max - d_min
+    # Deprojected distances obtained using the best-fit angles.
+    # THIS ASSUMES THAT THE INCLINED PLANE IS OBTAINED BY ROTATING TWICE
+    # THE (x,y,z) SYSTEM. THE VALUES GIVEN FOR THE ANGLES OBTAINED WITH THE
+    # FREE PLANE BEST FIT METHOD WILL THUS REPRESENT AN APPROXIMATION OF
+    # THE ACTUAL VALUES IF THE (x',y') PLANE INTERSECTED THE (x,y) PLANE
+    # THROUGH THE ORIGIN (ie: IF  d=0 IN THE PLANE'S EQUATION)
+    dep_dist_kpc = get_deproj_dist(
+        gal_dist, Angle(inc_b, unit=u.degree),
+        Angle(pa_b, unit=u.degree), rho_f, phi_f)
+    # CCC value for the best fit angles.
+    ccc_b = ccc(dep_dist_kpc, d_d_f)
 
-    m, b = -1./(delta_d), d_max/delta_d
+    xyz = [cl_x.value, cl_y.value, cl_z.value]
+    if method in ['deproj_dists', 'perp_d_fix_plane']:
+        # Convert best fit PA to theta.
+        theta = pa_b + 90.
+        # Plane coefficients according to Eq (6) in vdM&C01 for z'=0.
+        a = -1.*np.sin(np.deg2rad(theta))*np.sin(np.deg2rad(inc_b))
+        b = np.cos(np.deg2rad(theta))*np.sin(np.deg2rad(inc_b))
+        c = np.cos(np.deg2rad(inc_b))
+        d = 0.
+        abcd = [a, b, c, d]
+        sum_d_b = perp_error(abcd, xyz)
+    elif method == 'perp_d_free_plane':
+        sum_d_b = perp_error(best_angles_pars, xyz)
 
-    plot_dist_2_pl_map_transf = m*plot_dist_2_pl_map + b
+    return dep_dist_kpc, ccc_b, sum_d_b
 
-    return plot_dist_2_pl_map_transf
+
+# def linear_transf(plot_dist_2_pl_map):
+#     """
+#     Transform the sum of the absolute values of the distances to an inclined
+#     plane for all clusters, from [d_min, d_max] to [1, 0].
+#     """
+#     d_min, d_max = np.amin(plot_dist_2_pl_map), np.amax(plot_dist_2_pl_map)
+#     delta_d = d_max - d_min
+
+#     m, b = -1./(delta_d), d_max/delta_d
+
+#     plot_dist_2_pl_map_transf = m*plot_dist_2_pl_map + b
+
+#     return plot_dist_2_pl_map_transf
 
 
 def gsd(in_params):
@@ -535,7 +608,7 @@ def gsd(in_params):
 
     # Store parameters needed for plotting the density maps and 1:1 diagonal
     # plots of deprojected distance in Kpc, as well as the r_min plots.
-    gal_str_pars, rho_plot_pars = [], [[], []]
+    gal_str_pars, rho_plot_pars = [[], []], [[], []]
     for j in [0, 1]:  # SMC, LMC = 0, 1
         print 'Galaxy:', j
 
@@ -547,7 +620,7 @@ def gsd(in_params):
         # The value ia used as: (r_min...]
         rho_lst = [0., 0.5, 1., 1.5, 2., 2.5, 3., 3.5, 4.]
         # Select index of r_min value to plot.
-        r_idx_save = 2
+        r_idx_save = 3
         for r_idx, r_min in enumerate(rho_lst):
 
             # Filter clusters by distance to center of galaxy.
@@ -569,10 +642,11 @@ def gsd(in_params):
 
             # Obtain coordinates of filtered clusters in the (x,y,z) system.
             # Used by two of the methods below.
-            x, y, z = xyz_coords(rho_f, phi_f, gal_dist, np.asarray(dm_f))
+            cl_x, cl_y, cl_z = xyz_coords(rho_f, phi_f, gal_dist,
+                                          np.asarray(dm_f))
 
             # Run once for each method defined.
-            inc_best, pa_best, in_mcarlo, pa_mcarlo, ccc_best =\
+            inc_best, pa_best, in_mcarlo, pa_mcarlo, ccc_sum_d_best =\
                 [], [], [], [], []
             for method in ['deproj_dists', 'perp_d_fix_plane',
                            'perp_d_free_plane']:
@@ -597,7 +671,8 @@ def gsd(in_params):
 
                     # Store density map obtained using the distance values with
                     # no random sampling.
-                    pl_dists_kpc = fix_plane_perp_dist(plane_abc, x, y, z)
+                    pl_dists_kpc = fix_plane_perp_dist(plane_abc, cl_x, cl_y,
+                                                       cl_z)
                     # Interpolate density map into finer/denser grid.
                     dens_vals_interp = interp_dens_map(inc_lst, pa_lst, xi, yi,
                                                        pl_dists_kpc)
@@ -612,7 +687,15 @@ def gsd(in_params):
                     # given the set of clusters passed in the (x,y,z) system.
                     # The best fit is obtained minimizing the perpendicular
                     # distance to the plane.
-                    best_angles_pars = minimize_perp_distance(x, y, z)
+                    best_angles_pars = minimize_perp_distance(cl_x, cl_y, cl_z)
+
+                    # Obtain density map from the 'perp_d_fix_plane' method.
+                    # Used for plotting since this method doesn't generate a
+                    # density map.
+                    pl_dists_kpc = fix_plane_perp_dist(plane_abc, cl_x, cl_y,
+                                                       cl_z)
+                    dens_vals_interp = interp_dens_map(inc_lst, pa_lst, xi, yi,
+                                                       pl_dists_kpc)
 
                 # Best fit angles for the density map with no random sampling.
                 inc_b, pa_b = best_fit_angles(method, best_angles_pars)
@@ -621,9 +704,19 @@ def gsd(in_params):
                 inc_best.append(inc_b)
                 pa_best.append(pa_b)
 
+                # Retrieve the CCC value and the sum of the abs values of the
+                # deprojected distances, for the distances obtained with the
+                # best fit rotation angles versus the ones given by
+                # ASteCA + astropy.
+                dep_dist_kpc, ccc_b, sum_d_b = ccc_sum_d_for_best_fit(
+                    gal_dist, rho_f, phi_f, d_d_f, cl_x, cl_y, cl_z,
+                    best_angles_pars, inc_b, pa_b, method)
+                ccc_sum_d_best.append([ccc_b, sum_d_b])
+
                 # Obtain distribution of rotation angles via Monte Carlo random
                 # sampling.
                 inc_pa_mcarlo = monte_carlo_errors(N_maps, method, params)
+                # inc_pa_mcarlo = [[0., 0.], [0., 0.]]
 
                 # Save inclination and position angles obtained via the Monte
                 # Carlo process. Combining values from all methods, we
@@ -640,17 +733,6 @@ def gsd(in_params):
                 # angles.
                 i_pa_std = np.std(np.asarray(inc_pa_mcarlo), axis=0)
 
-                # Deprojected distances obtained using the max/best-fit
-                # angles.
-                dep_dist_kpc = get_deproj_dist(
-                    gal_dist, Angle(inc_b, unit=u.degree),
-                    Angle(pa_b, unit=u.degree), rho_f, phi_f)
-                # Retrieve the CCC value of the deprojected distances
-                # obtained with the best fit rotation angles, with the
-                # ones given by ASteCA + astropy. Used for plotting.
-                ccc_b = ccc(dep_dist_kpc, d_d_f)
-                ccc_best.append(ccc_b)
-
                 # Store parameters for density maps and 1:1 diagonal plots.
                 if r_idx == r_idx_save:
 
@@ -660,31 +742,29 @@ def gsd(in_params):
                     #     # 1 and the maximum is zero.
                     #     plot_dens_map = linear_transf(plot_dens_map)
 
-                    gal_str_pars.append([xmin, xmax, ymin, ymax, xi, yi,
-                                        dens_vals_interp, [inc_b, pa_b],
-                                        i_pa_std, width, height, theta])
+                    gal_str_pars[0].append([xmin, xmax, ymin, ymax, xi, yi,
+                                           dens_vals_interp, [inc_b, pa_b],
+                                           i_pa_std, width, height, theta])
 
                     # Append dummy values at the end.
-                    gal_str_pars.append([-0.01, 8.05, -0.01, 8.05, d_d_f,
-                                        dep_dist_kpc, age_f, ccc_b, '', '', '',
-                                        ''])
+                    gal_str_pars[1].append([0.01, 7.95, 0.01, 7.95, d_d_f,
+                                           dep_dist_kpc, age_f, ccc_sum_d_best,
+                                           '', '', '', ''])
 
             # Number of clusters used in this run. Used for plotting.
             N_clust = len(ra_f)
             # Mean and standard deviation for the rotation angles.
             inc_mean, inc_std = np.mean(inc_best), np.std(in_mcarlo)
             pa_mean, pa_std = np.mean(pa_best), np.std(pa_mcarlo)
-            ccc_mean = np.mean(ccc_best)
+            ccc_mean = 0.5 #np.mean(ccc_best)
             # Store parameters for plotting.
             rho_plot_pars[j].append([r_min, N_clust, inc_mean, inc_std,
                                      pa_mean, pa_std, ccc_mean])
 
             print 'rho min=', r_min
-            print 'CCC=', ccc_mean
-            print 'Inc best, mean, MC mean, std:', inc_best, inc_mean,\
-                np.mean(in_mcarlo), inc_std
-            print 'PA Best, mean, MC mean, std:', pa_best, pa_mean,\
-                np.mean(pa_mcarlo), pa_std
+            print 'CCC=', ccc_sum_d_best
+            print 'Inc best, MC std:', inc_best, inc_std
+            print 'PA Best, MC std:', pa_best, pa_std, '\n'
 
     return gal_str_pars, rho_plot_pars
 
@@ -714,4 +794,4 @@ if __name__ == "__main__":
 
     from make_all_plots import make_angles_plot, make_rho_min_plot
     make_angles_plot(gal_str_pars)
-    make_rho_min_plot(rho_plot_pars)
+    # make_rho_min_plot(rho_plot_pars)

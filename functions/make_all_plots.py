@@ -1847,34 +1847,23 @@ def pl_angles(in_pars):
         ang_pars
 
     # Define gridspec ranges.
-    if i == 0:
-        a, b, c, d = 0, 1, 0, 2
-        gal_name = 'SMC'
-    elif i == 2:
-        a, b, c, d = 0, 1, 2, 4
-        gal_name = 'SMC'
-    if i == 4:
-        a, b, c, d = 1, 2, 0, 2
-        gal_name = 'LMC'
-    elif i == 6:
-        a, b, c, d = 1, 2, 2, 4
-        gal_name = 'LMC'
+    x_gdsp = [[[0, 2], [2, 4], [4, 6]], [[0, 1],
+              [2, 3], [4, 5], [1, 2], [3, 4], [5, 6]]]
+    gal_id = ['SMC', 'LMC']
+    if i in [0, 1, 2]:
+        y1, y2 = 0, 1
+        x1, x2 = x_gdsp[0][i]
+        gal_name = gal_id[0]
+    elif i in [3, 4, 5]:
+        y1, y2 = 1, 2
+        x1, x2 = x_gdsp[0][i-3]
+        gal_name = gal_id[1]
+    elif i in [6, 7, 8, 9, 10, 11]:
+        y1, y2 = 2, 3
+        x1, x2 = x_gdsp[1][i-6]
+        gal_name = gal_id[0 if 8.5 % i < 8.5 else 1]
 
-    elif i == 1:
-        a, b, c, d = 2, 3, 0, 1
-        gal_name = 'SMC'
-    elif i == 3:
-        a, b, c, d = 2, 3, 2, 3
-        gal_name = 'SMC'
-
-    elif i == 5:
-        a, b, c, d = 2, 3, 1, 2
-        gal_name = 'LMC'
-    elif i == 7:
-        a, b, c, d = 2, 3, 3, 4
-        gal_name = 'LMC'
-
-    ax = plt.subplot(gs[a:b, c:d])
+    ax = plt.subplot(gs[y1:y2, x1:x2])
     xy_font_s = 12
     plt.xlim(xmin, xmax)
     plt.ylim(ymin, ymax)
@@ -1883,26 +1872,28 @@ def pl_angles(in_pars):
     plt.xlabel(xlab, fontsize=xy_font_s)
     plt.ylabel(ylab, fontsize=xy_font_s)
 
-    t = ['M1: Match deprojected distances', '',
-         'M2: Minimize distance to plane']
-    if i in [0, 2]:
+    t = ['M1: Match deprojected distances',
+         'M2: Minimize distance to plane (fixed)',
+         'M3: Minimize distance to plane (free)']
+    if i in [0, 1, 2]:
         ax.set_xticklabels([])
-        plt.xlabel('')
         plt.title(t[i], fontsize=11)
-    if i in [2, 3, 5, 6, 7]:
+    if i in [1, 2, 4, 5, 7, 8, 9, 10, 11]:
         ax.set_yticklabels([])
-        plt.ylabel('')
 
-    sub_idx = ['1', '1', '3', '3', '2', '2', '4', '4']
-    if i in [0, 2, 4, 6]:
+    sub_idx = ['1', '3', '5', '2', '4', '6', '1', '3', '5', '2', '4', '6']
+    if i in [0, 1, 2, 3, 4, 5]:
         # Set minor ticks
         ax.minorticks_on()
-        cm = plt.cm.get_cmap('RdBu_r')
+        if i in [0, 3]:
+            cm = plt.cm.get_cmap('RdBu_r')
+        else:
+            cm = plt.cm.get_cmap('RdBu')
         # Only draw units on axis (ie: 1, 2, 3)
-        ax.xaxis.set_major_locator(MultipleLocator(5.0))
-        ax.yaxis.set_major_locator(MultipleLocator(20.0))
+        ax.xaxis.set_major_locator(MultipleLocator(20.))
+        ax.yaxis.set_major_locator(MultipleLocator(20.))
         # Plot density map.
-        SC = plt.imshow(np.rot90(zi), vmin=0.01, vmax=0.99, origin='upper',
+        SC = plt.imshow(np.rot90(zi), origin='upper',
                         extent=[xi.min(), xi.max(), yi.min(), yi.max()],
                         cmap=cm)
         # Plot contour curves.
@@ -1930,28 +1921,36 @@ def pl_angles(in_pars):
         SC = plt.scatter(xi, yi, marker='o', c=zi, edgecolor='k', s=25,
                          cmap=cm, lw=0.25, zorder=4)
         text1 = r'$[\Theta_{{{}}},i_{{{}}}]$'.format(sub_idx[i], sub_idx[i])
-        text2 = r'$ccc={:.2f}$'.format(mean_pos)
-        text = text1 + '\n' + text2
+        j = 6 if i < 9 else 9
+        text2 = r'$ccc={:.2f}$'.format(mean_pos[i-j][0])
+        text3 = r'$\sum |d_{{p}}|={:.1f}$'.format(mean_pos[i-j][1])
+        text = text1 + '\n' + text2 + '\n' + text3
     ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
     # Gal name.
-    l = [1, 2, 1, 2, 1, 2, 1, 2]
+    l = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2]  # position of the text box
     ob = offsetbox.AnchoredText(gal_name, loc=l[i], prop=dict(size=xy_font_s))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
-    cb_siz = ['', '', "2%", '', '', '', "2%", "5%"]
-    cb_lab = ['', '', '$ccc$ ; $d_{plane}$', '', '', '', '$ccc$ ; $d_{plane}$',
-              '$log(aye/yr)_{ASteCA}$']
-    if i in [2, 6, 7]:
+    cb_siz = ["2%", "5%"]
+    cb_lab = [r'$ccc$', r'$\sum |d_{{p}}|$', r'$\sum |d_{{p}}|$', r'$ccc$',
+              r'$\sum |d_{{p}}|$', r'$\sum |d_{{p}}|$',
+              r'$log(aye/yr)_{ASteCA}$']
+    if i in [0, 1, 2, 3, 4, 5, 11]:
+        if i != 11:
+            cbs_txt, cbl_txt = cb_siz[0], cb_lab[i]
+        else:
+            cbs_txt, cbl_txt = cb_siz[1], cb_lab[6]
         # Position colorbar.
         the_divider = make_axes_locatable(ax)
-        color_axis = the_divider.append_axes("right", size=cb_siz[i], pad=0.1)
+        color_axis = the_divider.append_axes("right", size=cbs_txt, pad=0.1)
         # Colorbar.
         cbar = plt.colorbar(SC, cax=color_axis)
-        cbar.set_label(cb_lab[i], fontsize=xy_font_s, labelpad=4, y=0.5)
+        cbar.set_label(cbl_txt, fontsize=xy_font_s, labelpad=4, y=0.5)
         cbar.ax.tick_params(labelsize=xy_font_s - 3)
-    if i in [0, 2, 4, 6]:
+        cbar.ax.invert_yaxis()
+    if i in [0, 1, 2, 3, 4, 5]:
         ax.set_aspect(aspect='auto')
 
 
@@ -1960,31 +1959,39 @@ def make_angles_plot(gal_str_pars):
     Plot inclination and position angles density maps for both galaxies.
     '''
 
-    fig = plt.figure(figsize=(9.5, 13.5))
-    gs = gridspec.GridSpec(3, 4)
+    fig = plt.figure(figsize=(14.25, 13.5))
+    gs = gridspec.GridSpec(3, 6)
+
+    xlab = ['', r'Inclination ($i^{\circ}$)', r'$d_{GC}\,(Kpc)$']
+    ylab = ['', r'Position angle ($\Theta^{\circ}$)',
+            r'$d_{[\Theta_m,i_m]}\,(Kpc)$']
 
     str_lst = [
-        [gs, 0, '', r'Position angle ($\Theta^{\circ}$)', gal_str_pars[0]],
-        [gs, 1, r'$d_{GC}\,(Kpc)$', r'$d_{[\Theta_m,i_m]}\,(Kpc)$',
-         gal_str_pars[1]],
-        [gs, 2, '', '', gal_str_pars[2]],
-        [gs, 3, r'$d_{GC}\,(Kpc)$', r'$d_{\Theta,i}\,(Kpc)$',
-         gal_str_pars[3]],
-        [gs, 4, r'Inclination ($i^{\circ}$)',
-         r'Position angle ($\Theta^{\circ}$)', gal_str_pars[4]],
-        [gs, 5, r'$d_{GC}\,(Kpc)$', r'$d_{\Theta,i}\,(Kpc)$',
-         gal_str_pars[5]],
-        [gs, 6, r'Inclination ($i^{\circ}$)', '', gal_str_pars[6]],
-        [gs, 7, r'$d_{GC}\,(Kpc)$', r'$d_{\Theta,i}\,(Kpc)$',
-         gal_str_pars[7]]
+        # SMC dens map
+        [gs, 0, xlab[0], ylab[1], gal_str_pars[0][0]],
+        [gs, 1, xlab[0], ylab[0], gal_str_pars[0][1]],
+        [gs, 2, xlab[0], ylab[0], gal_str_pars[0][2]],
+        # LMC dens map
+        [gs, 3, xlab[1], ylab[1], gal_str_pars[0][3]],
+        [gs, 4, xlab[1], ylab[0], gal_str_pars[0][4]],
+        [gs, 5, xlab[1], ylab[0], gal_str_pars[0][5]],
+        # SMC CCC 1:1 diagonal diagrams.
+        [gs, 6, xlab[2], ylab[2], gal_str_pars[1][0]],
+        [gs, 7, xlab[2], ylab[0], gal_str_pars[1][1]],
+        [gs, 8, xlab[2], ylab[0], gal_str_pars[1][2]],
+        # LMC CCC 1:1 diagonal diagrams.
+        [gs, 9, xlab[2], ylab[0], gal_str_pars[1][3]],
+        [gs, 10, xlab[2], ylab[0], gal_str_pars[1][4]],
+        [gs, 11, xlab[2], ylab[0], gal_str_pars[1][5]]
     ]
 
     for pl_params in str_lst:
         pl_angles(pl_params)
 
-    fig.tight_layout()
+    # fig.tight_layout()
+    fig.subplots_adjust(wspace=0)
     # plt.savefig('figures/MCs_deproj_dist_angles.png', dpi=300)
-    plt.savefig('MCs_deproj_dist_angles.png', dpi=150)
+    plt.savefig('MCs_deproj_dist_angles.png', dpi=150, bbox_inches='tight')
 
 
 def pl_rho_var(in_pars):
