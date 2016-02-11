@@ -1847,21 +1847,16 @@ def pl_angles(in_pars):
         ang_pars
 
     # Define gridspec ranges.
-    x_gdsp = [[[0, 2], [2, 4], [4, 6]], [[0, 1],
-              [2, 3], [4, 5], [1, 2], [3, 4], [5, 6]]]
+    x_gdsp = [[0, 2], [2, 4], [4, 6]]
     gal_id = ['SMC', 'LMC']
     if i in [0, 1, 2]:
         y1, y2 = 0, 1
-        x1, x2 = x_gdsp[0][i]
+        x1, x2 = x_gdsp[i]
         gal_name = gal_id[0]
     elif i in [3, 4, 5]:
         y1, y2 = 1, 2
-        x1, x2 = x_gdsp[0][i-3]
+        x1, x2 = x_gdsp[i-3]
         gal_name = gal_id[1]
-    elif i in [6, 7, 8, 9, 10, 11]:
-        y1, y2 = 2, 3
-        x1, x2 = x_gdsp[1][i-6]
-        gal_name = gal_id[0 if 8.5 % i < 8.5 else 1]
 
     ax = plt.subplot(gs[y1:y2, x1:x2])
     xy_font_s = 12
@@ -1878,80 +1873,149 @@ def pl_angles(in_pars):
     if i in [0, 1, 2]:
         ax.set_xticklabels([])
         plt.title(t[i], fontsize=11)
-    if i in [1, 2, 4, 5, 7, 8, 9, 10, 11]:
+    if i in [1, 2, 4, 5]:
         ax.set_yticklabels([])
 
-    sub_idx = ['1', '3', '5', '2', '4', '6', '1', '3', '5', '2', '4', '6']
-    if i in [0, 1, 2, 3, 4, 5]:
-        # Set minor ticks
-        ax.minorticks_on()
-        if i in [0, 3]:
-            cm = plt.cm.get_cmap('RdBu_r')
-        else:
-            cm = plt.cm.get_cmap('RdBu')
-        # Only draw units on axis (ie: 1, 2, 3)
-        ax.xaxis.set_major_locator(MultipleLocator(20.))
-        ax.yaxis.set_major_locator(MultipleLocator(20.))
-        # Plot density map.
-        SC = plt.imshow(np.rot90(zi), origin='upper',
-                        extent=[xi.min(), xi.max(), yi.min(), yi.max()],
-                        cmap=cm)
-        # Plot contour curves.
-        curv_num = 150
-        plt.contour(np.rot90(zi), curv_num, colors='k', linewidths=0.2,
-                    origin='upper',
-                    extent=[xi.min(), xi.max(), yi.min(), yi.max()])
-        plt.scatter(mean_pos[0], mean_pos[1], c='w', s=45, zorder=3)
-        # Standard dev ellipse.
-        ellipse = Ellipse(xy=(mean_pos[0], mean_pos[1]),
-                          width=e_w, height=e_h, angle=theta,
-                          edgecolor='w', fc='None', lw=0.85, zorder=3)
-        ax.add_patch(ellipse)
-        # Text box.
-        text1 = r'$\Theta_{{{}}}={:.0f}^{{\circ}}\pm{:.0f}$'.format(
-            sub_idx[i], mean_pos[1], i_pa_std[1])
-        text2 = r'$i_{{{}}}={:.0f}^{{\circ}}\pm{:.0f}$'.format(
-            sub_idx[i], mean_pos[0], i_pa_std[0])
-        text = text1 + '\n' + text2
+    sub_idx = ['1', '3', '5', '2', '4', '6']
+    # Set minor ticks
+    ax.minorticks_on()
+    if i in [0, 3]:
+        cm = plt.cm.get_cmap('RdBu_r')
     else:
-        ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.3,
-                zorder=1)
-        cm = plt.cm.get_cmap('RdYlBu_r')
-        plt.plot([xmin, xmax], [ymin, ymax], 'k', ls='--')
-        SC = plt.scatter(xi, yi, marker='o', c=zi, edgecolor='k', s=25,
-                         cmap=cm, lw=0.25, zorder=4)
-        text1 = r'$[\Theta_{{{}}},i_{{{}}}]$'.format(sub_idx[i], sub_idx[i])
-        j = 6 if i < 9 else 9
-        text2 = r'$ccc={:.2f}$'.format(mean_pos[i-j][0])
-        text3 = r'$\sum |d_{{p}}|={:.1f}$'.format(mean_pos[i-j][1])
-        text = text1 + '\n' + text2 + '\n' + text3
+        cm = plt.cm.get_cmap('RdBu')
+    # Only draw units on axis (ie: 1, 2, 3)
+    ax.xaxis.set_major_locator(MultipleLocator(20.))
+    ax.yaxis.set_major_locator(MultipleLocator(20.))
+    # Plot density map.
+    SC = plt.imshow(np.rot90(zi), origin='upper',
+                    extent=[xi.min(), xi.max(), yi.min(), yi.max()],
+                    cmap=cm)
+    # Plot contour curves.
+    curv_num = 150
+    plt.contour(np.rot90(zi), curv_num, colors='k', linewidths=0.2,
+                origin='upper',
+                extent=[xi.min(), xi.max(), yi.min(), yi.max()])
+    plt.scatter(mean_pos[0], mean_pos[1], c='w', s=45, zorder=3)
+    # Standard dev ellipse.
+    ellipse = Ellipse(xy=(mean_pos[0], mean_pos[1]),
+                      width=e_w, height=e_h, angle=theta,
+                      edgecolor='w', fc='None', lw=0.85, zorder=3)
+    ax.add_patch(ellipse)
+    # Text box.
+    text1 = r'$\Theta_{{{}}}={:.0f}^{{\circ}}\pm{:.0f}$'.format(
+        sub_idx[i], mean_pos[1], i_pa_std[1])
+    text2 = r'$i_{{{}}}={:.0f}^{{\circ}}\pm{:.0f}$'.format(
+        sub_idx[i], mean_pos[0], i_pa_std[0])
+    text = text1 + '\n' + text2
     ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
     # Gal name.
-    l = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2]  # position of the text box
-    ob = offsetbox.AnchoredText(gal_name, loc=l[i], prop=dict(size=xy_font_s))
+    ob = offsetbox.AnchoredText(gal_name, loc=1, prop=dict(size=xy_font_s))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
-    cb_siz = ["2%", "5%"]
     cb_lab = [r'$ccc$', r'$\sum |d_{{p}}|$', r'$\sum |d_{{p}}|$', r'$ccc$',
-              r'$\sum |d_{{p}}|$', r'$\sum |d_{{p}}|$',
-              r'$log(aye/yr)_{ASteCA}$']
-    if i in [0, 1, 2, 3, 4, 5, 11]:
-        if i != 11:
-            cbs_txt, cbl_txt = cb_siz[0], cb_lab[i]
-        else:
-            cbs_txt, cbl_txt = cb_siz[1], cb_lab[6]
-        # Position colorbar.
-        the_divider = make_axes_locatable(ax)
-        color_axis = the_divider.append_axes("right", size=cbs_txt, pad=0.1)
-        # Colorbar.
-        cbar = plt.colorbar(SC, cax=color_axis)
-        cbar.set_label(cbl_txt, fontsize=xy_font_s, labelpad=4, y=0.5)
-        cbar.ax.tick_params(labelsize=xy_font_s - 3)
-        cbar.ax.invert_yaxis()
-    if i in [0, 1, 2, 3, 4, 5]:
-        ax.set_aspect(aspect='auto')
+              r'$\sum |d_{{p}}|$', r'$\sum |d_{{p}}|$']
+    # Position colorbar.
+    the_divider = make_axes_locatable(ax)
+    color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
+    # Colorbar.
+    cbar = plt.colorbar(SC, cax=color_axis)
+    cbar.set_label(cb_lab[i], fontsize=xy_font_s, labelpad=4, y=0.5)
+    cbar.ax.tick_params(labelsize=xy_font_s - 3)
+    cbar.ax.invert_yaxis()
+    # Square
+    ax.set_aspect(aspect='auto')
+
+
+def diag_plots(in_pars):
+    """
+    """
+    gs, i, xlab, ylab, ang_pars = in_pars
+
+    x_gdsp = [[[0, 1], [2, 3], [4, 5]], [[1, 2], [3, 4],  [5, 6]]]
+    y1, y2 = 2, 3
+    x11, x12 = x_gdsp[0][i]
+    x21, x22 = x_gdsp[1][i]
+
+    xy_font_s = 12
+    cm = plt.cm.get_cmap('RdYlBu_r')
+
+    # Unpack
+    xmin, xmax, ymin, ymax, xi, yi, zi, mean_pos, i_pa_std, e_w, e_h, theta = \
+        ang_pars[i]
+    # Left plot.
+    right_gs = gridspec.GridSpecFromSubplotSpec(
+        1, 2, width_ratios=[1, 6], subplot_spec=gs[y1:y2, x11:x12],
+        wspace=0.)
+    axl = plt.subplot(right_gs[1])
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    plt.xlabel(xlab, fontsize=xy_font_s)
+    plt.tick_params(axis='both', which='major', labelsize=xy_font_s - 3)
+    axl.grid(b=True, which='major', color='gray', linestyle='--', lw=0.3,
+             zorder=1)
+    if i == 0:
+        axl.set_ylabel(ylab, fontsize=xy_font_s)
+    else:
+        axl.set_yticklabels([])
+    axl.tick_params(axis='both', which='major', labelsize=9)
+    plt.plot([xmin, xmax], [ymin, ymax], 'k', ls='--')
+    plt.scatter(xi, yi, marker='o', c=zi, edgecolor='k', s=25,
+                cmap=cm, lw=0.25, zorder=4)
+    # Gal name.
+    text1 = r'$[\Theta_{{{}}},i_{{{}}}]$'.format(i*2+1, i*2+1)
+    text = 'SMC\n' + text1
+    ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s))
+    ob.patch.set(alpha=0.85)
+    axl.add_artist(ob)
+    # Text box.
+    text2 = r'$ccc={:.2f}$'.format(mean_pos[i][0])
+    text3 = r'$\sum |d_{{p}}|={:.1f}$'.format(mean_pos[i][1])
+    text = text2 + '\n' + text3
+    ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s - 1))
+    ob.patch.set(alpha=0.85)
+    axl.add_artist(ob)
+
+    # Unpack
+    xmin, xmax, ymin, ymax, xi, yi, zi, mean_pos, i_pa_std, e_w, e_h, theta = \
+        ang_pars[i+3]
+    # Right pot.
+    right_gs = gridspec.GridSpecFromSubplotSpec(
+        1, 2, width_ratios=[6, 1], subplot_spec=gs[y1:y2, x21:x22],
+        wspace=0.)
+    axr = plt.subplot(right_gs[0])
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    plt.xlabel(xlab, fontsize=xy_font_s)
+    plt.tick_params(axis='both', which='major', labelsize=xy_font_s - 3)
+    axr.grid(b=True, which='major', color='gray', linestyle='--', lw=0.3,
+             zorder=1)
+    axr.set_yticklabels([])
+    plt.plot([xmin, xmax], [ymin, ymax], 'k', ls='--')
+    SC = plt.scatter(xi, yi, marker='o', c=zi, edgecolor='k', s=25,
+                     cmap=cm, lw=0.25, zorder=4)
+    # Gal name.
+    text1 = r'$[\Theta_{{{}}},i_{{{}}}]$'.format(i*2+2, i*2+2)
+    text = 'LMC\n' + text1
+    ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s))
+    ob.patch.set(alpha=0.85)
+    axr.add_artist(ob)
+    # Text box.
+    text2 = r'$ccc={:.2f}$'.format(mean_pos[i][0])
+    text3 = r'$\sum |d_{{p}}|={:.1f}$'.format(mean_pos[i][1])
+    text = text2 + '\n' + text3
+    ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s - 1))
+    ob.patch.set(alpha=0.85)
+    axr.add_artist(ob)
+    # Position colorbar.
+    the_divider = make_axes_locatable(axr)
+    color_axis = the_divider.append_axes("right", size="5%", pad=0.1)
+    # Colorbar.
+    cbar = plt.colorbar(SC, cax=color_axis)
+    cbar.set_label(r'$log(aye/yr)_{ASteCA}$', fontsize=xy_font_s, labelpad=4,
+                   y=0.5)
+    cbar.ax.tick_params(labelsize=xy_font_s - 3)
 
 
 def make_angles_plot(gal_str_pars):
@@ -1961,6 +2025,15 @@ def make_angles_plot(gal_str_pars):
 
     fig = plt.figure(figsize=(14.25, 13.5))
     gs = gridspec.GridSpec(3, 6)
+
+    # New gridspecs for bottom rectangular plots.
+    # ***Values selected by hand***
+    gs2 = gridspec.GridSpec(3, 6)
+    gs2.update(wspace=0.0, bottom=0.029, left=0.031, right=0.95)
+    gs3 = gridspec.GridSpec(3, 6)
+    gs3.update(wspace=0.0, bottom=0.029, left=0.043, right=0.965)
+    gs4 = gridspec.GridSpec(3, 6)
+    gs4.update(wspace=0.0, bottom=0.029, left=0.05, right=0.976)
 
     xlab = ['', r'Inclination ($i^{\circ}$)', r'$d_{GC}\,(Kpc)$']
     ylab = ['', r'Position angle ($\Theta^{\circ}$)',
@@ -1974,22 +2047,22 @@ def make_angles_plot(gal_str_pars):
         # LMC dens map
         [gs, 3, xlab[1], ylab[1], gal_str_pars[0][3]],
         [gs, 4, xlab[1], ylab[0], gal_str_pars[0][4]],
-        [gs, 5, xlab[1], ylab[0], gal_str_pars[0][5]],
-        # SMC CCC 1:1 diagonal diagrams.
-        [gs, 6, xlab[2], ylab[2], gal_str_pars[1][0]],
-        [gs, 7, xlab[2], ylab[0], gal_str_pars[1][1]],
-        [gs, 8, xlab[2], ylab[0], gal_str_pars[1][2]],
-        # LMC CCC 1:1 diagonal diagrams.
-        [gs, 9, xlab[2], ylab[0], gal_str_pars[1][3]],
-        [gs, 10, xlab[2], ylab[0], gal_str_pars[1][4]],
-        [gs, 11, xlab[2], ylab[0], gal_str_pars[1][5]]
+        [gs, 5, xlab[1], ylab[0], gal_str_pars[0][5]]
     ]
 
     for pl_params in str_lst:
         pl_angles(pl_params)
 
-    # fig.tight_layout()
-    fig.subplots_adjust(wspace=0)
+    str_lst = [
+        # S/LMC CCC 1:1 diagonal diagrams.
+        [gs2, 0, xlab[2], ylab[2], gal_str_pars[1]],
+        [gs3, 1, xlab[2], ylab[0], gal_str_pars[1]],
+        [gs4, 2, xlab[2], ylab[0], gal_str_pars[1]]
+    ]
+    for pl_params in str_lst:
+        diag_plots(pl_params)
+
+    fig.tight_layout()
     # plt.savefig('figures/MCs_deproj_dist_angles.png', dpi=300)
     plt.savefig('MCs_deproj_dist_angles.png', dpi=150, bbox_inches='tight')
 

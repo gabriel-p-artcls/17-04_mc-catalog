@@ -572,7 +572,7 @@ def gsd(in_params):
                                'e_d_cent', 'darr', 'dsigma']]
 
     # Define ranges for the grid of inclination and position angles.
-    inc_rang, pa_rang = [-89., 89.], [1., 179.]  # FIXME
+    inc_rang, pa_rang = [-89., 89.], [1., 179.]
 
     # Grid limits (for plotting).
     xmin, xmax = inc_rang[0] - 0.1, inc_rang[1] + 0.1
@@ -607,9 +607,10 @@ def gsd(in_params):
 
         # Input minimum projected angular distance values to use in filter.
         # The value ia used as: (r_min...]
-        rho_lst = [0., 0.5, 1., 1.5, 2., 2.5, 3., 3.5, 4.]
+        rho_lst = [0., 0.5, 1., 1.5, 2., 2.5, 3., 3.5, 4.]  # FIXME
+        rho_lst = [0., 0.5, 1.]  # FIXME
         # Select index of r_min value to plot.
-        r_idx_save = 3
+        r_idx_save = 2
         for r_idx, r_min in enumerate(rho_lst):
 
             # Filter clusters by distance to center of galaxy.
@@ -731,7 +732,7 @@ def gsd(in_params):
                                            i_pa_std, width, height, theta])
 
                     # Append dummy values at the end.
-                    gal_str_pars[1].append([0.01, 7.95, 0.01, 7.95, d_d_f,
+                    gal_str_pars[1].append([0.1, 7.95, 0.01, 7.95, d_d_f,
                                            dep_dist_kpc, age_f, ccc_sum_d_best,
                                            '', '', '', ''])
 
