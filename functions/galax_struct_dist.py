@@ -588,7 +588,7 @@ def gsd(in_params):
 
     # Number of iterations for the minimization algorithm that searches for the
     # best plane fit to the clusters, with no constrains imposed.
-    N_min = 10  # FIXME
+    N_min = 5  # FIXME
 
     # Number of density maps to be generated, where the distance to each
     # cluster is randomly drawn from a normal probability distribution.
@@ -608,7 +608,7 @@ def gsd(in_params):
         # Input minimum projected angular distance values to use in filter.
         # The value ia used as: (r_min...]
         rho_lst = [0., 0.5, 1., 1.5, 2., 2.5, 3., 3.5, 4.]  # FIXME
-        rho_lst = [0., 0.5, 1.]  # FIXME
+        # rho_lst = [0., 0.5, 1.]  # DELETE
         # Select index of r_min value to plot.
         r_idx_save = 2
         for r_idx, r_min in enumerate(rho_lst):
@@ -707,7 +707,6 @@ def gsd(in_params):
                 # Obtain distribution of rotation angles via Monte Carlo random
                 # sampling.
                 inc_pa_mcarlo = monte_carlo_errors(N_maps, method, params)
-                # inc_pa_mcarlo = [[0., 0.], [0., 0.]]
 
                 # Save inclination and position angles obtained via the Monte
                 # Carlo process. Combining values from all methods, we
@@ -738,10 +737,20 @@ def gsd(in_params):
 
             # Number of clusters used in this run. Used for plotting.
             N_clust = len(ra_f)
+
+            # # Mean and standard deviation for the rotation angles.
+            # inc_std = np.std(in_mcarlo)
+            # pa_std = np.std(pa_mcarlo)
+            # # Pass best fit CCC values for colorbar.
+            # ccc_best = zip(*ccc_sum_d_best)[0]
+            # # Store parameters for plotting.
+            # rho_plot_pars[j].append([r_min, N_clust, inc_best, inc_std,
+            #                          pa_best, pa_std, ccc_best])
+
             # Mean and standard deviation for the rotation angles.
             inc_mean, inc_std = np.mean(inc_best), np.std(in_mcarlo)
             pa_mean, pa_std = np.mean(pa_best), np.std(pa_mcarlo)
-            ccc_mean = 0.5 #np.mean(ccc_best)
+            ccc_mean = np.mean(zip(*ccc_sum_d_best)[0])
             # Store parameters for plotting.
             rho_plot_pars[j].append([r_min, N_clust, inc_mean, inc_std,
                                      pa_mean, pa_std, ccc_mean])
@@ -764,13 +773,6 @@ if __name__ == "__main__":
     dsigma = [[[0.05, 0.05, 0.06, 0.07, 0.03, 0.05, 0.06, 0.05, 0.05, 0.07, 0.06, 0.06, 0.05, 0.04, 0.06, 0.04, 0.05, 0.06, 0.07, 0.05, 0.05, 0.07, 0.07, 0.06, 0.06, 0.05, 0.07, 0.05, 0.05, 0.06, 0.04, 0.05, 0.06, 0.04, 0.06, 0.05, 0.05, 0.06, 0.04, 0.07, 0.05, 0.06, 0.04, 0.03, 0.06, 0.05, 0.04, 0.05, 0.05, 0.05, 0.06, 0.06, 0.04, 0.06, 0.05, 0.05, 0.06, 0.05, 0.03, 0.06, 0.04, 0.04, 0.06, 0.05, 0.05, 0.04, 0.05, 0.06, 0.04, 0.06, 0.05, 0.04, 0.04, 0.06, 0.04, 0.03, 0.07, 0.07, 0.06, 0.04, 0.06, 0.06, 0.05, 0.07, 0.06, 0.06, 0.03, 0.05, 0.06], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]], [[0.05, 0.05, 0.06, 0.05, 0.06, 0.07, 0.06, 0.04, 0.07, 0.05, 0.06, 0.04, 0.06, 0.05, 0.06, 0.06, 0.05, 0.06, 0.05, 0.06, 0.04, 0.05, 0.05, 0.06, 0.06, 0.05, 0.04, 0.05, 0.06, 0.06, 0.05, 0.03, 0.05, 0.06, 0.06, 0.03, 0.05, 0.06, 0.06, 0.06, 0.05, 0.04, 0.07, 0.04, 0.06, 0.03, 0.06, 0.06, 0.04, 0.06, 0.04, 0.05, 0.04, 0.06, 0.04, 0.06, 0.06, 0.03, 0.07, 0.07, 0.07, 0.05, 0.06, 0.03, 0.04, 0.06, 0.06, 0.06, 0.05, 0.06, 0.06, 0.06, 0.06, 0.04, 0.04, 0.06, 0.06, 0.06, 0.04, 0.06, 0.05, 0.05, 0.06, 0.05, 0.06, 0.06, 0.06, 0.05, 0.05, 0.07, 0.05, 0.07, 0.06, 0.05, 0.04, 0.07, 0.05, 0.07, 0.05, 0.06, 0.03, 0.05, 0.06, 0.05, 0.05, 0.06, 0.06, 0.07, 0.03, 0.04, 0.06, 0.05, 0.07, 0.06, 0.04, 0.05, 0.03, 0.04, 0.04, 0.07, 0.04, 0.07, 0.06, 0.02, 0.05, 0.06, 0.06, 0.04, 0.06, 0.04, 0.06, 0.06, 0.05, 0.04, 0.06, 0.05, 0.05, 0.02, 0.07, 0.05, 0.06, 0.06, 0.06, 0.06, 0.05, 0.05, 0.05, 0.04, 0.06, 0.03], [0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, -9999999999.9, 0.1, -9999999999.9, 0.1, -9999999999.9, -9999999999.9, -9999999999.9, 0.1, 0.1, 0.1, -9999999999.9, 0.1, -9999999999.9, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, -9999999999.9, 0.1, -9999999999.9, 0.1, -9999999999.9, 0.1, -9999999999.9, 0.1, 0.1, 0.1, -9999999999.9, 0.1, -9999999999.9, -9999999999.9, -9999999999.9, 0.1, -9999999999.9, -9999999999.9, -9999999999.9, -9999999999.9, 0.1, 0.1, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, -9999999999.9, 0.1, -9999999999.9, 0.1, -9999999999.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]]
     gal_names = [['B112', 'B47', 'H86-70', 'HW59', 'L63', 'L62', 'BS265', 'L50', 'AM3', 'HW40', 'B39', 'BS121', 'BS88', 'HW55', 'L106', 'L19', 'H86-197', 'HW67', 'L49', 'L112', 'HW22', 'L111', 'L109', 'HW63', 'HW84', 'L3', 'L100', 'HW86', 'L34', 'HW42', 'L102', 'L30', 'L115', 'HW66', 'L5', 'K38', 'L108', 'L58', 'NGC294', 'HW85', 'B34', 'L45', 'L28', 'HW31', 'L72', 'NGC339', 'L7', 'HW79', 'L91', 'L113', 'L4', 'L27', 'L110', 'L6', 'NGC419', 'HW41', 'L114', 'BS35', 'HW47', 'SOGLE196', 'K63', 'B103', 'B111', 'H86-76', 'H86-174', 'K43', 'K57', 'BS80', 'K55', 'HW52', 'BS75', 'B55', 'HW32', 'B99', 'K61', 'L39', 'H86-190', 'NGC241', 'B48', 'H86-87', 'B124', 'H86-85', 'NGC242', 'H86-97', 'H86-90', 'L35', 'K47', 'B134', 'H86-188'], ['BRHT4B', 'BRHT45A', 'BRHT38B', 'BSDL1035', 'BSDL527', 'BSDL3158', 'KMHK128', 'HS114', 'BSDL1024', 'C11', 'BSDL665', 'HS131', 'KMHK505', 'BSDL716', 'H88-33', 'HS411', 'BSDL675', 'H3', 'HS38', 'HS154', 'H88-331', 'KMHK112', 'KMHK151', 'HS151', 'H88-334', 'KMHK95', 'BSDL77', 'H88-235', 'BSDL677', 'H88-67', 'BSDL2995', 'H88-26', 'KMHK123', 'KMHK1719', 'NGC1838', 'LW397', 'H88-55', 'KMHK1702', 'NGC1697', 'KMHK58', 'KMHK229', 'NGC1917', 'HS116', 'KMHK1023', 'H88-52', 'HS121', 'NGC1865', 'SL133', 'SL230', 'NGC2108', 'KMHK907', 'NGC1795', 'SL13', 'H88-265', 'NGC1997', 'NGC1793', 'SL505', 'LW469', 'SL359', 'HS8', 'HS156', 'HS390', 'SL269', 'BSDL594', 'NGC1644', 'NGC1839', 'SL154', 'SL229', 'SL678', 'LW224', 'SL35', 'SL293', 'HS178', 'KMHK506', 'SL555', 'SL73', 'SL548', 'SL54', 'KMHK1668', 'SL874', 'OHSC28', 'SL674', 'H88-40', 'LW263', 'SL397', 'LW69', 'NGC1751', 'LW54', 'NGC1852', 'SL300', 'SL290', 'LW211', 'SL151', 'SL446A', 'SL351', 'SL444', 'SL5', 'SL870', 'LW393', 'SL132', 'SL96', 'SL549', 'SL707', 'SL869', 'SL162', 'NGC1846', 'OGLE298', 'H88-244', 'NGC1863', 'HS329', 'HS130', 'KMHK1055', 'BSDL761', 'SL588', 'BSDL341', 'HS247', 'H88-269', 'H88-320', 'SL33', 'SL72', 'SL244', 'NGC1836', 'HS412', 'H88-307', 'NGC1860', 'KMHK378', 'H88-188', 'BSDL268', 'SL510', 'NGC2093', 'BSDL779', 'H88-245', 'H88-279', 'SL41', 'NGC2161', 'SL663', 'IC2146', 'H88-333', 'HS264', 'KMHK1045', 'KMHK586', 'SL551', 'BSDL654', 'H88-131', 'SL579', 'KMHK975', 'H88-316', 'KMHK979', 'SL218', 'BSDL631']]
 
-    # M = 89
-    # ra = [ra[0][:M], ra[1][:M]]
-    # dec = [dec[0][:M], dec[1][:M]]
-    # dist_cent = [dist_cent[0][:M], dist_cent[1][:M]]
-    # e_d_cent = [e_d_cent[0][:M], e_d_cent[1][:M]]
-    # aarr = [[aarr[0][0][:M], []], [aarr[1][0][:M], []]]
-
     in_params = {'ra': ra, 'dec': dec, 'dist_cent': dist_cent,
                  'e_d_cent': e_d_cent, 'aarr': aarr, 'darr': darr,
                  'dsigma': dsigma, 'gal_names': gal_names}
@@ -778,5 +780,5 @@ if __name__ == "__main__":
     gal_str_pars, rho_plot_pars = gsd(in_params)
 
     from make_all_plots import make_angles_plot, make_rho_min_plot
-    make_angles_plot(gal_str_pars)
-    # make_rho_min_plot(rho_plot_pars)
+    # make_angles_plot(gal_str_pars)
+    make_rho_min_plot(rho_plot_pars)
