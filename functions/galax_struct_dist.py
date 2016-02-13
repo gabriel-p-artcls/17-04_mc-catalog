@@ -348,16 +348,35 @@ def angle_betw_planes(plane_abcd):
     # We use the theta = PA + 90 convention.
     PA = theta - Angle('90.d')
 
-    # Clockwise rotation angle around the x' axis.
-    v1 = [a/c, b/c, 1.]
-    # Vector normal to the z=0 plane, ie: the x,y plane.
-    v2 = [0, 0, 1]
-    i = np.arccos(np.dot(v1, v2) / np.sqrt(np.dot(v1, v1)*np.dot(v2, v2)))
-    inc = Angle(i*u.radian, unit='degree')
+    if c != 0.:
+        # Clockwise rotation angle around the x' axis.
+        v1 = [a/c, b/c, 1.]
 
-    # Set inclination angles to correct ranges [-90, 90]
-    if inc.degree > 90.:
-        inc = Angle(i*u.radian, unit='degree') - Angle('180.d')
+        # Set correct sign for inclination angle.
+        if theta.degree < 90.:
+            f = -1.
+        elif theta.degree > 90.:
+            f = 1.
+        z1 = -1.*[d + a*(x_int+1) + b*(y_int+f)]/c
+        if z1 > 0.:
+            # Vector normal to the z=0 plane, ie: the x,y plane.
+            # This results in a positive i value.
+            v2 = [0, 0, 1]
+        elif z1 < 0.:
+            # This results in a negative i value.
+            v2 = [0, 0, -1]
+        elif z1 == 0.:
+            # This means i=0.
+            v2 = v1
+
+        i = np.arccos(np.dot(v1, v2) / np.sqrt(np.dot(v1, v1)*np.dot(v2, v2)))
+        inc = Angle(i*u.radian, unit='degree')
+
+        # Set inclination angles to correct ranges [-90, 90]
+        if inc.degree > 90.:
+            inc = Angle(i*u.radian, unit='degree') - Angle('180.d')
+    else:
+        inc = Angle(90., unit='degree')
 
     return inc.degree, PA.degree
 
