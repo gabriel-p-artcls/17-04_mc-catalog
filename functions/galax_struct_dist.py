@@ -330,12 +330,19 @@ def angle_betw_planes(plane_abcd):
     a, b, c, d = plane_abcd
 
     # Counter clockwise rotation angle around the z axis.
-    x_int, y_int = -d/a, -d/b
-    if y_int > 0.:
-        t = 180. - np.arctan2(y_int, x_int)*180./np.pi
-    elif y_int < 0.:
-        t = abs(np.arctan2(y_int, x_int)*180./np.pi)
     # 0. <= theta <= 180.
+    if d != 0.:
+        x_int, y_int = -d/a, -d/b
+        if y_int > 0.:
+            t = 180. - np.arctan2(y_int, x_int)*180./np.pi
+        elif y_int < 0.:
+            t = abs(np.arctan2(y_int, x_int)*180./np.pi)
+    else:
+        x_int, y_int = 1., -a/b
+        if y_int > 0.:
+            t = np.arctan2(y_int, x_int)*180./np.pi
+        elif y_int < 0.:
+            t = np.arctan2(y_int, x_int)*180./np.pi + 180.
     theta = Angle(t, unit='degree')
 
     # Set theta to correct range [90., 270.] (given that the position angle's
@@ -343,40 +350,52 @@ def angle_betw_planes(plane_abcd):
     if theta.degree < 90.:
         n = int((90. - theta.degree)/180.) + 1
         theta = theta + n*Angle('180.d')
-
     # Pass position angle (PA) instead of theta, to match the other methods.
     # We use the theta = PA + 90 convention.
     PA = theta - Angle('90.d')
 
+    # Clockwise rotation angle around the x' axis.
+    # Obtain the inclination with the correct sign.
     if c != 0.:
-        # Clockwise rotation angle around the x' axis.
+        # Normal vector to inclined plane.
         v1 = [a/c, b/c, 1.]
+        # theta = 90.d
+        if b == 0.:
+            if a/c > 0.:
+                sign = 'neg'
+            elif a/c < 0.:
+                sign = 'pos'
+            else:
+                sign = 'no'
+        else:
+            # 90. < theta < 270.
+            if b/c > 0.:
+                sign = 'neg'
+            elif b/c < 0.:
+                sign = 'pos'
 
         # Set correct sign for inclination angle.
-        if theta.degree < 90.:
-            f = -1.
-        elif theta.degree > 90.:
-            f = 1.
-        z1 = -1.*[d + a*(x_int+1) + b*(y_int+f)]/c
-        if z1 > 0.:
+        if sign == 'pos':
             # Vector normal to the z=0 plane, ie: the x,y plane.
             # This results in a positive i value.
             v2 = [0, 0, 1]
-        elif z1 < 0.:
+        elif sign == 'neg':
             # This results in a negative i value.
             v2 = [0, 0, -1]
-        elif z1 == 0.:
+        else:
             # This means i=0.
             v2 = v1
 
         i = np.arccos(np.dot(v1, v2) / np.sqrt(np.dot(v1, v1)*np.dot(v2, v2)))
         inc = Angle(i*u.radian, unit='degree')
 
-        # Set inclination angles to correct ranges [-90, 90]
-        if inc.degree > 90.:
-            inc = Angle(i*u.radian, unit='degree') - Angle('180.d')
     else:
         inc = Angle(90., unit='degree')
+    # 0. <= inc <= 180.
+
+    # Set inclination angles to correct ranges [-90, 90]
+    if inc.degree > 90.:
+        inc = Angle(i*u.radian, unit='degree') - Angle('180.d')
 
     return inc.degree, PA.degree
 
@@ -607,7 +626,7 @@ def gsd(in_params):
 
     # Number of iterations for the minimization algorithm that searches for the
     # best plane fit to the clusters, with no constrains imposed.
-    N_min = 5  # FIXME
+    N_min = 20  # FIXME
 
     # Number of density maps to be generated, where the distance to each
     # cluster is randomly drawn from a normal probability distribution.
