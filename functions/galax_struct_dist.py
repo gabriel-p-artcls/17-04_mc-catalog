@@ -6,6 +6,7 @@ import deproj_dist as dd
 from MCs_data import MCs_data
 import scipy.interpolate
 import scipy.optimize as optimize
+from tabulate import tabulate
 
 
 def inc_PA_grid(N, inc_rang, pa_rang):
@@ -516,7 +517,7 @@ def monte_carlo_errors(N_maps, method, params):
         percentage_complete = (100. * (_ + 1) / N_maps)
         while len(milestones) > 0 and \
                 percentage_complete >= milestones[0]:
-            print " {:>3}% done".format(milestones[0])
+            # print " {:>3}% done".format(milestones[0])
             # Remove that milestone from the list.
             milestones = milestones[1:]
 
@@ -628,16 +629,16 @@ def gsd(in_params):
 
     # Number of iterations for the minimization algorithm that searches for the
     # best plane fit to the clusters, with no constrains imposed.
-    N_min = 20  # FIXME
+    N_min = 5  # FIXME
 
-    # Number of density maps to be generated, where the distance to each
+    # Number of Monte Carlo runs, where the distance to each
     # cluster is randomly drawn from a normal probability distribution.
     # This is used to assign errors to the best fit angle values.
-    N_maps = 20  # FIXME
+    N_maps = 5  # FIXME
 
     # Store parameters needed for plotting the density maps and 1:1 diagonal
     # plots of deprojected distance in Kpc, as well as the r_min plots.
-    gal_str_pars, rho_plot_pars = [[], []], [[], []]
+    gal_str_pars, rho_plot_pars, table = [[], []], [[], []], []
     for j in [0, 1]:  # SMC, LMC = 0, 1
         print 'Galaxy:', j
 
@@ -676,8 +677,8 @@ def gsd(in_params):
                                           np.asarray(dm_f))
 
             # Run once for each method defined.
-            inc_best, pa_best, in_mcarlo, pa_mcarlo, ccc_sum_d_best =\
-                [], [], [], [], []
+            inc_best, pa_best, mc_inc_std, mc_pa_std, in_mcarlo, pa_mcarlo,\
+                ccc_sum_d_best = [], [], [], [], [], [], []
             for method in ['deproj_dists', 'perp_d_fix_plane',
                            'perp_d_free_plane']:
                 if method == 'deproj_dists':
@@ -747,9 +748,11 @@ def gsd(in_params):
                 # Obtain distribution of rotation angles via Monte Carlo random
                 # sampling.
                 inc_pa_mcarlo = monte_carlo_errors(N_maps, method, params)
-
+                # Standard deviations for the angles for *each* method.
+                mc_inc_std.append(np.std(zip(*inc_pa_mcarlo)[0]))
+                mc_pa_std.append(np.std(zip(*inc_pa_mcarlo)[1]))
                 # Save inclination and position angles obtained via the Monte
-                # Carlo process. Combining values from all methods, we
+                # Carlo process. Combining values from *all* methods, we
                 # calculate the combined standard deviation for each angle.
                 in_mcarlo = in_mcarlo + list(zip(*inc_pa_mcarlo)[0])
                 pa_mcarlo = pa_mcarlo + list(zip(*inc_pa_mcarlo)[1])
@@ -790,15 +793,30 @@ def gsd(in_params):
             # Mean and standard deviation for the rotation angles.
             inc_mean, inc_std = np.mean(inc_best), np.std(in_mcarlo)
             pa_mean, pa_std = np.mean(pa_best), np.std(pa_mcarlo)
-            ccc_mean = np.mean(zip(*ccc_sum_d_best)[0])
+            perp_sum_mean = np.mean(zip(*ccc_sum_d_best)[1])
             # Store parameters for plotting.
             rho_plot_pars[j].append([r_min, N_clust, inc_mean, inc_std,
-                                     pa_mean, pa_std, ccc_mean])
+                                     pa_mean, pa_std, perp_sum_mean])
 
             print 'rho min=', r_min
-            print 'CCC=', ccc_sum_d_best
-            print 'Inc best, MC std:', inc_best, inc_std
-            print 'PA Best, MC std:', pa_best, pa_std, '\n'
+            print 'CCC/Perp sum=', ccc_sum_d_best
+            print 'PA Best, MC std:', pa_best, mc_pa_std
+            print 'Inc best, MC std:', inc_best, mc_inc_std
+            print 'PA combined MC:', pa_mean, pa_std
+            print 'Inc combined MC:', inc_mean, inc_std, '\n'
+
+            table.append([
+                "{:.1f}".format(r_min),
+                r"${:.1f}pm{:.1f}$".format(pa_best[0], mc_pa_std[0]),
+                r"${:.1f}pm{:.1f}$".format(inc_best[0], mc_inc_std[0]),
+                r"${:.1f}pm{:.1f}$".format(pa_best[1], mc_pa_std[1]),
+                r"${:.1f}pm{:.1f}$".format(inc_best[1], mc_inc_std[1]),
+                r"${:.1f}pm{:.1f}$".format(pa_best[2], mc_pa_std[2]),
+                r"${:.1f}pm{:.1f}$".format(inc_best[2], mc_inc_std[2]),
+                r"${:.1f}pm{:.1f}$".format(pa_mean, pa_std),
+                r"${:.1f}pm{:.1f}$".format(inc_mean, inc_std)])
+
+        print tabulate(table, tablefmt="latex")
 
     return gal_str_pars, rho_plot_pars
 
