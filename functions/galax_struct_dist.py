@@ -232,29 +232,31 @@ def fix_plane_perp_dist(plane_abc, x, y, z):
 
     a*x + b*y + c*z + d = 0
 
-    Pass the sum of the absolute values of each distance, for each inclination
-    and position angle values.
+    Pass the averaged sum of the absolute values of each distance, for each
+    inclination and position angle values.
 
     http://mathworld.wolfram.com/Point-PlaneDistance.html
     '''
     # Unpack lists of inclined planes coefficients.
     a_lst, b_lst, c_lst = plane_abc
-    # Calculate sum of (positive) distances to each inclined plane.
+    # Calculate the averaged sum of (positive) distances to each inclined
+    # plane.
     pl_dists_kpc = np.sum(abs(np.outer(a_lst, x) + np.outer(b_lst, y) +
-                              np.outer(c_lst, z)), axis=1)
+                              np.outer(c_lst, z)), axis=1)/len(x)
 
     return pl_dists_kpc
 
 
 def perp_error(params, xyz):
     """
-    Return sum of the absolute values for the perpendicular distance of the
-    points in 'xyz', to the plane defined by the coefficients 'a,b,c,d'.
+    Return the averaged sum of the absolute values for the perpendicular
+    distance of the points in 'xyz', to the plane defined by the
+    coefficients 'a,b,c,d'.
     """
     a, b, c, d = params
     x, y, z = xyz
     length = np.sqrt(a**2+b**2+c**2)
-    return np.abs(a*x + b*y + c*z + d).sum()/length
+    return (np.abs(a*x + b*y + c*z + d).sum()/length)/len(x)
 
 
 def minimize_perp_distance(x, y, z, N_min):
@@ -264,7 +266,7 @@ def minimize_perp_distance(x, y, z, N_min):
 
     a*x + b*t + c*z + d = 0
 
-    and the minimization is done for perpendicular distances to the plane.
+    and the minimization is done for the perpendicular distances to the plane.
 
     Source: http://stackoverflow.com/a/35118683/1391441
     """
@@ -818,5 +820,5 @@ if __name__ == "__main__":
     gal_str_pars, rho_plot_pars = gsd(in_params)
 
     from make_all_plots import make_angles_plot, make_rho_min_plot
-    # make_angles_plot(gal_str_pars)
+    make_angles_plot(gal_str_pars)
     make_rho_min_plot(rho_plot_pars)

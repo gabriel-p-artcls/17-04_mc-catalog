@@ -1914,8 +1914,9 @@ def pl_angles(in_pars):
     ob = offsetbox.AnchoredText(gal_name, loc=1, prop=dict(size=xy_font_s))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
-    cb_lab = [r'$ccc$', r'$\sum |d_{{p}}|$', r'$\sum |d_{{p}}|$', r'$ccc$',
-              r'$\sum |d_{{p}}|$', r'$\sum |d_{{p}}|$']
+    cb_lab = [r'$ccc$', r'$\overline{{|d_{{p}}}|}$',
+              r'$\overline{{|d_{{p}}}|}$', r'$ccc$',
+              r'$\overline{{|d_{{p}}}|}$', r'$\overline{{|d_{{p}}}|}$']
     # Position colorbar.
     the_divider = make_axes_locatable(ax)
     color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
@@ -1923,7 +1924,8 @@ def pl_angles(in_pars):
     cbar = plt.colorbar(SC, cax=color_axis)
     cbar.set_label(cb_lab[i], fontsize=xy_font_s, labelpad=4, y=0.5)
     cbar.ax.tick_params(labelsize=xy_font_s - 3)
-    cbar.ax.invert_yaxis()
+    if i not in [0, 3]:
+        cbar.ax.invert_yaxis()
     # Square
     ax.set_aspect(aspect='auto')
 
@@ -1966,14 +1968,14 @@ def diag_plots(in_pars):
     # Gal name.
     text1 = r'$[\Theta_{{{}}},i_{{{}}}]$'.format(i*2+1, i*2+1)
     text = 'SMC\n' + text1
-    ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s))
+    ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s))
     ob.patch.set(alpha=0.85)
     axl.add_artist(ob)
     # Text box.
     text2 = r'$ccc={:.2f}$'.format(mean_pos[i][0])
-    text3 = r'$\sum |d_{{p}}|={:.1f}$'.format(mean_pos[i][1])
+    text3 = r'$\overline{{|d_{{p}}|}}={:.2f}$'.format(mean_pos[i][1])
     text = text2 + '\n' + text3
-    ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s - 1))
+    ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s - 1))
     ob.patch.set(alpha=0.85)
     axl.add_artist(ob)
 
@@ -1998,14 +2000,14 @@ def diag_plots(in_pars):
     # Gal name.
     text1 = r'$[\Theta_{{{}}},i_{{{}}}]$'.format(i*2+2, i*2+2)
     text = 'LMC\n' + text1
-    ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s))
+    ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s))
     ob.patch.set(alpha=0.85)
     axr.add_artist(ob)
     # Text box.
     text2 = r'$ccc={:.2f}$'.format(mean_pos[i][0])
-    text3 = r'$\sum |d_{{p}}|={:.1f}$'.format(mean_pos[i][1])
+    text3 = r'$\overline{{|d_{{p}}|}}={:.2f}$'.format(mean_pos[i][1])
     text = text2 + '\n' + text3
-    ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s - 1))
+    ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s - 1))
     ob.patch.set(alpha=0.85)
     axr.add_artist(ob)
     # Position colorbar.
