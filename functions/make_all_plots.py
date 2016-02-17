@@ -210,7 +210,6 @@ def make_as_vs_lit_plot(in_params):
     print 'Age vals PCC:', np.corrcoef(aarr[1][0], aarr[1][1])[0, 1]
     ks, pval = ks_2samp(aarr[1][0], aarr[1][1])
     print 'Age vals K-S:', ks, pval
-    raw_input()
 
     # print 'Gal  Mean  StandDev'
     par_mean_std = []
@@ -416,7 +415,6 @@ def make_ra_dec_plots(in_params, bica_coords):
     # plt.scatter(-1. * np.asarray(ra[0]), dec[0], c=darr[0][0], cmap=cm,
     #             marker='o', s=50, lw=0.1, vmin=18.82, vmax=19.08)
     # plt.show()
-    # raw_input()
 
     # Put both SMC and LMC clusters into a single list.
     ra = ra[0] + ra[1]
@@ -951,10 +949,9 @@ def make_dist_2_cents(in_params):
     #         if dist_cent[j][i] > 4000 and aarr[j][0][i] < 8.5:
     #             print gal, cl, ra[j][i], dec[j][i], dist_cent[j][i],\
     #                 '{:.5f}'.format(zarr[j][0][i]), aarr[j][0][i]
-    # raw_input()
-    print 'SMC, ASteCA:', np.mean(zarr[0][0]), np.std(zarr[0][0])
-    print 'LMC, ASteCA:', np.mean(zarr[1][0]), np.std(zarr[1][0])
-    raw_input()
+    #
+    # print 'SMC, ASteCA:', np.mean(zarr[0][0]), np.std(zarr[0][0])
+    # print 'LMC, ASteCA:', np.mean(zarr[1][0]), np.std(zarr[1][0])
 
     # Define names of arrays being plotted.
     x_lab, yz_lab = '$R_{GC}\,[pc]$', \
