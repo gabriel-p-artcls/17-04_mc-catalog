@@ -10,11 +10,10 @@ from matplotlib.patches import Ellipse
 from scipy import stats
 from scipy.stats import ks_2samp
 
-# from functions.ra_dec_map import ra_dec_plots
-# from functions.kde_2d import kde_map
-# import functions.CMD_obs_vs_asteca as cmd
-# from functions.amr_kde import age_met_rel
-# from functions import lin_fit_conf_bands as lf_cb
+from functions.ra_dec_map import ra_dec_plots
+from functions.kde_2d import kde_map
+from functions.amr_kde import age_met_rel
+from functions import lin_fit_conf_bands as lf_cb
 
 
 def ccc(l1, l2):
@@ -311,7 +310,7 @@ def make_as_vs_lit_plot(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/as_vs_lit_S-LMC.png', dpi=300)
+    plt.savefig('figures/as_vs_lit_S-LMC.png', dpi=300, bbox_inches='tight')
 
 
 def kde_plots(pl_params):
@@ -396,7 +395,8 @@ def make_kde_plots(galax, k, in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/as_kde_maps_' + galax + '.png', dpi=300)
+    plt.savefig('figures/as_kde_maps_' + galax + '.png', dpi=300,
+                bbox_inches='tight')
 
 
 def make_ra_dec_plots(in_params, bica_coords):
@@ -461,7 +461,7 @@ def make_ra_dec_plots(in_params, bica_coords):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/as_RA_DEC.png', dpi=300)
+    plt.savefig('figures/as_RA_DEC.png', dpi=300, bbox_inches='tight')
 
 
 def lit_ext_plots(pl_params):
@@ -579,7 +579,7 @@ def make_lit_ext_plot(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/as_vs_lit_extin.png', dpi=300)
+    plt.savefig('figures/as_vs_lit_extin.png', dpi=300, bbox_inches='tight')
 
 
 def wide_plots(pl_params):
@@ -661,7 +661,7 @@ def make_int_cols_plot(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/as_integ_colors.png', dpi=300)
+    plt.savefig('figures/as_integ_colors.png', dpi=300, bbox_inches='tight')
 
 
 def make_concent_plot(in_params):
@@ -707,7 +707,7 @@ def make_concent_plot(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/concent_param.png', dpi=300)
+    plt.savefig('figures/concent_param.png', dpi=300, bbox_inches='tight')
 
 
 def make_radius_plot(in_params):
@@ -754,7 +754,8 @@ def make_radius_plot(in_params):
 
         # Output png file.
         fig.tight_layout()
-        plt.savefig('figures/as_rad_vs_params_' + gal_name + '.png', dpi=300)
+        plt.savefig('figures/as_rad_vs_params_' + gal_name + '.png', dpi=300,
+                    bbox_inches='tight')
 
 
 def prob_vs_CI_plot(pl_params):
@@ -854,7 +855,7 @@ def make_probs_CI_plot(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/as_prob_vs_CI.png', dpi=300)
+    plt.savefig('figures/as_prob_vs_CI.png', dpi=300, bbox_inches='tight')
 
 
 def plot_dist_2_cent(pl_params):
@@ -961,7 +962,7 @@ def make_dist_2_cents(in_params):
             '$E(B-V)_{ASteCA}$']
     xmin, xmax = 0, 7500
     vmin_met, vmax_met = -2.1, 0.29
-    vmin_mas, vmax_mas = 1000, 28000
+    # vmin_mas, vmax_mas = 1000, 28000
     vmin_ext, vmax_ext = 0., 0.3
     vmin_age, vmax_age = 6.7, 9.7
 
@@ -1002,7 +1003,7 @@ def make_dist_2_cents(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/as_dist_2_cent.png', dpi=300)
+    plt.savefig('figures/as_dist_2_cent.png', dpi=300, bbox_inches='tight')
 
 
 def cross_match_plot(pl_params):
@@ -1217,7 +1218,7 @@ def make_cross_match(cross_match):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/cross_match.png', dpi=300)
+    plt.savefig('figures/cross_match.png', dpi=300, bbox_inches='tight')
 
 
 def cross_match_age_ext_plot(pl_params):
@@ -1468,7 +1469,8 @@ def make_cross_match_age_ext(cross_match, in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/cross_match_age_ext.png', dpi=300)
+    plt.savefig('figures/cross_match_age_ext.png', dpi=300,
+                bbox_inches='tight')
 
 
 def pl_DBs_ASteCA_CMDs(pl_params):
@@ -1600,9 +1602,6 @@ def make_DB_ASteCA_CMDs(db, db_cls):
         fig_name = 'figures/DB_fit/' + db + '_VS_asteca_' + str(k) + '.png'
         plt.savefig(fig_name, dpi=150, bbox_inches='tight')
 
-        # Crop image.
-        # cmd.save_crop_img(fig_name)
-
 
 def pl_errors(pl_params):
     '''
@@ -1705,8 +1704,7 @@ def make_errors_plots(in_params):
 
     # Output png file.
     fig.tight_layout()
-    fig_name = 'figures/errors_asteca.png'
-    plt.savefig(fig_name, dpi=300)
+    plt.savefig('figures/errors_asteca.png', dpi=300, bbox_inches='tight')
 
 
 def pl_amr(pl_params):
@@ -1833,10 +1831,7 @@ def make_amr_plot(in_params, amr_lit):
 
     # Output png file.
     fig.tight_layout()
-    fig_name = 'figures/AMR_asteca.png'
-    plt.savefig(fig_name, dpi=300)
-    # Crop image.
-    cmd.save_crop_img(fig_name)
+    plt.savefig('figures/AMR_asteca.png', dpi=300, bbox_inches='tight')
 
 
 def pl_angles(in_pars):
@@ -2065,7 +2060,8 @@ def make_angles_plot(gal_str_pars):
         diag_plots(pl_params)
 
     fig.tight_layout()
-    # plt.savefig('figures/MCs_deproj_dist_angles.png', dpi=300)
+    # plt.savefig('figures/MCs_deproj_dist_angles.png', dpi=300,
+    #             bbox_inches='tight')
     plt.savefig('MCs_deproj_dist_angles.png', dpi=150, bbox_inches='tight')
 
 
@@ -2192,8 +2188,9 @@ def make_rho_min_plot(rho_plot_pars):
         pl_rho_var(pl_params)
 
     fig.tight_layout()
-    # plt.savefig('figures/MCs_angles_var_w_rho.png', dpi=300)
-    plt.savefig('MCs_angles_var_w_rho.png', dpi=300)
+    # plt.savefig('figures/MCs_angles_var_w_rho.png', dpi=300,
+    #             bbox_inches='tight')
+    plt.savefig('MCs_angles_var_w_rho.png', dpi=300, bbox_inches='tight')
 
 
 if __name__ == "__main__":

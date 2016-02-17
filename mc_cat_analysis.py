@@ -84,7 +84,7 @@ def main():
     r_path = os.path.realpath(__file__)[:-29]
 
     # Generate CMDs of DBs vs ASteCA.
-    CMD_DBs_vs_asteca(r_path)
+    # CMD_DBs_vs_asteca(r_path)
 
     # Read data from ASteca output file.
     as_names, as_pars = get_asteca_data()

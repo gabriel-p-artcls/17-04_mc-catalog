@@ -312,18 +312,3 @@ def get_asteca_params(cl):
                 # Pass valid string.
                 as_z_str = met_vals[z_idx]
                 return as_z, as_z_str, as_a, as_e, as_d
-
-
-def save_crop_img(fig_name):
-    '''
-    Crop image.
-    '''
-    image = Image.open(fig_name)
-    image_inv = ImageOps.invert(image.convert('RGB'))
-    image_inv.load()
-    # imageBox = image.getbbox()
-    imageBox = image_inv.getbbox()
-    cropped = image.crop(imageBox)
-    fig_name_2 = fig_name[:-4] + '_crop.png'
-    cropped.save(fig_name_2)
-    os.remove(fig_name)
