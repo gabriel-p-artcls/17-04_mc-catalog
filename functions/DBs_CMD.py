@@ -1,4 +1,5 @@
 
+import os
 import functions.CMD_obs_vs_asteca as cmd
 
 
@@ -25,6 +26,14 @@ def get_DBs_ASteCA_CMD_data(r_path, db):
         mc_cls = [['B47', 'H86-70', 'L63', 'L62', 'B39', 'BS121', 'BS88',
                    'NGC294', 'L19', 'L34'],
                   ['L30', 'B34', 'L72', 'NGC419', 'BS35', 'L35']]
+
+    # Create folder where the final images will be stored.
+    path = 'figures/DB_fit/'
+    try:
+        os.makedirs(path)
+    except OSError:
+        if not os.path.isdir(path):
+            raise
 
     db_cls = [[] for _ in mc_cls]
     for i, cl_lst in enumerate(mc_cls):

@@ -68,6 +68,7 @@ def CMD_DBs_vs_asteca(r_path):
     CMDs of clusters matched between these two databases and
     the values given  by ASteCA.
     """
+    print 'Generating CMDs of DBs for matched clusters with ASteCA.'
     for db in ['G10', 'C06']:
         db_cls = get_DBs_ASteCA_CMD_data(r_path, db)
         make_DB_ASteCA_CMDs(db, db_cls)
