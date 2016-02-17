@@ -18,12 +18,12 @@ def check_diffs(in_params):
         met_count = 0
         for i, name in enumerate(gal_names[j]):
             # Metallicity.
-            z_diff = 0.75
+            z_diff = 0.5
             diff = zarr[j][0][i] - zarr[j][1][i]
             if zarr[j][1][i] > -99.:
                 if abs(diff) > z_diff:
                     met_count += 1
-                    # AsteCA vs Literature Log(age) difference.
+                    # AsteCA minus Literature metallicity difference.
                     rel_diff = zarr[j][0][i] - zarr[j][1][i]
                     print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
                         gal[j], name, zarr[j][0][i], zarr[j][1][i], rel_diff)
@@ -36,11 +36,12 @@ def check_diffs(in_params):
         for i, name in enumerate(gal_names[j]):
             # Age.
             a_diff = 0.5
+            # ASteCA - literature
             diff = aarr[j][0][i] - aarr[j][1][i]
             if aarr[j][1][i] > -99.:
                 if abs(diff) > a_diff:
                     age_count += 1
-                    # AsteCA vs Literature Log(age) difference.
+                    # AsteCA minus Literature Log(age) difference.
                     rel_diff = aarr[j][0][i] - aarr[j][1][i]
                     print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
                         gal[j], name, aarr[j][0][i], aarr[j][1][i], rel_diff)
