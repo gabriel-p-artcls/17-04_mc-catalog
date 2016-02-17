@@ -63,12 +63,27 @@ def make_plots(in_params, bica_coords, cross_match, amr_lit, gal_str_pars):
     print 'Inclination vs position angles plot done.'
 
 
+def CMD_DBs_vs_asteca(r_path):
+    """
+    CMDs of clusters matched between these two databases and
+    the values given  by ASteCA.
+    """
+    for db in ['G10', 'C06']:
+        db_cls = get_DBs_ASteCA_CMD_data(r_path, db)
+        make_DB_ASteCA_CMDs(db, db_cls)
+        print ("CMDs for matched clusters between {} DB and"
+               " ASteCA clusters done.".format(db))
+
+
 def main():
     '''
     Call each function.
     '''
     # Root path.
     r_path = os.path.realpath(__file__)[:-29]
+
+    # Generate CMDs of DBs vs ASteCA.
+    CMD_DBs_vs_asteca(r_path)
 
     # Read data from ASteca output file.
     as_names, as_pars = get_asteca_data()
@@ -85,9 +100,9 @@ def main():
     # Get data parameters arrays.
     in_params = params(r_path, as_names, as_pars, cl_dict, names_idx)
     print 'Dictionary of parameters obtained.'
-    # darr, gal_nams = [in_params[_] for _ in ['darr', 'gal_names']]
-    # for i, _ in enumerate(darr[1][0]):
-    #     print gal_nams[1][i], _
+
+    # Check for differences in ASteCA vs Lit values.
+    check_diffs(in_params)
 
     # Obtain galactic structure (inclination + position angles) for MCs
     gal_str_pars = gsd(in_params)
@@ -97,9 +112,6 @@ def main():
     cross_match = get_cross_match_data()
     print 'Cross-matched data read.'
 
-    # Check for differences in ASteCA vs Lit values.
-    check_diffs(in_params)
-
     # Read Bica et al. (2008) database.
     bica_coords = get_bica_database()
 
@@ -107,15 +119,8 @@ def main():
     amr_lit = get_amr_lit()
 
     # Make final plots.
-    # print 'Plotting...\n'
-    # make_plots(in_params, bica_coords, cross_match, amr_lit, gal_str_pars)
-
-    # # Put this plot here since it does not depend on any parameter obtained
-    # # previously so it's faster to plot it separately.
-    # for db in ['G10', 'C06']:
-    #     db_cls = get_DBs_ASteCA_CMD_data(r_path, db)
-    #     make_DB_ASteCA_CMDs(db, db_cls)
-    #     print 'CMDs for matched DB and ASteCA clusters done.'
+    print 'Plotting...\n'
+    make_plots(in_params, bica_coords, cross_match, amr_lit, gal_str_pars)
 
     print '\nEnd.'
 
