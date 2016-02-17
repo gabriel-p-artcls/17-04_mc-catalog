@@ -52,7 +52,12 @@ def diag_limits(r_path, cl):
     y_axis = 0
     path_no_ext = r_path + 'asteca-project/asteca/input/dont_read/'\
         + 'MC_all/' + cl + '.*'
-    data_file = glob.glob(path_no_ext)[0]
+    try:
+        data_file = glob.glob(path_no_ext)[0]
+    except IndexError:
+        print ("The folder: {}asteca-project/asteca/ does not"
+               " exist".format(r_path))
+        raise SystemExit(0)
     phot_data = gd(data_file)
     phot_x, phot_y = phot_data[5], phot_data[3]
 
