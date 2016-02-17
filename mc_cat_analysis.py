@@ -21,45 +21,45 @@ def make_plots(in_params, bica_coords, cross_match, amr_lit, gal_str_pars,
     Make each plot sequentially.
     '''
 
-    # for j, gal in enumerate(['SMC', 'LMC']):
-    #     make_kde_plots(gal, j, in_params)
-    #     print '{} KDE maps done.'.format(gal)
+    for j, gal in enumerate(['SMC', 'LMC']):
+        make_kde_plots(gal, j, in_params)
+        print '{} KDE maps done.'.format(gal)
 
-    # make_as_vs_lit_plot(in_params)
-    # print 'ASteCA vs literature plots done.'
+    make_as_vs_lit_plot(in_params)
+    print 'ASteCA vs literature plots done.'
 
-    # make_errors_plots(in_params)
-    # print 'Errors plots done.'
+    make_errors_plots(in_params)
+    print 'Errors plots done.'
 
-    # make_ra_dec_plots(in_params, bica_coords)
-    # print 'RA vs DEC plots done.'
+    make_ra_dec_plots(in_params, bica_coords)
+    print 'RA vs DEC plots done.'
 
-    # make_lit_ext_plot(in_params)
-    # print 'ASteca vs MCEV vs SandF extinction plot done.'
+    make_lit_ext_plot(in_params)
+    print 'ASteca vs MCEV vs SandF extinction plot done.'
 
-    # make_int_cols_plot(in_params)
-    # print 'Integrated colors plot done.'
+    make_int_cols_plot(in_params)
+    print 'Integrated colors plot done.'
 
-    # make_concent_plot(in_params)
-    # print 'Concentration parameter plot done.'
+    make_concent_plot(in_params)
+    print 'Concentration parameter plot done.'
 
-    # make_radius_plot(in_params)
-    # print 'ASteCA radius (pc) vs parameters plot done.'
+    make_radius_plot(in_params)
+    print 'ASteCA radius (pc) vs parameters plot done.'
 
-    # make_probs_CI_plot(in_params)
-    # print 'ASteCA probabilities versus CI done.'
+    make_probs_CI_plot(in_params)
+    print 'ASteCA probabilities versus CI done.'
 
-    # make_dist_2_cents(in_params)
-    # print 'Distances to center of MC done.'
+    make_dist_2_cents(in_params)
+    print 'Distances to center of MC done.'
 
-    # make_cross_match(cross_match)
-    # print 'Cross-matched clusters done.'
+    make_cross_match(cross_match)
+    print 'Cross-matched clusters done.'
 
-    # make_cross_match_age_ext(cross_match, in_params)
-    # print 'Age and extinction diffs for cross-matched clusters done.'
+    make_cross_match_age_ext(cross_match, in_params)
+    print 'Age and extinction diffs for cross-matched clusters done.'
 
-    # make_amr_plot(in_params, amr_lit)
-    # print 'AMR maps done.'
+    make_amr_plot(in_params, amr_lit)
+    print 'AMR maps done.'
 
     make_angles_plot(gal_str_pars)
     print 'Inclination vs position angles plot done.'
@@ -119,9 +119,11 @@ def main():
 
     # Read Bica et al. (2008) database.
     bica_coords = get_bica_database()
+    print 'Bica et al. (2008) data read.'
 
     # Read AMR data from other articles.
     amr_lit = get_amr_lit()
+    print 'AMR data from literature read.'
 
     # Make final plots.
     print 'Plotting...\n'
