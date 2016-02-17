@@ -10,6 +10,7 @@ def check_diffs(in_params):
                                 'rarr', 'marr', 'dist_cent', 'ra', 'dec']]
 
     gal = ['SMC', 'LMC']
+    print ''
 
     # For SMC and LMC.
     for j in [0, 1]:
