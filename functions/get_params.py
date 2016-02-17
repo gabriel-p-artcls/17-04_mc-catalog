@@ -166,8 +166,8 @@ def params(r_path, as_names, as_pars, cl_dict, names_idx):
         # values are expressed in parsecs.
         d_c, e_d_c = dist_2_cloud_center(j, ra[j][-1], dec[j][-1],
                                          as_p[a_di], float(as_p[a_dei]))
-        dist_cent[j].append(d_c)
-        e_d_cent[j].append(e_d_c)
+        dist_cent[j].append(d_c.value)
+        e_d_cent[j].append(e_d_c.value)
 
         # Get photometric dispersion parameter.
         phot_disp[j].append(get_disp(r_path, as_names[i]))
