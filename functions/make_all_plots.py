@@ -1598,10 +1598,10 @@ def make_DB_ASteCA_CMDs(db, db_cls):
         # Output png file.
         fig.tight_layout()
         fig_name = 'figures/DB_fit/' + db + '_VS_asteca_' + str(k) + '.png'
-        plt.savefig(fig_name, dpi=150)
+        plt.savefig(fig_name, dpi=150, bbox_inches='tight')
 
         # Crop image.
-        cmd.save_crop_img(fig_name)
+        # cmd.save_crop_img(fig_name)
 
 
 def pl_errors(pl_params):
