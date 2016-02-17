@@ -20,7 +20,7 @@ def inc_PA_grid(N, inc_rang, pa_rang):
     return inc_lst, pa_lst
 
 
-def gal_data(ra, dec, dist_cent, aarr, darr, dsigma, j):
+def gal_data(ra, dec, dist_cent, e_d_cent, aarr, darr, dsigma, j):
     """
     Return data for the selected galaxy: j=0 --> SMC ; j=1 --> LMC.
     """
@@ -644,7 +644,7 @@ def gsd(in_params):
 
         # Retrieve data for this galaxy.
         ra_g, dec_g, d_d_g, e_dd_g, age_g, dm_g, e_dm_g, gal_cent, gal_dist =\
-            gal_data(ra, dec, dist_cent, aarr, darr, dsigma, j)
+            gal_data(ra, dec, dist_cent, e_d_cent, aarr, darr, dsigma, j)
 
         # Input minimum projected angular distance values to use in filter.
         # The value ia used as: (r_min...]
