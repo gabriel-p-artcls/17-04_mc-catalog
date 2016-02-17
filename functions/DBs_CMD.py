@@ -48,7 +48,7 @@ def get_DBs_ASteCA_CMD_data(r_path, db):
             run = cmd.get_cl_run(cl)
             # Fetch what 'input_XX' folder in the above run contains the
             # membership file.
-            inpt = cmd.get_input_folder(cl, run)
+            inpt = cmd.get_input_folder(r_path, cl, run)
             # Membership data for cluster.
             cl_reg_fit, cl_reg_no_fit = cmd.get_memb_data(r_path, run, inpt,
                                                           cl)
@@ -59,7 +59,8 @@ def get_DBs_ASteCA_CMD_data(r_path, db):
             # Obtain ASteCA parameters.
             as_z, as_z_str, as_a, as_e, as_d = cmd.get_asteca_params(cl)
             # Obtain ASteCA isochrone.
-            asteca_isoch = cmd.get_isoch('AS', as_z_str, as_a, as_e, as_d)
+            asteca_isoch = cmd.get_isoch(r_path, 'AS', as_z_str, as_a, as_e,
+                                         as_d)
 
             db_cls[i].append([x_min_cmd, x_max_cmd, y_min_cmd, y_max_cmd, cl,
                               db, gal, cl_reg_fit, cl_reg_no_fit, lit_isoch,
