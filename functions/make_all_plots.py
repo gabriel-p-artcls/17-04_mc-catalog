@@ -10,10 +10,10 @@ from matplotlib.patches import Ellipse
 from scipy import stats
 from scipy.stats import ks_2samp
 
-from functions.ra_dec_map import ra_dec_plots
-from functions.kde_2d import kde_map
-from functions.amr_kde import age_met_rel
-from functions import lin_fit_conf_bands as lf_cb
+from ra_dec_map import ra_dec_plots
+from kde_2d import kde_map
+from amr_kde import age_met_rel
+import lin_fit_conf_bands as lf_cb
 
 
 def ccc(l1, l2):
