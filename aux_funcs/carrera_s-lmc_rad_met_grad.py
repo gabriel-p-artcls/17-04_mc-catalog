@@ -8,6 +8,7 @@ import sys
 r_path = os.path.realpath(__file__)[:-57]
 sys.path.insert(0, r_path + 'github/mc-catalog/functions/')
 from deproj_dist import deproj_dist
+from deproj_dist import rho_phi
 from lin_fit_conf_bands import linear_fit
 
 
@@ -73,16 +74,19 @@ def get_data(name_data):
 for db in ['carrera_11', 'carrera_08', 'palma_15']:
     cent, dist, inc, pa, ra_lst, dec_lst, fe_h, sigma_feh = get_data(db)
 
-    dist_kpc = []
+    ra_dec = []
     for i, (ra, dec) in enumerate(zip(*[ra_lst, dec_lst])):
-        a = SkyCoord(ra, dec, unit=(u.hourangle, u.deg))
-        d_kpc = deproj_dist(a, cent, pa, inc, dist)
-        dist_kpc.append(d_kpc.value)
+        ra_dec.append([ra, dec])
+
+    ra_dec = SkyCoord(ra_dec, unit=(u.hourangle, u.deg))
+    rho, Phi, phi = rho_phi(ra_dec, cent)
+    d_kpc = deproj_dist(pa, inc, dist, rho, phi)
+    print d_kpc
 
     print '\nNon-weighted fit.'
-    fit = np.polyfit(dist_kpc, fe_h, 1)
+    fit = np.polyfit(d_kpc, fe_h, 1)
     fit_nw = np.poly1d(fit)
     print fit_nw
     print '\nWeighted fit.'
-    a, b, sa, sb, rchi2, dof = linear_fit(np.array(dist_kpc), fe_h, sigma_feh)
+    a, b, sa, sb, rchi2, dof = linear_fit(np.array(d_kpc), fe_h, sigma_feh)
     print a, sa, b, sb, rchi2, dof

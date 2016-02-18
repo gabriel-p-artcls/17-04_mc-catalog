@@ -286,18 +286,6 @@ if __name__ == "__main__":
     # ra_lst = ['05h10m', '05h50m', '05h50m', '05h10m']
     # dec_lst = ['-66d', '-66d', '-72d', '-72d']
 
-    # # Random values.
-    # ra_lst, dec_lst = [], []
-    # N = 500
-    # for _ in range(N):
-    #     h = int(np.random.uniform(4., 7., 1)[0])
-    #     m = np.random.uniform(0., 59., 1)[0]
-    #     d = np.random.uniform(-75., -65., 1)[0]
-    #     ra_lst.append(str(h) + 'h' + str(m) + 'm')
-    #     dec_lst.append(str(d) + 'd')
-    # print ra_lst
-    # print dec_lst, '\n'
-
     # # Noel SMC data.
     # cent = SkyCoord('0h52m42s', '-72d49m', frame='icrs')
     # dist = Distance(51., unit=u.kpc)
