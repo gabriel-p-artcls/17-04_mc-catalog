@@ -3,13 +3,22 @@ import numpy as np
 import scipy
 
 
-def linear_fit(xdata, ydata, ysigma=None):
+def non_weight_linear_fit(x, y):
+    """
+    Performs a *non weighted* linear fit to data.
+    """
+    fit = np.polyfit(x, y, 1)
+    fit_nw = np.poly1d(fit)
+    return fit_nw
+
+
+def weight_linear_fit(xdata, ydata, ysigma=None):
     """
     http://bulldog2.redlands.edu/facultyfolder/deweerd/tutorials/fitting.txt
     http://nbviewer.ipython.org/url/bulldog2.redlands.edu/facultyfolder/
     deweerd/tutorials/LinearRegression.txt
 
-    Performs a linear fit to data, weighted by errors in y.
+    Performs a linear fit to data, *weighted* by errors in y.
 
     Parameters
     ----------

@@ -895,12 +895,11 @@ def plot_dist_2_cent(pl_params):
 
     if i in [2, 3]:
         # Linear regression of metallicity, NOT weighted by errors.
-        fit = np.polyfit(xarr, yarr, 1)
-        fit_nw = np.poly1d(fit)
+        fit_nw = lf_cb.non_weigth_linear_fit(xarr, yarr)
         plt.plot(xarr, fit_nw(xarr), '-k', lw=0.8)
         # Linear regression and confidence bands or metallicity gradient,
         # weighted by their errors in [Fe/H].
-        a, b, sa, sb, rchi2, dof = lf_cb.linear_fit(
+        a, b, sa, sb, rchi2, dof = lf_cb.weight_linear_fit(
             np.array(xarr), np.array(yarr), np.array(ysigma))
         # Confidence bands.
         lcb, ucb, x = lf_cb.confband(np.array(xarr), np.array(yarr), a, b,

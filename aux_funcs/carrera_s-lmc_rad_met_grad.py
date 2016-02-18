@@ -9,7 +9,8 @@ r_path = os.path.realpath(__file__)[:-57]
 sys.path.insert(0, r_path + 'github/mc-catalog/functions/')
 from deproj_dist import deproj_dist
 from deproj_dist import rho_phi
-from lin_fit_conf_bands import linear_fit
+from lin_fit_conf_bands import weight_linear_fit
+from lin_fit_conf_bands import non_weight_linear_fit
 
 
 def get_data(name_data):
@@ -81,12 +82,13 @@ for db in ['carrera_11', 'carrera_08', 'palma_15']:
     ra_dec = SkyCoord(ra_dec, unit=(u.hourangle, u.deg))
     rho, Phi, phi = rho_phi(ra_dec, cent)
     d_kpc = deproj_dist(pa, inc, dist, rho, phi)
-    print d_kpc
 
-    print '\nNon-weighted fit.'
-    fit = np.polyfit(d_kpc, fe_h, 1)
-    fit_nw = np.poly1d(fit)
+    print '\nDatabase:', db
+
+    print 'Non-weighted fit.'
+    fit_nw = non_weight_linear_fit(d_kpc, fe_h)
     print fit_nw
-    print '\nWeighted fit.'
-    a, b, sa, sb, rchi2, dof = linear_fit(np.array(d_kpc), fe_h, sigma_feh)
+    print 'Weighted fit.'
+    a, b, sa, sb, rchi2, dof = weight_linear_fit(np.array(d_kpc), fe_h,
+                                                 sigma_feh)
     print a, sa, b, sb, rchi2, dof
