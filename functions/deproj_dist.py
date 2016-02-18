@@ -334,28 +334,3 @@ if __name__ == "__main__":
     Phi_p, phi_p = phi_palma(ra_dec, cent)
     dep_dist_deg_p = claria_2005_dep_dist(rho, phi_p, pa, inc)
     # print dep_dist_deg_p.degree
-
-    # import matplotlib.pyplot as plt
-    # from mpl_toolkits.axes_grid1 import make_axes_locatable
-    # fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 10))
-
-    # ax1.set_xlim(0., 12.)
-    # ax1.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5)
-    # ax1.set_xlabel('d_deg (Palma)')
-    # ax1.set_ylabel(r'$\Delta$d_deg (Perren - Palma)')
-    # ax1.scatter(np.asarray(x) - np.asarray(y), y, s=80, lw=0.4, c='gray')
-
-    # ax2.invert_xaxis()
-    # ax2.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5)
-    # plt.xlabel('RA (deg)')
-    # plt.ylabel('DEC (deg)')
-    # ax2.set_ylim(-76., -60.)
-    # cm = plt.cm.get_cmap('RdYlBu_r')
-    # SC = ax2.scatter(ra_deg, dec_deg, c=y, s=80, lw=0.2)
-    # plt.scatter(cent.ra.degree, cent.dec.degree, marker='s', s=30, c='k')
-    # the_divider = make_axes_locatable(ax2)
-    # color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
-    # cbar = plt.colorbar(SC, cax=color_axis)
-    # cbar.set_label(r'$\Delta$d_deg')
-    # fig.tight_layout()
-    # plt.savefig('palma_dep_dist.png', dpi=150)
