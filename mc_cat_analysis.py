@@ -4,15 +4,13 @@ from functions.get_data import get_asteca_data, get_liter_data, \
     get_bica_database, get_cross_match_data, get_amr_lit
 from functions.get_params import params
 from functions.match_clusters import match_clusters
-from functions.galax_struct_dist import gsd
 from functions.check_diffs import check_diffs
 from functions.DBs_CMD import get_DBs_ASteCA_CMD_data
 from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
     make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
     make_concent_plot, make_radius_plot, make_probs_CI_plot, \
     make_dist_2_cents, make_cross_match, make_cross_match_age_ext, \
-    make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot, make_angles_plot,\
-    make_rho_min_plot
+    make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot
 
 
 def make_plots(in_params, bica_coords, cross_match, amr_lit, gal_str_pars,
@@ -61,11 +59,6 @@ def make_plots(in_params, bica_coords, cross_match, amr_lit, gal_str_pars,
     make_amr_plot(in_params, amr_lit)
     print 'AMR maps done.'
 
-    make_angles_plot(gal_str_pars)
-    print 'Inclination vs position angles plot done.'
-    make_rho_min_plot(rho_plot_pars)
-    print 'Rho min plot done.'
-
 
 def CMD_DBs_vs_asteca(r_path):
     """
@@ -109,10 +102,6 @@ def main():
     # Check for differences in ASteCA vs Lit values.
     # check_diffs(in_params)
 
-    # Obtain galactic structure (inclination + position angles) for MCs
-    gal_str_pars, rho_plot_pars = gsd(in_params)
-    print 'Inclination and position angles for MCs obtained.'
-
     # Read cross-matched clusters.
     cross_match = get_cross_match_data()
     print 'Cross-matched data read.'
@@ -127,8 +116,7 @@ def main():
 
     # Make final plots.
     print 'Plotting...\n'
-    make_plots(in_params, bica_coords, cross_match, amr_lit, gal_str_pars,
-               rho_plot_pars)
+    make_plots(in_params, bica_coords, cross_match, amr_lit)
 
     print '\nEnd.'
 
