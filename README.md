@@ -194,9 +194,11 @@ photometry.
   Gets the extinction data from the table obtained via the MCEV service
   (`ra_dec_exts_mult_matches.dat`) and produces for each of the clusters a
   value of the closest, average and maximum E(B-V) extinction values.
-  The transformation eq1uation used is:
+  The transformation equation used is:
 
-  `E(V-I) = 1.38 * E(B-V)`.
+  `E(V-I) = 1.38 * E(B-V)`
+
+  according to Tammann et al. 2003, A&A, 404, 423.
 
   The results are stored in the `cls_exts_match.dat` file.
 
@@ -285,6 +287,8 @@ photometry.
   * skip DA + red_memb: local + scott
   * skip DA + red_memb: local + blocks
   * skip DA + skip red_memb <-- Will fit mostly field stars if n_memb is low.
+
+  For NGC339 (input_05) the max mass limit was set to 30000.
 
 #### `6th_run/`
 

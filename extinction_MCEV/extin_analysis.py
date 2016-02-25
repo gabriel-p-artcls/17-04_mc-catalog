@@ -64,8 +64,11 @@ def get_ext_values(ext_pars, coords_match):
     Obtain the closest extinction value and its distance (in degrees),
     the average extinction and its standard deviation, and the maximum
     extinction value.
-    Convert from E(V-I) to E(B-V) according to:
+    Convert from E(V-I) to E(B-V):
+
     E(V-I) = 1.38 *  E(B-V)
+
+    according to Tammann et al. 2003, A&A, 404, 423.
     '''
 
     clusts_exts = []

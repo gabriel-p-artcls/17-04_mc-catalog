@@ -33,7 +33,7 @@ def check_diffs(in_params):
             gal[j], z_diff, met_count)
 
         # For each cluster.
-        age_count = 0
+        age_diff = []
         for i, name in enumerate(gal_names[j]):
             # Age.
             a_diff = 0.5
@@ -41,11 +41,17 @@ def check_diffs(in_params):
             diff = aarr[j][0][i] - aarr[j][1][i]
             if aarr[j][1][i] > -99.:
                 if abs(diff) > a_diff:
-                    age_count += 1
+                    age_diff.append(diff)
                     # AsteCA minus Literature Log(age) difference.
                     rel_diff = aarr[j][0][i] - aarr[j][1][i]
                     print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
                         gal[j], name, aarr[j][0][i], aarr[j][1][i], rel_diff)
 
         print '\n* {}, Clusters with \delta log(age)>{}: {}\n'.format(
-            gal[j], a_diff, age_count)
+            gal[j], a_diff, len(age_diff))
+
+        # import matplotlib.pyplot as plt
+        # import numpy as np
+        # print np.mean(age_diff), np.std(age_diff)
+        # plt.hist(age_diff, bins=50)
+        # plt.show()

@@ -81,7 +81,7 @@ def main():
     r_path = os.path.realpath(__file__)[:-29]
 
     # Generate CMDs of DBs vs ASteCA.
-    # CMD_DBs_vs_asteca(r_path)
+    CMD_DBs_vs_asteca(r_path)
 
     # Read data from ASteca output file.
     as_names, as_pars = get_asteca_data()
@@ -100,7 +100,7 @@ def main():
     print 'Dictionary of parameters obtained.'
 
     # Check for differences in ASteCA vs Lit values.
-    # check_diffs(in_params)
+    check_diffs(in_params)
 
     # Read cross-matched clusters.
     cross_match = get_cross_match_data()
