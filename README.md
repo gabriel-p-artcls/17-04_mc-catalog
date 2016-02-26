@@ -445,8 +445,9 @@ Per cluster DA/GA parameters:
  1. DA: skip + local + blocks
   * B134
 
-###### Clusters kept from 1st run (12)
- * B103, B111, BS75, BS80, H86-76, H86-174, HW52, K43, K55, K57, K63, SOGLE196
+###### Clusters kept from 1st run (12 + H86-188)
+ * B103, B111, BS75, BS80, H86-76, H86-174, HW52, K43, K55, K57, K63, SOGLE196,
+ H86-188 (it is processed several more times, but this one is kept)
 
 ##### 2nd run (17)
 1. Defaults (DA: auto + local + blocks)
