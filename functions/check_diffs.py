@@ -1,13 +1,17 @@
 
+import numpy as np
+
 
 def check_diffs(in_params):
     '''
     check differences between ASteCA values and literature values for given
     parameters.
     '''
-    gal_names, zarr, aarr, earr, darr, rarr, marr, dist_cent, ra, dec = \
-        [in_params[_] for _ in ['gal_names', 'zarr', 'aarr', 'earr', 'darr',
-                                'rarr', 'marr', 'dist_cent', 'ra', 'dec']]
+    gal_names, zarr, zsigma, aarr, asigma, earr, darr, rarr, marr, dist_cent,\
+        ra, dec = \
+        [in_params[_] for _ in ['gal_names', 'zarr', 'zsigma', 'aarr',
+                                'asigma', 'earr', 'darr', 'rarr', 'marr',
+                                'dist_cent', 'ra', 'dec']]
 
     gal = ['SMC', 'LMC']
     print ''
@@ -32,6 +36,24 @@ def check_diffs(in_params):
         print '\n* {}, Clusters with \delta z>{}: {}\n'.format(
             gal[j], z_diff, met_count)
 
+        err_c, err_thresh = 0, 0.2
+        for ez in zsigma[j][0]:
+            if ez <= err_thresh:
+                err_c += 1
+        perc = float(err_c)/len(zsigma[j][0])
+        print 'Perc of OC with z errors below {}: {}'.format(err_thresh, perc)
+
+        err_c, err_min, err_max = 0, 0.0029, 0.0031
+        for i, e in enumerate(zsigma[j][0]):
+            # convert from [Fe/H] to z
+            z = 10**zarr[j][0][i] * 0.0152
+            e_z = e*z*np.log(10.)
+            if err_min <= e_z <= err_max:
+                err_c += 1
+        perc = float(err_c)/len(zsigma[j][0])
+        print 'Perc of OC with {}<= z <={}: {}'.format(err_min, err_max,
+                                                       perc)
+
         # For each cluster.
         age_diff = []
         for i, name in enumerate(gal_names[j]):
@@ -50,8 +72,10 @@ def check_diffs(in_params):
         print '\n* {}, Clusters with \delta log(age)>{}: {}\n'.format(
             gal[j], a_diff, len(age_diff))
 
-        # import matplotlib.pyplot as plt
-        # import numpy as np
-        # print np.mean(age_diff), np.std(age_diff)
-        # plt.hist(age_diff, bins=50)
-        # plt.show()
+        err_c, err_thresh = 0, 0.1
+        for e in asigma[j][0]:
+            if e <= err_thresh:
+                err_c += 1
+        perc = float(err_c)/len(asigma[j][0])
+        print 'Perc of OC with age errors below {}: {}'.format(err_thresh,
+                                                               perc)

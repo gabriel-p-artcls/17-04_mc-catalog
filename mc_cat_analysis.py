@@ -148,6 +148,8 @@ def main():
 
     # Check for differences in ASteCA vs Lit values.
     check_diffs(in_params)
+    import pdb; pdb.set_trace()  # breakpoint b55292ea //
+    
 
     # # Read cross-matched clusters.
     # cross_match = get_cross_match_data()

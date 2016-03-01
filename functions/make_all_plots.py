@@ -1617,7 +1617,6 @@ def pl_errors(pl_params):
             zorder=1)
     ax.minorticks_on()
     cm = plt.cm.get_cmap('RdYlBu_r')
-
     # Introduce random scatter.
     if x_lab == '$[Fe/H]_{ASteCA}$':
         # 1% of axis ranges.
@@ -1630,8 +1629,9 @@ def pl_errors(pl_params):
     r_x = x + np.random.uniform(-ax_ext, ax_ext, len(x))
     SC = plt.scatter(r_x, y, marker='o', c=z, edgecolor='k', s=siz,
                      cmap=cm, lw=0.25, zorder=4)  # vmin=0., vmax=1.,
-    # horizontal histogram
+    # Horizontal histogram
     axHisty = plt.subplot(gs[i, 4:5])
+    axHisty.minorticks_on()
     axHisty.grid(b=True, which='major', color='white', linestyle='-', lw=0.5,
                  zorder=1)
     axHisty.hist(y, bins=20, orientation='horizontal', normed=1,
@@ -1666,7 +1666,6 @@ def pl_errors(pl_params):
 def make_errors_plots(in_params):
     '''
     '''
-
     zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, msigma,\
         rarr, cont_ind = [
             in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
@@ -1678,6 +1677,10 @@ def make_errors_plots(in_params):
     r_arr = rarr[0][0] + rarr[1][0]
     z_arr = zarr[0][0] + zarr[1][0]
     z_sigma = zsigma[0][0] + zsigma[1][0]
+    # # Transform [Fe/H] values to z
+    # z_arr = list((10**np.array(z_arr)) * 0.0152)
+    # z_sigma = list(np.array(z_sigma) * np.array(z_arr) * np.log(10.))
+    #
     a_arr = aarr[0][0] + aarr[1][0]
     a_sigma = asigma[0][0] + asigma[1][0]
     e_arr = earr[0][0] + earr[1][0]
@@ -1704,7 +1707,9 @@ def make_errors_plots(in_params):
     gs = gridspec.GridSpec(5, 5)
 
     errors_lst = [
-        [gs, 0, -2.4, 0.11, -0.03, 2.1, ord_z, ord_zs, ord_X, ord_r,
+        # [gs, 0, -2.4, 0.11, -0.03, 2.1, ord_z, ord_zs, ord_X, ord_r,
+        #     '$[Fe/H]$', '$e_{[Fe/H]}$'],
+        [gs, 0, 0., 0.016, 0., 0.01, ord_z, ord_zs, ord_X, ord_r,
             '$[Fe/H]$', '$e_{[Fe/H]}$'],
         [gs, 1, 6.51, 10.1, -0.03, 1.1, ord_a, ord_as, ord_X, ord_r,
             r'$\log(aye/yr)$', '$e_{\log(aye/yr)}$'],
