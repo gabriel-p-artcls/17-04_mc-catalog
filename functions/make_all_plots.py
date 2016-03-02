@@ -91,7 +91,7 @@ def as_vs_lit_plots(pl_params):
             elif ysigma[j] > 0. and xsigma[j] < 0.:
                 plt.errorbar(xy[0], xy[1], yerr=ysigma[j], ls='none',
                              color='k', elinewidth=0.5, zorder=1)
-    if i in [0, 1, 3, 4, 6, 7, 8, 9, 10]:
+    if i in [0, 1, 3, 4, 6, 7, 9, 10]:
         # Text box.
         ob = offsetbox.AnchoredText(gal_name, loc=4,
                                     prop=dict(size=xy_font_s - 4))
