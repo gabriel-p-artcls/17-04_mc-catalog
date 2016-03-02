@@ -91,13 +91,13 @@ def as_vs_lit_plots(pl_params):
             elif ysigma[j] > 0. and xsigma[j] < 0.:
                 plt.errorbar(xy[0], xy[1], yerr=ysigma[j], ls='none',
                              color='k', elinewidth=0.5, zorder=1)
-    if i in [0, 1]:
+    if i in [0, 1, 3, 4, 6, 7, 8, 9, 10]:
         # Text box.
         ob = offsetbox.AnchoredText(gal_name, loc=4,
                                     prop=dict(size=xy_font_s - 4))
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
-    if i in [2, 5, 8, 11, 14]:
+    if i in [2, 5, 8, 11]:
         # Text box.
         pres = [2, 2] if i in [2, 5, 8, 11] else [0, 0]
         text1 = r'$\bar{{y}}={:g}$'.format(round(par_mean_std[0], pres[0]))
@@ -259,10 +259,10 @@ def make_as_vs_lit_plot(in_params):
         [gs, 3, 5.8, 10.6, 5.8, 10.6, '$log(age/yr)_{ASteCA}$',
             '$log(age/yr)_{lit}$', '', aarr[1][0],
             asigma[1][0], aarr[1][1], asigma[1][1], earr[1][0], ext_min,
-            ext_max, [], ''],
+            ext_max, [], 'LMC'],
         [gs, 4, 5.8, 10.6, 5.8, 10.6, '$log(age/yr)_{ASteCA}$',
             '', '', aarr[0][0], asigma[0][0], aarr[0][1], asigma[0][1],
-            earr[0][0], ext_min, ext_max, [], ''],
+            earr[0][0], ext_min, ext_max, [], 'SMC'],
         # Asteca log(age) vs \delta log(age) with lit values.
         [gs, 5, 5.8, 10.6, -2.4, 2.4, '$log(age/yr)_{ASteCA}$',
             '$\Delta log(age/yr)$', '$E(B-V)_{ASteCA}$', age_all,
@@ -271,10 +271,10 @@ def make_as_vs_lit_plot(in_params):
         # Ext LMC/SMC
         [gs, 6, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{ASteCA}$',
             '$E(B-V)_{lit}$', '', earr[1][0], esigma[1][0], earr[1][1],
-            esigma[1][1], aarr[1][0], 6.6, 9.8, [], ''],
+            esigma[1][1], aarr[1][0], 6.6, 9.8, [], 'LMC'],
         [gs, 7, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{ASteCA}$',
             '', '', earr[0][0], esigma[0][0], earr[0][1], esigma[0][1],
-            aarr[0][0], 6.6, 9.8, [], ''],
+            aarr[0][0], 6.6, 9.8, [], 'SMC'],
         # Asteca E(B-V) vs \delta E(B-V) with lit values.
         [gs, 8, -0.04, 0.29, -0.21, 0.21, '$E(B-V)_{ASteCA}$',
             '$\Delta E(B-V)$', '$log(age/yr)_{ASteCA}$', ext_all, [],
@@ -283,10 +283,10 @@ def make_as_vs_lit_plot(in_params):
         # Dits mod LMC/SMC
         [gs, 9, dm_min, dm_max, dm_min, dm_max, '$(m-M)_{0;\,ASteCA}$',
             '$(m-M)_{0;\,lit}$', '', darr[1][0], dsigma[1][0], darr[1][1],
-            dsigma[1][1], aarr[1][0], 6.6, 9.8, [], ''],
+            dsigma[1][1], aarr[1][0], 6.6, 9.8, [], 'LMC'],
         [gs, 10, dm_min, dm_max, dm_min, dm_max, '$(m-M)_{0;\,ASteCA}$',
             '', '', darr[0][0], dsigma[0][0], darr[0][1], dsigma[0][1],
-            aarr[0][0], 6.6, 9.8, [], ''],
+            aarr[0][0], 6.6, 9.8, [], 'SMC'],
         # Asteca dist_mod vs \delta dist_mod with lit values.
         [gs, 11, dm_min, dm_max, -1. * dm_span, dm_span,
             '$(m-M)_{0;\,ASteCA}$', '$\Delta (m-M)_{0}$',

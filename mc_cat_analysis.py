@@ -84,11 +84,11 @@ def make_plots(in_params, bica_coords, cross_match, amr_lit):
     #     make_kde_plots(gal, j, in_params)
     #     print '{} KDE maps done.'.format(gal)
 
-    # make_as_vs_lit_plot(in_params)
-    # print 'ASteCA vs literature plots done.'
+    make_as_vs_lit_plot(in_params)
+    print 'ASteCA vs literature plots done.'
 
-    make_errors_plots(in_params)
-    print 'Errors plots done.'
+    # make_errors_plots(in_params)
+    # print 'Errors plots done.'
 
     # make_ra_dec_plots(in_params, bica_coords)
     # print 'RA vs DEC plots done.'
@@ -147,9 +147,7 @@ def main():
     in_params = get_in_params(r_path)
 
     # Check for differences in ASteCA vs Lit values.
-    check_diffs(in_params)
-    import pdb; pdb.set_trace()  # breakpoint b55292ea //
-    
+    # check_diffs(in_params)    
 
     # # Read cross-matched clusters.
     # cross_match = get_cross_match_data()
