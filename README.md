@@ -2,7 +2,7 @@
 
 - [mc-catalog](#mc-catalog)
   - [Top level](#top-level)
-    - [`ages_mass_lit/`](#ages_mass_lit)
+    - [`databases/`](#databases)
     - [`AMRs/`](#AMRs)
     - [`aux_funcs/`](#aux_funcs)
     - [`extinction_MCEV/`](#extinction_mcev)
@@ -47,7 +47,7 @@ photometry.
  Combined final results for the entire sample.
 
 
-### `ages_mass_lit/`
+### `databases/`
 
 * `BB_10.dat`
 

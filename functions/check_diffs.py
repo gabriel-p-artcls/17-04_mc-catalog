@@ -8,10 +8,10 @@ def check_diffs(in_params):
     parameters.
     '''
     gal_names, zarr, zsigma, aarr, asigma, earr, darr, rarr, marr, dist_cent,\
-        ra, dec = \
+        ra, dec, n_memb = \
         [in_params[_] for _ in ['gal_names', 'zarr', 'zsigma', 'aarr',
                                 'asigma', 'earr', 'darr', 'rarr', 'marr',
-                                'dist_cent', 'ra', 'dec']]
+                                'dist_cent', 'ra', 'dec', 'n_memb']]
 
     gal = ['SMC', 'LMC']
     print ''
@@ -79,3 +79,9 @@ def check_diffs(in_params):
         perc = float(err_c)/len(asigma[j][0])
         print 'Perc of OC with age errors below {}: {}'.format(err_thresh,
                                                                perc)
+
+        print 'Average mass for the {}: {}'.format(gal[j], np.mean(marr[j][0]))
+        print 'Average radius for the {}: {}'.format(gal[j],
+                                                     np.mean(rarr[j][0]))
+        print 'Average density for the {}: {}'.format(
+            gal[j], np.mean(n_memb[j]/(np.pi*np.array(rarr[j][0])**2)))
