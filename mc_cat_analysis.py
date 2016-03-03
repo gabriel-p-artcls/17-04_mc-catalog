@@ -6,7 +6,8 @@ from functions.get_params import params
 from functions.match_clusters import match_clusters
 from functions.check_diffs import check_diffs
 from functions.DBs_CMD import get_DBs_ASteCA_CMD_data
-from functions.make_all_plots import make_as_vs_lit_plot, make_kde_plots, \
+from functions.make_all_plots import make_as_vs_lit_plot,\
+    make_as_vs_lit_mass_plot, make_kde_plots, \
     make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
     make_concent_plot, make_radius_plot, make_probs_CI_plot, \
     make_dist_2_cents, make_cross_match, make_cross_match_age_ext, \
@@ -84,8 +85,11 @@ def make_plots(in_params, bica_coords, cross_match, amr_lit):
     #     make_kde_plots(gal, j, in_params)
     #     print '{} KDE maps done.'.format(gal)
 
-    make_as_vs_lit_plot(in_params)
-    print 'ASteCA vs literature plots done.'
+    # make_as_vs_lit_plot(in_params)
+    # print 'ASteCA vs literature plots done.'
+
+    make_as_vs_lit_mass_plot(in_params)
+    print 'ASteCA vs literature mass plot done.'
 
     # make_errors_plots(in_params)
     # print 'Errors plots done.'
@@ -147,7 +151,7 @@ def main():
     in_params = get_in_params(r_path)
 
     # Check for differences in ASteCA vs Lit values.
-    # check_diffs(in_params)    
+    # check_diffs(in_params)
 
     # # Read cross-matched clusters.
     # cross_match = get_cross_match_data()

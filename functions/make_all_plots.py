@@ -8,8 +8,6 @@ from matplotlib.ticker import MultipleLocator
 from matplotlib.patches import Ellipse
 # import statsmodels.api as sm
 from scipy import stats
-from scipy.stats import ks_2samp
-
 from ra_dec_map import ra_dec_plots
 from kde_2d import kde_map
 from amr_kde import age_met_rel
@@ -58,7 +56,7 @@ def as_vs_lit_plots(pl_params):
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
             zorder=1)
     ax.minorticks_on()
-    if i in [1, 4, 7, 10, 13]:
+    if i in [1, 4, 7, 10, 13] and x_lab != '$Mass_{ASteCA}\,(M_{\odot})$':
         ax.set_yticklabels([])
 
     # Introduce random scatter.
@@ -68,10 +66,13 @@ def as_vs_lit_plots(pl_params):
     elif x_lab == '$dm_{o;\,ASteCA}$':
         # 3% of axis ranges.
         ax_ext = (xmax - xmin) * 0.03
+    elif x_lab == '$Mass_{ASteCA}\,(M_{\odot})$':
+        # 1% of axis ranges.
+        ax_ext = (xmax - xmin) * 0.01
     else:
         # No scatter.
         ax_ext = 0.
-    # Add randoms scatter.
+    # Add random scatter.
     rs_x = xarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
     rs_y = yarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
 
@@ -88,7 +89,7 @@ def as_vs_lit_plots(pl_params):
             elif xsigma[j] > 0. and ysigma[j] < 0.:
                 plt.errorbar(xy[0], xy[1], xerr=xsigma[j],
                              ls='none', color='k', elinewidth=0.5, zorder=1)
-            elif ysigma[j] > 0. and xsigma[j] < 0.:
+            elif ysigma[j] > 0. and xsigma[j] <= 0.:
                 plt.errorbar(xy[0], xy[1], yerr=ysigma[j], ls='none',
                              color='k', elinewidth=0.5, zorder=1)
     if i in [0, 1, 3, 4, 6, 7, 9, 10]:
@@ -99,10 +100,11 @@ def as_vs_lit_plots(pl_params):
         ax.add_artist(ob)
     if i in [2, 5, 8, 11]:
         # Text box.
-        pres = [2, 2] if i in [2, 5, 8, 11] else [0, 0]
-        text1 = r'$\bar{{y}}={:g}$'.format(round(par_mean_std[0], pres[0]))
-        text2 = r'$\sigma={:g}$'.format(round(par_mean_std[1], pres[1]))
-        text = text1 + '\n' + text2
+        pres = [2, 2] if x_lab != '$Mass_{ASteCA}\,(M_{\odot})$' else [0, 0]
+        text1 = r'$\bar{{\Delta}}={:g}$'.format(round(par_mean_std[0],
+                                                pres[0]))
+        text2 = r'$\pm{:g}$'.format(round(par_mean_std[1], pres[1]))
+        text = text1 + text2
         ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s - 4))
         ob.patch.set(alpha=0.5)
         ax.add_artist(ob)
@@ -120,16 +122,15 @@ def make_as_vs_lit_plot(in_params):
     SMC and LMC plots.
     '''
 
-    zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, msigma, \
-        rarr = [in_params[_] for _ in
-                ['zarr', 'zsigma', 'aarr', 'asigma', 'earr', 'esigma', 'darr',
-                'dsigma', 'marr', 'msigma', 'rarr']]
+    zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, rarr =\
+        [in_params[_] for _ in
+         ['zarr', 'zsigma', 'aarr', 'asigma', 'earr', 'esigma', 'darr',
+          'dsigma', 'rarr']]
 
     # SMC/LMC
-    z_all, age_all, ext_all, dm_all, ma_all = [], [], [], [], []
-    z_delta, age_delta, ext_delta, dm_delta, ma_delta = [], [], [], [], []
+    z_all, age_all, ext_all, dm_all = [], [], [], []
+    z_delta, age_delta, ext_delta, dm_delta = [], [], [], []
     for k in [0, 1]:
-
         # \delta z as ASteCA - literature values.
         z_all += zarr[k][0]
         z_delta += list(np.array(zarr[k][0]) - np.array(zarr[k][1]))
@@ -142,78 +143,10 @@ def make_as_vs_lit_plot(in_params):
         # \delta dm as ASteCA - literature values.
         dm_all += darr[k][0]
         dm_delta += list(np.array(darr[k][0]) - np.array(darr[k][1]))
-        # \delta mass as ASteCA - literature values.
-        ma_all += marr[k][0]
-        ma_delta += list(np.array(marr[k][0]) - np.array(marr[k][1]))
-
-    # Shaded area that contains 9X% of the clusters.
-    # par_9x_span = []
-    # idx_9x = int(68 * len(zarr[k][0]) / 100)
-    # for span in [z_delta, age_delta, ext_delta, dm_delta]:
-    #     abs_v = sorted([abs(_) for _ in span])
-    #     par_9x_span.append(abs_v[idx_9x])
-
-    # K_S test.
-    # Null hypothesis: that 2 independent samples are drawn from the same
-    # continuous distribution (sample sizes can be different)
-    #
-    # If the K-S statistic is small or the p-value is high, then we cannot
-    # reject the hypothesis that the distributions of the two samples are the
-    # same.
-    # For two identical distributions the KS value will be small and
-    # the p-value high.
-
-    print 'SMC'
-    # Mean only for those clusters with ASteCA age values closer than 0.5
-    # to literature values.
-    age_smc_f = []
-    for a in list(np.array(aarr[0][0]) - np.array(aarr[0][1])):
-        if abs(a) <= 0.5:
-            age_smc_f.append(a)
-    print 'Age mean for Delta log(age)<0.5:', np.mean(age_smc_f)
-    print 'Met vals mean/std, AS:', np.mean(zarr[0][0]), \
-        np.std(zarr[0][0])
-    print 'Met vals mean/std, Lit:', np.mean(zarr[0][1]), \
-        np.std(zarr[0][1])
-    print 'Met vals CCC:', ccc(zarr[0][0], zarr[0][1])
-    print 'Met vals PCC', np.corrcoef(zarr[0][0], zarr[0][1])[0, 1]
-    ks, pval = ks_2samp(zarr[0][0], zarr[0][1])
-    print 'Met vals K-S:', ks, pval
-    print 'Age vals CCC:', ccc(aarr[0][0], aarr[0][1])
-    print 'Age vals PCC:', np.corrcoef(aarr[0][0], aarr[0][1])[0, 1]
-    ks, pval = ks_2samp(aarr[0][0], aarr[0][1])
-    print 'Age vals K-S:', ks, pval, '\n'
-
-    print 'LMC'
-    # Mean only for those clusters with ASteCA age values closer than 0.5
-    # to literature values.
-    age_lmc_f = []
-    for a in list(np.array(aarr[1][0]) - np.array(aarr[1][1])):
-        if abs(a) <= 0.5:
-            age_lmc_f.append(a)
-    print 'Age mean for Delta log(age)<0.5:', np.mean(age_lmc_f)
-    print 'Met vals mean/std, AS:', np.mean(zarr[1][0]), \
-        np.std(zarr[1][0])
-    # Filter out clusters with no metal values in the literature (.ods file)
-    z_lmc_lit_f, z_lmc_ast_f = [], []
-    for z_ast, z_lit in zip(*[zarr[1][0], zarr[1][1]]):
-        if abs(z_lit) < 10000:
-            z_lmc_lit_f.append(z_lit)
-            z_lmc_ast_f.append(z_ast)
-    print 'Met vals mean/std, Lit:', np.mean(z_lmc_lit_f), \
-        np.std(z_lmc_lit_f)
-    print 'Met vals CCC:', ccc(z_lmc_ast_f, z_lmc_lit_f)
-    print 'Met vals PCC:', np.corrcoef(z_lmc_ast_f, z_lmc_lit_f)[0, 1]
-    ks, pval = ks_2samp(z_lmc_ast_f, z_lmc_lit_f)
-    print 'Met vals K-S:', ks, pval
-    print 'Age vals CCC:', ccc(aarr[1][0], aarr[1][1])
-    print 'Age vals PCC:', np.corrcoef(aarr[1][0], aarr[1][1])[0, 1]
-    ks, pval = ks_2samp(aarr[1][0], aarr[1][1])
-    print 'Age vals K-S:', ks, pval
 
     # print 'Gal  Mean  StandDev'
     par_mean_std = []
-    for span in [z_delta, age_delta, ext_delta, dm_delta, ma_delta]:
+    for span in [z_delta, age_delta, ext_delta, dm_delta]:
         # Filter out -9999999999.9 values added in get_params to replace
         # missing values in .ods file.
         span_filter = []
@@ -292,24 +225,71 @@ def make_as_vs_lit_plot(in_params):
             '$dm_{o;\,ASteCA}$', '$\Delta dm_{o}$',
             '$\log(age/yr)_{ASteCA}$', dm_all, [],
             dm_delta, [], age_all, 6.6, 9.8, par_mean_std[3], ''],
-
-        # # ASteCA vs literature masses.
-        # [gs, 8, 10., 5000., 10., 5000., '$M_{ASteCA}\,(M_{\odot})$',
-        #     '$M_{lit}\,(M_{\odot})$', '$log(age/yr)_{ASteCA}$', marr[k][0],
-        #     msigma[k][0], marr[k][1], msigma[k][1], aarr[k][0], 6.6, 9.8, [],
-        #     galax],
-        # [gs, 9, 10., 4000., -2000., 2000., '$M_{ASteCA}\,(M_{\odot})$',
-        #     '$\Delta M_{\odot}$', '$log(age/yr)_{ASteCA}$', marr[k][0],
-        #     msigma[k][0], ma_delta, [], aarr[k][0], 6.6, 9.8, par_mean_std[4],
-        #     galax]
     ]
-    #
+
     for pl_params in as_lit_pl_lst:
         as_vs_lit_plots(pl_params)
 
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/as_vs_lit_S-LMC.png', dpi=300, bbox_inches='tight')
+
+
+def make_as_vs_lit_mass_plot(in_params):
+    '''
+    Prepare parameters and call function to generate ASteca vs literature
+    SMC and LMC plots.
+    '''
+
+    aarr, marr, msigma = [in_params[_] for _ in ['aarr', 'marr', 'msigma']]
+
+    # SMC/LMC
+    age_all, ma_all, ma_delta, ma_delta_err = [], [], [], []
+    for k in [0, 1]:
+        age_all += aarr[k][0]
+        # \delta mass as ASteCA - literature values.
+        ma_all += marr[k][0]
+        ma_delta += list(np.array(marr[k][0]) - np.array(marr[k][1]))
+        ma_delta_err += list(np.sqrt(np.array(msigma[k][0])**2 +
+                             np.array(msigma[k][1])**2))
+
+    # print 'Gal  Mean  StandDev'
+    par_mean_std = []
+    # Filter out -9999999999.9 values added in get_params to replace
+    # missing values in .ods file.
+    span_filter = []
+    for _ in ma_delta:
+        if abs(_) < 30000:
+            span_filter.append(_)
+    if span_filter:
+        p_mean, p_stdev = np.mean(span_filter), np.std(span_filter)
+        par_mean_std.append([p_mean, p_stdev])
+    else:
+        par_mean_std.append([0., 0.])
+
+    # Generate ASteca vs literature plots.
+    fig = plt.figure(figsize=(21, 31.25))  # create the top-level container
+    # gs = gridspec.GridSpec(2, 4, width_ratios=[1, 0.35, 1, 0.35])
+    gs = gridspec.GridSpec(5, 3)
+
+    as_lit_pl_lst = [
+        # ASteCA vs literature masses.
+        [gs, 1, 10., 3999., 10., 3999., '$Mass_{ASteCA}\,(M_{\odot})$',
+            '$Mass_{lit}\,(M_{\odot})$', '', marr[0][0],
+            msigma[0][0], marr[0][1], msigma[0][1], aarr[0][0], 6.6, 9.8, [],
+            'SMC'],
+        [gs, 2, 10., 3999., -3500., 3500., '$Mass_{ASteCA}\,(M_{\odot})$',
+            '$\Delta Mass\,(M_{\odot})$', '$\log(age/yr)_{ASteCA}$',
+            ma_all, [0.]*len(ma_all), ma_delta, ma_delta_err, age_all,
+            6.6, 9.8, par_mean_std[0], '']
+    ]
+
+    for pl_params in as_lit_pl_lst:
+        as_vs_lit_plots(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    plt.savefig('figures/as_vs_lit_mass.png', dpi=300, bbox_inches='tight')
 
 
 def kde_plots(pl_params):
