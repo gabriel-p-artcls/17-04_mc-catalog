@@ -61,8 +61,8 @@ def as_vs_lit_plots(pl_params):
 
     # Introduce random scatter.
     if x_lab == '$[Fe/H]_{ASteCA}$':
-        # 1% of axis ranges.
-        ax_ext = (xmax - xmin) * 0.01
+        # 2% of axis ranges.
+        ax_ext = (xmax - xmin) * 0.02
     elif x_lab == '$dm_{o;\,ASteCA}$':
         # 3% of axis ranges.
         ax_ext = (xmax - xmin) * 0.03
@@ -122,24 +122,60 @@ def make_as_vs_lit_plot(in_params):
          ['zarr', 'zsigma', 'aarr', 'asigma', 'earr', 'esigma', 'darr',
           'dsigma', 'rarr']]
 
-    # SMC/LMC
+    # par_all, par_delta, par_delta_err = [[[], [], [], []] for _ in range(3)]
+    # sigmas = [zsigma, asigma, esigma, dsigma]
+    # for i, param in enumerate([zarr, aarr, earr, darr]):
+    #     # SMC/LMC
+    #     for k in [0, 1]:
+    #         for j, p_lit in enumerate(param[k][1]):
+    #             # Filter out Piatti (2011) clusters that only have ages
+    #             # assigned.
+    #             if abs(zarr[k][1][j]) < 30000.:
+    #                 # \delta as: ASteCA - literature values.
+    #                 par_all[i].append(param[k][0][j])
+    #                 par_delta[i].append(param[k][0][j] - param[k][1][j])
+    #                 par_delta_err[i].append(np.sqrt(sigmas[i][k][0][j]**2 +
+    #                                                 sigmas[i][k][1][j]**2))
+    #             else:
+    #                 print aarr[k][1][j], earr[k][1][j]
+    # z_all, age_all, ext_all, dm_all = par_all
+    # z_delta, age_delta, ext_delta, dm_delta = par_delta
+    # z_delta_err, age_delta_err, ext_delta_err, dm_delta_err = par_delta_err
+    # par_mean_std = []
+    # for span in par_delta:
+    #     par_mean_std.append([np.mean(span), np.std(span)])
+
     z_all, age_all, ext_all, dm_all = [], [], [], []
     z_delta, age_delta, ext_delta, dm_delta = [], [], [], []
+    z_delta_e, age_delta_e, ext_delta_e, dm_delta_e = [], [], [], []
+    # SMC/LMC
     for k in [0, 1]:
         # \delta z as ASteCA - literature values.
         z_all += zarr[k][0]
         z_delta += list(np.array(zarr[k][0]) - np.array(zarr[k][1]))
+        z_delta_e += list(np.sqrt(np.array(zsigma[k][0])**2 +
+                          np.array(zsigma[k][1])**2))
         # \delta log(age) as ASteCA - literature values.
         age_all += aarr[k][0]
         age_delta += list(np.array(aarr[k][0]) - np.array(aarr[k][1]))
+        age_delta_e += list(np.sqrt(np.array(asigma[k][0])**2 +
+                            np.array(asigma[k][1])**2))
         # \delta E(B-V) as ASteCA - literature values.
         ext_all += earr[k][0]
         ext_delta += list(np.array(earr[k][0]) - np.array(earr[k][1]))
+        ext_delta_e += list(np.sqrt(np.array(esigma[k][0])**2 +
+                            np.array(esigma[k][1])**2))
         # \delta dm as ASteCA - literature values.
         dm_all += darr[k][0]
         dm_delta += list(np.array(darr[k][0]) - np.array(darr[k][1]))
+        dm_delta_e += list(np.sqrt(np.array(dsigma[k][0])**2 +
+                           np.array(dsigma[k][1])**2))
 
-    # print 'Gal  Mean  StandDev'
+    # Replace huge error values for clusters with no extinctions in the
+    # literature, with small values. Else they are plotted in the 1:1 plot.
+    ext_delta_e = [min(99., abs(_)) for _ in ext_delta_e]
+
+    # Gal Mean & StandDev
     par_mean_std = []
     for span in [z_delta, age_delta, ext_delta, dm_delta]:
         # Filter out -9999999999.9 values added in get_params to replace
@@ -178,10 +214,10 @@ def make_as_vs_lit_plot(in_params):
             '', zarr[0][0], zsigma[0][0], zarr[0][1],
             zsigma[0][1], aarr[0][0], 6.6, 9.8, [], 'SMC'],
         # Asteca z vs \delta z with lit values.
-        [gs, 2, -2.4, 0.45, -1.43, 1.43, '$[Fe/H]_{ASteCA}$',
+        [gs, 2, -2.4, 0.45, -1.83, 1.43, '$[Fe/H]_{ASteCA}$',
             '$\Delta [Fe/H]$', '$\log(age/yr)_{ASteCA}$', z_all,
-            [], z_delta, [], age_all, 6.6, 9.8, par_mean_std[0],
-            ''],
+            [0.]*len(z_all), z_delta, z_delta_e, age_all, 6.6, 9.8,
+            par_mean_std[0], ''],
 
         # Age LMC/SMC
         [gs, 3, 5.8, 10.6, 5.8, 10.6, '$\log(age/yr)_{ASteCA}$',
@@ -194,7 +230,8 @@ def make_as_vs_lit_plot(in_params):
         # Asteca log(age) vs \delta log(age) with lit values.
         [gs, 5, 5.8, 10.6, -2.4, 2.4, '$\log(age/yr)_{ASteCA}$',
             '$\Delta \log(age/yr)$', '$E(B-V)_{ASteCA}$', age_all,
-            [], age_delta, [], ext_all, ext_min, ext_max, par_mean_std[1], ''],
+            [0.]*len(age_all), age_delta, age_delta_e, ext_all, ext_min,
+            ext_max, par_mean_std[1], ''],
 
         # Ext LMC/SMC
         [gs, 6, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{ASteCA}$',
@@ -205,8 +242,9 @@ def make_as_vs_lit_plot(in_params):
             aarr[0][0], 6.6, 9.8, [], 'SMC'],
         # Asteca E(B-V) vs \delta E(B-V) with lit values.
         [gs, 8, -0.04, 0.29, -0.21, 0.21, '$E(B-V)_{ASteCA}$',
-            '$\Delta E(B-V)$', '$\log(age/yr)_{ASteCA}$', ext_all, [],
-            ext_delta, [], age_all, 6.6, 9.8, par_mean_std[2], ''],
+            '$\Delta E(B-V)$', '$\log(age/yr)_{ASteCA}$', ext_all,
+            [0.]*len(ext_all), ext_delta, ext_delta_e, age_all, 6.6, 9.8,
+            par_mean_std[2], ''],
 
         # Dits mod LMC/SMC
         [gs, 9, dm_min, dm_max, dm_min, dm_max, '$dm_{o;\,ASteCA}$',
@@ -218,8 +256,8 @@ def make_as_vs_lit_plot(in_params):
         # Asteca dist_mod vs \delta dist_mod with lit values.
         [gs, 11, dm_min, dm_max, -1. * dm_span, dm_span,
             '$dm_{o;\,ASteCA}$', '$\Delta dm_{o}$',
-            '$\log(age/yr)_{ASteCA}$', dm_all, [],
-            dm_delta, [], age_all, 6.6, 9.8, par_mean_std[3], ''],
+            '$\log(age/yr)_{ASteCA}$', dm_all, [0.]*len(dm_all),
+            dm_delta, dm_delta_e, age_all, 6.6, 9.8, par_mean_std[3], ''],
     ]
 
     for pl_params in as_lit_pl_lst:
@@ -317,6 +355,8 @@ def make_as_vs_lit_mass_plot(in_params):
     age_all, ma_all, ma_delta, ma_delta_err = [], [], [], []
     for k in [0, 1]:
         for i, a in enumerate(aarr[k][0]):
+            # Filter out -9999999999.9 values added in get_params to replace
+            # missing values in .ods file.
             if abs(msigma[k][1][i]) < 30000.:
                 age_all.append(a)
                 # \delta mass as ASteCA - literature values.
@@ -325,19 +365,8 @@ def make_as_vs_lit_mass_plot(in_params):
                 ma_delta_err.append(np.sqrt(msigma[k][0][i]**2 +
                                             msigma[k][1][i]**2))
 
-    # print 'Gal  Mean  StandDev'
-    par_mean_std = []
-    # Filter out -9999999999.9 values added in get_params to replace
-    # missing values in .ods file.
-    span_filter = []
-    for _ in ma_delta:
-        if abs(_) < 30000:
-            span_filter.append(_)
-    if span_filter:
-        p_mean, p_stdev = np.mean(span_filter), np.std(span_filter)
-        par_mean_std.append([p_mean, p_stdev])
-    else:
-        par_mean_std.append([0., 0.])
+    # Mean & StandDev
+    par_mean_std = [np.mean(ma_delta), np.std(ma_delta)]
 
     # Replace huge mass error values for clusters with no masses in the
     # literature, with small values. Else they are plotted a the bottom

@@ -125,6 +125,11 @@ def check_diffs(in_params):
                 z_xmc_ast_f.append(z_ast)
         print 'Met vals mean/std, Lit:', np.mean(z_xmc_lit_f), \
             np.std(z_xmc_lit_f)
+        print 'Met vals mean diff:', np.mean(np.array(z_xmc_ast_f) -
+                                             np.array(z_xmc_lit_f))
+        print 'Met vals median diff:', np.median(np.array(z_xmc_ast_f) -
+                                                 np.array(z_xmc_lit_f)), '\n'
+
         print 'Met vals CCC:', ccc(z_xmc_ast_f, z_xmc_lit_f)
         print 'Met vals PCC:', np.corrcoef(z_xmc_ast_f, z_xmc_lit_f)[0, 1]
         ks, pval = ks_2samp(z_xmc_ast_f, z_xmc_lit_f)
