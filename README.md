@@ -533,3 +533,19 @@ fitted for the age and the other two for the metallicity.
 * H88-131
 1. DA: defaults; GA: p_mut=0.35
 * NGC294, HW85
+
+#### `20th_run`
+
+Re-process L45 and L50 with better radii estimates. Originally, the values used
+where:
+rad_L45 = 162.5 (semi); rad_L50 = 170. (auto)
+
+new values are:
+rad_L45 = 100. (auto); rad_L50 = 100 (semi)
+
+Since no substantial change is made, these new values are incorporated into the
+3rd and 4th run where L50 and L45 where processed, respectively.
+KDE probs are borrowed from the previous run, since they were not obtained
+here.
+L50 had its age corrected to 7.85 (that's why it differs from the output fig)
+because of ASteCA's issue #248.

@@ -18,16 +18,23 @@ def check_diffs(in_params):
     parameters.
     '''
     gal_names, zarr, zsigma, aarr, asigma, earr, darr, rarr, marr, dist_cent,\
-        ra, dec, n_memb = \
+        e_d_cent, ra, dec, n_memb, rad_pc = \
         [in_params[_] for _ in ['gal_names', 'zarr', 'zsigma', 'aarr',
                                 'asigma', 'earr', 'darr', 'rarr', 'marr',
-                                'dist_cent', 'ra', 'dec', 'n_memb']]
+                                'dist_cent', 'e_d_cent', 'ra', 'dec',
+                                'n_memb', 'rad_pc']]
 
     gal = ['SMC', 'LMC']
     print ''
 
     # For SMC and LMC.
     for j in [0, 1]:
+
+        for i, name in enumerate(gal_names[j]):
+            a, r = aarr[j][0][i], rad_pc[j][i]
+            if a < 8.5 and r > 12.5:
+                print '{} {}: age: {} ; rad: {} pc'.format(gal[j], name, a, r)
+        print ''
 
         # For each cluster.
         met_count = 0
@@ -64,6 +71,16 @@ def check_diffs(in_params):
         print 'Perc of OC with {}<= z <={}: {}'.format(err_min, err_max,
                                                        perc)
 
+        default_fe_h, feh_sum = [-0.7, -0.4], 0.
+        for i, fe_h_lit in enumerate(zarr[j][1]):
+            feh = default_fe_h[j]
+            if (feh - 0.01) <= fe_h_lit <= (feh + 0.01):
+                feh_sum += 1
+        tot_feh = len(zarr[j][1]) if j == 0 else (len(zarr[j][1]) - 36)
+        perc = float(feh_sum)/tot_feh
+        print 'Perc of OC with lit values [Fe/H]~{}: {}'.format(
+            feh, perc)
+
         # For each cluster.
         age_diff = []
         for i, name in enumerate(gal_names[j]):
@@ -90,6 +107,15 @@ def check_diffs(in_params):
         print 'Perc of OC with age errors below {}: {}'.format(err_thresh,
                                                                perc)
 
+        min_rgc, max_rgc = 3500., 5500.
+        min_a, max_a = 7.5, 8.5
+        for i, a in enumerate(aarr[j][0]):
+            R_gc = dist_cent[j][i]
+            if min_rgc < R_gc < max_rgc and min_a < a < max_a:
+                print 'OCs in {} < R_gc < {} & {} < age < {}: {}'.format(
+                    min_rgc, max_rgc, min_a, max_a, gal_names[j][i])
+                print 'OC R_gc error:', e_d_cent[j][i]
+
         print 'Average mass for the {}: {}'.format(gal[j], np.mean(marr[j][0]))
         print 'Average radius for the {}: {}'.format(gal[j],
                                                      np.mean(rarr[j][0]))
@@ -109,6 +135,8 @@ def check_diffs(in_params):
         print '\n', gal[j]
         # Mean only for those clusters with ASteCA age values closer than 0.5
         # to literature values.
+        print 'Mean literature e_log(age) for {}: {}'.format(
+            gal[j], np.mean(asigma[j][1]))
         age_xmc_f = []
         for a in list(np.array(aarr[j][0]) - np.array(aarr[j][1])):
             if abs(a) <= 0.5:
