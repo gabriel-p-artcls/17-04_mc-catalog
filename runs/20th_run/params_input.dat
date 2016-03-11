@@ -340,7 +340,7 @@ PS_a					6.		10.1    0.05
 PS_e					0.		0.08		0.01
 #    Distance modulus		SMC
 # SMC
-PS_d					18.8	19.2	0.05
+PS_d                    18.86  19.061  0.02
 # LMC
 #PS_d					18.3	18.7	0.05
 #    Total initial mass (in solar masses).

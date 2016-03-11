@@ -17,11 +17,11 @@ def check_diffs(in_params):
     check differences between ASteCA values and literature values for given
     parameters.
     '''
-    gal_names, zarr, zsigma, aarr, asigma, earr, darr, rarr, marr, dist_cent,\
-        e_d_cent, ra, dec, n_memb, rad_pc = \
+    gal_names, zarr, zsigma, aarr, asigma, earr, darr, dsigma, rarr, marr,\
+        dist_cent, e_d_cent, ra, dec, n_memb, rad_pc = \
         [in_params[_] for _ in ['gal_names', 'zarr', 'zsigma', 'aarr',
-                                'asigma', 'earr', 'darr', 'rarr', 'marr',
-                                'dist_cent', 'e_d_cent', 'ra', 'dec',
+                                'asigma', 'earr', 'darr', 'dsigma', 'rarr',
+                                'marr', 'dist_cent', 'e_d_cent', 'ra', 'dec',
                                 'n_memb', 'rad_pc']]
 
     gal = ['SMC', 'LMC']
@@ -114,9 +114,20 @@ def check_diffs(in_params):
             if min_rgc < R_gc < max_rgc and min_a < a < max_a:
                 print 'OCs in {} < R_gc < {} & {} < age < {}: {}'.format(
                     min_rgc, max_rgc, min_a, max_a, gal_names[j][i])
-                print 'OC R_gc error:', e_d_cent[j][i]
+                print '  OC R_gc error:', e_d_cent[j][i]
 
-        print 'Average mass for the {}: {}'.format(gal[j], np.mean(marr[j][0]))
+        print ''
+        e_rgc_max = 100.
+        for i, R_gc in enumerate(dist_cent[j]):
+            e_rgc = e_d_cent[j][i]
+            if e_rgc < e_rgc_max:
+                print ("OCs w e_R_gc < {}: {} / ra, dec, dm, e_dm: "
+                       "{}, {}, {}, {}".format(
+                            e_rgc_max, gal_names[j][i], ra[j][i],
+                            dec[j][i], darr[j][0][i], dsigma[j][0][i]))
+
+        print '\nAverage mass for the {}: {}'.format(gal[j],
+                                                     np.mean(marr[j][0]))
         print 'Average radius for the {}: {}'.format(gal[j],
                                                      np.mean(rarr[j][0]))
         print 'Average density for the {}: {}'.format(

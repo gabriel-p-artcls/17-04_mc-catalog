@@ -108,4 +108,7 @@ def dist_2_cloud_center(gal, ra_deg, dec_deg, dist_mod, e_dm):
 
 
 if __name__ == "__main__":
-    dist_2_cloud_center(0, 12.75, -72.5, 18.52, 0.02)
+    # L115
+    dist_2_cloud_center(0, 29.1833333333, -74.2194444444, 18.96, 0.06)
+    # L114
+    dist_2_cloud_center(0, 27.5791666667, -74.3561111111, 18.96, 0.06)

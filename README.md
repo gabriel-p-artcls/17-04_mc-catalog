@@ -547,5 +547,3 @@ Since no substantial change is made, these new values are incorporated into the
 3rd and 4th run where L50 and L45 where processed, respectively.
 KDE probs are borrowed from the previous run, since they were not obtained
 here.
-L50 had its age corrected to 7.85 (that's why it differs from the output fig)
-because of ASteCA's issue #248.
