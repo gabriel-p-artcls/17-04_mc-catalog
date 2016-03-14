@@ -547,3 +547,7 @@ Since no substantial change is made, these new values are incorporated into the
 3rd and 4th run where L50 and L45 where processed, respectively.
 KDE probs are borrowed from the previous run, since they were not obtained
 here.
+
+Re-process NGC294 and HW85 fixing all parameters except metallicity, with
+a binary fraction of 0.
+Metallicity of NGC294 changed 0.001 --> 0.0005, due to issue #248.
