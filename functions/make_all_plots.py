@@ -60,12 +60,9 @@ def as_vs_lit_plots(pl_params):
         ax.set_yticklabels([])
 
     # Introduce random scatter.
-    if x_lab == '$[Fe/H]_{ASteCA}$':
-        # 2% of axis ranges.
+    if i in [0, 1, 2, 9, 10, 11]:
+        # 2% of [Fe/H], distance modulus axis ranges.
         ax_ext = (xmax - xmin) * 0.02
-    elif x_lab == '$dm_{o;\,ASteCA}$':
-        # 3% of axis ranges.
-        ax_ext = (xmax - xmin) * 0.03
     else:
         # No scatter.
         ax_ext = 0.
@@ -122,29 +119,6 @@ def make_as_vs_lit_plot(in_params):
          ['zarr', 'zsigma', 'aarr', 'asigma', 'earr', 'esigma', 'darr',
           'dsigma', 'rarr']]
 
-    # par_all, par_delta, par_delta_err = [[[], [], [], []] for _ in range(3)]
-    # sigmas = [zsigma, asigma, esigma, dsigma]
-    # for i, param in enumerate([zarr, aarr, earr, darr]):
-    #     # SMC/LMC
-    #     for k in [0, 1]:
-    #         for j, p_lit in enumerate(param[k][1]):
-    #             # Filter out Piatti (2011) clusters that only have ages
-    #             # assigned.
-    #             if abs(zarr[k][1][j]) < 30000.:
-    #                 # \delta as: ASteCA - literature values.
-    #                 par_all[i].append(param[k][0][j])
-    #                 par_delta[i].append(param[k][0][j] - param[k][1][j])
-    #                 par_delta_err[i].append(np.sqrt(sigmas[i][k][0][j]**2 +
-    #                                                 sigmas[i][k][1][j]**2))
-    #             else:
-    #                 print aarr[k][1][j], earr[k][1][j]
-    # z_all, age_all, ext_all, dm_all = par_all
-    # z_delta, age_delta, ext_delta, dm_delta = par_delta
-    # z_delta_err, age_delta_err, ext_delta_err, dm_delta_err = par_delta_err
-    # par_mean_std = []
-    # for span in par_delta:
-    #     par_mean_std.append([np.mean(span), np.std(span)])
-
     z_all, age_all, ext_all, dm_all = [], [], [], []
     z_delta, age_delta, ext_delta, dm_delta = [], [], [], []
     z_delta_e, age_delta_e, ext_delta_e, dm_delta_e = [], [], [], []
@@ -196,7 +170,9 @@ def make_as_vs_lit_plot(in_params):
     # gs = gridspec.GridSpec(2, 4, width_ratios=[1, 0.35, 1, 0.35])
     gs = gridspec.GridSpec(5, 3)
 
-    ext_min, ext_max = 0., 0.3
+    z_min, z_max = -1.3, 0.
+    a_min, a_max = 6.6, 9.8
+    ext_min, ext_max = 0., 0.25
     # dm_min, dm_max = 18.62, 19.21
     # dm_min, dm_max = 18.21, 18.79
     dm_min, dm_max = 18.21, 19.19
@@ -209,55 +185,56 @@ def make_as_vs_lit_plot(in_params):
         # Metallicity LMC/SMC
         [gs, 0, -2.4, 0.45, -2.4, 0.45, '$[Fe/H]_{ASteCA}$', '$[Fe/H]_{lit}$',
             '', zarr[1][0], zsigma[1][0], zarr[1][1],
-            zsigma[1][1], aarr[1][0], 6.6, 9.8, [], 'LMC'],
+            zsigma[1][1], darr[1][0], dm_min, dm_max, [], 'LMC'],
         [gs, 1, -2.4, 0.45, -2.4, 0.45, '$[Fe/H]_{ASteCA}$', '',
             '', zarr[0][0], zsigma[0][0], zarr[0][1],
-            zsigma[0][1], aarr[0][0], 6.6, 9.8, [], 'SMC'],
+            zsigma[0][1], darr[0][0], dm_min, dm_max, [], 'SMC'],
         # Asteca z vs \delta z with lit values.
         [gs, 2, -2.4, 0.45, -1.83, 1.43, '$[Fe/H]_{ASteCA}$',
-            '$\Delta [Fe/H]$', '$\log(age/yr)_{ASteCA}$', z_all,
-            [0.]*len(z_all), z_delta, z_delta_e, age_all, 6.6, 9.8,
+            '$\Delta [Fe/H]$', '$\mu_{0; ASteCA}$', z_all,
+            [0.]*len(z_all), z_delta, z_delta_e, dm_all, dm_min, dm_max,
             par_mean_std[0], ''],
 
         # Age LMC/SMC
         [gs, 3, 5.8, 10.6, 5.8, 10.6, '$\log(age/yr)_{ASteCA}$',
             '$\log(age/yr)_{lit}$', '', aarr[1][0],
-            asigma[1][0], aarr[1][1], asigma[1][1], earr[1][0], ext_min,
-            ext_max, [], 'LMC'],
+            asigma[1][0], aarr[1][1], asigma[1][1], zarr[1][0], z_min,
+            z_max, [], 'LMC'],
         [gs, 4, 5.8, 10.6, 5.8, 10.6, '$\log(age/yr)_{ASteCA}$',
             '', '', aarr[0][0], asigma[0][0], aarr[0][1], asigma[0][1],
-            earr[0][0], ext_min, ext_max, [], 'SMC'],
+            zarr[0][0], z_min, z_max, [], 'SMC'],
         # Asteca log(age) vs \delta log(age) with lit values.
         [gs, 5, 5.8, 10.6, -2.4, 2.4, '$\log(age/yr)_{ASteCA}$',
-            '$\Delta \log(age/yr)$', '$E(B-V)_{ASteCA}$', age_all,
-            [0.]*len(age_all), age_delta, age_delta_e, ext_all, ext_min,
-            ext_max, par_mean_std[1], ''],
+            '$\Delta \log(age/yr)$', '$[Fe/H]_{ASteCA}$', age_all,
+            [0.]*len(age_all), age_delta, age_delta_e, z_all, z_min,
+            z_max, par_mean_std[1], ''],
 
         # Ext LMC/SMC
         [gs, 6, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{ASteCA}$',
             '$E(B-V)_{lit}$', '', earr[1][0], esigma[1][0], earr[1][1],
-            esigma[1][1], aarr[1][0], 6.6, 9.8, [], 'LMC'],
+            esigma[1][1], aarr[1][0], a_min, a_max, [], 'LMC'],
         [gs, 7, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{ASteCA}$',
             '', '', earr[0][0], esigma[0][0], earr[0][1], esigma[0][1],
-            aarr[0][0], 6.6, 9.8, [], 'SMC'],
+            aarr[0][0], a_min, a_max, [], 'SMC'],
         # Asteca E(B-V) vs \delta E(B-V) with lit values.
         [gs, 8, -0.04, 0.29, -0.21, 0.21, '$E(B-V)_{ASteCA}$',
             '$\Delta E(B-V)$', '$\log(age/yr)_{ASteCA}$', ext_all,
-            [0.]*len(ext_all), ext_delta, ext_delta_e, age_all, 6.6, 9.8,
+            [0.]*len(ext_all), ext_delta, ext_delta_e, age_all, a_min, a_max,
             par_mean_std[2], ''],
 
         # Dits mod LMC/SMC
-        [gs, 9, dm_min, dm_max, dm_min, dm_max, '$dm_{o;\,ASteCA}$',
-            '$dm_{o;\,lit}$', '', darr[1][0], dsigma[1][0], darr[1][1],
-            dsigma[1][1], aarr[1][0], 6.6, 9.8, [], 'LMC'],
-        [gs, 10, dm_min, dm_max, dm_min, dm_max, '$dm_{o;\,ASteCA}$',
+        [gs, 9, dm_min, dm_max, dm_min, dm_max, '$\mu_{0;\,ASteCA}$',
+            '$\mu_{0;\,lit}$', '', darr[1][0], dsigma[1][0], darr[1][1],
+            dsigma[1][1], earr[1][0], ext_min, ext_max, [], 'LMC'],
+        [gs, 10, dm_min, dm_max, dm_min, dm_max, '$\mu_{0;\,ASteCA}$',
             '', '', darr[0][0], dsigma[0][0], darr[0][1], dsigma[0][1],
-            aarr[0][0], 6.6, 9.8, [], 'SMC'],
+            earr[0][0], ext_min, ext_max, [], 'SMC'],
         # Asteca dist_mod vs \delta dist_mod with lit values.
         [gs, 11, dm_min, dm_max, -1. * dm_span, dm_span,
-            '$dm_{o;\,ASteCA}$', '$\Delta dm_{o}$',
-            '$\log(age/yr)_{ASteCA}$', dm_all, [0.]*len(dm_all),
-            dm_delta, dm_delta_e, age_all, 6.6, 9.8, par_mean_std[3], ''],
+            '$\mu_{0;\,ASteCA}$', '$\Delta \mu_{0}$',
+            '$E(B-V)_{ASteCA}$', dm_all, [0.]*len(dm_all),
+            dm_delta, dm_delta_e, ext_all, ext_min, ext_max, par_mean_std[3],
+            ''],
     ]
 
     for pl_params in as_lit_pl_lst:
@@ -1791,7 +1768,7 @@ def make_errors_plots(in_params):
         [gs, 2, -0.02, 0.32, -0.01, 0.11, ord_e, ord_es, ord_X, ord_r,
             '$E_{B-V}$', '$e_{E_{B-V}}$'],
         [gs, 3, 18.28, 19.19, 0.007, 0.083, ord_d, ord_ds, ord_X, ord_r,
-            '$dm_{\circ}$', '$e_{dm_{\circ}}$'],
+            '$\mu_{0}$', '$e_{\mu_{0}}$'],
         [gs, 4, -210, 30000, -210, 4450, ord_m, ord_ms, ord_X, ord_r,
             '$Mass\,(M_{\odot})$', '$e_{Mass}$']
     ]

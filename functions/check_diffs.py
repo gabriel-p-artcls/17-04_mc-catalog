@@ -1,6 +1,6 @@
 
 import numpy as np
-from scipy.stats import ks_2samp
+from scipy.stats import ks_2samp, pearsonr
 
 
 def ccc(l1, l2):
@@ -25,22 +25,23 @@ def check_diffs(in_params):
                                 'n_memb', 'rad_pc']]
 
     gal = ['SMC', 'LMC']
-    print ''
-
+    age_xmc_f_all = []
     # For SMC and LMC.
     for j in [0, 1]:
+        print '\n*** {} ***\n'.format(gal[j])
 
+        print '{} clusters in age/rad range:'.format(gal[j])
         for i, name in enumerate(gal_names[j]):
             a, r = aarr[j][0][i], rad_pc[j][i]
             if a < 8.5 and r > 12.5:
-                print '{} {}: age: {} ; rad: {} pc'.format(gal[j], name, a, r)
+                print '{}: age: {} ; rad: {} pc'.format(name, a, r)
         print ''
 
         # For each cluster.
         met_count = 0
         for i, name in enumerate(gal_names[j]):
             # Metallicity.
-            z_diff = 0.5
+            z_diff = 0.75
             diff = zarr[j][0][i] - zarr[j][1][i]
             if zarr[j][1][i] > -99.:
                 if abs(diff) > z_diff:
@@ -50,8 +51,26 @@ def check_diffs(in_params):
                     print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
                         gal[j], name, zarr[j][0][i], zarr[j][1][i], rel_diff)
 
-        print '\n* {}, Clusters with \delta z>{}: {}\n'.format(
+        print '{}, Clusters with \delta z>{}: {}\n'.format(
             gal[j], z_diff, met_count)
+
+        # For each cluster.
+        age_diff = []
+        for i, name in enumerate(gal_names[j]):
+            # Age.
+            a_diff = 0.5
+            # ASteCA - literature
+            diff = aarr[j][0][i] - aarr[j][1][i]
+            if aarr[j][1][i] > -99.:
+                if abs(diff) > a_diff:
+                    age_diff.append(diff)
+                    # AsteCA minus Literature Log(age) difference.
+                    rel_diff = aarr[j][0][i] - aarr[j][1][i]
+                    print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
+                        gal[j], name, aarr[j][0][i], aarr[j][1][i], rel_diff)
+
+        print '{}, Clusters with \delta log(age)>{}: {}\n'.format(
+            gal[j], a_diff, len(age_diff))
 
         err_c, err_thresh = 0, 0.2
         for ez in zsigma[j][0]:
@@ -81,31 +100,13 @@ def check_diffs(in_params):
         print 'Perc of OC with lit values [Fe/H]~{}: {}'.format(
             feh, perc)
 
-        # For each cluster.
-        age_diff = []
-        for i, name in enumerate(gal_names[j]):
-            # Age.
-            a_diff = 0.5
-            # ASteCA - literature
-            diff = aarr[j][0][i] - aarr[j][1][i]
-            if aarr[j][1][i] > -99.:
-                if abs(diff) > a_diff:
-                    age_diff.append(diff)
-                    # AsteCA minus Literature Log(age) difference.
-                    rel_diff = aarr[j][0][i] - aarr[j][1][i]
-                    print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
-                        gal[j], name, aarr[j][0][i], aarr[j][1][i], rel_diff)
-
-        print '\n* {}, Clusters with \delta log(age)>{}: {}\n'.format(
-            gal[j], a_diff, len(age_diff))
-
         err_c, err_thresh = 0, 0.1
         for e in asigma[j][0]:
             if e <= err_thresh:
                 err_c += 1
         perc = float(err_c)/len(asigma[j][0])
-        print 'Perc of OC with age errors below {}: {}'.format(err_thresh,
-                                                               perc)
+        print 'Perc of OC with age errors below {}: {}\n'.format(err_thresh,
+                                                                 perc)
 
         min_rgc, max_rgc = 3500., 5500.
         min_a, max_a = 7.5, 8.5
@@ -133,25 +134,16 @@ def check_diffs(in_params):
         print 'Average density for the {}: {}'.format(
             gal[j], np.mean(n_memb[j]/(np.pi*np.array(rarr[j][0])**2)))
 
-        # K_S test.
-        # Null hypothesis: that 2 independent samples are drawn from the same
-        # continuous distribution (sample sizes can be different)
-        #
-        # If the K-S statistic is small or the p-value is high, then we cannot
-        # reject the hypothesis that the distributions of the two samples are
-        # the same.
-        # For two identical distributions the KS value will be small and
-        # the p-value high.
+        print '\nMean literature e_log(age) for {}: {}\n'.format(
+            gal[j], np.mean(asigma[j][1]))
 
-        print '\n', gal[j]
         # Mean only for those clusters with ASteCA age values closer than 0.5
         # to literature values.
-        print 'Mean literature e_log(age) for {}: {}'.format(
-            gal[j], np.mean(asigma[j][1]))
         age_xmc_f = []
         for a in list(np.array(aarr[j][0]) - np.array(aarr[j][1])):
             if abs(a) <= 0.5:
                 age_xmc_f.append(a)
+        age_xmc_f_all += age_xmc_f
         print 'Age mean for Delta log(age)<0.5:', np.mean(age_xmc_f)
         print 'Met vals mean/std, AS:', np.mean(zarr[j][0]), \
             np.std(zarr[j][0])
@@ -169,6 +161,15 @@ def check_diffs(in_params):
         print 'Met vals median diff:', np.median(np.array(z_xmc_ast_f) -
                                                  np.array(z_xmc_lit_f)), '\n'
 
+        # K_S test.
+        # Null hypothesis: that 2 independent samples are drawn from the same
+        # continuous distribution (sample sizes can be different)
+        #
+        # If the K-S statistic is small or the p-value is high, then we cannot
+        # reject the hypothesis that the distributions of the two samples are
+        # the same.
+        # For two identical distributions the KS value will be small and
+        # the p-value high.
         print 'Met vals CCC:', ccc(z_xmc_ast_f, z_xmc_lit_f)
         print 'Met vals PCC:', np.corrcoef(z_xmc_ast_f, z_xmc_lit_f)[0, 1]
         ks, pval = ks_2samp(z_xmc_ast_f, z_xmc_lit_f)
@@ -177,3 +178,26 @@ def check_diffs(in_params):
         print 'Age vals PCC:', np.corrcoef(aarr[j][0], aarr[j][1])[0, 1]
         ks, pval = ks_2samp(aarr[j][0], aarr[j][1])
         print 'Age vals K-S:', ks, pval, '\n'
+
+        print 'Filter out Piatti (2011) clusters that only have ages assigned'
+        par_all, par_delta = [[[], [], [], []] for _ in range(2)]
+        for i, param in enumerate([zarr, aarr, earr, darr]):
+            for k, p_lit in enumerate(param[j][1]):
+                # Filter out Piatti (2011) clusters that only have ages
+                # assigned.
+                if abs(zarr[j][1][k]) < 30000.:
+                    # \delta as: ASteCA - literature values.
+                    # par_all[i].append(param[j][0][k])
+                    par_delta[i].append(param[j][0][k] - param[j][1][k])
+        p_name = ['[Fe/H]', 'log(age)', 'E(B-V)', 'dm']
+        for i, span in enumerate(par_delta):
+            print 'Delta {}/{} mean+-std: {:.3f} +- {:.3f}'.format(
+                gal[j], p_name[i], np.mean(span), np.std(span))
+        for i, span in enumerate(par_delta[:-1]):
+            r_pears = pearsonr(span, par_delta[-1])
+            print 'Correlation Delta {} vs dm: {:.3f}'.format(
+                p_name[i], r_pears[0])
+        print ''
+
+    print '\nAge mean for Delta log(age)<0.5 S/LMC:{}\n'.format(
+        np.mean(age_xmc_f_all))
