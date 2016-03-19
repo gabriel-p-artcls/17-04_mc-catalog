@@ -72,6 +72,14 @@ def check_diffs(in_params):
         print '{}, Clusters with \delta log(age)>{}: {}\n'.format(
             gal[j], a_diff, len(age_diff))
 
+        if j == 0:
+            print 'Masses for SMC clusters from Maia et al. (2013)'
+            for i, (ma, ml) in enumerate(zip(*[marr[0][0], marr[0][1]])):
+                if abs(ml) < 5000:
+                    print '{}: {} (ASteCA) , {} (Maia)'.format(
+                        gal_names[j][i], ma, ml)
+
+        print ''
         err_c, err_thresh = 0, 0.2
         for ez in zsigma[j][0]:
             if ez <= err_thresh:
