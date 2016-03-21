@@ -73,11 +73,17 @@ def check_diffs(in_params):
             gal[j], a_diff, len(age_diff))
 
         if j == 0:
-            print 'Masses for SMC clusters from Maia et al. (2013)'
+            avrg_mass = []
+            print 'Masses for SMC clusters: ASteCA - Maia et al. (2013) = diff'
             for i, (ma, ml) in enumerate(zip(*[marr[0][0], marr[0][1]])):
                 if abs(ml) < 5000:
-                    print '{}: {} (ASteCA) , {} (Maia)'.format(
-                        gal_names[j][i], ma, ml)
+                    print '{}: {} - {} = {}'.format(
+                        gal_names[j][i], ma, ml, ma-ml)
+                    m_lim = 1500.
+                    if abs(ma-ml) < m_lim:
+                        avrg_mass.append(ma-ml)
+            print 'Mean mass diff for Delta<{}: {} +- {}'.format(
+                m_lim, np.mean(avrg_mass), np.std(avrg_mass))
 
         print ''
         err_c, err_thresh = 0, 0.2
