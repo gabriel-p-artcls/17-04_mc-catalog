@@ -524,6 +524,11 @@ Per cluster DA/GA parameters:
 1. DA: skip + local + knuth; GA: n_pop=100, n_gen=2000, p_mut=0.35, n_el=1
  * H86-188 (11)
 
+##### 10th run (8)
+Re-run 8 clusters that needed an offset applied to their photometry (which I
+found out after processing them in the runs above): B48, H86-76, H86-90,
+H86-97, L39, NGC241, NGC242, SOGLE196.
+
 #### `19th_run`
 
 Re-process these clusters to try to improve their fits. H88-131 could be better
@@ -549,5 +554,7 @@ KDE probs are borrowed from the previous run, since they were not obtained
 here.
 
 Re-process NGC294 and HW85 fixing all parameters except metallicity, with
-a binary fraction of 0.
+binary fractions of [0., 0.25, 0.5, 0.75, 1.]
 Metallicity of NGC294 changed 0.001 --> 0.0005, due to issue #248.
+These runs are only used to check the metal-binarity dependence, and are not
+added to the final output file.
