@@ -8,6 +8,22 @@ from read_photom_files import get_data as gd
 import glob
 
 
+def find_phot_file(r_path, cl):
+    """
+    Find photometric file corresponding to this cluster.
+    """
+    path_no_ext = r_path + 'asteca-project/asteca/input/dont_read/'\
+        + 'MC_all/' + cl + '.*'
+    try:
+        data_file = glob.glob(path_no_ext)[0]
+    except IndexError:
+        print ("The file: {}\nwas not found".format(path_no_ext))
+        raise SystemExit(0)
+    phot_data = gd(data_file)
+
+    return phot_data
+
+
 def kde_limits(phot_x, phot_y):
     '''
     Return photometric diagram limits taken from a 2D KDE.
@@ -43,20 +59,11 @@ def kde_limits(phot_x, phot_y):
     return x_v, y_v
 
 
-def diag_limits(r_path, cl):
+def diag_limits(phot_data):
     '''
     Define plot limits for *all* photometric diagrams.
     '''
     y_axis = 0
-    path_no_ext = r_path + 'asteca-project/asteca/input/dont_read/'\
-        + 'MC_all/' + cl + '.*'
-    try:
-        data_file = glob.glob(path_no_ext)[0]
-    except IndexError:
-        print ("The folder: {}asteca-project/asteca/ does not"
-               " exist".format(r_path))
-        raise SystemExit(0)
-    phot_data = gd(data_file)
     phot_x, phot_y = phot_data[5], phot_data[3]
 
     x_v, y_v = kde_limits(phot_x, phot_y)
@@ -86,19 +93,35 @@ def skip_comments(f):
             yield line
 
 
-def get_DB_age_ext(r_path, cl, db):
+def get_DB_age_ext(r_path, cl, db, in_params):
     '''
     Read age and extinction values (and Galaxy) for the 'cl' cluster matched
     in the 'db' database.
     '''
-    f_path = r_path + 'mc-catalog/ages_mass_lit/matched_clusters.dat'
-    # Read data file
-    with open(f_path) as f:
-        for line in skip_comments(f):
-            l = line.split()
-            if l[0] == db and l[2] == cl:
-                a, e, gal = line.split()[3], line.split()[15], line.split()[1]
-                return a, e, gal
+    if db != 'outliers':
+        f_path = r_path + 'mc-catalog/databases/matched_clusters.dat'
+        # INdexes for age, extinction and galaxy.
+        a_i, e_i, g_i = 3, 15, 1
+        # Read data file
+        with open(f_path) as f:
+            for line in skip_comments(f):
+                l = line.split()
+                if l[0] == db and l[2] == cl:
+                    a, e, gal = l[a_i], l[e_i], l[g_i]
+                    return a, e, gal
+
+    else:
+        gal_names, aarr, earr = [
+            in_params[_] for _ in ['gal_names', 'aarr', 'earr']]
+        gal = ['SMC', 'LMC']
+        # Extract names, ages, extinction for SMC OCs in literature.
+        for j in [0, 1]:
+            for (cl_n, a, e) in zip(*[gal_names[j], aarr[j][1], earr[j][1]]):
+                if cl_n == cl:
+                    # Format age and extinction properly.
+                    age = float('{:.1f}'.format(a))
+                    ext = float('{:.2f}'.format(e))
+                    return age, ext, gal[j]
 
 
 def get_cl_run(cl):
@@ -194,14 +217,27 @@ def move_isoch(isochrone, e, d):
     return iso_moved
 
 
-def get_isoch(r_path, DB_asteca, z, a, e, d):
+def get_isoch(r_path, DB_asteca, isoch, z, a, e, d):
     '''
     Read a given metallicity file and return the isochrones for the age passed,
     moved according to the extinction and distance modulus values.
     '''
-    if DB_asteca == 'DB':
+
+    if isoch == 'M08':
         # Use Marigo isochrones.
-        met_f = r_path + 'mc-catalog/functions/' + str(z) + '.dat'
+        isc = 'marigo'
+    elif isoch == 'G02':
+        # Use Girardi isochrones.
+        isc = 'girardi'
+
+    if DB_asteca in ['G10', 'C06']:
+        # Use Girardi isochrones.
+        met_f = r_path + 'mc-catalog/functions/' + str(z) + '_' + isc + '.dat'
+        line_start, imass_idx = "#\tIsochrone\tZ = ", 1
+        # T1, C
+        mag1_idx, mag2_idx = 9, 7
+    elif DB_asteca == 'outliers':
+        met_f = r_path + 'mc-catalog/functions/' + str(z) + '_' + isc + '.dat'
         line_start, imass_idx = "#\tIsochrone\tZ = ", 1
         # T1, C
         mag1_idx, mag2_idx = 9, 7

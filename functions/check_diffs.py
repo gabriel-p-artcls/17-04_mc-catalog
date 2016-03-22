@@ -56,6 +56,7 @@ def check_diffs(in_params):
 
         # For each cluster.
         age_diff = []
+        print 'Gal-Clust alpha delta log(age)_lit log(age)_ASteCA'
         for i, name in enumerate(gal_names[j]):
             # Age.
             a_diff = 0.5
@@ -64,10 +65,12 @@ def check_diffs(in_params):
             if aarr[j][1][i] > -99.:
                 if abs(diff) > a_diff:
                     age_diff.append(diff)
-                    # AsteCA minus Literature Log(age) difference.
-                    rel_diff = aarr[j][0][i] - aarr[j][1][i]
-                    print '{} {}, {:.2f} vs {:.2f} , {:.2f}'.format(
-                        gal[j], name, aarr[j][0][i], aarr[j][1][i], rel_diff)
+                    # Literature minus AsteCA Log(age) difference.
+                    rel_diff = aarr[j][1][i] - aarr[j][0][i]
+                    print ("{}-{} & {:.5f} & {:.5f} & {:.2f} & "
+                           "{:.2f} & {:.2f}\\\\".format(
+                            gal[j][0], name, ra[j][i], dec[j][i],
+                            aarr[j][1][i], aarr[j][0][i], rel_diff))
 
         print '{}, Clusters with \delta log(age)>{}: {}\n'.format(
             gal[j], a_diff, len(age_diff))

@@ -146,10 +146,22 @@ def CMD_DBs_vs_asteca(r_path):
     """
     print 'Generating CMDs of DBs for matched clusters with ASteCA.'
     for db in ['G10', 'C06']:
-        db_cls = get_DBs_ASteCA_CMD_data(r_path, db)
+        db_cls = get_DBs_ASteCA_CMD_data(r_path, db, [])
         make_DB_ASteCA_CMDs(db, db_cls)
         print ("CMDs for matched clusters between {} DB and"
                " ASteCA clusters done.".format(db))
+
+
+def CMD_outliers(r_path, in_params):
+    """
+    CMDs of outlier clusters, ie: those with large age differences between
+    literature values and the values given  by ASteCA.
+    """
+    print 'Generating CMDs of outliers.'
+    for db in ['outliers']:
+        db_cls = get_DBs_ASteCA_CMD_data(r_path, db, in_params)
+        make_DB_ASteCA_CMDs(db, db_cls)
+        print "CMDs for outlier clusters done."
 
 
 def main():
@@ -160,14 +172,18 @@ def main():
     r_path = os.path.realpath(__file__)[:-29]
 
     # Generate CMDs of DBs vs ASteCA.
-    # CMD_DBs_vs_asteca(r_path)
+    CMD_DBs_vs_asteca(r_path)
 
+    # Obtain data from ASteCA's output and from the literature.
     in_params = get_in_params(r_path)
+
+    # Generate CMDs for outlier clusters.
+    CMD_outliers(r_path, in_params)
+    import pdb; pdb.set_trace()  # breakpoint 5dbaae80 //
+
 
     # Check for differences in ASteCA vs Lit values.
     check_diffs(in_params)
-    import pdb; pdb.set_trace()  # breakpoint 6890bbf9 //
-    
 
     # # Read cross-matched clusters.
     # cross_match = get_cross_match_data()

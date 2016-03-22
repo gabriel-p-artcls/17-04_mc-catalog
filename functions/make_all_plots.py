@@ -1529,6 +1529,9 @@ def pl_DBs_ASteCA_CMDs(pl_params):
         gal, cl_reg_fit, cl_reg_no_fit, lit_isoch, asteca_isoch, db_z, db_a,\
         db_e, db_d, as_z, as_a, as_e, as_d = pl_params
 
+    letter = ['a', '', 'b', '', '', '', 'c', '', 'd', '', '', '', 'e', '',
+              'f', '', '', '', 'g', '', 'h', '', '', '', 'i', '', 'j', '']
+
     # DB isoch fit.
     ax = plt.subplot(gs[i])
     # Set plot limits
@@ -1538,7 +1541,11 @@ def pl_DBs_ASteCA_CMDs(pl_params):
     plt.xlabel('$' + x_ax + '$', fontsize=18)
     plt.ylabel('$' + y_ax + '$', fontsize=18)
     # Add text box.
-    text = '$' + cl + '-' + gal + '\,({})$'.format(db)
+    ob0 = offsetbox.AnchoredText(letter[i], loc=2, prop=dict(size=12))
+    ob0.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
+    ax.add_artist(ob0)
+    db = 'Lit' if db == 'outliers' else db
+    text = gal + '-' + cl + ' ({})'.format(db)
     ob1 = offsetbox.AnchoredText(text, loc=1, prop=dict(size=11))
     ob1.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
     ax.add_artist(ob1)
@@ -1547,7 +1554,7 @@ def pl_DBs_ASteCA_CMDs(pl_params):
     text3 = '\n' + r'$E_{{(B-V)}}={}$'.format(db_e)
     text4 = '\n' + r'$dm={}$'.format(db_d)
     text = text1 + text2 + text3 + text4
-    ob2 = offsetbox.AnchoredText(text, loc=2, prop=dict(size=11))
+    ob2 = offsetbox.AnchoredText(text, loc=3, prop=dict(size=11))
     ob2.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
     ax.add_artist(ob2)
     # Set minor ticks
@@ -1574,9 +1581,13 @@ def pl_DBs_ASteCA_CMDs(pl_params):
     plt.ylim(y_min_cmd, y_max_cmd)
     # Set axis labels
     plt.xlabel('$' + x_ax + '$', fontsize=18)
-    plt.ylabel('$' + y_ax + '$', fontsize=18)
+    plt.ylabel('')
+    ax.axes.yaxis.set_ticklabels([])
     # Add text box.
-    text = '$' + cl + '-' + gal + '\,(ASteCA)$'
+    ob0 = offsetbox.AnchoredText(letter[i], loc=2, prop=dict(size=12))
+    ob0.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
+    ax.add_artist(ob0)
+    text = gal + '-' + cl + ' (ASteCA)'
     ob1 = offsetbox.AnchoredText(text, loc=1, prop=dict(size=11))
     ob1.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
     ax.add_artist(ob1)
@@ -1585,7 +1596,7 @@ def pl_DBs_ASteCA_CMDs(pl_params):
     text3 = '\n' + r'$E_{{(B-V)}}={}$'.format(as_e)
     text4 = '\n' + r'$dm={}$'.format(as_d)
     text = text1 + text2 + text3 + text4
-    ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=11))
+    ob = offsetbox.AnchoredText(text, loc=3, prop=dict(size=11))
     ob.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
     ax.add_artist(ob)
     # Set minor ticks
@@ -1647,7 +1658,10 @@ def make_DB_ASteCA_CMDs(db, db_cls):
 
         # Output png file.
         fig.tight_layout()
-        fig_name = 'figures/DB_fit/' + db + '_VS_asteca_' + str(k) + '.png'
+        if db == 'outliers':
+            fig_name = 'figures/' + db + '_lit_VS_asteca.png'
+        else:
+            fig_name = 'figures/DB_fit/' + db + '_VS_asteca_' + str(k) + '.png'
         plt.savefig(fig_name, dpi=150, bbox_inches='tight')
 
 
