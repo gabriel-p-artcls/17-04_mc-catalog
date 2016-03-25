@@ -96,11 +96,11 @@ def make_plots(in_params, bica_coords, cross_match, amr_lit):
     # make_ra_dec_plots(in_params, bica_coords)
     # print 'RA vs DEC plots done.'
 
-    make_as_vs_lit_plot(in_params)
-    print 'ASteCA vs literature plots done.'
+    # make_as_vs_lit_plot(in_params)
+    # print 'ASteCA vs literature plots done.'
 
-    # make_as_vs_lit_mass_plot(in_params)
-    # print 'ASteCA vs literature mass plot done.'
+    make_as_vs_lit_mass_plot(in_params)
+    print 'ASteCA vs literature mass plot done.'
 
     # make_errors_plots(in_params)
     # print 'Errors plots done.'
@@ -145,7 +145,7 @@ def CMD_DBs_vs_asteca(r_path):
     the values given  by ASteCA.
     """
     print 'Generating CMDs of DBs for matched clusters with ASteCA.'
-    for db in ['G10', 'C06']:
+    for db in ['C06', 'G10']:
         db_cls = get_DBs_ASteCA_CMD_data(r_path, db, [])
         make_DB_ASteCA_CMDs(db, db_cls)
         print ("CMDs for matched clusters between {} DB and"
@@ -172,15 +172,13 @@ def main():
     r_path = os.path.realpath(__file__)[:-29]
 
     # Generate CMDs of DBs vs ASteCA.
-    CMD_DBs_vs_asteca(r_path)
+    # CMD_DBs_vs_asteca(r_path)
 
     # Obtain data from ASteCA's output and from the literature.
     in_params = get_in_params(r_path)
 
     # Generate CMDs for outlier clusters.
-    CMD_outliers(r_path, in_params)
-    import pdb; pdb.set_trace()  # breakpoint 5dbaae80 //
-
+    # CMD_outliers(r_path, in_params)
 
     # Check for differences in ASteCA vs Lit values.
     check_diffs(in_params)

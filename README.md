@@ -528,6 +528,9 @@ Per cluster DA/GA parameters:
 Re-run 8 clusters that needed an offset applied to their photometry (which I
 found out after processing them in the runs above): B48, H86-76, H86-90,
 H86-97, L39, NGC241, NGC242, SOGLE196.
+1. p_mut=0.35: NGC241
+2. p_mut=0.5, DA skip, local+knuth: H86-76; p_mut=0.5, DA auto, skip: H86-97
+3. p_muy=0.5, n_gen=3000, 
 
 #### `19th_run`
 

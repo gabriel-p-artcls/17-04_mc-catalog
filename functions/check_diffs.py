@@ -18,11 +18,13 @@ def check_diffs(in_params):
     parameters.
     '''
     gal_names, zarr, zsigma, aarr, asigma, earr, darr, dsigma, rarr, marr,\
-        dist_cent, e_d_cent, ra, dec, n_memb, rad_pc = \
+        dist_cent, e_d_cent, ra, dec, n_memb, rad_pc, int_colors, cont_ind,\
+        phot_disp = \
         [in_params[_] for _ in ['gal_names', 'zarr', 'zsigma', 'aarr',
                                 'asigma', 'earr', 'darr', 'dsigma', 'rarr',
                                 'marr', 'dist_cent', 'e_d_cent', 'ra', 'dec',
-                                'n_memb', 'rad_pc']]
+                                'n_memb', 'rad_pc', 'int_colors', 'cont_ind',
+                                'phot_disp']]
 
     gal = ['SMC', 'LMC']
     age_xmc_f_all = []
@@ -80,8 +82,8 @@ def check_diffs(in_params):
             print 'Masses for SMC clusters: ASteCA - Maia et al. (2013) = diff'
             for i, (ma, ml) in enumerate(zip(*[marr[0][0], marr[0][1]])):
                 if abs(ml) < 5000:
-                    print '{}: {} - {} = {}'.format(
-                        gal_names[j][i], ma, ml, ma-ml)
+                    print '{}: {} - {} = {}, {}'.format(
+                        gal_names[j][i], ma, ml, ma-ml, cont_ind[0][i])
                     m_lim = 1500.
                     if abs(ma-ml) < m_lim:
                         avrg_mass.append(ma-ml)

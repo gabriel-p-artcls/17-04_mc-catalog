@@ -63,7 +63,9 @@ def diag_limits(phot_data):
     '''
     Define plot limits for *all* photometric diagrams.
     '''
+    # y axis is a magnitude.
     y_axis = 0
+    # Extract photometric data.
     phot_x, phot_y = phot_data[5], phot_data[3]
 
     x_v, y_v = kde_limits(phot_x, phot_y)

@@ -250,7 +250,7 @@ def as_vs_lit_mass_plots(pl_params):
     Generate ASteCA vs literature mass values plot.
     '''
     gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, xarr, xsigma, yarr, \
-        ysigma, zarr, v_min_mp, v_max_mp, par_mean_std, gal_name = pl_params
+        ysigma, carr, v_min_mp, v_max_mp, par_mean_std, gal_name = pl_params
 
     xy_font_s = 21
     ax = plt.subplot(gs[i], aspect='auto')
@@ -260,7 +260,7 @@ def as_vs_lit_mass_plots(pl_params):
         # 1:1 line
         plt.plot([xmin, xmax], [ymin, ymax], 'k', ls='--')
         # Text box.
-        ob = offsetbox.AnchoredText(gal_name, loc=4,
+        ob = offsetbox.AnchoredText(gal_name, loc=1,
                                     prop=dict(size=xy_font_s - 4))
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
@@ -292,8 +292,8 @@ def as_vs_lit_mass_plots(pl_params):
     rs_y = yarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
 
     # Plot all clusters in dictionary.
-    SC = plt.scatter(rs_x, rs_y, marker='o', c=zarr, s=110, lw=0.25, cmap=cm,
-                     vmin=v_min_mp, vmax=v_max_mp, zorder=3)
+    SC = plt.scatter(rs_x, rs_y, marker='o', c=carr, s=110, lw=0.25,
+                     cmap=cm, vmin=v_min_mp, vmax=v_max_mp, zorder=3)
     # Plot error bars.
     for j, xy in enumerate(zip(*[rs_x, rs_y])):
         if i == 0:
@@ -304,7 +304,7 @@ def as_vs_lit_mass_plots(pl_params):
                          color='k', elinewidth=0.5, zorder=1)
     if i != 0:
         # Text box.
-        pres = [2, 2] if x_lab != '$Mass_{ASteCA}\,(M_{\odot})$' else [0, 0]
+        pres = [2, 2] if x_lab != '$M_{ASteCA}\,(M_{\odot})$' else [0, 0]
         text1 = r'$\bar{{\Delta}}={:g}$'.format(round(par_mean_std[0],
                                                 pres[0]))
         text2 = r'$\pm{:g}$'.format(round(par_mean_std[1], pres[1]))
@@ -313,11 +313,19 @@ def as_vs_lit_mass_plots(pl_params):
         ob.patch.set(alpha=0.5)
         ax.add_artist(ob)
     # Position colorbar.
-    the_divider = make_axes_locatable(ax)
-    color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
-    # Colorbar.
-    cbar = plt.colorbar(SC, cax=color_axis)
-    cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=7)
+    # the_divider = make_axes_locatable(ax)
+    # color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
+    # # Colorbar.
+    # cbar = plt.colorbar(SC, cax=color_axis)
+    # cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=7)
+    # cbar.set_ticks([0., 0.2, 0.4, 0.6, 0.8, 1., 1.2])
+    if i == 0:
+        # Position colorbar.
+        axColor = plt.axes([0.25, 0.83, 0.1, 0.005])
+        cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
+        cbar.set_label(z_lab, fontsize=xy_font_s - 2, labelpad=-45)
+        cbar.set_ticks([0.6, 0.8, 1., 1.2])
+        cbar.ax.tick_params(labelsize=xy_font_s - 10)
 
 
 def make_as_vs_lit_mass_plot(in_params):
@@ -326,16 +334,20 @@ def make_as_vs_lit_mass_plot(in_params):
     SMC and LMC plots.
     '''
 
-    aarr, marr, msigma = [in_params[_] for _ in ['aarr', 'marr', 'msigma']]
+    aarr, marr, msigma, zarr, int_colors, cont_ind, phot_disp = [
+        in_params[_] for _ in [
+            'aarr', 'marr', 'msigma', 'zarr', 'int_colors', 'cont_ind',
+            'phot_disp']]
 
     # SMC/LMC
-    age_all, ma_all, ma_delta, ma_delta_err = [], [], [], []
+    age_all, ci_all, ma_all, ma_delta, ma_delta_err = [], [], [], [], []
     for k in [0, 1]:
         for i, a in enumerate(aarr[k][0]):
             # Filter out -9999999999.9 values added in get_params to replace
             # missing values in .ods file.
             if abs(msigma[k][1][i]) < 30000.:
                 age_all.append(a)
+                ci_all.append(cont_ind[k][i])
                 # \delta mass as ASteCA - literature values.
                 ma_all.append(marr[k][0][i])
                 ma_delta.append(marr[k][0][i] - marr[k][1][i])
@@ -351,20 +363,19 @@ def make_as_vs_lit_mass_plot(in_params):
     msigma_lit = [min(999, abs(_)) for _ in msigma[0][1]]
 
     # Generate ASteca vs literature plots.
-    fig = plt.figure(figsize=(21, 31.25))  # create the top-level container
-    # gs = gridspec.GridSpec(2, 4, width_ratios=[1, 0.35, 1, 0.35])
+    fig = plt.figure(figsize=(18.5, 31.25))  # create the top-level container
     gs = gridspec.GridSpec(5, 3)
+
+    cbar_min, cbar_max = 0.6, 1.3
 
     as_lit_pl_lst = [
         # ASteCA vs literature masses.
-        [gs, 0, 10., 3998., 10., 3998., '', '$Mass_{lit}\,(M_{\odot})$',
-         '$\log(age/yr)_{ASteCA}$', marr[0][0],
-         msigma[0][0], marr[0][1], msigma_lit, aarr[0][0], 6.6, 9.8, [],
-         'SMC'],
-        [gs, 3, 10., 3998., -3500., 1900., '$Mass_{ASteCA}\,(M_{\odot})$',
-         '$\Delta Mass\,(M_{\odot})$', '$\log(age/yr)_{ASteCA}$',
-         ma_all, [0.]*len(ma_all), ma_delta, ma_delta_err, age_all,
-         6.6, 9.8, par_mean_std[0], '']
+        [gs, 0, 10., 3998., 10., 3998., '', '$M_{lit}\,(M_{\odot})$',
+         '$CI$', marr[0][0], msigma[0][0], marr[0][1], msigma_lit,
+         cont_ind[0], cbar_min, cbar_max, [], 'SMC (M13)'],
+        [gs, 3, 10., 3998., -3500., 1900., '$M_{ASteCA}\,(M_{\odot})$',
+         '$\Delta M\,(M_{\odot})$', '$CI$', ma_all, [0.]*len(ma_all),
+         ma_delta, ma_delta_err, ci_all, cbar_min, cbar_max, par_mean_std, '']
     ]
 
     for pl_params in as_lit_pl_lst:
@@ -1784,7 +1795,7 @@ def make_errors_plots(in_params):
         [gs, 3, 18.28, 19.19, 0.007, 0.083, ord_d, ord_ds, ord_X, ord_r,
             '$\mu_{0}$', '$e_{\mu_{0}}$'],
         [gs, 4, -210, 30000, -210, 4450, ord_m, ord_ms, ord_X, ord_r,
-            '$Mass\,(M_{\odot})$', '$e_{Mass}$']
+            '$M\,(M_{\odot})$', '$e_{M}$']
     ]
 
     for pl_params in errors_lst:
