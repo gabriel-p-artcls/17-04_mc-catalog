@@ -32,7 +32,11 @@ def check_diffs(in_params):
     for j in [0, 1]:
         print '\n*** {} ***\n'.format(gal[j])
 
-        print '{} clusters in age/rad range:'.format(gal[j])
+        # print 'Contamination index'
+        # for i, name in enumerate(gal_names[j]):
+        #     print name, cont_ind[j][i]
+
+        print '\n{} clusters in age/rad range:'.format(gal[j])
         for i, name in enumerate(gal_names[j]):
             a, r = aarr[j][0][i], rad_pc[j][i]
             if a < 8.5 and r > 12.5:

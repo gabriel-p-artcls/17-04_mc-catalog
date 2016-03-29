@@ -71,7 +71,7 @@ def as_vs_lit_plots(pl_params):
     rs_y = yarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
 
     # Plot all clusters in dictionary.
-    SC = plt.scatter(rs_x, rs_y, marker='o', c=zarr, s=110, lw=0.25, cmap=cm,
+    SC = plt.scatter(rs_x, rs_y, marker='o', c=zarr, s=75, lw=0.25, cmap=cm,
                      vmin=v_min_mp, vmax=v_max_mp, zorder=3)
     # Plot error bars.
     for j, xy in enumerate(zip(*[rs_x, rs_y])):
