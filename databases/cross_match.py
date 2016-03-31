@@ -145,38 +145,29 @@ def get_liter_data():
     # Store as dictionary and then as list.
     cl_dict = cl_file.sheets()["S-LMC"]
 
-    # Indexes of coord, age and extinction columns in .ods literature file.
-    ra_i, dec_i, age_i, e_age_i, ext_i, e_ext_i, mass_i, e_mass_i = \
+    # Indexes of parameters columns in .ods literature file.
+    ra_i, dec_i, age_i, e_age_i, ext_i, e_ext_i, mass_i, e_mass_i, name_idx = \
         cl_dict[0].index(u'ra_deg'),\
         cl_dict[0].index(u'dec_deg'), cl_dict[0].index(u'log(age)'), \
         cl_dict[0].index(u'e_log(age)'), cl_dict[0].index(u'E(B-V) (lit)'), \
         cl_dict[0].index(u'e_E(B-V)'), cl_dict[0].index(u'Mass'), \
-        cl_dict[0].index(u'e_mass')
-    # Index of the cluster's name in the .ods file.
-    name_idx = cl_dict[0].index(u'Name')
+        cl_dict[0].index(u'e_mass'), cl_dict[0].index(u'Name')
 
     names_ra_dec, ra, dec, ages, e_age, exti, e_exti, mass, e_mass = [], [], \
         [], [], [], [], [], [], []
-    for cl in cl_dict:
-        names_ra_dec.append(str(cl[name_idx]))
-        ra.append(cl[ra_i])
-        dec.append(cl[dec_i])
-        ages.append(cl[age_i])
-        e_age.append(cl[e_age_i])
-        exti.append(cl[ext_i])
-        e_exti.append(cl[e_ext_i])
-        mass.append(cl[mass_i])
-        e_mass.append(cl[e_mass_i])
-
-    # Remove first line (column names)
-    del names_ra_dec[0], ra[0], dec[0], ages[0], e_age[0], exti[0], e_exti[0],\
-        mass[0], e_mass[0]
-    # Remove i last lines (empty string)
-    i = 0
-    for el in ra:
-        i += 1 if el == '' else 0
-    del names_ra_dec[-i:], ra[-i:], dec[-i:], ages[-i:], e_age[-i:], \
-        exti[-i:], e_exti[-i:], mass[-i:], e_mass[-i:]
+    # Skip first line (columns names)
+    for cl in cl_dict[1:]:
+        # Skip empty last lines.
+        if cl:
+            names_ra_dec.append(str(cl[name_idx]))
+            ra.append(cl[ra_i])
+            dec.append(cl[dec_i])
+            ages.append(cl[age_i])
+            e_age.append(cl[e_age_i])
+            exti.append(cl[ext_i])
+            e_exti.append(cl[e_ext_i])
+            mass.append(cl[mass_i])
+            e_mass.append(cl[e_mass_i])
 
     # Create the RA, DEC catalog.
     cat_ra_dec = SkyCoord(ra*u.degree, dec*u.degree, frame='icrs')
