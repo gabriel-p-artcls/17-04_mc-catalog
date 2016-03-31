@@ -139,7 +139,7 @@ def get_amr_lit():
             amr_smc_N09[0].append(float(l[0]))
             amr_smc_N09[1].append(float(l[1]))
 
-    # Path to data N09 file.
+    # Path to data TB09 file.
     in_file = 'AMRs/TB09_smc_amr.dat'
     # Read data file
     with open(in_file) as f:
@@ -152,7 +152,7 @@ def get_amr_lit():
             amr_smc_TB09_2[0].append(float(l[0]))
             amr_smc_TB09_2[1].append(float(l[2]))
 
-    # Path to data N09 file.
+    # Path to data C13 file.
     in_file = 'AMRs/C13_smc_amr.dat'
     # Read data file
     with open(in_file) as f:
