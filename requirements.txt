@@ -1,0 +1,12 @@
+astropy==1.1.2
+cycler==0.10.0
+matplotlib==1.5.1
+numpy==1.11.0
+odfpy==0.9.6
+pyexcel-io==0.1.0
+pyexcel-ods==0.1.1
+pyparsing==2.1.1
+python-dateutil==2.5.2
+pytz==2016.3
+scipy==0.17.0
+six==1.10.0

@@ -14,6 +14,25 @@ from functions.make_all_plots import make_as_vs_lit_plot,\
     make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot
 
 
+def rpath_fig_folder():
+    """
+    Obtain root path and create folders where images will be stored.
+    """
+    # Root path.
+    r_path = os.path.realpath(__file__)[:-29]
+
+    # Create folder where the final images will be stored.
+    path = 'figures/'
+    try:
+        os.makedirs(path)
+        os.makedirs(path + 'DB_fit/')
+    except OSError:
+        if not os.path.isdir(path):
+            raise
+
+    return r_path
+
+
 def get_in_params(r_path):
     """
     Obtain data from ASteCA's output and from the literature.
@@ -89,56 +108,6 @@ def get_in_params(r_path):
     return in_params
 
 
-def make_plots(in_params, bica_coords, cross_match, amr_lit):
-    '''
-    Make each plot sequentially.
-    '''
-    # make_ra_dec_plots(in_params, bica_coords)
-    # print 'RA vs DEC plots done.'
-
-    make_as_vs_lit_plot(in_params)
-    print 'ASteCA vs literature plots done.'
-
-    # make_as_vs_lit_mass_plot(in_params)
-    # print 'ASteCA vs literature mass plot done.'
-
-    # make_errors_plots(in_params)
-    # print 'Errors plots done.'
-
-    # make_radius_plot(in_params)
-    # print 'ASteCA radius (pc) vs parameters plot done.'
-
-    # make_dist_2_cents(in_params)
-    # print 'Distances to center of MC done.'
-
-    # make_cross_match(cross_match)
-    # print 'Cross-matched clusters done.'
-
-    # make_cross_match_age_ext(cross_match, in_params)
-    # print 'Age and extinction diffs for cross-matched clusters done.'
-
-    # make_amr_plot(in_params, amr_lit)
-    # print 'AMR maps done.'
-
-    # UNUSED?
-
-    # for j, gal in enumerate(['SMC', 'LMC']):
-    #     make_kde_plots(gal, j, in_params)
-    #     print '{} KDE maps done.'.format(gal)
-
-    # make_lit_ext_plot(in_params)
-    # print 'ASteca vs MCEV vs SandF extinction plot done.'
-
-    # make_int_cols_plot(in_params)
-    # print 'Integrated colors plot done.'
-
-    # make_concent_plot(in_params)
-    # print 'Concentration parameter plot done.'
-
-    # make_probs_CI_plot(in_params)
-    # print 'ASteCA probabilities versus CI done.'
-
-
 def CMD_DBs_vs_asteca(r_path):
     """
     CMDs of clusters matched between these two databases and
@@ -148,8 +117,6 @@ def CMD_DBs_vs_asteca(r_path):
     for db in ['C06', 'G10']:
         db_cls = get_DBs_ASteCA_CMD_data(r_path, db, [])
         make_DB_ASteCA_CMDs(db, db_cls)
-        print ("CMDs for matched clusters between {} DB and"
-               " ASteCA clusters done.".format(db))
 
 
 def CMD_outliers(r_path, in_params):
@@ -161,7 +128,77 @@ def CMD_outliers(r_path, in_params):
     for db in ['outliers']:
         db_cls = get_DBs_ASteCA_CMD_data(r_path, db, in_params)
         make_DB_ASteCA_CMDs(db, db_cls)
+
+
+def make_plots(r_path, plots, in_params, bica_coords, cross_match, amr_lit):
+    '''
+    Make each plot sequentially.
+    '''
+
+    if '0' in plots:
+        make_ra_dec_plots(in_params, bica_coords)
+        print 'RA vs DEC plots done.'
+
+    if '1' in plots:
+        make_errors_plots(in_params)
+        print 'Errors plots done.'
+
+    if '2' in plots:
+        make_as_vs_lit_plot(in_params)
+        print 'ASteCA vs literature plots done.'
+
+    if '3' in plots:
+        make_as_vs_lit_mass_plot(in_params)
+        print 'ASteCA vs literature mass plot done.'
+
+    if '4' in plots:
+        CMD_outliers(r_path, in_params)
         print "CMDs for outlier clusters done."
+
+    if '5' in plots:
+        CMD_DBs_vs_asteca(r_path)
+        print "CMDs for matched clusters between DBs and ASteCA clusters done."
+
+    if '6' in plots:
+        make_cross_match(cross_match)
+        print 'Cross-matched clusters done.'
+
+    if '7' in plots:
+        make_cross_match_age_ext(cross_match, in_params)
+        print 'Age and extinction diffs for cross-matched clusters done.'
+
+    if '8' in plots:
+        make_radius_plot(in_params)
+        print 'ASteCA radius (pc) vs parameters plot done.'
+
+    if '9' in plots:
+        make_dist_2_cents(in_params)
+        print 'Distances to center of MC done.'
+
+    if '10' in plots:
+        make_amr_plot(in_params, amr_lit)
+        print 'AMR maps done.'
+
+    if '11' in plots:
+        for j, gal in enumerate(['SMC', 'LMC']):
+            make_kde_plots(gal, j, in_params)
+            print '{} KDE maps done.'.format(gal)
+
+    if '12' in plots:
+        make_lit_ext_plot(in_params)
+        print 'ASteca vs MCEV vs SandF extinction plot done.'
+
+    if '13' in plots:
+        make_int_cols_plot(in_params)
+        print 'Integrated colors plot done.'
+
+    if '14' in plots:
+        make_concent_plot(in_params)
+        print 'Concentration parameter plot done.'
+
+    if '15' in plots:
+        make_probs_CI_plot(in_params)
+        print 'ASteCA probabilities versus CI done.'
 
 
 def main():
@@ -169,37 +206,40 @@ def main():
     Call each function.
     '''
     # Root path.
-    r_path = os.path.realpath(__file__)[:-29]
-
-    # Generate CMDs of DBs vs ASteCA.
-    # CMD_DBs_vs_asteca(r_path)
+    r_path = rpath_fig_folder()
 
     # Obtain data from ASteCA's output and from the literature.
     in_params = get_in_params(r_path)
 
-    # Generate CMDs for outlier clusters.
-    # CMD_outliers(r_path, in_params)
-
     # Check for differences in ASteCA vs Lit values.
     check_diffs(in_params)
 
-    # # Read cross-matched clusters.
-    # cross_match = get_cross_match_data()
-    # print 'Cross-matched data read.'
+    # Define which plots to produce.
+    plots = ['1', '2', '3', '4']
 
-    # # Read Bica et al. (2008) database.
-    # bica_coords = get_bica_database()
-    # print 'Bica et al. (2008) data read.'
-
-    # # Read AMR data from other articles.
-    # amr_lit = get_amr_lit()
-    # print 'AMR data from literature read.'
-
-    bica_coords, cross_match, amr_lit = [], [], []
+    # Only obtain data if the plot is being generated.
+    if '0' in plots:
+        # Read Bica et al. (2008) database.
+        bica_coords = get_bica_database()
+        print 'Bica et al. (2008) data read.'
+    else:
+        bica_coords = []
+    if '6' in plots or '7' in plots:
+        # Read cross-matched clusters.
+        cross_match = get_cross_match_data()
+        print 'Cross-matched data read.'
+    else:
+        cross_match = []
+    if '10' in plots:
+        # Read AMR data from other articles.
+        amr_lit = get_amr_lit()
+        print 'AMR data from literature read.'
+    else:
+        amr_lit = []
 
     # Make final plots.
     print 'Plotting...\n'
-    make_plots(in_params, bica_coords, cross_match, amr_lit)
+    make_plots(r_path, plots, in_params, bica_coords, cross_match, amr_lit)
 
     print '\nEnd.'
 

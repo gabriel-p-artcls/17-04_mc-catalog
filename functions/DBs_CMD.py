@@ -8,15 +8,6 @@ def get_DBs_ASteCA_CMD_data(r_path, db, in_params):
     Generate figures containing CMDs of databases vs ASteCA for the clusters
     matched in the selected database.
     '''
-    fold = 'DB_fit/' if db != 'outliers' else ''
-    # Create folder where the final images will be stored.
-    path = 'figures/' + fold
-    try:
-        os.makedirs(path)
-    except OSError:
-        if not os.path.isdir(path):
-            raise
-
     if db == 'G10':
         mc_cls = [['B112', 'SL218', 'KMHK979', 'KMHK229', 'HW22', 'HW42',
                    'HW63', 'KMHK378', 'SL446A', 'L91'],
@@ -39,8 +30,9 @@ def get_DBs_ASteCA_CMD_data(r_path, db, in_params):
 
     elif db == 'outliers':
         mc_cls = [['KMHK975', 'SL579', 'BSDL631', 'KMHK979', 'H88-316',
-                   'SL218', 'L35', 'H86-188', 'B134', 'K47']]
-        isochs = [['M08', 'M08', 'M08', 'M08', 'M08', 'G02', 'G02', 'M08',
+                   'L39', 'L35', 'H86-188', 'B134', 'K47']]
+        # Isochrones used in the analysis of the above clusters.
+        isochs = [['M08', 'M08', 'M08', 'M08', 'M08', 'M08', 'G02', 'M08',
                    'M08', 'M08']]
 
     db_cls = [[] for _ in mc_cls]

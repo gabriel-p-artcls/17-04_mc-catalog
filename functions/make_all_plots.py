@@ -1669,10 +1669,8 @@ def make_DB_ASteCA_CMDs(db, db_cls):
 
         # Output png file.
         fig.tight_layout()
-        if db == 'outliers':
-            fig_name = 'figures/' + db + '_lit_VS_asteca.png'
-        else:
-            fig_name = 'figures/DB_fit/' + db + '_VS_asteca_' + str(k) + '.png'
+        r_path = 'figures/' if db == 'outliers' else 'figures/DB_fit/'
+        fig_name = r_path + db + '_VS_asteca_' + str(k) + '.png'
         plt.savefig(fig_name, dpi=150, bbox_inches='tight')
 
 
