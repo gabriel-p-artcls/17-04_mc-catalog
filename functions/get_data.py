@@ -1,6 +1,5 @@
 
 from pyexcel_ods import ODSBook
-import os.path
 
 
 def skip_comments(f):
