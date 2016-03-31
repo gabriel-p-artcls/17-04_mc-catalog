@@ -300,7 +300,7 @@ photometry.
 
 #### `7th_run/`
 
-  Seventh run, 20 high mass clusters re-process with higher mass max limit.
+  Seventh run, 20 high mass clusters re-processed with higher mass max limit.
   Parameters used:
 
   * max mass = 30000
@@ -397,7 +397,7 @@ photometry.
 
   Equal to 15th run but using a fixed mass of 1500 Mo and `Tolstoy` likelihood
   instead of `Dolphin`.
-  **Correction**: I used  *whitout noticing* a mass interval of:
+  **Correction**: I used  *without noticing* a mass interval of:
   `TM 10 1500` in the `params_input.dat` file instead of fixing it to a value
   of `1500`.
   This caused the mass values in the range to be defined by
