@@ -1,5 +1,4 @@
 
-import os
 import functions.CMD_obs_vs_asteca as cmd
 
 
