@@ -191,16 +191,16 @@ def get_liter_data():
     return cl_dict
 
 
-def get_cross_match_data():
+def get_cross_match_data(r_path):
     '''
     Read the cross-matched clusters between ASteCA output and several
     databases.
     '''
     # Path to data file.
-    in_file = '/../ages_mass_lit/matched_clusters.dat'
+    in_file = 'mc-catalog/databases/matched_clusters.dat'
 
     # Read data file
-    with open(os.path.dirname(__file__) + in_file, 'r') as f:
+    with open(r_path + in_file, 'r') as f:
         cross_match = [[], [], [], [], [], [], []]
 
         for line in skip_comments(f):

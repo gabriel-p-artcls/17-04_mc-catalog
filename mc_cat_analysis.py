@@ -215,7 +215,7 @@ def main():
     check_diffs(in_params)
 
     # Define which plots to produce.
-    plots = ['1', '2', '3', '4']
+    plots = ['6', '7']
 
     # Only obtain data if the plot is being generated.
     if '0' in plots:
@@ -226,7 +226,7 @@ def main():
         bica_coords = []
     if '6' in plots or '7' in plots:
         # Read cross-matched clusters.
-        cross_match = get_cross_match_data()
+        cross_match = get_cross_match_data(r_path)
         print 'Cross-matched data read.'
     else:
         cross_match = []
