@@ -304,7 +304,7 @@ def as_vs_lit_mass_plots(pl_params):
                          color='k', elinewidth=0.5, zorder=1)
     if i != 0:
         # Text box.
-        pres = [2, 2] if x_lab != '$M_{ASteCA}\,(M_{\odot})$' else [0, 0]
+        pres = [2, 2] if x_lab != '$M_{ASteCA}\,[M_{\odot}]$' else [0, 0]
         text1 = r'$\bar{{\Delta}}={:g}$'.format(round(par_mean_std[0],
                                                 pres[0]))
         text2 = r'$\pm{:g}$'.format(round(par_mean_std[1], pres[1]))
@@ -370,11 +370,11 @@ def make_as_vs_lit_mass_plot(in_params):
 
     as_lit_pl_lst = [
         # ASteCA vs literature masses.
-        [gs, 0, 10., 3998., 10., 3998., '', '$M_{lit}\,(M_{\odot})$',
+        [gs, 0, 10., 3998., 10., 3998., '', '$M_{lit}\,[M_{\odot}]$',
          '$CI$', marr[0][0], msigma[0][0], marr[0][1], msigma_lit,
          cont_ind[0], cbar_min, cbar_max, [], 'SMC (M13)'],
-        [gs, 3, 10., 3998., -3500., 1900., '$M_{ASteCA}\,(M_{\odot})$',
-         '$\Delta M\,(M_{\odot})$', '$CI$', ma_all, [0.]*len(ma_all),
+        [gs, 3, 10., 3998., -3500., 1900., '$M_{ASteCA}\,[M_{\odot}]$',
+         '$\Delta M\,[M_{\odot}]$', '$CI$', ma_all, [0.]*len(ma_all),
          ma_delta, ma_delta_err, ci_all, cbar_min, cbar_max, par_mean_std, '']
     ]
 
@@ -452,12 +452,12 @@ def make_kde_plots(galax, k, in_params):
     kde_pl_lst = [
         [gs, 0, '$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', aarr[k][0],
             asigma[k][0], zarr[k][0], zsigma[k][0], age_rang, fe_h_rang],
-        [gs, 1, '$log(age/yr)_{ASteCA}$', '$M_{ASteCA}\,(M_{\odot})$',
+        [gs, 1, '$log(age/yr)_{ASteCA}$', '$M_{ASteCA}\,[M_{\odot}]$',
             aarr[k][0], asigma[k][0], marr[k][0], msigma[k][0], age_rang,
             mass_rang],
         [gs, 2, '$(m-M)_{\circ;\,ASteCA}$', '$E(B-V)_{ASteCA}$', darr[k][0],
             dsigma[k][0], earr[k][0], esigma[k][0], dist_mod_rang, E_bv_rang],
-        [gs, 3, '$M_{ASteCA}\,(M_{\odot})$', '$[Fe/H]_{ASteCA}$', marr[k][0],
+        [gs, 3, '$M_{ASteCA}\,[M_{\odot}]$', '$[Fe/H]_{ASteCA}$', marr[k][0],
             msigma[k][0], zarr[k][0], zsigma[k][0], mass_rang, fe_h_rang],
         [gs, 4, '$Age_{ASteCA}\,(Gyr)$', '$[Fe/H]_{ASteCA}$', age_gyr[0],
             age_gyr[1], zarr[k][0], zsigma[k][0], age_gyr_rang, fe_h_rang]
@@ -523,7 +523,7 @@ def make_ra_dec_plots(in_params, bica_coords):
         [fig, 325, ra, dec, bb_ra, bb_dec, darr, 18.82, 19.08, rad_pc,
          '$(m-M)_{\circ}$'],
         [fig, 326, ra, dec, bb_ra, bb_dec, marr, 100, 30000, rad_pc,
-         '$M\,(M_{\odot})$']
+         '$M\,[M_{\odot}]$']
         # [fig, 326, ra, dec, bb_ra, bb_dec, rad_pc, rad_pc,
         # '$r_{clust}\,[pc]$']
     ]
@@ -714,7 +714,7 @@ def make_int_cols_plot(in_params):
     # Define values to pass.
     xmin, xmax = 6.5, 9.95
     x_lab, y_lab, z_lab = '$log(age/yr)_{ASteCA}$', \
-        '$(C-T_{1})_{0;\,ASteCA}$', '$M\,(M_{\odot})$'
+        '$(C-T_{1})_{0;\,ASteCA}$', '$M\,[M_{\odot}]$'
 
     fig = plt.figure(figsize=(16, 25))  # create the top-level container
     gs = gridspec.GridSpec(4, 1)       # create a GridSpec object
@@ -756,7 +756,7 @@ def make_concent_plot(in_params):
     # Define values to pass.
     xmin, xmax = [6.5, -2.3], [10.4, 0.2]
     x_lab, y_lab, z_lab = ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$'], \
-        '$Concentration\,(N_{memb}/pc^{2})$', '$M\,(M_{\odot})$'
+        '$Concentration\,(N_{memb}/pc^{2})$', '$M\,[M_{\odot}]$'
 
     fig = plt.figure(figsize=(16, 25))  # create the top-level container
     gs = gridspec.GridSpec(4, 1)       # create a GridSpec object
@@ -796,8 +796,8 @@ def make_radius_plot(in_params):
     xmin, xmax = 0., 40.
     ymin, ymax = 6., 10.
     x_lab = ['$R_{cl;\,ASteCA}\,(pc)$', '$R_{core;\,ASteCA}\,(pc)$']
-    y_lab = ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,(M_{\odot})$']
-    z_lab = ['$M\,(M_{\odot})$', '$log(age/yr)_{ASteCA}$']
+    y_lab = ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,[M_{\odot}]$']
+    z_lab = ['$M\,[M_{\odot}]$', '$log(age/yr)_{ASteCA}$']
 
     for i, gal_name in enumerate(['SMC', 'LMC']):
 
@@ -897,8 +897,8 @@ def make_probs_CI_plot(in_params):
 
     # Define names of arrays being plotted.
     x_lab, y_lab, z_lab = '$CI_{ASteCA}$', '$prob_{ASteCA}$', \
-        ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,(M_{\odot})$',
-            '$M\,(M_{\odot})$', '$log(age/yr)_{ASteCA}$']
+        ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,[M_{\odot}]$',
+            '$M\,[M_{\odot}]$', '$log(age/yr)_{ASteCA}$']
     xmin, xmax, ymin, ymax = -0.01, 1.02, -0.01, 1.02
 
     fig = plt.figure(figsize=(16, 25))
@@ -1017,7 +1017,7 @@ def make_dist_2_cents(in_params):
 
     # Define names of arrays being plotted.
     x_lab, yz_lab = '$R_{GC}\,[pc]$', \
-        ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,(M_{\odot})$',
+        ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,[M_{\odot}]$',
             '$E(B-V)_{ASteCA}$']
     xmin, xmax = 0, 7500
     vmin_met, vmax_met = -2.1, 0.29
@@ -1073,6 +1073,7 @@ def cross_match_plot(pl_params):
         mark, cols, text_box, databases = pl_params
 
     a, e_a, b, e_b = indexes
+    tit = ['Isochrone fitting', 'Integrated photometry']
 
     xy_font_s = 21
     plt.xticks(fontsize=15)
@@ -1081,6 +1082,8 @@ def cross_match_plot(pl_params):
 
     ax = plt.subplot(gs[i])
     ax.set_aspect('equal')
+    if i in [0, 1]:
+        plt.title(tit[i], y=1.02)
     plt.xlim(xmin, xmax)
     plt.ylim(ymin, ymax)
     plt.xlabel(x_lab, fontsize=xy_font_s)
@@ -1123,23 +1126,23 @@ def cross_match_plot(pl_params):
             # Plot error bars.
             if xsigma:
                 for k, xy in enumerate(zip(*[xarr, yarr])):
-                    x_err = xsigma[k] if 0. < xsigma[k] < 5. else 0.
-                    plt.errorbar(xy[0], xy[1], xerr=x_err, ls='none',
-                                 color='k', elinewidth=0.2, zorder=1)
+                    if xsigma[k] > 0.:
+                        plt.errorbar(xy[0], xy[1], xerr=xsigma[k], ls='none',
+                                     color='k', elinewidth=0.2, zorder=1)
             if ysigma:
                 for k, xy in enumerate(zip(*[xarr, yarr])):
-                    y_err = ysigma[k] if 0. < ysigma[k] < 5. else 0.
-                    plt.errorbar(xy[0], xy[1], yerr=y_err, ls='none',
-                                 color='k', elinewidth=0.2, zorder=1)
+                    if ysigma[k] > 0:
+                        plt.errorbar(xy[0], xy[1], yerr=ysigma[k], ls='none',
+                                     color='k', elinewidth=0.2, zorder=1)
             # Legend.
-            if y_lab != '$mass_{DB}\,[M_{\odot}]$':
+            if i not in [3, 5]:
                 leg = plt.legend(loc='upper left', markerscale=1.,
                                  scatterpoints=1, fontsize=xy_font_s - 7)
                 leg.get_frame().set_alpha(0.5)
     plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
     if text_box:
         # Text box.
-        ob = offsetbox.AnchoredText(text_box, loc=4,
+        ob = offsetbox.AnchoredText(text_box, loc=1,
                                     prop=dict(size=xy_font_s - 5))
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
@@ -1177,10 +1180,6 @@ def make_cross_match(cross_match):
             ['chocolate', 'm', 'k', 'c', 'g'], ['r', 'm', 'g', 'b'],
             ['m', 'b']]
 
-    # Text boxes.
-    text_box = ['Isochrone fitting', 'Integrated photometry', 'SMC', 'LMC',
-                '$M_{\odot}<5000$']
-
     # Separate SMC from LMC clusters in H03 and G10 databases.
     h03_smc, h03_lmc, g10_smc, g10_lmc = [], [], [], []
     for cl in zip(*h03):
@@ -1199,11 +1198,12 @@ def make_cross_match(cross_match):
     # Separate clusters with mass < 5000
     h03_low_mass, p12_low_mass = [], []
     for cl in zip(*h03):
-        if cl[6] <= 5000.:
+        # Filter out large masses in both DB and ASteCA.
+        if cl[8] < 5000. and cl[10] < 5000.:
             h03_low_mass.append(cl)
     h03_low_mass = zip(*h03_low_mass)
     for cl in zip(*p12):
-        if cl[6] <= 5000.:
+        if cl[8] < 5000. and cl[10] < 5000.:
             p12_low_mass.append(cl)
     p12_low_mass = zip(*p12_low_mass)
 
@@ -1229,10 +1229,10 @@ def make_cross_match(cross_match):
         ast_ip, dbs_ip)[0, 1]
 
     # Define names of arrays being plotted.
-    x_lab = ['$log(age/yr)_{ASteCA}$', '$mass_{ASteCA}\,[M_{\odot}]$']
-    y_lab = ['$log(age/yr)_{DB}$', '$mass_{DB}\,[M_{\odot}]$']
-    z_lab = ['$mass_{ASteCA}\,[M_{\odot}]$', '$log(age/yr)_{ASteCA}$']
-    xymin, xymax = [5.8, -69.], [10.6, 5000, 30000]
+    x_lab = ['$log(age/yr)_{ASteCA}$', '$M_{ASteCA}\,[M_{\odot}]$']
+    y_lab = ['$log(age/yr)_{DB}$', '$M_{DB}\,[M_{\odot}]$']
+    z_lab = ['$M_{ASteCA}\,[M_{\odot}]$', '$log(age/yr)_{ASteCA}$']
+    xymin, xymax = [5.8, -69.], [10.6, 4950, 30000]
 
     fig = plt.figure(figsize=(16, 25))
     gs = gridspec.GridSpec(4, 2)
@@ -1240,7 +1240,7 @@ def make_cross_match(cross_match):
     cross_match_lst = [
         # Age cross-match, isoch fit.
         [gs, 0, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[0], y_lab[0],
-            z_lab[0], indexes[0], labels[0], mark[0], cols[0], text_box[0],
+            z_lab[0], indexes[0], labels[0], mark[0], cols[0], '',
             databases[0]],
 
         # # Extinction G10 vs P99, P00, C06. This block needs the
@@ -1252,24 +1252,24 @@ def make_cross_match(cross_match):
 
         # Age cross-match, integrated photometry.
         [gs, 1, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[0], y_lab[0],
-            z_lab[0], indexes[0], labels[1], mark[1], cols[1], text_box[1],
+            z_lab[0], indexes[0], labels[1], mark[1], cols[1], '',
             databases[1]],
         # Age cross-match, SMC.
         [gs, 2, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[0], y_lab[0],
-            z_lab[0], indexes[0], labels[2], mark[2], cols[2], text_box[2],
+            z_lab[0], indexes[0], labels[2], mark[2], cols[2], 'SMC',
             databases[2]],
-        # Age cross-match, LMC.
-        [gs, 3, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[0], y_lab[0],
-            z_lab[0], indexes[0], labels[3], mark[3], cols[3], text_box[3],
-            databases[3]],
-        # Mass cross_match (all)
-        [gs, 4, xymin[1], xymax[2], xymin[1], xymax[2], x_lab[1], y_lab[1],
-            z_lab[1], indexes[1], labels[4], mark[4], cols[4], [],
-            databases[5]],
         # Mass cross_match (low mass)
-        [gs, 5, xymin[1], xymax[1], xymin[1], xymax[1], x_lab[1], y_lab[1],
-            z_lab[1], indexes[1], labels[4], mark[4], cols[4], text_box[4],
-            databases[4]]
+        [gs, 3, xymin[1], xymax[1], xymin[1], xymax[1], x_lab[1], y_lab[1],
+            z_lab[1], indexes[1], labels[4], mark[4], cols[4],
+            '$M_{\odot}<5000$', databases[4]],
+        # Age cross-match, LMC.
+        [gs, 4, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[0], y_lab[0],
+            z_lab[0], indexes[0], labels[3], mark[3], cols[3], 'LMC',
+            databases[3]],
+        # Mass cross_match (large masses)
+        [gs, 5, xymin[1], xymax[2], xymin[1], xymax[2], x_lab[1], y_lab[1],
+            z_lab[1], indexes[1], labels[4], mark[4], cols[4], '',
+            databases[5]]
     ]
 
     for pl_params in cross_match_lst:
@@ -1693,10 +1693,10 @@ def pl_errors(pl_params):
     ax.minorticks_on()
     cm = plt.cm.get_cmap('RdYlBu_r')
     # Introduce random scatter.
-    if x_lab == '$[Fe/H]_{ASteCA}$':
+    if i == 0:
         # 1% of axis ranges.
         ax_ext = (xmax - xmin) * 0.02
-    elif x_lab == '$M_{\odot;\,ASteCA}$':
+    elif i == 4:
         ax_ext = (xmax - xmin) * 0.01
     else:
         ax_ext = (xmax - xmin) * 0.025
@@ -1726,16 +1726,13 @@ def pl_errors(pl_params):
     axHisty.add_artist(ob)
     print 'Mean {}: {}'.format(y_lab, np.mean(y))
 
-    # Position colorbar.
-    # the_divider = make_axes_locatable(ax)
-    # color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
-    # cbar = plt.colorbar(SC, cax=color_axis)
-    # x0, y0, width, height
-    axColor = plt.axes([0.1, 0.85, 0.3, 0.005])
-    cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
-    # Colorbar.
-    cbar.set_label(r'$CI$', fontsize=xy_font_s - 2, labelpad=-37)
-    cbar.ax.tick_params(labelsize=xy_font_s - 8)
+    if i == 0:
+        # Position colorbar.
+        axColor = plt.axes([0.1, 0.85, 0.3, 0.005])
+        cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
+        cbar.set_label(r'$CI$', fontsize=xy_font_s - 2, labelpad=-37)
+        cbar.set_ticks([0.2, 0.4, 0.6, 0.8, 1., 1.2])
+        cbar.ax.tick_params(labelsize=xy_font_s - 8)
 
 
 def make_errors_plots(in_params):
@@ -1793,7 +1790,7 @@ def make_errors_plots(in_params):
         [gs, 3, 18.28, 19.19, 0.007, 0.083, ord_d, ord_ds, ord_X, ord_r,
             '$\mu_{0}$', '$e_{\mu_{0}}$'],
         [gs, 4, -210, 30000, -210, 4450, ord_m, ord_ms, ord_X, ord_r,
-            '$M\,(M_{\odot})$', '$e_{M}$']
+            '$M\,[M_{\odot}]$', '$e_{M}$']
     ]
 
     for pl_params in errors_lst:
