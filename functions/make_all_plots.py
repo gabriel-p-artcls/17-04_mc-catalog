@@ -1083,7 +1083,7 @@ def cross_match_plot(pl_params):
     ax = plt.subplot(gs[i])
     ax.set_aspect('equal')
     if i in [0, 1]:
-        plt.title(tit[i], y=1.02)
+        plt.title(tit[i], y=1.005)
     plt.xlim(xmin, xmax)
     plt.ylim(ymin, ymax)
     plt.xlabel(x_lab, fontsize=xy_font_s)
@@ -1196,16 +1196,48 @@ def make_cross_match(cross_match):
     g10_smc, g10_lmc = zip(*g10_smc), zip(*g10_lmc)
 
     # Separate clusters with mass < 5000
-    h03_low_mass, p12_low_mass = [], []
+    h03_low_mass, p12_low_mass, h03_h_mass, p12_h_mass = [], [], [], []
     for cl in zip(*h03):
         # Filter out large masses in both DB and ASteCA.
         if cl[8] < 5000. and cl[10] < 5000.:
             h03_low_mass.append(cl)
+        else:
+            h03_h_mass.append(cl)
     h03_low_mass = zip(*h03_low_mass)
+    h03_h_mass = zip(*h03_h_mass)
     for cl in zip(*p12):
         if cl[8] < 5000. and cl[10] < 5000.:
             p12_low_mass.append(cl)
+        else:
+            p12_h_mass.append(cl)
     p12_low_mass = zip(*p12_low_mass)
+    p12_h_mass = zip(*p12_h_mass)
+
+    # ASteCA - DB ages
+    print 'Delta (ASteCA - DB) for ages: mean +- std'
+    db_name = ['P99', 'P00', 'H03', 'R05', 'C06', 'G10', 'P12']
+    for i, db in enumerate(cross_match):
+        diff_mean = np.mean(np.array(db[4]) - np.array(db[2]))
+        diff_std = np.std(np.array(db[4]) - np.array(db[2]))
+        print '{} Delta diffs ages: {:.2f} +- {:.2f}'.format(
+            db_name[i], diff_mean, diff_std)
+
+    # ASteCA - DB masses
+    print '\nDelta (ASteCA - DB) for small mass OCs: mean +- std'
+    db_name = ['H03', 'P12']
+    for i, low_m_db in enumerate([h03_low_mass, p12_low_mass]):
+        diff_mean = np.mean(np.array(low_m_db[10]) - np.array(low_m_db[8]))
+        diff_std = np.std(np.array(low_m_db[10]) - np.array(low_m_db[8]))
+        print '{} Delta diffs small mass: {:.0f} +- {:.0f}'.format(
+            db_name[i], diff_mean, diff_std)
+    print '\nDelta (ASteCA - DB) for large masses: mean +- std'
+    print 'H03 OCs:', len(h03_h_mass[0]), 'P12 OCs:', len(p12_h_mass[0])
+    db_name = ['H03', 'P12']
+    for i, h_m_db in enumerate([h03_h_mass, p12_h_mass]):
+        diff_mean = np.mean(np.array(h_m_db[10]) - np.array(h_m_db[8]))
+        diff_std = np.std(np.array(h_m_db[10]) - np.array(h_m_db[8]))
+        print '{} Delta diffs large mass: {:.0f} +- {:.0f}'.format(
+            db_name[i], diff_mean, diff_std)
 
     # Define data to pass.
     databases = [[p99, p00, c06, g10], [h03, r05, p12],
@@ -1215,18 +1247,6 @@ def make_cross_match(cross_match):
 
     # First set is for the ages, second for the masses.
     indexes = [[4, 5, 2, 3], [10, 11, 8, 9]]
-
-    # Concordance correlation coef between AsteCA ages and DBs ages.
-    ast_if = list(p99[4]) + list(p00[4]) + list(c06[4]) + list(g10[4])
-    dbs_if = list(p99[2]) + list(p00[2]) + list(c06[2]) + list(g10[2])
-    ast_ip = list(h03[4]) + list(r05[4]) + list(p12[4])
-    dbs_ip = list(h03[2]) + list(r05[2]) + list(p12[2])
-    print 'AsteCA vs DBs (isoch fit) age conc corr coef:', ccc(ast_if, dbs_if)
-    print 'ASteCA vs DBs (isoch fit) Pearson corr coef:', np.corrcoef(
-        ast_if, dbs_if)[0, 1]
-    print 'AsteCA vs DBs (integ mag) age conc corr coef:', ccc(ast_ip, dbs_ip)
-    print 'ASteCA vs DBs (integ mag) Pearson corr coef:', np.corrcoef(
-        ast_ip, dbs_ip)[0, 1]
 
     # Define names of arrays being plotted.
     x_lab = ['$log(age/yr)_{ASteCA}$', '$M_{ASteCA}\,[M_{\odot}]$']
@@ -1478,7 +1498,7 @@ def make_cross_match_age_ext(cross_match, in_params):
 
     labels = [['P99', 'C06', 'G10'], ['SMC', 'LMC'],
               ['P99', 'P00', 'C06', 'G10']]
-    mark = [['>', 'v', '<'], ['o', '*'], ['>', '^', 'v', '<']]
+    mark = [['>', 'v', '<'], ['*', '*'], ['>', '^', 'v', '<']]
     cols = [['chocolate', 'c', 'g'], ['m', 'b'], ['chocolate', 'r', 'c', 'g']]
 
     # Define names of arrays being plotted.
