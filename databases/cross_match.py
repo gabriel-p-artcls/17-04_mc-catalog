@@ -153,8 +153,8 @@ def get_liter_data():
         cl_dict[0].index(u'e_E(B-V)'), cl_dict[0].index(u'Mass'), \
         cl_dict[0].index(u'e_mass'), cl_dict[0].index(u'Name')
 
-    names_ra_dec, ra, dec, ages, e_age, exti, e_exti, mass, e_mass = [], [], \
-        [], [], [], [], [], [], []
+    names_ra_dec, ra, dec, ages, e_age, exti, e_exti, mass, e_mass =\
+        [], [], [], [], [], [], [], [], []
     # Skip first line (columns names)
     for cl in cl_dict[1:]:
         # Skip empty last lines.
@@ -709,8 +709,8 @@ def str2int(lst_pass):
 
 
 def match_clusts(as_names, as_pars, names_lit, lit_ages, lit_e_age, lit_ext,
-                 lit_e_ext, lit_mass, lit_e_mass, p99, p00, h03, r05, c06,
-                 g10, p12):
+                 lit_e_ext, lit_mass, lit_e_mass, p99, p00, h03, r05,
+                 c06, g10, p12):
     '''
     Cross match clusters processed by ASteCA to those published in several
     articles. The final list is ordered in the same way the 'as_params' list
@@ -776,7 +776,7 @@ def match_clusts(as_names, as_pars, names_lit, lit_ages, lit_e_age, lit_ext,
                                         e_m_DB, as_pars[i][27], as_pars[i][28],
                                         l_mass, l_e_mass,
                                         ext_DB, as_pars[i][23], as_pars[i][24],
-                                        l_ext, l_e_ext]
+                                        l_ext, l_e_ext, as_pars[i][11]]
                                 # Increase counter.
                                 total[k] = total[k] + 1
 
@@ -800,13 +800,13 @@ def write_out_data(match_cl):
         f_out.write("#\n# Mass1: Mass_DB\n# Mass2: Mass_asteca\n#\n")
         f_out.write("#DB   GAL      NAME   Age1  e_age  Age2  \
 e_age   Age3  e_age      Mass1   e_mass    Mass2   e_mass    Mass3   \
-e_mass    E_BV1    E_BV2   e_E_BV    E_BV3   e_E_BV\n")
+e_mass    E_BV1    E_BV2   e_E_BV    E_BV3   e_E_BV     CI\n")
         for data_base in zip(*match_cl):
             for clust in data_base:
                 if clust:  # Check that list is not empty.
                     f_out.write('''{:<4} {:>4} {:>9} {:>6.2f} {:>6.2f} {:>5} \
 {:>6} {:>6.2f} {:>6.2f} {:>10.2f} {:>8.0f} {:>8} {:>8} {:>8} {:>8} {:>8.2f} \
-{:>8} {:>8} {:>8.2f} {:>8.2f}\n'''.format(*clust))
+{:>8} {:>8} {:>8.2f} {:>8.2f} {:>8}\n'''.format(*clust))
 
 
 def main():
