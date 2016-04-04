@@ -1314,9 +1314,6 @@ def cross_match_if_plot(pl_params):
         kde_cont = pl_params
 
     xy_font_s = 21
-    plt.xticks(fontsize=15)
-    plt.yticks(fontsize=15)
-
     ax = plt.subplot(gs[i])
     plt.xlim(xmin, xmax)
     plt.ylim(ymin, ymax)
@@ -1325,6 +1322,7 @@ def cross_match_if_plot(pl_params):
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
             zorder=1)
     ax.minorticks_on()
+    ax.tick_params(labelsize=15)
     if i in [1, 2]:
         # Origin lines.
         plt.plot([-10, 10], [0., 0.], 'k', ls='--')
@@ -1462,17 +1460,15 @@ def make_cross_match_if(cross_match, in_params):
              '$\Delta \log(age/yr)_{ASteCA-lit}$', '$\log(age/yr)_{ASteCA}$']
     y_lab = ['$\Delta E(B-V)_{ASteCA-DB}$', '$\Delta E(B-V)_{ASteCA-lit}$',
              '$\log(age/yr)_{DB}$']
-    xmm, ymm = [-1.5, 1.5, -0.019, 0.31], [-0.19, 0.19]
-
-    xymin, xymax = [5.8, -69.], [10.6, 4950, 30000]
+    xmm, ymm = [-1.5, 1.5, 5.8], [-0.19, 0.19, 10.6]
 
     # Arbitrary size so plots are actually squared.
-    fig = plt.figure(figsize=(20, 6.4))
+    fig = plt.figure(figsize=(20, 6.3))
     gs = gridspec.GridSpec(1, 3)
 
     cross_match_lst = [
         # Age 1:1, isoch fit lit vs ASteCA.
-        [gs, 0, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[2], y_lab[2],
+        [gs, 0, xmm[2], ymm[2], xmm[2], ymm[2], x_lab[2], y_lab[2],
             age_ast_DB_data, labels[2], mark[2], cols[2], []],
         # Age vs ext diff for ASteCA vs databases.
         [gs, 1, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[0], y_lab[0],
