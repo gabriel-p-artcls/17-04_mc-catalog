@@ -1239,14 +1239,20 @@ def make_cross_match(cross_match):
         print '{} Delta diffs large mass: {:.0f} +- {:.0f}'.format(
             db_name[i], diff_mean, diff_std)
 
+    # Differences ASteCA  - DBs
+    delta_h03 = [h03[10], h03[11], np.array(h03[10]) - np.array(h03[8]), [],
+                 h03[19]]
+    delta_p12 = [p12[10], p12[11], np.array(p12[10]) - np.array(p12[8]), [],
+                 p12[19]]
+
     # Define data to pass.
     databases = [[p99, p00, c06, g10], [h03, r05, p12],
                  [p99, h03_smc, r05, c06, g10_smc],
                  [p00, h03_lmc, g10_lmc, p12],
-                 [h03_low_mass, p12_low_mass], [h03, p12]]
+                 [h03_low_mass, p12_low_mass], [delta_h03, delta_p12]]
 
     # First set is for the ages, second for the masses.
-    indexes = [[4, 5, 2, 3], [10, 11, 8, 9]]
+    indexes = [[4, 5, 2, 3], [10, 11, 8, 9], [0, 1, 2, 3]]
 
     # Define names of arrays being plotted.
     x_lab = ['$log(age/yr)_{ASteCA}$', '$M_{ASteCA}\,[M_{\odot}]$']
@@ -1254,8 +1260,8 @@ def make_cross_match(cross_match):
     z_lab = ['$M_{ASteCA}\,[M_{\odot}]$', '$log(age/yr)_{ASteCA}$']
     xymin, xymax = [5.8, -69.], [10.6, 4950, 30000]
 
-    fig = plt.figure(figsize=(16, 25))
-    gs = gridspec.GridSpec(4, 2)
+    fig = plt.figure(figsize=(25, 16))
+    gs = gridspec.GridSpec(2, 4)
 
     cross_match_lst = [
         # Age cross-match, isoch fit.
@@ -1287,7 +1293,7 @@ def make_cross_match(cross_match):
             z_lab[0], indexes[0], labels[3], mark[3], cols[3], 'LMC',
             databases[3]],
         # Mass cross_match (large masses)
-        [gs, 5, xymin[1], xymax[2], xymin[1], xymax[2], x_lab[1], y_lab[1],
+        [gs, 5, xymin[1], xymax[2], -25000., 25000., x_lab[1], y_lab[1],
             z_lab[1], indexes[1], labels[4], mark[4], cols[4], '',
             databases[5]]
     ]
@@ -1300,9 +1306,9 @@ def make_cross_match(cross_match):
     plt.savefig('figures/cross_match.png', dpi=300, bbox_inches='tight')
 
 
-def cross_match_age_ext_plot(pl_params):
+def cross_match_if_plot(pl_params):
     '''
-    Generate plots for the cross-matched age and mass values.
+    Generate plots for the cross-matched isochrone fitted OCs.
     '''
     gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, data, labels, mark, cols, \
         kde_cont = pl_params
@@ -1319,7 +1325,7 @@ def cross_match_age_ext_plot(pl_params):
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
             zorder=1)
     ax.minorticks_on()
-    if i in [3, 5, 7]:
+    if i in [1, 2]:
         # Origin lines.
         plt.plot([-10, 10], [0., 0.], 'k', ls='--')
         plt.plot([0., 0.], [-10, 10], 'k', ls='--')
@@ -1332,7 +1338,7 @@ def cross_match_age_ext_plot(pl_params):
         xsigma, ysigma = DB[1], DB[3]
         siz = 60. if mark[j] != '*' else 80.
 
-        if i == 0:
+        if i in [0, 2]:
             db_lab = labels[j] + '$\;(N={})$'.format(len(xarr))
         else:
             db_lab = labels[j]
@@ -1363,7 +1369,7 @@ def cross_match_age_ext_plot(pl_params):
     ax.set_aspect('auto')
 
 
-def make_cross_match_age_ext(cross_match, in_params):
+def make_cross_match_if(cross_match, in_params):
     '''
     Plot the differences between extinction and age for ASteCA values versus
     Washington values (ie: Piatti et al. values) and ASteCA values versus
@@ -1394,53 +1400,24 @@ def make_cross_match_age_ext(cross_match, in_params):
 
     # P99 ASteCA minus database diffs.
     diffs_db_ages_p99 = np.array(p99[4]) - np.array(p99[2])
-    # P99 liter minus database diffs.
-    diffs_lit_db_ages_p99 = np.array(p99[6]) - np.array(p99[2])
     # Same for extinctions.
     diffs_db_exts_p99 = np.array(p99[15]) - np.array(p99[14])
-    diffs_lit_db_exts_p99 = np.array(p99[17]) - np.array(p99[14])
-
-    # P00 ASteCA minus database diffs.
+    # P00 ASteCA minus database diffs (no extinction information).
     diffs_db_ages_p00 = np.array(p00[4]) - np.array(p00[2])
-
     # C06
     diffs_db_ages_c06 = np.array(c06[4]) - np.array(c06[2])
-    diffs_lit_db_ages_c06 = np.array(c06[6]) - np.array(c06[2])
     diffs_db_exts_c06 = np.array(c06[15]) - np.array(c06[14])
-    diffs_lit_db_exts_c06 = np.array(c06[17]) - np.array(c06[14])
-
     # G10
     diffs_db_ages_g10 = np.array(g10[4]) - np.array(g10[2])
-    diffs_lit_db_ages_g10 = np.array(g10[6]) - np.array(g10[2])
     diffs_db_exts_g10 = np.array(g10[15]) - np.array(g10[14])
-    diffs_lit_db_exts_g10 = np.array(g10[17]) - np.array(g10[14])
 
     # Calculate std, means and medians for the age differences.
     txt = ['SMC', 'LMC', 'P99', 'P00', 'C06', 'G10']
     dbs = [diffs_lit_ages_smc, diffs_lit_ages_lmc, diffs_db_ages_p99,
            diffs_db_ages_p00, diffs_db_ages_c06, diffs_db_ages_g10]
     for i, db in enumerate(dbs):
-        print '{}, diff ages std = {:.3f}'.format(txt[i], np.std(db))
-    #     print '{}, mean = {:.3f}'.format(txt[i], np.mean(db))
-    #     print '{} median: {:.3f}'.format(txt[i], np.median(db))
-
-    # median_db = [
-    #     [[np.median(diffs_db_exts_p99), np.median(diffs_db_ages_p99)],
-    #      [np.median(diffs_db_exts_c06), np.median(diffs_db_ages_c06)],
-    #      [np.median(diffs_db_exts_g10), np.median(diffs_db_ages_g10)]],
-    #     [[np.median(diffs_lit_exts_smc), np.median(diffs_lit_ages_smc)],
-    #      [np.median(diffs_lit_exts_lmc), np.median(diffs_lit_ages_lmc)]]
-    # ]
-    print 'DB exts median:', np.median(list(diffs_db_exts_p99) +
-                                       list(diffs_db_exts_c06) +
-                                       list(diffs_db_exts_g10))
-    print 'DB ages median:', np.median(list(diffs_db_ages_p99) +
-                                       list(diffs_db_ages_c06) +
-                                       list(diffs_db_ages_g10))
-    print 'AS exts median:', np.median(list(diffs_lit_exts_smc) +
-                                       list(diffs_lit_exts_lmc))
-    print 'AS ages median:', np.median(list(diffs_lit_ages_smc) +
-                                       list(diffs_lit_ages_lmc))
+        print "{}, diff ages = {:.3f} +- {:.3f}".format(
+                txt[i], np.mean(db), np.std(db))
 
     # Obtain a Gaussian KDE for each plot.
     # Define x,y grid.
@@ -1451,10 +1428,7 @@ def make_cross_match_age_ext(cross_match, in_params):
              list(diffs_db_ages_g10), list(diffs_db_exts_p99) +
              list(diffs_db_exts_c06) + list(diffs_db_exts_g10)],
             [list(diffs_lit_ages_smc) + list(diffs_lit_ages_lmc),
-             list(diffs_lit_exts_smc) + list(diffs_lit_exts_lmc)],
-            [list(diffs_lit_db_ages_p99) + list(diffs_lit_db_ages_c06) +
-             list(diffs_lit_db_ages_g10), list(diffs_lit_db_exts_p99) +
-             list(diffs_lit_db_exts_c06) + list(diffs_lit_db_exts_g10)]
+             list(diffs_lit_exts_smc) + list(diffs_lit_exts_lmc)]
     ]:
         values = np.vstack([xarr, yarr])
         kernel = stats.gaussian_kde(values)
@@ -1473,28 +1447,10 @@ def make_cross_match_age_ext(cross_match, in_params):
     db_data = [[diffs_db_ages_p99, [], diffs_db_exts_p99, []],
                [diffs_db_ages_c06, [], diffs_db_exts_c06, []],
                [diffs_db_ages_g10, [], diffs_db_exts_g10, []]]
-    lit_db_data = [[diffs_lit_db_ages_p99, [], diffs_lit_db_exts_p99, []],
-                   [diffs_lit_db_ages_c06, [], diffs_lit_db_exts_c06, []],
-                   [diffs_lit_db_ages_g10, [], diffs_lit_db_exts_g10, []]]
-    # 1:1 plots.
-    ext_lit_data = [[earr[0][0], esigma[0][0], earr[0][1], esigma[0][1]],
-                    [earr[1][0], esigma[1][0], earr[1][1], esigma[1][1]]]
-    ext_DB_data = [[p99[15], p99[16], p99[14], []],
-                   [c06[15], c06[16], c06[14], []],
-                   [g10[15], g10[16], g10[14], []]]
-    ext_lit_DB_data = [[p99[17], p99[18], p99[14], []],
-                       [c06[17], c06[18], c06[14], []],
-                       [g10[17], g10[18], g10[14], []]]
-    age_lit_DB_data = [[p99[6], p99[7], p99[2], p99[3]],
-                       [p00[6], p00[7], p00[2], p00[3]],
-                       [c06[6], c06[7], c06[2], c06[3]],
-                       [g10[6], g10[7], g10[2], g10[3]]]
-
-    # Concordance correlation coef between Literature ages and DBs ages.
-    lit = list(p99[6]) + list(p00[6]) + list(c06[6]) + list(g10[6])
-    dbs = list(p99[2]) + list(p00[2]) + list(c06[2]) + list(g10[2])
-    print 'Lit vs DBs age conc corr coef:', ccc(lit, dbs)
-    print 'Lit vs DBs Pearson corr coef:', np.corrcoef(lit, dbs)[0, 1]
+    age_ast_DB_data = [[p99[4], p99[5], p99[2], p99[3]],
+                       [p00[4], p00[5], p00[2], p00[3]],
+                       [c06[4], c06[5], c06[2], c06[3]],
+                       [g10[4], g10[5], g10[2], g10[3]]]
 
     labels = [['P99', 'C06', 'G10'], ['SMC', 'LMC'],
               ['P99', 'P00', 'C06', 'G10']]
@@ -1502,53 +1458,36 @@ def make_cross_match_age_ext(cross_match, in_params):
     cols = [['chocolate', 'c', 'g'], ['m', 'b'], ['chocolate', 'r', 'c', 'g']]
 
     # Define names of arrays being plotted.
-    x_lab = ['$\Delta log(age/yr)_{ASteCA-DB}$',
-             '$\Delta log(age/yr)_{ASteCA-lit}$',
-             '$E(B-V)_{ASteCA}$', '$E(B-V)_{lit}$',
-             '$\Delta log(age/yr)_{lit-DB}$', '$log(age/yr)_{lit}$']
+    x_lab = ['$\Delta \log(age/yr)_{ASteCA-DB}$',
+             '$\Delta \log(age/yr)_{ASteCA-lit}$', '$\log(age/yr)_{ASteCA}$']
     y_lab = ['$\Delta E(B-V)_{ASteCA-DB}$', '$\Delta E(B-V)_{ASteCA-lit}$',
-             '$E(B-V)_{DB}$', '$E(B-V)_{lit}$', '$\Delta E(B-V)_{lit-DB}$',
-             '$log(age/yr)_{DB}$']
+             '$\log(age/yr)_{DB}$']
     xmm, ymm = [-1.5, 1.5, -0.019, 0.31], [-0.19, 0.19]
 
-    # The arbitrary size is set so that the fig sizes are equivalent to that
-    # of the cross_match plots.
-    fig = plt.figure(figsize=(13.77, 25.2))
-    gs = gridspec.GridSpec(4, 2)
+    xymin, xymax = [5.8, -69.], [10.6, 4950, 30000]
+
+    # Arbitrary size so plots are actually squared.
+    fig = plt.figure(figsize=(20, 6.4))
+    gs = gridspec.GridSpec(1, 3)
 
     cross_match_lst = [
-        # Age 1:1, literature vs databases.
-        [gs, 0, 5.8, 10.5, 5.8, 10.5, x_lab[5], y_lab[5],
-            age_lit_DB_data, labels[2], mark[2], cols[2], []],
-
-        # Extinction 1:1, literature vs DBs.
-        [gs, 2, xmm[2], xmm[3], xmm[2], xmm[3], x_lab[3], y_lab[2],
-            ext_lit_DB_data, labels[0], mark[0], cols[0], []],
-        # Age vs ext diff for literature vs DBs.
-        [gs, 3, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[4], y_lab[4],
-            lit_db_data, labels[0], mark[0], cols[0], kde_cont[2]],
-
-        # Extinction 1:1, ASteCA vs databases.
-        [gs, 4, xmm[2], xmm[3], xmm[2], xmm[3], x_lab[2], y_lab[2],
-            ext_DB_data, labels[0], mark[0], cols[0], []],
+        # Age 1:1, isoch fit lit vs ASteCA.
+        [gs, 0, xymin[0], xymax[0], xymin[0], xymax[0], x_lab[2], y_lab[2],
+            age_ast_DB_data, labels[2], mark[2], cols[2], []],
         # Age vs ext diff for ASteCA vs databases.
-        [gs, 5, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[0], y_lab[0],
+        [gs, 1, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[0], y_lab[0],
             db_data, labels[0], mark[0], cols[0], kde_cont[0]],
-
-        # Extinction 1:1, ASteCA vs literature.
-        [gs, 6, xmm[2], xmm[3], xmm[2], xmm[3], x_lab[2], y_lab[3],
-            ext_lit_data, labels[1], mark[1], cols[1], []],
         # Age vs ext diff for ASteCA vs literature.
-        [gs, 7, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[1], y_lab[1],
+        [gs, 2, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[1], y_lab[1],
             lit_data, labels[1], mark[1], cols[1], kde_cont[1]]
     ]
 
     for pl_params in cross_match_lst:
-        cross_match_age_ext_plot(pl_params)
+        cross_match_if_plot(pl_params)
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/cross_match_age_ext.png', dpi=300,
+    plt.savefig('figures/cross_match_if.png', dpi=300,
                 bbox_inches='tight')
 
 
