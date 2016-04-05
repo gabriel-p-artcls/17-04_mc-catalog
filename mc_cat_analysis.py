@@ -10,7 +10,7 @@ from functions.make_all_plots import make_as_vs_lit_plot,\
     make_as_vs_lit_mass_plot, make_kde_plots, \
     make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
     make_concent_plot, make_radius_plot, make_probs_CI_plot, \
-    make_dist_2_cents, make_cross_match, make_cross_match_if, \
+    make_dist_2_cents, make_cross_match_ip, make_cross_match_if, \
     make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot
 
 
@@ -160,12 +160,12 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match, amr_lit):
         print "CMDs for matched clusters between DBs and ASteCA clusters done."
 
     if '6' in plots:
-        make_cross_match(cross_match)
-        print 'Cross-matched clusters done.'
+        make_cross_match_if(cross_match, in_params)
+        print 'Cross-matched isochrone fitting clusters done.'
 
     if '7' in plots:
-        make_cross_match_if(cross_match, in_params)
-        print 'Age and extinction diffs for cross-matched clusters done.'
+        make_cross_match_ip(cross_match)
+        print 'Cross-matched integrated photometry clusters done.'
 
     if '8' in plots:
         make_radius_plot(in_params)
