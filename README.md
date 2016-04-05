@@ -561,3 +561,14 @@ binary fractions of [0., 0.25, 0.5, 0.75, 1.]
 Metallicity of NGC294 changed 0.001 --> 0.0005, due to issue #248.
 These runs are only used to check the metal-binarity dependence, and are not
 added to the final output file.
+
+#### `21st_run`
+
+Re-process 5 OCs whose masses differ greatly from the H03 and P12 estimates.
+We use:
+* no DA + no local removal of field stars
+* no bootstrap
+* max mass limit of 400000 with a step of 5000 (Mo)
+
+All other parameter ranges are kept from 3rd run.
+

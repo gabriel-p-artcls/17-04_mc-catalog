@@ -1,5 +1,5 @@
 
-from pyexcel_ods import ODSBook
+from pyexcel_ods import get_data
 import numpy as np
 from astropy.coordinates import SkyCoord, match_coordinates_sky
 from astropy import units as u
@@ -139,11 +139,8 @@ def get_liter_data():
     Read the data file with the literature values for each cluster as a
     dictionary.
     '''
-
     # Read .ods file with literature data.
-    cl_file = ODSBook('../lista_unica_cumulos.ods')
-    # Store as dictionary and then as list.
-    cl_dict = cl_file.sheets()["S-LMC"]
+    cl_dict = get_data('../lista_unica_cumulos.ods')["S-LMC"]
 
     # Indexes of parameters columns in .ods literature file.
     ra_i, dec_i, age_i, e_age_i, ext_i, e_ext_i, mass_i, e_mass_i, name_idx = \
@@ -247,6 +244,8 @@ def read_pietr99(names_ra_dec, cat_ra_dec):
 def read_pietr(names_ra_dec, cat_ra_dec):
     '''
     Read Pietrzynski et al. (2000) database.
+    Use fixed E(B-V) value of 0.143. This is the value used according to
+    de Grijs et al. (2006).
 
     Return
     ------
@@ -277,7 +276,7 @@ def read_pietr(names_ra_dec, cat_ra_dec):
                 gal = 'LMC'
                 log_age = float(lin[4])
                 e_age = float(lin[5])
-                p00.append([gal, [name], log_age, e_age])
+                p00.append([gal, [name], log_age, e_age, 0.143])
 
     return p00
 
@@ -746,8 +745,8 @@ def match_clusts(as_names, as_pars, names_lit, lit_ages, lit_e_age, lit_ext,
                         m_DB, e_m_DB = cl_db[4], cl_db[5]
                     else:
                         m_DB, e_m_DB = -1., -1.
-                    # Only P99, C06 and G10 have defined extinctions.
-                    if k in [0, 4, 5]:
+                    # Only P99, P00, C06 and G10 have defined extinctions.
+                    if k in [0, 1, 4, 5]:
                         ext_DB = cl_db[4]
                     else:
                         ext_DB = -1.
