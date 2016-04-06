@@ -232,7 +232,7 @@ def get_isoch(r_path, DB_asteca, isoch, z, a, e, d):
         # Use Girardi isochrones.
         isc = 'girardi'
 
-    if DB_asteca in ['G10', 'C06']:
+    if DB_asteca in ['P99', 'P00', 'C06', 'G10']:
         # Use Girardi isochrones.
         met_f = r_path + 'mc-catalog/functions/' + str(z) + '_' + isc + '.dat'
         line_start, imass_idx = "#\tIsochrone\tZ = ", 1

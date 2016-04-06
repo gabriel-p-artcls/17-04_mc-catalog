@@ -114,7 +114,7 @@ def CMD_DBs_vs_asteca(r_path):
     the values given  by ASteCA.
     """
     print 'Generating CMDs of DBs for matched clusters with ASteCA.'
-    for db in ['C06', 'G10']:
+    for db in ['P99', 'P00', 'C06', 'G10']:
         db_cls = get_DBs_ASteCA_CMD_data(r_path, db, [])
         make_DB_ASteCA_CMDs(db, db_cls)
 
@@ -215,7 +215,7 @@ def main():
     check_diffs(in_params)
 
     # Define which plots to produce.
-    plots = ['6']
+    plots = ['5']
 
     # Only obtain data if the plot is being generated.
     if '0' in plots:

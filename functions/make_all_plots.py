@@ -1385,6 +1385,7 @@ def make_cross_match_if(cross_match, in_params):
     diffs_db_exts_p99 = np.array(p99[15]) - np.array(p99[14])
     # P00 ASteCA minus database diffs (no extinction information).
     diffs_db_ages_p00 = np.array(p00[4]) - np.array(p00[2])
+    diffs_db_exts_p00 = np.array(p00[15]) - np.array(p00[14])
     # C06
     diffs_db_ages_c06 = np.array(c06[4]) - np.array(c06[2])
     diffs_db_exts_c06 = np.array(c06[15]) - np.array(c06[14])
@@ -1405,8 +1406,9 @@ def make_cross_match_if(cross_match, in_params):
     gd_c = complex(0, 100)
     kde_cont = []
     for xarr, yarr in [
-            [list(diffs_db_ages_p99) + list(diffs_db_ages_c06) +
-             list(diffs_db_ages_g10), list(diffs_db_exts_p99) +
+            [list(diffs_db_ages_p99) + list(diffs_db_ages_p00) +
+             list(diffs_db_ages_c06) + list(diffs_db_ages_g10),
+             list(diffs_db_exts_p99) + list(diffs_db_exts_p00) +
              list(diffs_db_exts_c06) + list(diffs_db_exts_g10)],
             [list(diffs_lit_ages_smc) + list(diffs_lit_ages_lmc),
              list(diffs_lit_exts_smc) + list(diffs_lit_exts_lmc)]
@@ -1426,6 +1428,7 @@ def make_cross_match_if(cross_match, in_params):
     lit_data = [[diffs_lit_ages_smc, [], diffs_lit_exts_smc, []],
                 [diffs_lit_ages_lmc, [], diffs_lit_exts_lmc, []]]
     db_data = [[diffs_db_ages_p99, [], diffs_db_exts_p99, []],
+               [diffs_db_ages_p00, [], diffs_db_exts_p00, []],
                [diffs_db_ages_c06, [], diffs_db_exts_c06, []],
                [diffs_db_ages_g10, [], diffs_db_exts_g10, []]]
     age_ast_DB_data = [[p99[4], p99[5], p99[2], p99[3]],
@@ -1433,10 +1436,9 @@ def make_cross_match_if(cross_match, in_params):
                        [c06[4], c06[5], c06[2], c06[3]],
                        [g10[4], g10[5], g10[2], g10[3]]]
 
-    labels = [['P99', 'C06', 'G10'], ['SMC', 'LMC'],
-              ['P99', 'P00', 'C06', 'G10']]
-    mark = [['>', 'v', '<'], ['*', '*'], ['>', '^', 'v', '<']]
-    cols = [['chocolate', 'c', 'g'], ['m', 'b'], ['chocolate', 'r', 'c', 'g']]
+    labels = [['P99', 'P00', 'C06', 'G10'], ['SMC', 'LMC']]
+    mark = [['>', '^', 'v', '<'], ['*', '*']]
+    cols = [['chocolate', 'r', 'c', 'g'], ['m', 'b']]
 
     # Define names of arrays being plotted.
     x_lab = ['$\Delta \log(age/yr)_{ASteCA-DB}$',
@@ -1452,7 +1454,7 @@ def make_cross_match_if(cross_match, in_params):
     cross_match_lst = [
         # Age 1:1, isoch fit lit vs ASteCA.
         [gs, 0, xmm[2], ymm[2], xmm[2], ymm[2], x_lab[2], y_lab[2],
-            age_ast_DB_data, labels[2], mark[2], cols[2], []],
+            age_ast_DB_data, labels[0], mark[0], cols[0], []],
         # Age vs ext diff for ASteCA vs databases.
         [gs, 1, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[0], y_lab[0],
             db_data, labels[0], mark[0], cols[0], kde_cont[0]],
