@@ -143,15 +143,17 @@ def get_liter_data():
     cl_dict = get_data('../lista_unica_cumulos.ods')["S-LMC"]
 
     # Indexes of parameters columns in .ods literature file.
-    ra_i, dec_i, age_i, e_age_i, ext_i, e_ext_i, mass_i, e_mass_i, name_idx = \
+    ra_i, dec_i, age_i, e_age_i, ext_i, e_ext_i, mass_i, e_mass_i, name_idx,\
+        scale_i = \
         cl_dict[0].index(u'ra_deg'),\
         cl_dict[0].index(u'dec_deg'), cl_dict[0].index(u'log(age)'), \
         cl_dict[0].index(u'e_log(age)'), cl_dict[0].index(u'E(B-V) (lit)'), \
         cl_dict[0].index(u'e_E(B-V)'), cl_dict[0].index(u'Mass'), \
-        cl_dict[0].index(u'e_mass'), cl_dict[0].index(u'Name')
+        cl_dict[0].index(u'e_mass'), cl_dict[0].index(u'Name'),\
+        cl_dict[0].index(u'arcsec/pixel')
 
-    names_ra_dec, ra, dec, ages, e_age, exti, e_exti, mass, e_mass =\
-        [], [], [], [], [], [], [], [], []
+    names_ra_dec, ra, dec, ages, e_age, exti, e_exti, mass, e_mass, px_scale =\
+        [], [], [], [], [], [], [], [], [], []
     # Skip first line (columns names)
     for cl in cl_dict[1:]:
         # Skip empty last lines.
@@ -165,11 +167,13 @@ def get_liter_data():
             e_exti.append(cl[e_ext_i])
             mass.append(cl[mass_i])
             e_mass.append(cl[e_mass_i])
+            px_scale.append(cl[scale_i])
 
     # Create the RA, DEC catalog.
     cat_ra_dec = SkyCoord(ra*u.degree, dec*u.degree, frame='icrs')
 
-    return names_ra_dec, cat_ra_dec, ages, e_age, exti, e_exti, mass, e_mass
+    return names_ra_dec, cat_ra_dec, ages, e_age, exti, e_exti, mass, e_mass,\
+        px_scale
 
 
 def match_ra_dec_asteca(names_ra_dec, cat_ra_dec, ra, dec):
@@ -707,15 +711,32 @@ def str2int(lst_pass):
     return lst_hold
 
 
+def rad_in_pc(float_lst):
+    '''
+    Convert radius from pixel to arcsec to parsecs.
+    '''
+    # Unpack
+    r_px, scale, dis_mod, e_bv = float_lst
+    # Convert from px to arcsecs.
+    rad_arcsec = r_px * scale
+    Av = 3.1 * e_bv
+    # Distance to cluster in parsecs.
+    d_pc = 10 ** (0.2 * (dis_mod + 5 - Av))
+    # Radius in parsecs.
+    r_pc = d_pc * np.tan(np.deg2rad(rad_arcsec / 3600.))
+
+    return r_pc
+
+
 def match_clusts(as_names, as_pars, names_lit, lit_ages, lit_e_age, lit_ext,
-                 lit_e_ext, lit_mass, lit_e_mass, p99, p00, h03, r05,
-                 c06, g10, p12):
+                 lit_e_ext, lit_mass, lit_e_mass, lit_px_scale, p99, p00,
+                 h03, r05, c06, g10, p12):
     '''
     Cross match clusters processed by ASteCA to those published in several
     articles. The final list is ordered in the same way the 'as_params' list
     is.
 
-    match_cl = [[[p00], [p00], [h03], [g10], [p12]], ..., N_clusts]
+    match_cl = [[[p99], [p00], [h03], [g10], [p12]], ..., N_clusts]
 
     DB = ['XXX', Gal, name, log_DB_age, e_DB_age, log_age_asteca, e_age_asteca,
     log_age_lit, e_log_age_lit, mass_DB, e_mass_DB, mass_asteca, e_mass_asteca,
@@ -746,10 +767,7 @@ def match_clusts(as_names, as_pars, names_lit, lit_ages, lit_e_age, lit_ext,
                     else:
                         m_DB, e_m_DB = -1., -1.
                     # Only P99, P00, C06 and G10 have defined extinctions.
-                    if k in [0, 1, 4, 5]:
-                        ext_DB = cl_db[4]
-                    else:
-                        ext_DB = -1.
+                    ext_DB = cl_db[4] if k in [0, 1, 4, 5] else -1.
 
                     # If names match.
                     if cl_n == cl_h_n:
@@ -758,10 +776,17 @@ def match_clusts(as_names, as_pars, names_lit, lit_ages, lit_e_age, lit_ext,
                         for j, cl_l in enumerate(names_lit):
                             # Check match in literature.
                             if cl_l == cl_n:
-                                l_ext, l_age, l_mass = lit_ext[j],\
-                                    lit_ages[j], lit_mass[j]
-                                l_e_age, l_e_ext, l_e_mass = lit_e_age[j], \
-                                    lit_e_ext[j], lit_e_mass[j]
+                                l_ext, l_age, l_mass, l_e_ext, l_e_age,\
+                                    l_e_mass, l_px_sc = lit_ext[j],\
+                                    lit_ages[j], lit_mass[j], lit_e_ext[j],\
+                                    lit_e_age[j], lit_e_mass[j],\
+                                    lit_px_scale[j]
+
+                                # Radius in parsec.
+                                r_pc = rad_in_pc(
+                                    [float(_) for _ in [
+                                        as_pars[i][4], l_px_sc, as_pars[i][25],
+                                        as_pars[i][23]]])
 
                                 # Convert '--' strings into -1. values.
                                 l_ext, l_e_ext, l_mass, l_e_mass = \
@@ -775,7 +800,7 @@ def match_clusts(as_names, as_pars, names_lit, lit_ages, lit_e_age, lit_ext,
                                         e_m_DB, as_pars[i][27], as_pars[i][28],
                                         l_mass, l_e_mass,
                                         ext_DB, as_pars[i][23], as_pars[i][24],
-                                        l_ext, l_e_ext, as_pars[i][11]]
+                                        l_ext, l_e_ext, r_pc, as_pars[i][11]]
                                 # Increase counter.
                                 total[k] = total[k] + 1
 
@@ -799,13 +824,13 @@ def write_out_data(match_cl):
         f_out.write("#\n# Mass1: Mass_DB\n# Mass2: Mass_asteca\n#\n")
         f_out.write("#DB   GAL      NAME   Age1  e_age  Age2  \
 e_age   Age3  e_age      Mass1   e_mass    Mass2   e_mass    Mass3   \
-e_mass    E_BV1    E_BV2   e_E_BV    E_BV3   e_E_BV     CI\n")
+e_mass    E_BV1    E_BV2   e_E_BV    E_BV3   e_E_BV     r (pc)   CI\n")
         for data_base in zip(*match_cl):
             for clust in data_base:
                 if clust:  # Check that list is not empty.
                     f_out.write('''{:<4} {:>4} {:>9} {:>6.2f} {:>6.2f} {:>5} \
 {:>6} {:>6.2f} {:>6.2f} {:>10.2f} {:>8.0f} {:>8} {:>8} {:>8} {:>8} {:>8.2f} \
-{:>8} {:>8} {:>8.2f} {:>8.2f} {:>8}\n'''.format(*clust))
+{:>8} {:>8} {:>8.2f} {:>8.2f} {:>8.2f} {:>8}\n'''.format(*clust))
 
 
 def main():
@@ -815,7 +840,7 @@ def main():
 
     # Read RA & DEC literature data.
     names_ra_dec, cat_ra_dec, lit_ages, lit_e_age, lit_ext, lit_e_ext, \
-        lit_mass, lit_e_mass = get_liter_data()
+        lit_mass, lit_e_mass, lit_px_scale = get_liter_data()
 
     # # Read Glatt et al. (2010) as if it were ASteCA data.
     # as_names, as_pars, names_ra_dec, cat_ra_dec, lit_ages, lit_e_age,\
@@ -845,7 +870,8 @@ def main():
     # Cross-match all clusters.
     match_cl = match_clusts(as_names, as_pars, names_ra_dec, lit_ages,
                             lit_e_age, lit_ext, lit_e_ext, lit_mass,
-                            lit_e_mass, p99, p00, h03, r05, c06, g10, p12)
+                            lit_e_mass, lit_px_scale, p99, p00, h03, r05,
+                            c06, g10, p12)
 
     # Write to file.
     write_out_data(match_cl)

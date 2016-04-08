@@ -1106,7 +1106,7 @@ def cross_match_ip_plot(pl_params):
                             lw=0.3, edgecolor='w', label=db_lab, zorder=3)
             else:
                 plt.scatter(xarr, yarr, marker=mark[j], c=DB[ba_i],
-                            s=siz, cmap=cm, vmin=0., vmax=1.3, lw=0.3,
+                            s=siz, cmap=cm, vmin=0.6, vmax=1.3, lw=0.3,
                             edgecolor='k', label=db_lab, zorder=3)
             # Plot error bars.
             if xsigma:
