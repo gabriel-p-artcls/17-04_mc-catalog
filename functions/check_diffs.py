@@ -150,11 +150,13 @@ def check_diffs(in_params):
                             e_rgc_max, gal_names[j][i], ra[j][i],
                             dec[j][i], darr[j][0][i], dsigma[j][0][i]))
 
-        print '\nAverage mass for the {}: {}'.format(gal[j],
-                                                     np.mean(marr[j][0]))
-        print 'Average radius for the {}: {}'.format(gal[j],
-                                                     np.mean(rarr[j][0]))
-        print 'Average density for the {}: {}'.format(
+        print '\nAverage ASteCA E(B-V) for the {}: {} +- {}'.format(
+            gal[j], np.mean(earr[j][0]), np.std(earr[j][0]))
+        print 'Average ASteCA mass for the {}: {}'.format(
+            gal[j], np.mean(marr[j][0]))
+        print 'Average ASteCA radius for the {}: {}'.format(
+            gal[j], np.mean(rarr[j][0]))
+        print 'Average ASteCA density for the {}: {}'.format(
             gal[j], np.mean(n_memb[j]/(np.pi*np.array(rarr[j][0])**2)))
 
         print '\nMean literature e_log(age) for {}: {}\n'.format(

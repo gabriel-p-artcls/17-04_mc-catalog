@@ -1088,7 +1088,7 @@ def cross_match_ip_plot(pl_params):
     if i == 0:
         a, e_a, b, e_b = indexes
     else:
-        a, e_a, b, e_b, ba_i = 0, 1, 2, 3, 4
+        a, e_a, b, e_b, s_i, ba_i = 0, 1, 2, 3, 4, 5
         # ax.yaxis.major.formatter._useMathText = True
         # plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
 
@@ -1100,11 +1100,13 @@ def cross_match_ip_plot(pl_params):
 
             db_lab = labels[j] + '$\;(N={})$'.format(len(xarr))
             # Star marker is too small compared to the rest.
-            siz = 90. if mark[j] != '*' else 120.
+            # siz = 90. if mark[j] != '*' else 120.
             if i == 0:
+                siz = 90. if mark[j] != '*' else 120.
                 plt.scatter(xarr, yarr, marker=mark[j], c=cols[j], s=siz,
                             lw=0.3, edgecolor='w', label=db_lab, zorder=3)
             else:
+                siz = np.array(DB[s_i])*8.
                 plt.scatter(xarr, yarr, marker=mark[j], c=DB[ba_i],
                             s=siz, cmap=cm, vmin=0.6, vmax=1.3, lw=0.3,
                             edgecolor='k', label=db_lab, zorder=3)
@@ -1248,13 +1250,13 @@ def make_cross_match_ip(cross_match):
                            np.array(p12_h_mass[9])**2)/10**4)
 
     delta_DBs_l = [[h03_l_mass[8], h03_l_mass[9], h03_mass_diff_l,
-                    h03_delta_err_l, h03_l_mass[19]],
+                    h03_delta_err_l, h03_l_mass[19], h03_l_mass[20]],
                    [p12_l_mass[8], p12_l_mass[9], p12_mass_diff_l,
-                    p12_delta_err_l, p12_l_mass[19]]]
+                    p12_delta_err_l, p12_l_mass[19], p12_l_mass[20]]]
     delta_DBs_h = [[h03_h_mass[8], h03_h_mass[9], h03_mass_diff_h,
-                    h03_delta_err_h, h03_h_mass[19]],
+                    h03_delta_err_h, h03_h_mass[19], h03_h_mass[20]],
                    [p12_h_mass[8], p12_h_mass[9], p12_mass_diff_h,
-                    p12_delta_err_h, p12_h_mass[19]]]
+                    p12_delta_err_h, p12_h_mass[19], p12_h_mass[20]]]
 
     # Define data to pass.
     databases = [[h03, r05, p12], delta_DBs_l, delta_DBs_h]
