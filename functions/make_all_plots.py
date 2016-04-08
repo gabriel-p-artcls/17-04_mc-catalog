@@ -1089,8 +1089,8 @@ def cross_match_ip_plot(pl_params):
         a, e_a, b, e_b = indexes
     else:
         a, e_a, b, e_b, ba_i = 0, 1, 2, 3, 4
-        ax.yaxis.major.formatter._useMathText = True
-        plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
+        # ax.yaxis.major.formatter._useMathText = True
+        # plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
 
     # Plot all clusters for each DB.
     for j, DB in enumerate(databases):
@@ -1229,19 +1229,23 @@ def make_cross_match_ip(cross_match):
             db_name[i], diff_mean, diff_std)
 
     # Differences ASteCA  - DBs
-    h03_mass_diff_l = np.array(h03_l_mass[10]) - np.array(h03_l_mass[8])
-    p12_mass_diff_l = np.array(p12_l_mass[10]) - np.array(p12_l_mass[8])
+    h03_mass_diff_l = (np.array(h03_l_mass[10]) -
+                       np.array(h03_l_mass[8]))/10**4
+    p12_mass_diff_l = (np.array(p12_l_mass[10]) -
+                       np.array(p12_l_mass[8]))/10**4
     h03_delta_err_l = list(np.sqrt(np.array(h03_l_mass[11])**2 +
-                           np.array(h03_l_mass[9])**2))
+                           np.array(h03_l_mass[9])**2)/10**4)
     p12_delta_err_l = list(np.sqrt(np.array(p12_l_mass[11])**2 +
-                           np.array(p12_l_mass[9])**2))
+                           np.array(p12_l_mass[9])**2)/10**4)
     # High masses.
-    h03_mass_diff_h = np.array(h03_h_mass[10]) - np.array(h03_h_mass[8])
-    p12_mass_diff_h = np.array(p12_h_mass[10]) - np.array(p12_h_mass[8])
+    h03_mass_diff_h = (np.array(h03_h_mass[10]) -
+                       np.array(h03_h_mass[8]))/10**4
+    p12_mass_diff_h = (np.array(p12_h_mass[10]) -
+                       np.array(p12_h_mass[8]))/10**4
     h03_delta_err_h = list(np.sqrt(np.array(h03_h_mass[11])**2 +
-                           np.array(h03_h_mass[9])**2))
+                           np.array(h03_h_mass[9])**2)/10**4)
     p12_delta_err_h = list(np.sqrt(np.array(p12_h_mass[11])**2 +
-                           np.array(p12_h_mass[9])**2))
+                           np.array(p12_h_mass[9])**2)/10**4)
 
     delta_DBs_l = [[h03_l_mass[8], h03_l_mass[9], h03_mass_diff_l,
                     h03_delta_err_l, h03_l_mass[19]],
@@ -1260,8 +1264,8 @@ def make_cross_match_ip(cross_match):
 
     # Define names of arrays being plotted.
     x_lab = ['$\log(age/yr)_{ASteCA}$', '$M_{DBs}\,[M_{\odot}]$']
-    y_lab = ['$\log(age/yr)_{DB}$', '$M_{DB}\,[M_{\odot}]$',
-             '$\Delta M\,[M_{\odot}]$']
+    y_lab = ['$\log(age/yr)_{DB}$', r'$\Delta M \times 10^{-4}\,[M_{\odot}]$',
+             r'$\Delta M \times 10^{-4}\,[M_{\odot}]$']
 
     # Arbitrary size so plots are actually squared.
     fig = plt.figure(figsize=(20, 6.3))
@@ -1272,11 +1276,11 @@ def make_cross_match_ip(cross_match):
         [gs, 0, 5.8, 10.6, 5.8, 10.6, x_lab[0], y_lab[0],
             indexes, labels[1], mark[1], cols[1], '', databases[0]],
         # Mass cross_match (low mass)
-        [gs, 1, -50., 4900., -4100., 8300., x_lab[1], y_lab[2],
+        [gs, 1, -50., 4900., -0.41, 0.83, x_lab[1], y_lab[1],
             [], labels[4], mark[4], cols[4], '$M_{DBs}\leq 5000\,[M_{\odot}]$',
             databases[1]],
         # Mass cross_match (large masses)
-        [gs, 2, 5010, 110000, -110000., 19000., x_lab[1], y_lab[2],
+        [gs, 2, 5010, 110000, -11., 1.9, x_lab[1], y_lab[2],
             [], labels[4], mark[4], cols[4], '$M_{DBs}>5000\,[M_{\odot}]$',
             databases[2]]
     ]
