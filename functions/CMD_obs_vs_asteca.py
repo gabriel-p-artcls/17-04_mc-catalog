@@ -12,8 +12,7 @@ def find_phot_file(r_path, cl):
     """
     Find photometric file corresponding to this cluster.
     """
-    path_no_ext = r_path + 'asteca-project/asteca/input/dont_read/'\
-        + 'MC_all/' + cl + '.*'
+    path_no_ext = r_path + 'mc-catalog/OCs_data/MC_all/' + cl + '.*'
     try:
         data_file = glob.glob(path_no_ext)[0]
     except IndexError:
@@ -247,8 +246,8 @@ def get_isoch(r_path, DB_asteca, isoch, z, a, e, d):
         # Use PARSEC isochrones.
         line_start, imass_idx = "#\tIsochrone  Z = ", 2
         mag1_idx, mag2_idx = 10, 8
-        met_f = r_path + 'asteca-project/asteca/isochrones/' + \
-            'parsec11_washington/' + str(z) + '.dat'
+        met_f = r_path + 'mc-catalog/OCs_data/parsec11_washington/' +\
+            str(z) + '.dat'
     age_format = r"Age = \t(.+?) yr"
     cmd_select = 4
 

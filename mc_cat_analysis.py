@@ -215,7 +215,7 @@ def main():
     check_diffs(in_params)
 
     # Define which plots to produce.
-    plots = ['6', '7']
+    plots = ['5']
 
     # Only obtain data if the plot is being generated.
     if '0' in plots:

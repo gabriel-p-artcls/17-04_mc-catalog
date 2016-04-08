@@ -245,7 +245,7 @@ def read_pietr99(names_ra_dec, cat_ra_dec):
     return p99
 
 
-def read_pietr(names_ra_dec, cat_ra_dec):
+def read_pietr00(names_ra_dec, cat_ra_dec):
     '''
     Read Pietrzynski et al. (2000) database.
     Use fixed E(B-V) value of 0.143. This is the value used according to
@@ -850,7 +850,7 @@ def main():
     p99 = read_pietr99(names_ra_dec, cat_ra_dec)
 
     # Read Pietrzynski et al. (2000) data.
-    p00 = read_pietr(names_ra_dec, cat_ra_dec)
+    p00 = read_pietr00(names_ra_dec, cat_ra_dec)
 
     # Read Hunter et al. (2003) data.
     h03 = read_hunter()
