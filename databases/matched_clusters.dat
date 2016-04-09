@@ -9,6 +9,7 @@
 #
 # Mass1: Mass_DB
 # Mass2: Mass_asteca
+# Mass3: Mass_lit
 #
 #DB   GAL      NAME   Age1  e_age  Age2  e_age   Age3  e_age      Mass1   e_mass    Mass2   e_mass    Mass3   e_mass    E_BV1    E_BV2   e_E_BV    E_BV3   e_E_BV     r (pc)   CI
 P99   SMC       L63   7.60   0.10   8.2    0.9   8.04   0.27      -1.00       -1    400.0    200.0     -1.0     -1.0     0.06     0.03     0.02     0.06     0.02     6.99     0.88

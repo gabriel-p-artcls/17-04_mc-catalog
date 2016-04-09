@@ -821,7 +821,8 @@ def write_out_data(match_cl):
                     "# Age3: log(age)_literature\n")
         f_out.write("#\n# E_BV1: E_BV_DB\n# E_BV2: E_BV_asteca\n"
                     "# E_BV3: E_BV_lit\n")
-        f_out.write("#\n# Mass1: Mass_DB\n# Mass2: Mass_asteca\n#\n")
+        f_out.write("#\n# Mass1: Mass_DB\n# Mass2: Mass_asteca\n"
+                    "# Mass3: Mass_lit\n#\n")
         f_out.write("#DB   GAL      NAME   Age1  e_age  Age2  \
 e_age   Age3  e_age      Mass1   e_mass    Mass2   e_mass    Mass3   \
 e_mass    E_BV1    E_BV2   e_E_BV    E_BV3   e_E_BV     r (pc)   CI\n")
