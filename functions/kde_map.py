@@ -9,7 +9,7 @@ def kernel(p0, p, s):
     '''
     # Replace 0 error with very small value.
     s = 0.000001 if s < 0. else s
-    val = (1. / (np.sqrt(2 * np.pi)*s)) * np.exp(-0.5 * ((p0 - p) / s) ** 2)
+    val = (1./(np.sqrt(2*np.pi)*s)) * np.exp(-0.5*((p0 - p) / s)**2)
 
     return val
 

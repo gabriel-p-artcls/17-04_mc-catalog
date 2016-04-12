@@ -390,46 +390,88 @@ def kde_plots(pl_params):
     '''
     Generate KDE plots.
     '''
-    gs, i, x_lab, y_lab, xarr, xsigma, yarr, ysigma, x_rang, y_rang = pl_params
+    gs, i, gs_pos, x_lab, y_lab, xarr, xsigma, yarr, ysigma, x_rang, y_rang =\
+        pl_params
 
     ext = [x_rang[0], x_rang[1], y_rang[0], y_rang[1]]
-    # Generate maps.
 
     # Make plot.
-    ax = plt.subplot(gs[i])
+    a, b, c, d = gs_pos[i]
+    ax = plt.subplot(gs[a:b, c:d])
     xy_font_s = 18
     plt.xlabel(x_lab, fontsize=xy_font_s)
+    if i == 6:
+        # ax.xaxis.set_label_position('top')
+        ax.xaxis.set_label_coords(0.5, 1.06)
     plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.minorticks_on()
 
-    if i == 0:
-        x, z = kde_1d(np.array(xarr), np.array(xsigma), ext, 100)
-        print max(z)
-        ax.plot(x, z)
+    if i not in [4, 5]:
+        ax.set_xticklabels([])
+    if i not in [2, 4]:
+        ax.set_yticklabels([])
+
+    # Grid density for the KDE evaluation.
+    grid_dens = 100
+
+    if i in [0, 1]:
+        ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+                zorder=-1)
+        # Generate map.
+        col, lab = ['r', 'b'], ['SMC', 'LMC']
+        x, z = kde_1d(np.array(xarr), np.array(xsigma), ext, grid_dens)
+        ax.plot(x, z, color=col[i], label=lab[i])
+    elif i in [6, 7]:
+        ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+                zorder=-1)
+        # Generate map.
+        x, z = kde_1d(np.array(xarr), np.array(xsigma), [ext[2], ext[3]],
+                      grid_dens)
+        ax.plot(z, x, color='r', label='SMC')
+        x, z = kde_1d(np.array(yarr), np.array(ysigma), [ext[2], ext[3]],
+                      grid_dens)
+        ax.plot(z, x, color='b', label='LMC')
     else:
+        col = ['r', 'b', 'r', 'b']
         # Generate map.
         z = kde_2d(np.array(xarr), np.array(xsigma), np.array(yarr),
-                   np.array(ysigma), ext, 100)
+                   np.array(ysigma), ext, grid_dens)
         cm = plt.cm.gist_earth_r
+        # cm = plt.cm.viridis_r
+        # cm = plt.cm.bone_r
+        # cm = plt.cm.copper_r
+        # cm = plt.cm.summer_r
+        # cm = plt.cm.hot_r
+        # cm = plt.cm.Greens
         ax.imshow(z, cmap=cm, extent=ext)
         ax.set_aspect('auto')
         # Error bars.
         # plt.errorbar(xarr, yarr, xerr=xsigma, yerr=ysigma, fmt='none',
         #              elinewidth=0.4, color='k')
-        # Define 1% of axis ranges.
-        xax_ext = (ext[1] - ext[0]) * 0.001
-        yax_ext = (ext[3] - ext[2]) * 0.001
+        # Define x% of axis ranges.
+        xax_ext = (ext[1] - ext[0]) * 0.02
+        yax_ext = (ext[3] - ext[2]) * 0.02
         # Random scatter.
         rs_x = np.random.uniform(0., xax_ext, len(xarr))
         rs_y = np.random.uniform(0., yax_ext, len(xarr))
         # Clusters.
         # color='#6b6868'
-        plt.scatter(xarr + rs_x, yarr + rs_y, marker='*', color='r', s=40,
-                    lw=0.5, facecolors='none')
+        plt.scatter(xarr + rs_x, yarr + rs_y, marker='*', color=col[i-2], s=50,
+                    lw=0.35, facecolors='none')
+    if i in [0, 1]:
+        leg = plt.legend(loc='upper left', markerscale=1.,
+                         scatterpoints=1, fontsize=xy_font_s - 4)
+        leg.get_frame().set_alpha(0.5)
+    # if i in [6, 7]:
+    #     leg = plt.legend(loc='lower right', markerscale=1.,
+    #                      scatterpoints=1, fontsize=xy_font_s - 4)
+    #     leg.get_frame().set_alpha(0.5)
+    # Limits.
     ax.set_xlim(ext[0], ext[1])
     ax.set_ylim(ext[2], ext[3])
 
 
-def make_kde_plots(galax, k, in_params):
+def make_kde_plots(in_params):
     '''
     Prepare parameters and call function to generate SMC and LMC KDE plots.
     '''
@@ -437,43 +479,48 @@ def make_kde_plots(galax, k, in_params):
         [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
                                 'esigma', 'darr', 'dsigma', 'marr', 'msigma']]
 
-    fig = plt.figure(figsize=(14, 25))  # create the top-level container
-    gs = gridspec.GridSpec(4, 2)  # create a GridSpec object
+    fig = plt.figure(figsize=(17, 17))  # create the top-level container
+    gs = gridspec.GridSpec(6, 6)  # create a GridSpec object
+
+    # Logarithmic mass
+    log_mass_smc, e_log_mass_smc = np.log10(marr[0][0]),\
+        np.array(msigma[0][0])/np.array(marr[0][0])
+    log_mass_lmc, e_log_mass_lmc = np.log10(marr[1][0]),\
+        np.array(msigma[1][0])/np.array(marr[1][0])
 
     # Define extension for each parameter range.
-    age_rang, fe_h_rang, mass_rang = [6.4, 10.1], [-2.4, 0.15], [-100., 30500.]
-    kde_rang = [0., 1.35]
-    if galax == 'SMC':
-        E_bv_rang, dist_mod_rang = [-0.01, 0.15], [18.75, 19.25]
-    else:
-        E_bv_rang, dist_mod_rang = [-0.01, 0.3], [18.25, 18.75]
+    age_rang, fe_h_rang, log_mass_rang = [6.51, 9.95], [-2.4, 0.25], [1.2, 4.9]
+    age_kde_rang, feh_kde_rang, log_m_kde_rang = [0., 1.25], [0., 2.], [0., 1.]
 
-    # Age in Gyrs.
-    age_gyr = [10 ** (np.asarray(aarr[k][0]) - 9),
-               np.asarray(asigma[k][0]) * np.asarray(aarr[k][0]) *
-               np.log(10) / 5.]
-    age_gyr_rang = [0., 6.6]
-    # Logarithmic mass
-    log_mass, e_log_mass = np.log10(marr[k][0]),\
-        np.array(msigma[k][0])/np.array(marr[k][0])
-    log_mass_rang = [1.2, 5.]
+    gs_pos = [[1, 2, 0, 2], [1, 2, 2, 4], [2, 4, 0, 2], [2, 4, 2, 4],
+              [4, 6, 0, 2], [4, 6, 2, 4], [2, 4, 4, 5], [4, 6, 4, 5]]
 
     kde_pl_lst = [
-        [gs, 0, '', '', aarr[k][0], asigma[k][0], [], [], age_rang, kde_rang],
-        [gs, 2, '$\log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', aarr[k][0],
-            asigma[k][0], zarr[k][0], zsigma[k][0], age_rang, fe_h_rang],
-        # [gs, 1, '$\log(age/yr)_{ASteCA}$', '$M_{ASteCA}\,[M_{\odot}]$',
-        #     aarr[k][0], asigma[k][0], marr[k][0], msigma[k][0], age_rang,
-        #     mass_rang],
-        [gs, 4, '$\log(age/yr)_{ASteCA}$', '$\log(M/M_{\odot})_{ASteCA}$',
-            aarr[k][0], asigma[k][0], log_mass, e_log_mass, age_rang,
+        # SMC
+        [gs, 0, gs_pos, '', r'$KDE_{\,\log(age/yr)}$', aarr[0][0],
+         asigma[0][0], [], [], age_rang, age_kde_rang],
+        # LMC
+        [gs, 1, gs_pos, '', '', aarr[1][0], asigma[1][0], [], [], age_rang,
+         age_kde_rang],
+        #
+        [gs, 2, gs_pos, '', '$[Fe/H]_{ASteCA}$', aarr[0][0],
+            asigma[0][0], zarr[0][0], zsigma[0][0], age_rang, fe_h_rang],
+        [gs, 3, gs_pos, '', '', aarr[1][0],
+            asigma[1][0], zarr[1][0], zsigma[1][0], age_rang, fe_h_rang],
+        #
+        [gs, 4, gs_pos, '$\log(age/yr)_{ASteCA}$',
+         '$\log(M/M_{\odot})_{ASteCA}$', aarr[0][0], asigma[0][0],
+         log_mass_smc, e_log_mass_smc, age_rang, log_mass_rang],
+        [gs, 5, gs_pos, '$\log(age/yr)_{ASteCA}$', '',
+            aarr[1][0], asigma[1][0], log_mass_lmc, e_log_mass_lmc, age_rang,
             log_mass_rang],
-        # [gs, 2, '$dm_{\circ;\,ASteCA}$', '$E(B-V)_{ASteCA}$', darr[k][0],
-        #     dsigma[k][0], earr[k][0], esigma[k][0], dist_mod_rang, E_bv_rang],
-        # [gs, 3, '$M_{ASteCA}\,[M_{\odot}]$', '$[Fe/H]_{ASteCA}$', marr[k][0],
-        #     msigma[k][0], zarr[k][0], zsigma[k][0], mass_rang, fe_h_rang],
-        # [gs, 4, '$Age_{ASteCA}\,[Gyr]$', '$[Fe/H]_{ASteCA}$', age_gyr[0],
-        #     age_gyr[1], zarr[k][0], zsigma[k][0], age_gyr_rang, fe_h_rang]
+        #
+        # S/LMC [Fe/H] & log(Mass) KDEs
+        [gs, 6, gs_pos, r'$KDE_{\,[Fe/H]}$', '', zarr[0][0], zsigma[0][0],
+         zarr[1][0], zsigma[1][0], feh_kde_rang, fe_h_rang],
+        [gs, 7, gs_pos, r'$KDE_{\,\log(M/M_{\odot})}$', '', log_mass_smc,
+         e_log_mass_smc, log_mass_lmc, e_log_mass_lmc, log_m_kde_rang,
+         log_mass_rang]
     ]
     #
     for pl_params in kde_pl_lst:
@@ -481,8 +528,7 @@ def make_kde_plots(galax, k, in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/as_kde_maps_' + galax + '.png', dpi=300,
-                bbox_inches='tight')
+    plt.savefig('figures/as_kde_maps.png', dpi=300, bbox_inches='tight')
 
 
 def make_ra_dec_plots(in_params, bica_coords):

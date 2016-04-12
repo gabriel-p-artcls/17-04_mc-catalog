@@ -180,9 +180,8 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match, amr_lit):
         print 'AMR maps done.'
 
     if '11' in plots:
-        for j, gal in enumerate(['SMC', 'LMC']):
-            make_kde_plots(gal, j, in_params)
-            print '{} KDE maps done.'.format(gal)
+        make_kde_plots(in_params)
+        print 'KDE maps done.'
 
     if '12' in plots:
         make_lit_ext_plot(in_params)
@@ -215,7 +214,7 @@ def main():
     check_diffs(in_params)
 
     # Define which plots to produce.
-    plots = ['10']
+    plots = ['11']
 
     # Only obtain data if the plot is being generated.
     if '0' in plots:
