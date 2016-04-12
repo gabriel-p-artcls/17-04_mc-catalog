@@ -1,6 +1,6 @@
 
 import numpy as np
-from kde_2d import kde_map
+from kde_map import kde_2d
 
 
 def age_met_rel(xarr, xsigma, yarr, ysigma):
@@ -14,7 +14,7 @@ def age_met_rel(xarr, xsigma, yarr, ysigma):
 
     # Define 2D space extension where the KDE will be obtained.
     x_min, x_max = min(np.array(xarr) - np.array(xsigma)), \
-        max(np.array(xarr) + np.array(xsigma))
+        max(np.array(xarr))  #  + np.array(xsigma)
     y_min, y_max = min(np.array(yarr) - np.array(ysigma)), \
         max(np.array(yarr) + np.array(ysigma))
     ext = [x_min, x_max, y_min, y_max]
@@ -32,8 +32,8 @@ def age_met_rel(xarr, xsigma, yarr, ysigma):
     # xsigma, ysigma = [0.05] * len(xarr), [0.1] * len(xarr)
 
     # Obtain age-metallicity KDE for the entire range.
-    z = kde_map(np.array(xarr), np.array(xsigma), np.array(yarr),
-                np.array(ysigma), ext, gd)
+    z = kde_2d(np.array(xarr), np.array(xsigma), np.array(yarr),
+               np.array(ysigma), ext, gd)
     # Order KDE in age columns where each column is associated with an age.
     a_m_kde = zip(*z)
 

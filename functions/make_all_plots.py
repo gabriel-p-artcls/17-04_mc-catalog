@@ -9,7 +9,7 @@ from matplotlib.patches import Ellipse
 # import statsmodels.api as sm
 from scipy import stats
 from ra_dec_map import ra_dec_plots
-from kde_2d import kde_map
+from kde_map import kde_2d, kde_1d
 from amr_kde import age_met_rel
 import lin_fit_conf_bands as lf_cb
 
@@ -393,10 +393,7 @@ def kde_plots(pl_params):
     gs, i, x_lab, y_lab, xarr, xsigma, yarr, ysigma, x_rang, y_rang = pl_params
 
     ext = [x_rang[0], x_rang[1], y_rang[0], y_rang[1]]
-
     # Generate maps.
-    z = kde_map(np.array(xarr), np.array(xsigma), np.array(yarr),
-                np.array(ysigma), ext, 100)
 
     # Make plot.
     ax = plt.subplot(gs[i])
@@ -404,23 +401,30 @@ def kde_plots(pl_params):
     plt.xlabel(x_lab, fontsize=xy_font_s)
     plt.ylabel(y_lab, fontsize=xy_font_s)
 
-    # cm = plt.cm.get_cmap('RdYlBu_r')
-    cm = plt.cm.gist_earth_r
-    ax.imshow(z, cmap=cm, extent=ext)
-    ax.set_aspect('auto')
-    # Error bars.
-    # plt.errorbar(xarr, yarr, xerr=xsigma, yerr=ysigma, fmt='none',
-    #              elinewidth=0.4, color='k')
-    # Define 1% of axis ranges.
-    xax_ext = (ext[1] - ext[0]) * 0.001
-    yax_ext = (ext[3] - ext[2]) * 0.001
-    # Random scatter.
-    rs_x = np.random.uniform(0., xax_ext, len(xarr))
-    rs_y = np.random.uniform(0., yax_ext, len(xarr))
-    # Clusters.
-    # color='#6b6868'
-    plt.scatter(xarr + rs_x, yarr + rs_y, marker='*', color='r', s=40,
-                lw=0.5, facecolors='none')
+    if i == 0:
+        x, z = kde_1d(np.array(xarr), np.array(xsigma), ext, 100)
+        print max(z)
+        ax.plot(x, z)
+    else:
+        # Generate map.
+        z = kde_2d(np.array(xarr), np.array(xsigma), np.array(yarr),
+                   np.array(ysigma), ext, 100)
+        cm = plt.cm.gist_earth_r
+        ax.imshow(z, cmap=cm, extent=ext)
+        ax.set_aspect('auto')
+        # Error bars.
+        # plt.errorbar(xarr, yarr, xerr=xsigma, yerr=ysigma, fmt='none',
+        #              elinewidth=0.4, color='k')
+        # Define 1% of axis ranges.
+        xax_ext = (ext[1] - ext[0]) * 0.001
+        yax_ext = (ext[3] - ext[2]) * 0.001
+        # Random scatter.
+        rs_x = np.random.uniform(0., xax_ext, len(xarr))
+        rs_y = np.random.uniform(0., yax_ext, len(xarr))
+        # Clusters.
+        # color='#6b6868'
+        plt.scatter(xarr + rs_x, yarr + rs_y, marker='*', color='r', s=40,
+                    lw=0.5, facecolors='none')
     ax.set_xlim(ext[0], ext[1])
     ax.set_ylim(ext[2], ext[3])
 
@@ -438,6 +442,7 @@ def make_kde_plots(galax, k, in_params):
 
     # Define extension for each parameter range.
     age_rang, fe_h_rang, mass_rang = [6.4, 10.1], [-2.4, 0.15], [-100., 30500.]
+    kde_rang = [0., 1.35]
     if galax == 'SMC':
         E_bv_rang, dist_mod_rang = [-0.01, 0.15], [18.75, 19.25]
     else:
@@ -448,19 +453,27 @@ def make_kde_plots(galax, k, in_params):
                np.asarray(asigma[k][0]) * np.asarray(aarr[k][0]) *
                np.log(10) / 5.]
     age_gyr_rang = [0., 6.6]
+    # Logarithmic mass
+    log_mass, e_log_mass = np.log10(marr[k][0]),\
+        np.array(msigma[k][0])/np.array(marr[k][0])
+    log_mass_rang = [1.2, 5.]
 
     kde_pl_lst = [
-        [gs, 0, '$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', aarr[k][0],
+        [gs, 0, '', '', aarr[k][0], asigma[k][0], [], [], age_rang, kde_rang],
+        [gs, 2, '$\log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', aarr[k][0],
             asigma[k][0], zarr[k][0], zsigma[k][0], age_rang, fe_h_rang],
-        [gs, 1, '$log(age/yr)_{ASteCA}$', '$M_{ASteCA}\,[M_{\odot}]$',
-            aarr[k][0], asigma[k][0], marr[k][0], msigma[k][0], age_rang,
-            mass_rang],
-        [gs, 2, '$(m-M)_{\circ;\,ASteCA}$', '$E(B-V)_{ASteCA}$', darr[k][0],
-            dsigma[k][0], earr[k][0], esigma[k][0], dist_mod_rang, E_bv_rang],
-        [gs, 3, '$M_{ASteCA}\,[M_{\odot}]$', '$[Fe/H]_{ASteCA}$', marr[k][0],
-            msigma[k][0], zarr[k][0], zsigma[k][0], mass_rang, fe_h_rang],
-        [gs, 4, '$Age_{ASteCA}\,(Gyr)$', '$[Fe/H]_{ASteCA}$', age_gyr[0],
-            age_gyr[1], zarr[k][0], zsigma[k][0], age_gyr_rang, fe_h_rang]
+        # [gs, 1, '$\log(age/yr)_{ASteCA}$', '$M_{ASteCA}\,[M_{\odot}]$',
+        #     aarr[k][0], asigma[k][0], marr[k][0], msigma[k][0], age_rang,
+        #     mass_rang],
+        [gs, 4, '$\log(age/yr)_{ASteCA}$', '$\log(M/M_{\odot})_{ASteCA}$',
+            aarr[k][0], asigma[k][0], log_mass, e_log_mass, age_rang,
+            log_mass_rang],
+        # [gs, 2, '$dm_{\circ;\,ASteCA}$', '$E(B-V)_{ASteCA}$', darr[k][0],
+        #     dsigma[k][0], earr[k][0], esigma[k][0], dist_mod_rang, E_bv_rang],
+        # [gs, 3, '$M_{ASteCA}\,[M_{\odot}]$', '$[Fe/H]_{ASteCA}$', marr[k][0],
+        #     msigma[k][0], zarr[k][0], zsigma[k][0], mass_rang, fe_h_rang],
+        # [gs, 4, '$Age_{ASteCA}\,[Gyr]$', '$[Fe/H]_{ASteCA}$', age_gyr[0],
+        #     age_gyr[1], zarr[k][0], zsigma[k][0], age_gyr_rang, fe_h_rang]
     ]
     #
     for pl_params in kde_pl_lst:
@@ -1778,7 +1791,7 @@ def pl_amr(pl_params):
             rs_x = age_gyr[k][0] + np.random.uniform(-ax_ext, ax_ext,
                                                      len(age_gyr[k][0]))
             plt.scatter(rs_x, zarr[k][0], marker='*', s=25, edgecolors=col[k],
-                        facecolor='none', lw=0.4, label=leg[k], zorder=1)
+                        facecolor='none', lw=0.4, label=leg[k], zorder=3)
             # ASteCA 1 sigma error regions.
             y_err_min = np.array(met_weighted[k][0]) -\
                 np.array(met_weighted[k][1])
@@ -1801,16 +1814,16 @@ def pl_amr(pl_params):
         amr_lab = ['PT98', 'PG03', 'C08', 'HZ09', 'R12']
         for j, amr in enumerate(amr_lit):
             plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
-                     dashes=c_dash[j], lw=1.5, zorder=1)
+                     dashes=c_dash[j], lw=1.5, zorder=3)
         # ASteCA values.
         plt.plot(age_vals[1], met_weighted[1][0], c='b', label='ASteCA',
-                 zorder=3)
+                 zorder=5)
         # Legend.
         leg2 = plt.legend(loc='lower left', handlelength=3.5, scatterpoints=1,
                           fontsize=xy_font_s - 8)
         leg2.get_frame().set_alpha(0.85)
     elif i == 2:
-        plt.ylim(-1.39, -0.39)
+        plt.ylim(-1.39, -0.19)
         plt.xlabel(x_lab, fontsize=xy_font_s)
         ax.set_title("SMC", x=0.5, y=0.92, fontsize=xy_font_s - 4)
         col = ['m', 'k', 'g', 'c', 'y', 'y', '#b22222', '#b22222']
@@ -1820,10 +1833,10 @@ def pl_amr(pl_params):
                    'C13-B', 'C13-C']
         for j, amr in enumerate(amr_lit):
             plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
-                     dashes=c_dash[j], lw=1.5, zorder=1)
+                     dashes=c_dash[j], lw=1.5, zorder=3)
         # ASteCA values.
         plt.plot(age_vals[0], met_weighted[0][0], c='r', label='ASteCA',
-                 zorder=3)
+                 zorder=5)
         # Legend.
         leg1 = plt.legend(loc='lower left', handlelength=3.5, scatterpoints=1,
                           fontsize=xy_font_s - 8)

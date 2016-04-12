@@ -7,32 +7,33 @@ def kernel(p0, p, s):
     '''
     Gaussian kernel.
     '''
-    if s > 0.:
-        val = (1. / np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((p0 - p) / s) ** 2)
-    else:
-        # Replace 0 error with very small value.
-        s = 0.000001
-        val = (1. / np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((p0 - p) / s) ** 2)
+    # Replace 0 error with very small value.
+    s = 0.000001 if s < 0. else s
+    val = (1. / (np.sqrt(2 * np.pi)*s)) * np.exp(-0.5 * ((p0 - p) / s) ** 2)
 
     return val
 
 
-def kde_val(point, xarr, xsigma, yarr, ysigma):
+def kde_val(point, xarr, xsigma, yarr, ysigma, dim):
     '''
-    Returns the value of the 2D Kernel Density Estimator (KDE) evaluated in
+    Returns the value of the 1D/2D Kernel Density Estimator (KDE) evaluated in
     the point passed.
     '''
     # Evaluate KDE in 'point'.
     kde_p = 0.
-    for x, sx, y, sy in zip(xarr, xsigma, yarr, ysigma):
-        kde_p = kde_p + kernel(point[0], x, sx) * kernel(point[1], y, sy)
+    if dim == '1':
+        for x, sx in zip(xarr, xsigma):
+            kde_p = kde_p + kernel(point[0], x, sx)
+    elif dim == '2':
+        for x, sx, y, sy in zip(xarr, xsigma, yarr, ysigma):
+            kde_p = kde_p + kernel(point[0], x, sx) * kernel(point[1], y, sy)
     # Normalize.
     norm_kde = kde_p / len(xarr)
 
     return norm_kde
 
 
-def kde_map(xarr, xsigma, yarr, ysigma, ext, grid_dens):
+def kde_2d(xarr, xsigma, yarr, ysigma, ext, grid_dens):
     '''
     Take an array of x,y data with their errors, create a grid of points in x,y
     and return the 2D KDE density map.
@@ -48,12 +49,36 @@ def kde_map(xarr, xsigma, yarr, ysigma, ext, grid_dens):
     # Evaluate KDE in x,y grid.
     kde_grid = []
     for p in zip(*positions):
-        kde_grid.append(kde_val(p, xarr, xsigma, yarr, ysigma))
+        kde_grid.append(kde_val(p, xarr, xsigma, yarr, ysigma, '2'))
 
     # Re-shape values for plotting.
     z = np.rot90(np.reshape(np.array(kde_grid).T, x.shape))
 
     return z
+
+
+def kde_1d(xarr, xsigma, ext, grid_dens):
+    '''
+    Take an array of x data with their errors, create a grid of points in x
+    and return the 1D KDE density map.
+    '''
+
+    # Grid density (number of points).
+    gd_c = complex(0, grid_dens)
+
+    # Define grid of points in x where the KDE will be evaluated.
+    x = np.mgrid[ext[0]:ext[1]:gd_c]
+    positions = np.vstack([x.ravel()])
+
+    # Evaluate KDE in x grid.
+    kde_grid = []
+    for p in zip(*positions):
+        kde_grid.append(kde_val(p, xarr, xsigma, [], [], '1'))
+
+    # Re-shape values for plotting.
+    z = np.array(kde_grid)
+
+    return positions[0], z
 
 
 # def measure(n):
