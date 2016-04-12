@@ -439,12 +439,6 @@ def kde_plots(pl_params):
         z = kde_2d(np.array(xarr), np.array(xsigma), np.array(yarr),
                    np.array(ysigma), ext, grid_dens)
         cm = plt.cm.gist_earth_r
-        # cm = plt.cm.viridis_r
-        # cm = plt.cm.bone_r
-        # cm = plt.cm.copper_r
-        # cm = plt.cm.summer_r
-        # cm = plt.cm.hot_r
-        # cm = plt.cm.Greens
         ax.imshow(z, cmap=cm, extent=ext)
         ax.set_aspect('auto')
         # Error bars.
