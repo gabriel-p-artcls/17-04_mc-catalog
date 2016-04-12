@@ -9,7 +9,7 @@ def kernel(p0, p, s):
     '''
     # Replace 0 error with very small value.
     s = 0.000001 if s < 0. else s
-    val = (1./(np.sqrt(2*np.pi)*s)) * np.exp(-0.5*((p0 - p) / s)**2)
+    val = (1./s) * np.exp(-0.5*((p0 - p) / s)**2)
 
     return val
 
@@ -24,11 +24,13 @@ def kde_val(point, xarr, xsigma, yarr, ysigma, dim):
     if dim == '1':
         for x, sx in zip(xarr, xsigma):
             kde_p = kde_p + kernel(point[0], x, sx)
+        # Normalize.
+        norm_kde = kde_p / (np.sqrt(2*np.pi)*len(xarr))
     elif dim == '2':
         for x, sx, y, sy in zip(xarr, xsigma, yarr, ysigma):
             kde_p = kde_p + kernel(point[0], x, sx) * kernel(point[1], y, sy)
-    # Normalize.
-    norm_kde = kde_p / len(xarr)
+        # Normalize.
+        norm_kde = kde_p / (2*np.pi*len(xarr))
 
     return norm_kde
 

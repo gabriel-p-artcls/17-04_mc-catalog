@@ -393,8 +393,6 @@ def kde_plots(pl_params):
     gs, i, gs_pos, x_lab, y_lab, xarr, xsigma, yarr, ysigma, x_rang, y_rang =\
         pl_params
 
-    ext = [x_rang[0], x_rang[1], y_rang[0], y_rang[1]]
-
     # Make plot.
     a, b, c, d = gs_pos[i]
     ax = plt.subplot(gs[a:b, c:d])
@@ -419,21 +417,25 @@ def kde_plots(pl_params):
                 zorder=-1)
         # Generate map.
         col, lab = ['r', 'b'], ['SMC', 'LMC']
-        x, z = kde_1d(np.array(xarr), np.array(xsigma), ext, grid_dens)
-        ax.plot(x, z, color=col[i], label=lab[i])
+        x, y = kde_1d(np.array(xarr), np.array(xsigma), [x_rang[0], x_rang[1]],
+                      grid_dens)
+        ax.plot(x, y, color=col[i], label=lab[i])
     elif i in [6, 7]:
         ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
                 zorder=-1)
         # Generate map.
-        x, z = kde_1d(np.array(xarr), np.array(xsigma), [ext[2], ext[3]],
+        x, y = kde_1d(np.array(xarr), np.array(xsigma), [y_rang[0], y_rang[1]],
                       grid_dens)
-        ax.plot(z, x, color='r', label='SMC')
-        x, z = kde_1d(np.array(yarr), np.array(ysigma), [ext[2], ext[3]],
+        ax.plot(y, x, color='r', label='SMC')
+        max_y = max(y)
+        x, y = kde_1d(np.array(yarr), np.array(ysigma), [y_rang[0], y_rang[1]],
                       grid_dens)
-        ax.plot(z, x, color='b', label='LMC')
+        ax.plot(y, x, color='b', label='LMC')
+        max_y = max(max(y), max_y) + 0.1*max(max(y), max_y)
     else:
         col = ['r', 'b', 'r', 'b']
         # Generate map.
+        ext = [x_rang[0], x_rang[1], y_rang[0], y_rang[1]]
         z = kde_2d(np.array(xarr), np.array(xsigma), np.array(yarr),
                    np.array(ysigma), ext, grid_dens)
         cm = plt.cm.gist_earth_r
@@ -462,13 +464,12 @@ def kde_plots(pl_params):
         leg = plt.legend(loc='upper left', markerscale=1.,
                          scatterpoints=1, fontsize=xy_font_s - 4)
         leg.get_frame().set_alpha(0.5)
-    # if i in [6, 7]:
-    #     leg = plt.legend(loc='lower right', markerscale=1.,
-    #                      scatterpoints=1, fontsize=xy_font_s - 4)
-    #     leg.get_frame().set_alpha(0.5)
     # Limits.
-    ax.set_xlim(ext[0], ext[1])
-    ax.set_ylim(ext[2], ext[3])
+    if i in [6, 7]:
+        ax.set_xlim(x_rang[0], max_y)
+    else:
+        ax.set_xlim(x_rang[0], x_rang[1])
+    ax.set_ylim(y_rang[0], y_rang[1])
 
 
 def make_kde_plots(in_params):
@@ -489,9 +490,9 @@ def make_kde_plots(in_params):
         np.array(msigma[1][0])/np.array(marr[1][0])
 
     # Define extension for each parameter range.
-    age_rang, fe_h_rang, log_mass_rang = [6.51, 9.95], [-2.4, 0.25], [1.2, 4.9]
+    age_rang, fe_h_rang, log_mass_rang = [6.51, 10.1], [-2.4, 0.25], [1.2, 4.9]
     age_kde_rang, feh_kde_rang, log_m_kde_rang =\
-        [0., 1.27], [0., 2.], [0., 0.8]
+        [0., 1.27], [0., 2.], [0., 2.]
 
     gs_pos = [[1, 2, 0, 2], [1, 2, 2, 4], [2, 4, 0, 2], [2, 4, 2, 4],
               [4, 6, 0, 2], [4, 6, 2, 4], [2, 4, 4, 5], [4, 6, 4, 5]]
