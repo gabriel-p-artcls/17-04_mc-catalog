@@ -490,7 +490,8 @@ def make_kde_plots(in_params):
 
     # Define extension for each parameter range.
     age_rang, fe_h_rang, log_mass_rang = [6.51, 9.95], [-2.4, 0.25], [1.2, 4.9]
-    age_kde_rang, feh_kde_rang, log_m_kde_rang = [0., 1.25], [0., 2.], [0., 1.]
+    age_kde_rang, feh_kde_rang, log_m_kde_rang =\
+        [0., 1.27], [0., 2.], [0., 0.8]
 
     gs_pos = [[1, 2, 0, 2], [1, 2, 2, 4], [2, 4, 0, 2], [2, 4, 2, 4],
               [4, 6, 0, 2], [4, 6, 2, 4], [2, 4, 4, 5], [4, 6, 4, 5]]
