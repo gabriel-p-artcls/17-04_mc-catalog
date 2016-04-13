@@ -409,28 +409,36 @@ def kde_plots(pl_params):
     if i not in [2, 4]:
         ax.set_yticklabels([])
 
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+            zorder=-1)
     # Grid density for the KDE evaluation.
     grid_dens = 100
 
     if i in [0, 1]:
-        ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
-                zorder=-1)
         # Generate map.
         col, lab = ['r', 'b'], ['SMC', 'LMC']
-        x, y = kde_1d(np.array(xarr), np.array(xsigma), [x_rang[0], x_rang[1]],
-                      grid_dens)
+        x, y = kde_1d(np.array(xarr), np.array(xsigma), x_rang, grid_dens)
+        # Confidence intervals.
+        lcb, ucf = lf_cb.monte_carlo_conf_bands(xarr, xsigma, x_rang,
+                                                grid_dens)
         ax.plot(x, y, color=col[i], label=lab[i])
+        plt.fill_between(x, lcb, ucf, alpha=0.3, facecolor=col[i])
     elif i in [6, 7]:
-        ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
-                zorder=-1)
         # Generate map.
-        x, y = kde_1d(np.array(xarr), np.array(xsigma), [y_rang[0], y_rang[1]],
-                      grid_dens)
+        x, y = kde_1d(np.array(xarr), np.array(xsigma), y_rang, grid_dens)
         ax.plot(y, x, color='r', label='SMC')
+        # Confidence intervals.
+        lcb, ucf = lf_cb.monte_carlo_conf_bands(xarr, xsigma, y_rang,
+                                                grid_dens)
+        plt.fill_betweenx(x, lcb, ucf, alpha=0.3, facecolor='r')
         max_y = max(y)
-        x, y = kde_1d(np.array(yarr), np.array(ysigma), [y_rang[0], y_rang[1]],
-                      grid_dens)
+        #
+        x, y = kde_1d(np.array(yarr), np.array(ysigma), y_rang, grid_dens)
         ax.plot(y, x, color='b', label='LMC')
+        # Confidence intervals.
+        lcb, ucf = lf_cb.monte_carlo_conf_bands(yarr, ysigma, y_rang,
+                                                grid_dens)
+        plt.fill_betweenx(x, lcb, ucf, alpha=0.3, facecolor='b')
         max_y = max(max(y), max_y) + 0.1*max(max(y), max_y)
     else:
         col = ['r', 'b', 'r', 'b']

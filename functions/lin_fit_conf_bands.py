@@ -1,6 +1,7 @@
 
 import numpy as np
-import scipy
+from scipy import stats
+from kde_map import kde_1d
 
 
 def non_weight_linear_fit(x, y):
@@ -125,7 +126,7 @@ def confband(xd, yd, a, b, conf=0.95):
     sx = (x - xd.mean()) ** 2  # array
 
     # Quantile of Student's t distribution for p=1-alpha/2
-    q = scipy.stats.t.ppf(1. - alpha / 2., n - 2)
+    q = stats.t.ppf(1. - alpha / 2., n - 2)
 
     # Confidence band
     dy = q * sd * np.sqrt(1. / n + sx / sxd)
@@ -133,3 +134,60 @@ def confband(xd, yd, a, b, conf=0.95):
     lcb = y - dy    # Lower confidence band
 
     return lcb, ucb, x
+
+
+# def mean_confidence_interval(data, confidence=0.95):
+#     """
+#     http://stackoverflow.com/a/15034143/1391441
+#     """
+#     a = 1.0*np.array(data)
+#     n = len(a)
+#     m, se = np.mean(a), stats.sem(a)
+#     h = se * stats.t._ppf((1+confidence)/2., n-1)
+#     return m, [m-h, m+h]
+
+
+def monte_carlo_conf_bands(xarr, xsigma, x_rang, grid_dens):
+    """
+    Calculate 95% confidence bands for a 1D KDE curve.
+
+    Good explanation: http://www.graphpad.com/guides/prism/6/statistics/
+    index.htm?stat_more_about_confidence_interval.htm
+    """
+
+    # Draw N_mc KDE values for each x point in the grid, perturbing the input
+    # data (xarr) through a Gaussian distribution.
+    N_mc, y_vals = 50, []
+    for _ in xrange(N_mc):
+        xarr_ran = np.random.normal(xarr, xsigma)
+        x, y = kde_1d(xarr_ran, np.array(xsigma), x_rang, grid_dens)
+        y_vals.append(y)
+
+    # Obtain the 95% confidence interval for each x point in the 1D grid.
+    kde_vals = zip(*y_vals)
+    low_conf_curve, up_conf_curve = [], []
+    for x_pos in kde_vals:
+        mu, sigma, N = np.mean(x_pos), np.std(x_pos), len(x_pos)
+        conf_int = stats.norm.interval(0.95, loc=mu, scale=sigma/np.sqrt(N))
+        # mu, conf_int = mean_confidence_interval(x_pos)
+        low_conf_curve.append(conf_int[0])
+        up_conf_curve.append(conf_int[1])
+
+    # import matplotlib.pyplot as plt
+    # x, y = kde_1d(xarr, np.array(xsigma), [x_rang[0], x_rang[1]],
+    #               grid_dens)
+    # plt.plot(x, y, color='g')
+    # plt.plot(x, low_conf_curve, color='r')
+    # plt.plot(x, up_conf_curve, color='b')
+    # plt.show()
+
+    return low_conf_curve, up_conf_curve
+
+
+# if __name__ == "__main__":
+#     xarr = np.random.uniform(0., 10., 300)
+#     xsigma = np.random.uniform(0., 0.5, 300)
+#     x_rang = [0., 10.]
+#     grid_dens = 20
+#     monte_carlo_conf_bands(xarr, xsigma, x_rang, grid_dens)
+    # main()
