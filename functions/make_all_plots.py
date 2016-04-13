@@ -418,27 +418,27 @@ def kde_plots(pl_params):
         # Generate map.
         col, lab = ['r', 'b'], ['SMC', 'LMC']
         x, y = kde_1d(np.array(xarr), np.array(xsigma), x_rang, grid_dens)
-        # Confidence intervals.
-        lcb, ucf = lf_cb.monte_carlo_conf_bands(xarr, xsigma, x_rang,
-                                                grid_dens)
+        # # Confidence intervals.
+        # lcb, ucf = lf_cb.monte_carlo_conf_bands(xarr, xsigma, x_rang,
+        #                                         grid_dens)
+        # plt.fill_between(x, lcb, ucf, alpha=0.3, facecolor=col[i])
         ax.plot(x, y, color=col[i], label=lab[i])
-        plt.fill_between(x, lcb, ucf, alpha=0.3, facecolor=col[i])
     elif i in [6, 7]:
         # Generate map.
         x, y = kde_1d(np.array(xarr), np.array(xsigma), y_rang, grid_dens)
         ax.plot(y, x, color='r', label='SMC')
-        # Confidence intervals.
-        lcb, ucf = lf_cb.monte_carlo_conf_bands(xarr, xsigma, y_rang,
-                                                grid_dens)
-        plt.fill_betweenx(x, lcb, ucf, alpha=0.3, facecolor='r')
+        # # Confidence intervals.
+        # lcb, ucf = lf_cb.monte_carlo_conf_bands(xarr, xsigma, y_rang,
+        #                                         grid_dens)
+        # plt.fill_betweenx(x, lcb, ucf, alpha=0.3, facecolor='r')
         max_y = max(y)
         #
         x, y = kde_1d(np.array(yarr), np.array(ysigma), y_rang, grid_dens)
         ax.plot(y, x, color='b', label='LMC')
-        # Confidence intervals.
-        lcb, ucf = lf_cb.monte_carlo_conf_bands(yarr, ysigma, y_rang,
-                                                grid_dens)
-        plt.fill_betweenx(x, lcb, ucf, alpha=0.3, facecolor='b')
+        # # Confidence intervals.
+        # lcb, ucf = lf_cb.monte_carlo_conf_bands(yarr, ysigma, y_rang,
+        #                                         grid_dens)
+        # plt.fill_betweenx(x, lcb, ucf, alpha=0.3, facecolor='b')
         max_y = max(max(y), max_y) + 0.1*max(max(y), max_y)
     else:
         col = ['r', 'b', 'r', 'b']
