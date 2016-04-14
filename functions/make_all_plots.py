@@ -493,6 +493,13 @@ def kde_plots(pl_params):
         leg = plt.legend(loc='upper left', markerscale=1.,
                          scatterpoints=1, fontsize=xy_font_s - 4)
         leg.get_frame().set_alpha(0.5)
+    # Text box
+    if i in [2, 3, 4, 5]:
+        text = 'SMC' if i % 2 == 0 else 'LMC'
+        l = 3 if (i-4) < 0 else 2
+        ob = offsetbox.AnchoredText(text, loc=l, prop=dict(size=xy_font_s - 4))
+        ob.patch.set(alpha=0.5)
+        ax.add_artist(ob)
     # Limits.
     if i in [6, 7]:
         ax.set_xlim(x_rang[0], max_y)
