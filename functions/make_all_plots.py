@@ -386,12 +386,33 @@ def make_as_vs_lit_mass_plot(in_params):
     plt.savefig('figures/as_vs_lit_mass.png', dpi=300, bbox_inches='tight')
 
 
+# import matplotlib.colors as mcolors
+# def make_colormap(seq):
+#     """Return a LinearSegmentedColormap
+#     seq: a sequence of floats and RGB-tuples. The floats should be increasing
+#     and in the interval (0,1).
+
+#     Source: http://stackoverflow.com/a/16836182/1391441
+#     Color names: http://stackoverflow.com/a/29676907/1391441
+#     """
+#     seq = [(None,) * 3, 0.0] + list(seq) + [1.0, (None,) * 3]
+#     cdict = {'red': [], 'green': [], 'blue': []}
+#     for i, item in enumerate(seq):
+#         if isinstance(item, float):
+#             r1, g1, b1 = seq[i - 1]
+#             r2, g2, b2 = seq[i + 1]
+#             cdict['red'].append([item, r1, r2])
+#             cdict['green'].append([item, g1, g2])
+#             cdict['blue'].append([item, b1, b2])
+#     return mcolors.LinearSegmentedColormap('CustomMap', cdict)
+
+
 def kde_plots(pl_params):
     '''
     Generate KDE plots.
     '''
-    gs, i, gs_pos, x_lab, y_lab, xarr, xsigma, yarr, ysigma, x_rang, y_rang =\
-        pl_params
+    gs, i, gs_pos, x_lab, y_lab, xarr, xsigma, yarr, ysigma, x_rang, y_rang,\
+        size = pl_params
 
     # Make plot.
     a, b, c, d = gs_pos[i]
@@ -441,12 +462,18 @@ def kde_plots(pl_params):
         # plt.fill_betweenx(x, lcb, ucf, alpha=0.3, facecolor='b')
         max_y = max(max(y), max_y) + 0.1*max(max(y), max_y)
     else:
-        col = ['r', 'b', 'r', 'b']
+        col = 'r' if i % 2 == 0 else 'b'
         # Generate map.
         ext = [x_rang[0], x_rang[1], y_rang[0], y_rang[1]]
         z = kde_2d(np.array(xarr), np.array(xsigma), np.array(yarr),
                    np.array(ysigma), ext, grid_dens)
         cm = plt.cm.gist_earth_r
+        # c = mcolors.ColorConverter().to_rgb
+        # cm = make_colormap(
+        #     [c('white'), 0.01, c('mintcream'), c('palegoldenrod'), 0.3,
+        #      c('wheat'), 0.4, c('khaki'), 0.5, c('darkkhaki'), 0.6,
+        #      c('yellowgreen'), 0.7, c('mediumseagreen'), 0.8, c('seagreen'),
+        #      0.9, c('green'), 0.95, c('darkgreen'), 0.97, c('black')])
         ax.imshow(z, cmap=cm, extent=ext)
         ax.set_aspect('auto')
         # Error bars.
@@ -460,8 +487,8 @@ def kde_plots(pl_params):
         rs_y = np.random.uniform(0., yax_ext, len(xarr))
         # Clusters.
         # color='#6b6868'
-        plt.scatter(xarr + rs_x, yarr + rs_y, marker='*', color=col[i-2], s=50,
-                    lw=0.35, facecolors='none')
+        plt.scatter(xarr + rs_x, yarr + rs_y, marker='*', color=col,
+                    s=11.*np.array(size), lw=0.45, facecolors='none')
     if i in [0, 1]:
         leg = plt.legend(loc='upper left', markerscale=1.,
                          scatterpoints=1, fontsize=xy_font_s - 4)
@@ -478,9 +505,11 @@ def make_kde_plots(in_params):
     '''
     Prepare parameters and call function to generate SMC and LMC KDE plots.
     '''
-    zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, msigma = \
+    zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, msigma,\
+        rad_pc = \
         [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
-                                'esigma', 'darr', 'dsigma', 'marr', 'msigma']]
+                                'esigma', 'darr', 'dsigma', 'marr', 'msigma',
+                                'rad_pc']]
 
     fig = plt.figure(figsize=(17, 17))  # create the top-level container
     gs = gridspec.GridSpec(6, 6)  # create a GridSpec object
@@ -492,9 +521,11 @@ def make_kde_plots(in_params):
         np.array(msigma[1][0])/np.array(marr[1][0])
 
     # Define extension for each parameter range.
-    age_rang, fe_h_rang, log_mass_rang = [6.51, 10.1], [-2.4, 0.25], [1.2, 4.9]
-    age_kde_rang, feh_kde_rang, log_m_kde_rang =\
-        [0., 1.27], [0., 2.], [0., 2.]
+    age_rang, fe_h_rang, log_mass_rang, dist_rang, ext_rang = [6.51, 10.1],\
+        [-2.4, 0.25], [1.2, 4.9], [[18.81, 19.14], [18.36, 18.67]],\
+        [-0.015, 0.31]
+    age_kde_rang, feh_kde_rang, log_m_kde_rang, dist_kde_rang, ext_kde_rang =\
+        [0., 1.27], [0., 2.], [0., 2.], [0., 5.1], [0., 2.]
 
     gs_pos = [[1, 2, 0, 2], [1, 2, 2, 4], [2, 4, 0, 2], [2, 4, 2, 4],
               [4, 6, 0, 2], [4, 6, 2, 4], [2, 4, 4, 5], [4, 6, 4, 5]]
@@ -502,29 +533,29 @@ def make_kde_plots(in_params):
     kde_pl_lst = [
         # SMC
         [gs, 0, gs_pos, '', r'$KDE_{\,\log(age/yr)}$', aarr[0][0],
-         asigma[0][0], [], [], age_rang, age_kde_rang],
+         asigma[0][0], [], [], age_rang, age_kde_rang, []],
         # LMC
         [gs, 1, gs_pos, '', '', aarr[1][0], asigma[1][0], [], [], age_rang,
-         age_kde_rang],
+         age_kde_rang, []],
         #
-        [gs, 2, gs_pos, '', '$[Fe/H]_{ASteCA}$', aarr[0][0],
-            asigma[0][0], zarr[0][0], zsigma[0][0], age_rang, fe_h_rang],
-        [gs, 3, gs_pos, '', '', aarr[1][0],
-            asigma[1][0], zarr[1][0], zsigma[1][0], age_rang, fe_h_rang],
+        [gs, 2, gs_pos, '', '$[Fe/H]_{ASteCA}$', aarr[0][0], asigma[0][0],
+         zarr[0][0], zsigma[0][0], age_rang, fe_h_rang, rad_pc[0]],
+        [gs, 3, gs_pos, '', '', aarr[1][0], asigma[1][0], zarr[1][0],
+         zsigma[1][0], age_rang, fe_h_rang, rad_pc[1]],
         #
         [gs, 4, gs_pos, '$\log(age/yr)_{ASteCA}$',
          '$\log(M/M_{\odot})_{ASteCA}$', aarr[0][0], asigma[0][0],
-         log_mass_smc, e_log_mass_smc, age_rang, log_mass_rang],
-        [gs, 5, gs_pos, '$\log(age/yr)_{ASteCA}$', '',
-            aarr[1][0], asigma[1][0], log_mass_lmc, e_log_mass_lmc, age_rang,
-            log_mass_rang],
+         log_mass_smc, e_log_mass_smc, age_rang, log_mass_rang, rad_pc[0]],
+        [gs, 5, gs_pos, '$\log(age/yr)_{ASteCA}$', '', aarr[1][0],
+         asigma[1][0], log_mass_lmc, e_log_mass_lmc, age_rang, log_mass_rang,
+         rad_pc[1]],
         #
         # S/LMC [Fe/H] & log(Mass) KDEs
         [gs, 6, gs_pos, r'$KDE_{\,[Fe/H]}$', '', zarr[0][0], zsigma[0][0],
-         zarr[1][0], zsigma[1][0], feh_kde_rang, fe_h_rang],
+         zarr[1][0], zsigma[1][0], feh_kde_rang, fe_h_rang, []],
         [gs, 7, gs_pos, r'$KDE_{\,\log(M/M_{\odot})}$', '', log_mass_smc,
          e_log_mass_smc, log_mass_lmc, e_log_mass_lmc, log_m_kde_rang,
-         log_mass_rang]
+         log_mass_rang, []]
     ]
     #
     for pl_params in kde_pl_lst:
@@ -532,7 +563,34 @@ def make_kde_plots(in_params):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/as_kde_maps.png', dpi=300, bbox_inches='tight')
+    plt.savefig('figures/as_kde_maps0.png', dpi=300, bbox_inches='tight')
+    fig.clf()
+
+    kde_pl_lst = [
+        # SMC
+        [gs, 0, gs_pos, '', r'$KDE_{\,\mu_0}$', darr[0][0],
+         dsigma[0][0], [], [], dist_rang[0], dist_kde_rang, []],
+        # LMC
+        [gs, 1, gs_pos, '', '', darr[1][0], dsigma[1][0], [], [], dist_rang[1],
+         dist_kde_rang, []],
+        #
+        [gs, 4, gs_pos, '$\mu_{0;ASteCA}$', '$E(B-V)_{ASteCA}$', darr[0][0],
+         dsigma[0][0], earr[0][0], esigma[0][0], dist_rang[0], ext_rang,
+         rad_pc[0]],
+        [gs, 5, gs_pos, '$\mu_{0;ASteCA}$', '', darr[1][0], dsigma[1][0],
+         earr[1][0], esigma[1][0], dist_rang[1], ext_rang, rad_pc[1]],
+        #
+        # S/LMC E(B-V) KDEs
+        [gs, 7, gs_pos, r'$KDE_{\,E(B-V)}$', '', earr[0][0], esigma[0][0],
+         earr[1][0], esigma[1][0], ext_kde_rang, ext_rang, []]
+    ]
+    #
+    for pl_params in kde_pl_lst:
+        kde_plots(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    plt.savefig('figures/as_kde_maps1.png', dpi=300, bbox_inches='tight')
 
 
 def make_ra_dec_plots(in_params, bica_coords):
