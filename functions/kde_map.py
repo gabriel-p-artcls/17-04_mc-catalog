@@ -9,7 +9,7 @@ def kernel(p0, p, s):
     '''
     # Replace 0 error with very small value.
     s = 0.000001 if s < 0. else s
-    val = (1./s) * np.exp(-0.5*((p0 - p) / s)**2)
+    val = (1. / s) * np.exp(-0.5 * ((p0 - p) / s)**2)
 
     return val
 
@@ -25,12 +25,12 @@ def kde_val(point, xarr, xsigma, yarr, ysigma, dim):
         for x, sx in zip(xarr, xsigma):
             kde_p = kde_p + kernel(point[0], x, sx)
         # Normalize.
-        norm_kde = kde_p / (np.sqrt(2*np.pi)*len(xarr))
+        norm_kde = kde_p / (np.sqrt(2 * np.pi) * len(xarr))
     elif dim == '2':
         for x, sx, y, sy in zip(xarr, xsigma, yarr, ysigma):
             kde_p = kde_p + kernel(point[0], x, sx) * kernel(point[1], y, sy)
         # Normalize.
-        norm_kde = kde_p / (2*np.pi*len(xarr))
+        norm_kde = kde_p / (2 * np.pi * len(xarr))
 
     return norm_kde
 
@@ -83,29 +83,28 @@ def kde_1d(xarr, xsigma, ext, grid_dens):
     return positions[0], z
 
 
-# def measure(n):
-#     "Return two coupled measurements."
-#     m1 = np.random.normal(size=n)
-#     m2 = np.random.normal(scale=0.5, size=n)
-#     return m1 + m2, m1 - m2
+# def solve_gaussian(val, data_array, sigma_array):
+#     return (1. / sigma_array) * np.exp(
+#         - (val - data_array) * (val - data_array) /
+#         (2 * sigma_array * sigma_array))
 
 
-# import matplotlib.pyplot as plt
-# # Create x,y data an its errors (sigmas).
-# N = 250
-# # Data.
-# xarr, yarr = measure(N)
-# # Errors.
-# xsigma, ysigma = np.random.uniform(0., 1., N), np.random.uniform(0., 1., N)
+# def solve_kde(xlist, data_array, sigma_array):
+#     kde_array = np.array([])
+#     print np.ndim(kde_array)
+#     for xx in xlist:
+#         single_kde = solve_gaussian(xx, data_array, sigma_array)
+#         if np.ndim(kde_array) == 3:
+#             kde_array = np.concatenate(
+#                 (kde_array, single_kde[np.newaxis, :, :]), axis=0)
+#         else:
+#             kde_array = np.dstack(single_kde)
+#     return kde_array
 
-
-# # Plot.
-# fig = plt.figure()
-# ax = fig.add_subplot(111)
-# ax.imshow(z, cmap=plt.cm.gist_earth_r, extent=[xmin, xmax, ymin, ymax])
-# #ax.set_aspect('auto')
-# #plt.errorbar(xarr, yarr, xerr=xsigma, yerr=ysigma, fmt=None, color='r')
-# plt.scatter(xarr, yarr, marker='.', color='r', s=5)
-# ax.set_xlim([xmin, xmax])
-# ax.set_ylim([ymin, ymax])
-# plt.show()
+# N = 300
+# data_array = np.array([np.random.uniform(0., 10., N) for _ in range(2)])
+# sigma_array = np.array([np.random.uniform(0., 0.5, N) for _ in range(2)])
+# xlist = np.linspace(0, 1, 101)  # Adjust as needed
+# kde_array = solve_kde(xlist, data_array, sigma_array)
+# kde_vector = np.sum(np.sum(kde_array, axis=2), axis=1)
+# mode_guess = xlist[np.argmax(kde_vector)]
