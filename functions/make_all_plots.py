@@ -1238,9 +1238,9 @@ def cross_match_ip_plot(pl_params):
                             lw=0.3, edgecolor='w', label=db_lab, zorder=3)
             else:
                 siz = np.array(DB[s_i])*8.
-                plt.scatter(xarr, yarr, marker=mark[j], c=DB[ba_i],
-                            s=siz, cmap=cm, vmin=0.6, vmax=1.3, lw=0.3,
-                            edgecolor='k', label=db_lab, zorder=3)
+                SC = plt.scatter(xarr, yarr, marker=mark[j], c=DB[ba_i],
+                                 s=siz, cmap=cm, vmin=0.6, vmax=1.3, lw=0.3,
+                                 edgecolor='k', label=db_lab, zorder=3)
             # Plot error bars.
             if xsigma:
                 for k, xy in enumerate(zip(*[xarr, yarr])):
@@ -1268,6 +1268,13 @@ def cross_match_ip_plot(pl_params):
                                     prop=dict(size=xy_font_s - 5))
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
+    if i == 2:
+        # Position colorbar.
+        axColor = plt.axes([0.74, 0.25, 0.1, 0.023])
+        cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
+        cbar.set_label('$CI$', fontsize=xy_font_s - 2, labelpad=-45)
+        cbar.set_ticks([0.6, 0.8, 1., 1.2])
+        cbar.ax.tick_params(labelsize=xy_font_s - 10)
 
 
 def make_cross_match_ip(cross_match):
@@ -1397,11 +1404,11 @@ def make_cross_match_ip(cross_match):
 
     # Define names of arrays being plotted.
     x_lab = ['$\log(age/yr)_{ASteCA}$', '$M_{DBs}\,[M_{\odot}]$']
-    y_lab = ['$\log(age/yr)_{DB}$', r'$\Delta M \times 10^{-4}\,[M_{\odot}]$',
-             r'$\Delta M \times 10^{-4}\,[M_{\odot}]$']
+    y_lab = ['$\log(age/yr)_{DB}$',
+             r'$\Delta M \times 10^{-4}\,[M_{\odot}]_{ASteCA-DB}$', '']
 
     # Arbitrary size so plots are actually squared.
-    fig = plt.figure(figsize=(20, 6.3))
+    fig = plt.figure(figsize=(19.3, 6.3))
     gs = gridspec.GridSpec(1, 3)
 
     cross_match_lst = [
