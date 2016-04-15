@@ -439,6 +439,7 @@ def kde_plots(pl_params):
         # Generate map.
         col, lab = ['r', 'b'], ['SMC', 'LMC']
         x, y = kde_1d(np.array(xarr), np.array(xsigma), x_rang, grid_dens)
+        # print 'int age:', integrate.simps(y, x)
         # # Confidence intervals.
         # lcb, ucf = lf_cb.monte_carlo_conf_bands(xarr, xsigma, x_rang,
         #                                         grid_dens)
@@ -448,6 +449,7 @@ def kde_plots(pl_params):
         # Generate map.
         x, y = kde_1d(np.array(xarr), np.array(xsigma), y_rang, grid_dens)
         ax.plot(y, x, color='r', label='SMC')
+        # print 'int met:', integrate.simps(y, x)
         # # Confidence intervals.
         # lcb, ucf = lf_cb.monte_carlo_conf_bands(xarr, xsigma, y_rang,
         #                                         grid_dens)
@@ -456,6 +458,7 @@ def kde_plots(pl_params):
         #
         x, y = kde_1d(np.array(yarr), np.array(ysigma), y_rang, grid_dens)
         ax.plot(y, x, color='b', label='LMC')
+        # print 'int: mass', integrate.simps(y, x)
         # # Confidence intervals.
         # lcb, ucf = lf_cb.monte_carlo_conf_bands(yarr, ysigma, y_rang,
         #                                         grid_dens)
