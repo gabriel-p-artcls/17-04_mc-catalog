@@ -445,6 +445,17 @@ def kde_plots(pl_params):
         #                                         grid_dens)
         # plt.fill_between(x, lcb, ucf, alpha=0.3, facecolor=col[i])
         ax.plot(x, y, color=col[i], label=lab[i])
+
+        # Obtain Gaussian fit for 1D KDE.
+        # from scipy.optimize import curve_fit
+        # def gaus(x, x0, sigma):
+        #     return (1/(sigma*np.sqrt(2*np.pi))) *\
+        #         np.exp(-0.5*((x - x0)/sigma)**2)
+
+        # mean, sigma = np.mean(x), np.std(x)
+        # popt, pcov = curve_fit(gaus, x, y, p0=[mean, sigma])
+        # print 'x +- std:', popt[0], popt[1]
+
     elif i in [6, 7]:
         # Generate map.
         x, y = kde_1d(np.array(xarr), np.array(xsigma), y_rang, grid_dens)
