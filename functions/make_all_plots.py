@@ -1901,7 +1901,7 @@ def pl_amr(pl_params):
     Plot AMRs.
     '''
 
-    gs, i, age_vals, met_weighted, age_gyr, amr_lit, zarr, x_lab,\
+    gs, i, age_vals, met_weighted, age_gyr, amr_lit, zarr, rad_pc, x_lab,\
         y_lab = pl_params
 
     xy_font_s = 16
@@ -1927,7 +1927,8 @@ def pl_amr(pl_params):
                                                      len(age_gyr[k][0]))
             rs_y = zarr[k][0] + np.random.uniform(-ax_y, ax_y,
                                                   len(zarr[k][0]))
-            plt.scatter(rs_x, rs_y, marker='*', s=25, edgecolors=col[k],
+            siz = np.array(rad_pc[k]) * 5.
+            plt.scatter(rs_x, rs_y, marker='*', s=siz, edgecolors=col[k],
                         facecolor='none', lw=0.4, label=leg[k], zorder=3)
             # ASteCA 1 sigma error regions.
             y_err_min = np.array(met_weighted[k][0]) -\
@@ -1939,6 +1940,8 @@ def pl_amr(pl_params):
         # Legend.
         leg0 = plt.legend(loc='lower right', handlelength=2.5, scatterpoints=1,
                           fontsize=xy_font_s - 8)
+        leg0.legendHandles[0]._sizes = [10]
+        leg0.legendHandles[1]._sizes = [10]
         leg0.get_frame().set_alpha(0.85)
 
     # Literature values.
@@ -1948,9 +1951,9 @@ def pl_amr(pl_params):
         ax.set_title("LMC", x=0.5, y=0.92, fontsize=xy_font_s - 4,
                      bbox=dict(facecolor=(1, 1, 1, 0.5),
                                edgecolor=(0, 0, 0, 1)))
-        col = ['m', 'k', 'g', 'c', 'y']
-        c_dash = [[8, 4], [8, 4, 2, 4], [2, 2], [8, 4, 2, 4, 2, 4], [8, 4]]
-        amr_lab = ['PT98', 'PG03', 'C08', 'HZ09', 'R12']
+        col = ['m', 'y', 'g', 'c', 'k']
+        c_dash = [[8, 4], [8, 4], [2, 2], [8, 4, 2, 4, 2, 4], [8, 4, 2, 4]]
+        amr_lab = ['PT98', 'C08', 'HZ09', 'R12', 'PG13']
         for j, amr in enumerate(amr_lit):
             plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
                      dashes=c_dash[j], lw=1.5, zorder=3)
@@ -1962,16 +1965,16 @@ def pl_amr(pl_params):
                           fontsize=xy_font_s - 8)
         leg2.get_frame().set_alpha(0.85)
     elif i == 2:
-        plt.ylim(-1.39, -0.19)
+        plt.ylim(-1.39, -0.25)
         plt.xlabel(x_lab, fontsize=xy_font_s)
         ax.set_title("SMC", x=0.5, y=0.92, fontsize=xy_font_s - 4,
                      bbox=dict(facecolor=(1, 1, 1, 0.5),
                                edgecolor=(0, 0, 0, 1)))
-        col = ['m', 'k', 'g', 'c', 'y', 'y', '#b22222', '#b22222']
+        col = ['m', '#b22222', 'g', 'c', 'y', 'y', '#b22222', 'k']
         c_dash = [[8, 4], [8, 4, 2, 4], [2, 2], [8, 4, 2, 4, 2, 4],
                   [8, 4, 2, 4, 2, 4], [8, 4], [2, 2], [8, 4, 2, 4]]
-        amr_lab = ['PT98', 'PG03', 'HZ04', 'N09', 'TB09-1', 'TB09-2',
-                   'C13-B', 'C13-C']
+        amr_lab = ['PT98', 'HZ04', 'N09', 'TB09-1', 'TB09-2',
+                   'C13-B', 'C13-C', 'PG13']
         for j, amr in enumerate(amr_lit):
             plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
                      dashes=c_dash[j], lw=1.5, zorder=3)
@@ -1989,8 +1992,8 @@ def make_amr_plot(in_params, amr_lit):
     Make age-metallicity relation plot for both galaxies.
     '''
 
-    zarr, zsigma, aarr, asigma = [in_params[_] for _ in ['zarr', 'zsigma',
-                                                         'aarr', 'asigma']]
+    zarr, zsigma, aarr, asigma, rad_pc = [
+        in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'rad_pc']]
 
     # First index k indicates the galaxy (0 for SMC, 1 for LMC), the second
     # index 0 indicates ASteCA values.
@@ -2013,11 +2016,12 @@ def make_amr_plot(in_params, amr_lit):
     amr_lit_smc, amr_lit_lmc = amr_lit
 
     amr_lst = [
-        [gs, 0, age_vals, met_weighted, age_gyr, [], zarr, '', '$[Fe/H]$'],
-        [gs, 1, age_vals, met_weighted, age_gyr, amr_lit_lmc, zarr,
+        [gs, 0, age_vals, met_weighted, age_gyr, [], zarr, rad_pc, '',
+         '$[Fe/H]$'],
+        [gs, 1, age_vals, met_weighted, age_gyr, amr_lit_lmc, zarr, [],
          '', '$[Fe/H]$'],
-        [gs, 2, age_vals, met_weighted, age_gyr, amr_lit_smc, zarr,
-         '$Age\,(Gyr)$', '$[Fe/H]$']
+        [gs, 2, age_vals, met_weighted, age_gyr, amr_lit_smc, zarr, [],
+         '$Age\,[Gyr]$', '$[Fe/H]$']
     ]
 
     for pl_params in amr_lst:

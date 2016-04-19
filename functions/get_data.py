@@ -69,21 +69,6 @@ def get_amr_lit():
     # Put SMC values first and LMC second.
     amr_smc_PT98, amr_lmc_PT98 = zip(*amr_PT98_t[0]), zip(*amr_PT98_t[1])
 
-    # Path to data Piatti & Geisler (2003) file.
-    in_file = 'AMRs/PG03_s-lmc_amr.dat'
-    # Read data file
-    with open(in_file) as f:
-        # i=0 --> SMC ; i=1 --> LMC
-        amr_PG03_t = [[], []]
-        for line in skip_comments(f):
-            l = line.split()
-            # Read coordinates.
-            amr_PG03_t[0].append([float(_) for _ in [l[4], l[6]]])
-            amr_PG03_t[1].append([float(_) for _ in [l[0], l[2]]])
-
-    # Put SMC values first and LMC second.
-    amr_smc_PG03, amr_lmc_PG03 = zip(*amr_PG03_t[0]), zip(*amr_PG03_t[1])
-
     # Path to data C08 file.
     in_file = 'AMRs/C08_lmc_amr.dat'
     # Read data file
@@ -166,11 +151,25 @@ def get_amr_lit():
             amr_smc_C13_C[0].append(float(l[2]))
             amr_smc_C13_C[1].append(float(l[3]))
 
-    amr_lit_smc = [amr_smc_PT98, amr_smc_PG03, amr_smc_HZ04, amr_smc_N09,
-                   amr_smc_TB09_1, amr_smc_TB09_2, amr_smc_C13_B,
-                   amr_smc_C13_C]
-    amr_lit_lmc = [amr_lmc_PT98, amr_lmc_PG03, amr_lmc_C08, amr_lmc_HZ09,
-                   amr_lmc_R12]
+    # Path to data Piatti & Geisler (2003) file.
+    in_file = 'AMRs/PG13_s-lmc_amr.dat'
+    # Read data file
+    with open(in_file) as f:
+        # i=0 --> SMC ; i=1 --> LMC
+        amr_PG13_t = [[], []]
+        for line in skip_comments(f):
+            l = line.split()
+            # Read coordinates.
+            amr_PG13_t[0].append([float(_) for _ in [l[4], l[6]]])
+            amr_PG13_t[1].append([float(_) for _ in [l[0], l[2]]])
+
+    # Put SMC values first and LMC second.
+    amr_smc_PG13, amr_lmc_PG13 = zip(*amr_PG13_t[0]), zip(*amr_PG13_t[1])
+
+    amr_lit_smc = [amr_smc_PT98, amr_smc_HZ04, amr_smc_N09, amr_smc_TB09_1,
+                   amr_smc_TB09_2, amr_smc_C13_B, amr_smc_C13_C, amr_smc_PG13]
+    amr_lit_lmc = [amr_lmc_PT98, amr_lmc_C08, amr_lmc_HZ09, amr_lmc_R12,
+                   amr_lmc_PG13]
     amr_lit = [amr_lit_smc, amr_lit_lmc]
 
     return amr_lit

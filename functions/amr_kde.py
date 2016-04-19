@@ -54,11 +54,16 @@ def age_met_rel(xarr, xsigma, yarr, ysigma):
         #     else:
         #         age_col2.append(_)
         # age_col = np.array(age_col2)
+
+        # Metallicity values given by the KDE for the entire metallicity range,
+        # for a single age value.
         age_col = np.array(age_col)
-        # Obtain weighted metallicity for this age value.
+
+        # Obtain weighted metallicity for this *single* age value.
         sum_age_col = sum(age_col)
         met_w = sum(met_vals * age_col) / sum_age_col
         met_weighted[0].append(met_w)
+
         # Obtain standard deviation.
         nume = sum(age_col * (met_w - met_vals) ** 2)
         deno = sum_age_col - (sum(age_col ** 2) / sum_age_col)
