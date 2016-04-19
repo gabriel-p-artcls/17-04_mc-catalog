@@ -18,9 +18,12 @@ def age_met_rel(xarr, xsigma, yarr, ysigma):
     y_min, y_max = min(np.array(yarr) - np.array(ysigma)), \
         max(np.array(yarr) + np.array(ysigma))
     ext = [x_min, x_max, y_min, y_max]
+
     # Grid density.
-    # Metallicity step.
-    met_step = 0.02
+    # Metallicity step. THIS NUMBER AFFECTS THE SHAPE OF THE FINAL AMR.
+    # We select a value of 0.3, which gives steps ~0.3 dex in metallicity. This
+    #  value is very similar to the average uncertainty in [Fe/H].
+    met_step = 0.3
     gd = int((y_max - y_min) / met_step)
 
     # Generate metallicity values as in grid. Invert list so the weighted

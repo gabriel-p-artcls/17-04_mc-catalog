@@ -1945,7 +1945,9 @@ def pl_amr(pl_params):
     elif i == 1:
         ax.set_xticklabels([])
         plt.ylim(-1.23, -0.06)
-        ax.set_title("LMC", x=0.5, y=0.92, fontsize=xy_font_s - 4)
+        ax.set_title("LMC", x=0.5, y=0.92, fontsize=xy_font_s - 4,
+                     bbox=dict(facecolor=(1, 1, 1, 0.5),
+                               edgecolor=(0, 0, 0, 1)))
         col = ['m', 'k', 'g', 'c', 'y']
         c_dash = [[8, 4], [8, 4, 2, 4], [2, 2], [8, 4, 2, 4, 2, 4], [8, 4]]
         amr_lab = ['PT98', 'PG03', 'C08', 'HZ09', 'R12']
@@ -1962,7 +1964,9 @@ def pl_amr(pl_params):
     elif i == 2:
         plt.ylim(-1.39, -0.19)
         plt.xlabel(x_lab, fontsize=xy_font_s)
-        ax.set_title("SMC", x=0.5, y=0.92, fontsize=xy_font_s - 4)
+        ax.set_title("SMC", x=0.5, y=0.92, fontsize=xy_font_s - 4,
+                     bbox=dict(facecolor=(1, 1, 1, 0.5),
+                               edgecolor=(0, 0, 0, 1)))
         col = ['m', 'k', 'g', 'c', 'y', 'y', '#b22222', '#b22222']
         c_dash = [[8, 4], [8, 4, 2, 4], [2, 2], [8, 4, 2, 4, 2, 4],
                   [8, 4, 2, 4, 2, 4], [8, 4], [2, 2], [8, 4, 2, 4]]
