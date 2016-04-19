@@ -194,10 +194,10 @@ def match_ra_dec_asteca(names_ra_dec, cat_ra_dec, ra, dec):
 
     # Match within a given tolerance.
     # 1 arcsec ~ 0.000278 deg
-    # if dist_deg < 0.004167:  # 15 arcsec ~ 0.004167 (25 clusters)
-    # if dist_deg < 0.00833:  # 30 arcsec ~ 0.00833 (26 clusters)
-    # if dist_deg < 0.0167:  # 1 arcmin ~ 0.0167 (27 clusters)
-    # if dist_deg < 0.002778:  # 10 arcsec ~ 0.002778 (24 clusters)
+    # if dist_deg < 0.004167:  # 15 arcsec ~ 0.004167
+    # if dist_deg < 0.00833:  # 30 arcsec ~ 0.00833
+    # if dist_deg < 0.0167:  # 1 arcmin ~ 0.0167
+    # if dist_deg < 0.002778:  # 10 arcsec ~ 0.002778
     if dist_deg < 0.00556:  # 20 arcsec ~ 0.00556
         name = str(names_ra_dec[i])
     else:
