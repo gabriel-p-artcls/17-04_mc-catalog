@@ -1320,20 +1320,20 @@ def make_cross_match_ip(cross_match):
             ['chocolate', 'm', 'k', 'c', 'g'], ['r', 'm', 'g', 'b'],
             ['m', 'b']]
 
-    # Separate SMC from LMC clusters in H03 and G10 databases.
-    h03_smc, h03_lmc, g10_smc, g10_lmc = [], [], [], []
-    for cl in zip(*h03):
-        if cl[0] == 'SMC':
-            h03_smc.append(cl)
-        else:
-            h03_lmc.append(cl)
-    h03_smc, h03_lmc = zip(*h03_smc), zip(*h03_lmc)
-    for cl in zip(*g10):
-        if cl[0] == 'SMC':
-            g10_smc.append(cl)
-        else:
-            g10_lmc.append(cl)
-    g10_smc, g10_lmc = zip(*g10_smc), zip(*g10_lmc)
+    # # Separate SMC from LMC clusters in H03 and G10 databases.
+    # h03_smc, h03_lmc, g10_smc, g10_lmc = [], [], [], []
+    # for cl in zip(*h03):
+    #     if cl[0] == 'SMC':
+    #         h03_smc.append(cl)
+    #     else:
+    #         h03_lmc.append(cl)
+    # h03_smc, h03_lmc = zip(*h03_smc), zip(*h03_lmc)
+    # for cl in zip(*g10):
+    #     if cl[0] == 'SMC':
+    #         g10_smc.append(cl)
+    #     else:
+    #         g10_lmc.append(cl)
+    # g10_smc, g10_lmc = zip(*g10_smc), zip(*g10_lmc)
 
     # Separate clusters with mass < 5000
     h03_l_mass, p12_l_mass, h03_h_mass, p12_h_mass = [], [], [], []
@@ -1427,7 +1427,7 @@ def make_cross_match_ip(cross_match):
         [gs, 0, 5.8, 10.6, 5.8, 10.6, x_lab[0], y_lab[0],
             indexes, labels[1], mark[1], cols[1], '', databases[0]],
         # Mass cross_match (low mass)
-        [gs, 1, -50., 4900., -0.41, 0.83, x_lab[1], y_lab[1],
+        [gs, 1, -50., 4990., -0.41, 0.83, x_lab[1], y_lab[1],
             [], labels[4], mark[4], cols[4], '$M_{DBs}\leq 5000\,[M_{\odot}]$',
             databases[1]],
         # Mass cross_match (large masses)
@@ -1920,13 +1920,14 @@ def pl_amr(pl_params):
             # ASteCA values.
             plt.plot(age_vals[k], met_weighted[k][0], c=col[k],
                      label=leg[k] + ' (ASteCA)', zorder=3)
-            # Introduce random scatter in Age (Gyr).
-            # 2% of axis ranges.
-            ax_ext = max(age_gyr[k][0]) * 0.02
-            # Add randoms scatter.
-            rs_x = age_gyr[k][0] + np.random.uniform(-ax_ext, ax_ext,
+            # Introduce random scatter.
+            ax_x, ax_y = 0.15, 0.03
+            # Add random scatter.
+            rs_x = age_gyr[k][0] + np.random.uniform(-ax_x, ax_x,
                                                      len(age_gyr[k][0]))
-            plt.scatter(rs_x, zarr[k][0], marker='*', s=25, edgecolors=col[k],
+            rs_y = zarr[k][0] + np.random.uniform(-ax_y, ax_y,
+                                                  len(zarr[k][0]))
+            plt.scatter(rs_x, rs_y, marker='*', s=25, edgecolors=col[k],
                         facecolor='none', lw=0.4, label=leg[k], zorder=3)
             # ASteCA 1 sigma error regions.
             y_err_min = np.array(met_weighted[k][0]) -\

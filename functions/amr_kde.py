@@ -14,7 +14,7 @@ def age_met_rel(xarr, xsigma, yarr, ysigma):
 
     # Define 2D space extension where the KDE will be obtained.
     x_min, x_max = min(np.array(xarr) - np.array(xsigma)), \
-        max(np.array(xarr))  #  + np.array(xsigma)
+        max(np.array(xarr) + 0.5*np.array(xsigma))
     y_min, y_max = min(np.array(yarr) - np.array(ysigma)), \
         max(np.array(yarr) + np.array(ysigma))
     ext = [x_min, x_max, y_min, y_max]

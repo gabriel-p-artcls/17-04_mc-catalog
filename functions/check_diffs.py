@@ -94,6 +94,13 @@ def check_diffs(in_params):
             print 'Mean mass diff for Delta<{}: {} +- {}'.format(
                 m_lim, np.mean(avrg_mass), np.std(avrg_mass))
 
+        if j == 1:
+            avrg_mass = []
+            print 'LMC clusters with large ASteCA ages and met values'
+            for i, (log_a, fe_h) in enumerate(zip(*[aarr[j][0], zarr[1][0]])):
+                if 10**log_a > 3*10**9 and fe_h > -0.5:
+                    print '{}: {} ; {}'.format(gal_names[j][i], log_a, fe_h)
+
         print ''
         err_c, err_thresh = 0, 0.2
         for ez in zsigma[j][0]:
