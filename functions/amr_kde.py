@@ -15,15 +15,19 @@ def age_met_rel(xarr, xsigma, yarr, ysigma):
     # Define 2D space extension where the KDE will be obtained.
     x_min, x_max = min(np.array(xarr) - np.array(xsigma)), \
         max(np.array(xarr) + 0.5*np.array(xsigma))
+    # These range is important since it defines the metallicity values
+    # (met_vals) that will be weighted by the KDE below.
     y_min, y_max = min(np.array(yarr) - np.array(ysigma)), \
         max(np.array(yarr) + np.array(ysigma))
-    ext = [x_min, x_max, y_min, y_max]
 
-    # Grid density.
     # Metallicity step. THIS NUMBER AFFECTS THE SHAPE OF THE FINAL AMR.
-    # We select a value of 0.3, which gives steps ~0.3 dex in metallicity. This
-    #  value is very similar to the average uncertainty in [Fe/H].
+    # We select a value of 0.3, which gives steps ~0.3 dex in the metallicity
+    # grid below. This value is very similar to the average uncertainty in
+    # [Fe/H]. A value that is too large (i.e. ~1.) results in a flat AMR
+    # shifted towards lower [Fe/H] values. A value that is too low (i.e. ~0.01)
+    # results in a noisy AMRshifted towards larger values.
     met_step = 0.3
+    # Grid density.
     gd = int((y_max - y_min) / met_step)
 
     # Generate metallicity values as in grid. Invert list so the weighted
@@ -34,7 +38,8 @@ def age_met_rel(xarr, xsigma, yarr, ysigma):
     # yarr = -0.5 + 0.0001 * np.random.randn(len(yarr))
     # xsigma, ysigma = [0.05] * len(xarr), [0.1] * len(xarr)
 
-    # Obtain age-metallicity KDE for the entire range.
+    # Obtain age-metallicity KDE for the entire defined range.
+    ext = [x_min, x_max, y_min, y_max]
     z = kde_2d(np.array(xarr), np.array(xsigma), np.array(yarr),
                np.array(ysigma), ext, gd)
     # Order KDE in age columns where each column is associated with an age.
