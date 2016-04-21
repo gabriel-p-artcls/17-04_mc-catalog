@@ -5,13 +5,10 @@ import matplotlib.gridspec as gridspec
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.offsetbox as offsetbox
 from matplotlib.ticker import MultipleLocator
-from matplotlib.patches import Ellipse
-# import statsmodels.api as sm
 from scipy import stats
 from ra_dec_map import ra_dec_plots
 from kde_map import kde_2d, kde_1d
 from amr_kde import age_met_rel
-import lin_fit_conf_bands as lf_cb
 
 
 def ccc(l1, l2):
@@ -1070,141 +1067,6 @@ def make_probs_CI_plot(in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/as_prob_vs_CI.png', dpi=300, bbox_inches='tight')
-
-
-def plot_dist_2_cent(pl_params):
-    '''
-    Generate plots for KDE probabilities versus contamination indexes.
-    '''
-    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, xarr, xsigma,\
-        yarr, ysigma, zarr, v_min, v_max, rad, gal_name = pl_params
-    siz = np.asarray(rad) * 6
-
-    xy_font_s = 16
-    cm = plt.cm.get_cmap('RdYlBu_r')
-
-    ax = plt.subplot(gs[i])
-    # ax.set_aspect('auto')
-    plt.xlim(xmin, xmax)
-    plt.ylim(ymin, ymax)
-    plt.xlabel(x_lab, fontsize=xy_font_s)
-    if i in [0, 2, 4, 6]:
-        plt.ylabel(y_lab, fontsize=xy_font_s)
-    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
-            zorder=1)
-    ax.minorticks_on()
-    # Plot all clusters in dictionary.
-    # Introduce random scatter.
-    # X% of axis ranges.
-    ax_ext = (xmax - xmin) * 0.02
-    # Add randoms scatter.
-    if i in [2, 3]:
-        rs_x = xarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
-    else:
-        rs_x = xarr
-    SC = plt.scatter(rs_x, yarr, marker='o', c=zarr, s=siz, lw=0.25, cmap=cm,
-                     vmin=v_min, vmax=v_max, zorder=3)
-    # Plot error bars.
-    plt.errorbar(xarr, yarr, xerr=xsigma, yerr=ysigma, ls='none', color='k',
-                 elinewidth=0.4, zorder=1)
-
-    if i in [2, 3]:
-        # Linear regression of metallicity, NOT weighted by errors.
-        fit_nw = lf_cb.non_weight_linear_fit(xarr, yarr)
-        plt.plot(xarr, fit_nw(xarr), '-k', lw=0.8)
-        # Linear regression and confidence bands or metallicity gradient,
-        # weighted by their errors in [Fe/H].
-        a, b, sa, sb, rchi2, dof = lf_cb.weight_linear_fit(
-            np.array(xarr), np.array(yarr), np.array(ysigma))
-        # Confidence bands.
-        lcb, ucb, x = lf_cb.confband(np.array(xarr), np.array(yarr), a, b,
-                                     conf=0.95)
-        fit_w = np.poly1d([a, b])
-        plt.plot(x, fit_w(x), '--g')
-        plt.fill_between(x, lcb, ucb, alpha=0.3, facecolor='gray')
-        # Text box.
-        text = r'$[Fe/H]_{{rg}}={:.2f}\pm{:.2f}\,dex\,kpc^{{-1}}$'.format(
-            a * 1000., sa * 1000.)
-        ob = offsetbox.AnchoredText(text, loc=4, prop=dict(size=xy_font_s - 3))
-        ob.patch.set(alpha=0.85)
-        ax.add_artist(ob)
-
-    if gal_name != '':
-        # Text box.
-        ob = offsetbox.AnchoredText(gal_name, loc=1,
-                                    prop=dict(size=xy_font_s - 2))
-        ob.patch.set(alpha=0.85)
-        ax.add_artist(ob)
-    # if i in [1, 3, 5, 7]:
-    # Position colorbar.
-    the_divider = make_axes_locatable(ax)
-    color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
-    # Colorbar.
-    cbar = plt.colorbar(SC, cax=color_axis)
-    zpad = 10 if z_lab == '$E_{(B-V)}$' else 5
-    cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=zpad)
-
-
-def make_dist_2_cents(in_params):
-    '''
-    Plot ASteCA distances to center of either MC galaxy.
-    '''
-
-    zarr, zsigma, aarr, asigma, earr, esigma, marr, msigma, rad_pc, cont_ind,\
-        dist_cent, e_d_cent, gal_names, ra, dec = \
-        [in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
-                                'esigma', 'marr', 'msigma', 'rad_pc',
-                                'cont_ind', 'dist_cent', 'e_d_cent',
-                                'gal_names', 'ra', 'dec']]
-
-    # Define names of arrays being plotted.
-    x_lab, yz_lab = '$R_{GC}\,[pc]$', \
-        ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,[M_{\odot}]$',
-            '$E(B-V)_{ASteCA}$']
-    xmin, xmax = 0, 7500
-    vmin_met, vmax_met = -2.1, 0.29
-    # vmin_mas, vmax_mas = 1000, 28000
-    vmin_ext, vmax_ext = 0., 0.3
-    vmin_age, vmax_age = 6.7, 9.7
-
-    fig = plt.figure(figsize=(14, 25))
-    gs = gridspec.GridSpec(4, 2)
-
-    dist_2_cent_pl_lst = [
-        # SMC
-        [gs, 0, xmin, xmax, 6.6, 10.1, x_lab, yz_lab[0], yz_lab[1],
-            dist_cent[0], e_d_cent[0], aarr[0][0], asigma[0][0], zarr[0][0],
-            vmin_met, vmax_met, rad_pc[0], 'SMC'],
-        [gs, 2, xmin, xmax, -2.4, 0.4, x_lab, yz_lab[1], yz_lab[0],
-            dist_cent[0], e_d_cent[0], zarr[0][0], zsigma[0][0], aarr[0][0],
-            vmin_age, vmax_age, rad_pc[0], 'SMC'],
-        [gs, 4, xmin, xmax, 0., 30000, x_lab, yz_lab[2], yz_lab[3],
-            dist_cent[0], e_d_cent[0], marr[0][0], msigma[0][0], earr[0][0],
-            vmin_ext, vmax_ext, rad_pc[0], ''],
-        [gs, 6, xmin, xmax, -0.01, 0.11, x_lab, yz_lab[3], yz_lab[0],
-            dist_cent[0], e_d_cent[0], earr[0][0], esigma[0][0], aarr[0][0],
-            vmin_age, vmax_age, rad_pc[0], ''],
-        # LMC
-        [gs, 1, xmin, xmax, 6.6, 10.1, x_lab, yz_lab[0], yz_lab[1],
-            dist_cent[1], e_d_cent[1], aarr[1][0], asigma[1][0], zarr[1][0],
-            vmin_met, vmax_met, rad_pc[1], 'LMC'],
-        [gs, 3, xmin, xmax, -2.4, 0.4, x_lab, yz_lab[1], yz_lab[0],
-            dist_cent[1], e_d_cent[1], zarr[1][0], zsigma[1][0], aarr[1][0],
-            vmin_age, vmax_age, rad_pc[1], 'LMC'],
-        [gs, 5, xmin, xmax, 0., 30000, x_lab, yz_lab[2], yz_lab[3],
-            dist_cent[1], e_d_cent[1], marr[1][0], msigma[1][0], earr[1][0],
-            vmin_ext, vmax_ext, rad_pc[1], ''],
-        [gs, 7, xmin, xmax, -0.01, 0.31, x_lab, yz_lab[3], yz_lab[0],
-            dist_cent[1], e_d_cent[1], earr[1][0], esigma[1][0], aarr[1][0],
-            vmin_age, vmax_age, rad_pc[1], '']
-    ]
-
-    for pl_params in dist_2_cent_pl_lst:
-        plot_dist_2_cent(pl_params)
-
-    # Output png file.
-    fig.tight_layout()
-    plt.savefig('figures/as_dist_2_cent.png', dpi=300, bbox_inches='tight')
 
 
 def cross_match_ip_plot(pl_params):

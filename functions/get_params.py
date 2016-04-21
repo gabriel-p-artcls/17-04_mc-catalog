@@ -1,7 +1,6 @@
 
 import numpy as np
 from functions.photom_dispersion import get_disp
-from functions.dist_2_cent import dist_2_cloud_center
 
 
 def float_str(val):
@@ -85,8 +84,8 @@ def params(r_path, as_names, as_pars, cl_dict, names_idx):
     # Initialize empty lists. The first sub-list in the parameters list
     # corresponds to clusters in the SMC and the second to those in the LMC.
     gal_names, int_colors, n_memb, cont_ind, kde_prob, ra, dec, rad_pc, \
-        erad_pc, dist_cent, e_d_cent, r_core_pc, e_r_core, phot_disp = \
-        [[[], []] for _ in range(14)]
+        erad_pc, r_core_pc, e_r_core, phot_disp = \
+        [[[], []] for _ in range(12)]
     # First sub-list stores SMC values, the second one stores LMC values.
     # First and 2nd sub-sublist store Schlafly & Finkbeiner extinction values
     # and their errors. Third and 4th store MCEV extinction values and their
@@ -162,13 +161,6 @@ def params(r_path, as_names, as_pars, cl_dict, names_idx):
         # if r_c_pc > r_pc:
         #     print j, as_names[i], as_p[a_rad], r_core_px
 
-        # Get 3D distance from cluster to galaxy center, and its error. Both
-        # values are expressed in parsecs.
-        d_c, e_d_c = dist_2_cloud_center(j, ra[j][-1], dec[j][-1],
-                                         as_p[a_di], float(as_p[a_dei]))
-        dist_cent[j].append(d_c.value)
-        e_d_cent[j].append(e_d_c.value)
-
         # Get photometric dispersion parameter.
         phot_disp[j].append(get_disp(r_path, as_names[i]))
         # phot_disp[j].append(0.)
@@ -217,8 +209,7 @@ def params(r_path, as_names, as_pars, cl_dict, names_idx):
         'msigma': msigma, 'rarr': rarr, 'ext_sf': ext_sf, 'ext_mcev': ext_mcev,
         'rad_pc': rad_pc, 'erad_pc': erad_pc, 'int_colors': int_colors,
         'n_memb': n_memb, 'cont_ind': cont_ind, 'kde_prob': kde_prob,
-        'dist_cent': dist_cent, 'e_d_cent': e_d_cent, 'r_core_pc': r_core_pc,
-        'e_r_core': e_r_core, 'phot_disp': phot_disp
+        'r_core_pc': r_core_pc, 'e_r_core': e_r_core, 'phot_disp': phot_disp
     }
 
     return pars_dict

@@ -10,7 +10,7 @@ from functions.make_all_plots import make_as_vs_lit_plot,\
     make_as_vs_lit_mass_plot, make_kde_plots, \
     make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
     make_concent_plot, make_radius_plot, make_probs_CI_plot, \
-    make_dist_2_cents, make_cross_match_ip, make_cross_match_if, \
+    make_cross_match_ip, make_cross_match_if, \
     make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot
 
 
@@ -168,34 +168,30 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match, amr_lit):
         print 'Cross-matched integrated photometry clusters done.'
 
     if '8' in plots:
-        make_radius_plot(in_params)
-        print 'ASteCA radius (pc) vs parameters plot done.'
-
-    if '9' in plots:
-        make_dist_2_cents(in_params)
-        print 'Distances to center of MC done.'
-
-    if '10' in plots:
-        make_amr_plot(in_params, amr_lit)
-        print 'AMR maps done.'
-
-    if '11' in plots:
         make_kde_plots(in_params)
         print 'KDE maps done.'
 
-    if '12' in plots:
-        make_lit_ext_plot(in_params)
-        print 'ASteca vs MCEV vs SandF extinction plot done.'
+    if '9' in plots:
+        make_amr_plot(in_params, amr_lit)
+        print 'AMR maps done.'
 
-    if '13' in plots:
+    if '10' in plots:
+        make_radius_plot(in_params)
+        print 'ASteCA radius (pc) vs parameters plot done.'
+
+    if '11' in plots:
+        make_lit_ext_plot(in_params)
+        print 'ASteCA vs MCEV vs SandF extinction plot done.'
+
+    if '12' in plots:
         make_int_cols_plot(in_params)
         print 'Integrated colors plot done.'
 
-    if '14' in plots:
+    if '13' in plots:
         make_concent_plot(in_params)
         print 'Concentration parameter plot done.'
 
-    if '15' in plots:
+    if '14' in plots:
         make_probs_CI_plot(in_params)
         print 'ASteCA probabilities versus CI done.'
 
@@ -214,7 +210,7 @@ def main():
     check_diffs(in_params)
 
     # Define which plots to produce.
-    plots = ['10']
+    plots = ['9']
 
     # Only obtain data if the plot is being generated.
     if '0' in plots:
@@ -229,7 +225,7 @@ def main():
         print 'Cross-matched data read.'
     else:
         cross_match = []
-    if '10' in plots:
+    if '9' in plots:
         # Read AMR data from other articles.
         amr_lit = get_amr_lit()
         print 'AMR data from literature read.'
