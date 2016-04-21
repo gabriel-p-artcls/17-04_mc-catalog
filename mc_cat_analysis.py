@@ -137,63 +137,63 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match, amr_lit):
 
     if '0' in plots:
         make_ra_dec_plots(in_params, bica_coords)
-        print 'RA vs DEC plots done.'
+        print 'RA vs DEC plots.'
 
     if '1' in plots:
         make_errors_plots(in_params)
-        print 'Errors plots done.'
+        print 'Errors plots.'
 
     if '2' in plots:
         make_as_vs_lit_plot(in_params)
-        print 'ASteCA vs literature plots done.'
+        print 'ASteCA vs literature plots.'
 
     if '3' in plots:
         make_as_vs_lit_mass_plot(in_params)
-        print 'ASteCA vs literature mass plot done.'
+        print 'ASteCA vs literature mass plot.'
 
     if '4' in plots:
         CMD_outliers(r_path, in_params)
-        print "CMDs for outlier clusters done."
+        print "CMDs for outlier clusters."
 
     if '5' in plots:
         CMD_DBs_vs_asteca(r_path)
-        print "CMDs for matched clusters between DBs and ASteCA clusters done."
+        print "CMDs for matched clusters between DBs and ASteCA clusters."
 
     if '6' in plots:
         make_cross_match_if(cross_match, in_params)
-        print 'Cross-matched isochrone fitting clusters done.'
+        print 'Cross-matched isochrone fitting clusters.'
 
     if '7' in plots:
         make_cross_match_ip(cross_match)
-        print 'Cross-matched integrated photometry clusters done.'
+        print 'Cross-matched integrated photometry clusters.'
 
     if '8' in plots:
         make_kde_plots(in_params)
-        print 'KDE maps done.'
+        print 'KDE maps.'
 
     if '9' in plots:
         make_amr_plot(in_params, amr_lit)
-        print 'AMR maps done.'
+        print 'AMR maps.'
 
     if '10' in plots:
         make_radius_plot(in_params)
-        print 'ASteCA radius (pc) vs parameters plot done.'
+        print 'ASteCA radius (pc) vs parameters plot.'
 
     if '11' in plots:
         make_lit_ext_plot(in_params)
-        print 'ASteCA vs MCEV vs SandF extinction plot done.'
+        print 'ASteCA vs MCEV vs SandF extinction plot.'
 
     if '12' in plots:
         make_int_cols_plot(in_params)
-        print 'Integrated colors plot done.'
+        print 'Integrated colors plot.'
 
     if '13' in plots:
         make_concent_plot(in_params)
-        print 'Concentration parameter plot done.'
+        print 'Concentration parameter plot.'
 
     if '14' in plots:
         make_probs_CI_plot(in_params)
-        print 'ASteCA probabilities versus CI done.'
+        print 'ASteCA probabilities versus CI.'
 
 
 def main():
