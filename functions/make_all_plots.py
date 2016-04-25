@@ -1074,7 +1074,7 @@ def cross_match_ip_plot(pl_params):
     Generate plots for the cross-matched age and mass values.
     '''
     gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, indexes, labels, \
-        mark, cols, text_box, databases = pl_params
+        mark, cols, text_box, databases, comb_delta_fill = pl_params
 
     xy_font_s = 21
     cm = plt.cm.get_cmap('RdYlBu_r')
@@ -1110,6 +1110,10 @@ def cross_match_ip_plot(pl_params):
                 plt.scatter(xarr, yarr, marker=mark[j], c=cols[j], s=siz,
                             lw=0.3, edgecolor='w', label=db_lab, zorder=3)
             else:
+                if i == 1:
+                    plt.fill_between([-1000., 6000.], comb_delta_fill[0],
+                                     comb_delta_fill[1], alpha=0.1,
+                                     color='grey')
                 siz = np.array(DB[s_i])*8.
                 SC = plt.scatter(xarr, yarr, marker=mark[j], c=DB[ba_i],
                                  s=siz, cmap=cm, vmin=0.6, vmax=1.3, lw=0.3,
@@ -1215,6 +1219,9 @@ def make_cross_match_ip(cross_match):
     p12_l_mass = zip(*p12_l_mass)
     p12_h_mass = zip(*p12_h_mass)
 
+    # Scale the y axis of Delta masses
+    scale = 10.**4
+
     # ASteCA - DB ages
     print 'Delta (ASteCA - DB) for ages: mean +- std'
     db_name = ['P99', 'P00', 'H03', 'R05', 'C06', 'G10', 'P12']
@@ -1232,6 +1239,13 @@ def make_cross_match_ip(cross_match):
         diff_std = np.std(np.array(low_m_db[10]) - np.array(low_m_db[8]))
         print '{} Delta diffs small mass: {:.0f} +- {:.0f}'.format(
             db_name[i], diff_mean, diff_std)
+    comb_low_mass = np.array(h03_l_mass[10] + p12_l_mass[10]) -\
+        np.array(h03_l_mass[8] + p12_l_mass[8])
+    comb_mean, comb_std = np.mean(comb_low_mass)/scale,\
+        np.std(comb_low_mass)/scale
+    comb_delta_fill = [comb_mean - comb_std, comb_mean + comb_std]
+    print ("Combined mean +- std for Delta(ASteCA-DB) mass_DB<5000:"
+           " {:.2f} +- {:.2f}".format(comb_mean, comb_std))
     print '\nDelta (ASteCA - DB) for mass_DB>5000: mean +- std'
     print 'H03 OCs:', len(h03_h_mass[0]), 'P12 OCs:', len(p12_h_mass[0])
     db_name = ['H03', 'P12']
@@ -1243,22 +1257,22 @@ def make_cross_match_ip(cross_match):
 
     # Differences ASteCA  - DBs
     h03_mass_diff_l = (np.array(h03_l_mass[10]) -
-                       np.array(h03_l_mass[8]))/10**4
+                       np.array(h03_l_mass[8]))/scale
     p12_mass_diff_l = (np.array(p12_l_mass[10]) -
-                       np.array(p12_l_mass[8]))/10**4
+                       np.array(p12_l_mass[8]))/scale
     h03_delta_err_l = list(np.sqrt(np.array(h03_l_mass[11])**2 +
-                           np.array(h03_l_mass[9])**2)/10**4)
+                           np.array(h03_l_mass[9])**2)/scale)
     p12_delta_err_l = list(np.sqrt(np.array(p12_l_mass[11])**2 +
-                           np.array(p12_l_mass[9])**2)/10**4)
+                           np.array(p12_l_mass[9])**2)/scale)
     # High masses.
     h03_mass_diff_h = (np.array(h03_h_mass[10]) -
-                       np.array(h03_h_mass[8]))/10**4
+                       np.array(h03_h_mass[8]))/scale
     p12_mass_diff_h = (np.array(p12_h_mass[10]) -
-                       np.array(p12_h_mass[8]))/10**4
+                       np.array(p12_h_mass[8]))/scale
     h03_delta_err_h = list(np.sqrt(np.array(h03_h_mass[11])**2 +
-                           np.array(h03_h_mass[9])**2)/10**4)
+                           np.array(h03_h_mass[9])**2)/scale)
     p12_delta_err_h = list(np.sqrt(np.array(p12_h_mass[11])**2 +
-                           np.array(p12_h_mass[9])**2)/10**4)
+                           np.array(p12_h_mass[9])**2)/scale)
 
     delta_DBs_l = [[h03_l_mass[8], h03_l_mass[9], h03_mass_diff_l,
                     h03_delta_err_l, h03_l_mass[19], h03_l_mass[20]],
@@ -1287,15 +1301,15 @@ def make_cross_match_ip(cross_match):
     cross_match_lst = [
         # Age cross-match, integrated photometry.
         [gs, 0, 5.8, 10.6, 5.8, 10.6, x_lab[0], y_lab[0],
-            indexes, labels[1], mark[1], cols[1], '', databases[0]],
+            indexes, labels[1], mark[1], cols[1], '', databases[0], []],
         # Mass cross_match (low mass)
         [gs, 1, -50., 4990., -0.41, 0.83, x_lab[1], y_lab[1],
             [], labels[4], mark[4], cols[4], '$M_{DBs}\leq 5000\,[M_{\odot}]$',
-            databases[1]],
+            databases[1], comb_delta_fill],
         # Mass cross_match (large masses)
         [gs, 2, 5010, 110000, -11., 1.9, x_lab[1], y_lab[2],
             [], labels[4], mark[4], cols[4], '$M_{DBs}>5000\,[M_{\odot}]$',
-            databases[2]]
+            databases[2], []]
     ]
 
     for pl_params in cross_match_lst:
