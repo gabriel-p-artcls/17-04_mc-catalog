@@ -1103,9 +1103,8 @@ def cross_match_ip_plot(pl_params):
             xsigma, ysigma = DB[e_a], DB[e_b]
 
             db_lab = labels[j] + '$\;(N={})$'.format(len(xarr))
-            # Star marker is too small compared to the rest.
-            # siz = 90. if mark[j] != '*' else 120.
             if i == 0:
+                # Star marker is too small compared to the rest.
                 siz = 90. if mark[j] != '*' else 120.
                 plt.scatter(xarr, yarr, marker=mark[j], c=cols[j], s=siz,
                             lw=0.3, edgecolor='w', label=db_lab, zorder=3)
@@ -1201,6 +1200,16 @@ def make_cross_match_ip(cross_match):
     #         g10_lmc.append(cl)
     # g10_smc, g10_lmc = zip(*g10_smc), zip(*g10_lmc)
 
+    # Calculate correlation coefficients.
+    h03_p12_comb_mass = np.array(h03[8] + p12[8])
+    ast_h03_p12_comb_mass = np.array(h03[10] + p12[10])
+    corr_as = stats.pearsonr(
+        ast_h03_p12_comb_mass, ast_h03_p12_comb_mass - h03_p12_comb_mass)
+    corr_h03_p12 = stats.pearsonr(
+        h03_p12_comb_mass, ast_h03_p12_comb_mass - h03_p12_comb_mass)
+    print 'Correlation ASteCA vs Delta mass: {:0.2f}'.format(corr_as[0])
+    print 'Correlation H03+P12 vs Delta mass: {:0.2f}'.format(corr_h03_p12[0])
+
     # Separate clusters with mass < 5000
     h03_l_mass, p12_l_mass, h03_h_mass, p12_h_mass = [], [], [], []
     for cl in zip(*h03):
@@ -1223,7 +1232,7 @@ def make_cross_match_ip(cross_match):
     scale = 10.**4
 
     # ASteCA - DB ages
-    print 'Delta (ASteCA - DB) for ages: mean +- std'
+    print '\nDelta (ASteCA - DB) for ages: mean +- std'
     db_name = ['P99', 'P00', 'H03', 'R05', 'C06', 'G10', 'P12']
     for i, db in enumerate(cross_match):
         diff_mean = np.mean(np.array(db[4]) - np.array(db[2]))
@@ -1283,6 +1292,16 @@ def make_cross_match_ip(cross_match):
                    [p12_h_mass[8], p12_h_mass[9], p12_mass_diff_h,
                     p12_delta_err_h, p12_h_mass[19], p12_h_mass[20]]]
 
+    # # ASteCA values in x axis.
+    # delta_DBs_l = [[h03_l_mass[10], h03_l_mass[11], h03_mass_diff_l,
+    #                 h03_delta_err_l, h03_l_mass[19], h03_l_mass[20]],
+    #                [p12_l_mass[10], p12_l_mass[11], p12_mass_diff_l,
+    #                 p12_delta_err_l, p12_l_mass[19], p12_l_mass[20]]]
+    # delta_DBs_h = [[h03_h_mass[10], h03_h_mass[11], h03_mass_diff_h,
+    #                 h03_delta_err_h, h03_h_mass[19], h03_h_mass[20]],
+    #                [p12_h_mass[10], p12_h_mass[11], p12_mass_diff_h,
+    #                 p12_delta_err_h, p12_h_mass[19], p12_h_mass[20]]]
+
     # Define data to pass.
     databases = [[h03, r05, p12], delta_DBs_l, delta_DBs_h]
 
@@ -1293,6 +1312,11 @@ def make_cross_match_ip(cross_match):
     x_lab = ['$\log(age/yr)_{ASteCA}$', '$M_{DBs}\,[M_{\odot}]$']
     y_lab = ['$\log(age/yr)_{DB}$',
              r'$\Delta M \times 10^{-4}\,[M_{\odot}]_{ASteCA-DB}$', '']
+    l_mass_lims = [-50., 4990., -0.41, 0.83]
+    h_mass_lims = [5010, 110000, -11., 1.9]
+    # For ASteCA values in the x axis
+    # l_mass_lims = [-50., 8990., -0.41, 0.83]
+    # h_mass_lims = [-50., 41000, -11., 1.9]
 
     # Arbitrary size so plots are actually squared.
     fig = plt.figure(figsize=(19.3, 6.3))
@@ -1303,13 +1327,13 @@ def make_cross_match_ip(cross_match):
         [gs, 0, 5.8, 10.6, 5.8, 10.6, x_lab[0], y_lab[0],
             indexes, labels[1], mark[1], cols[1], '', databases[0], []],
         # Mass cross_match (low mass)
-        [gs, 1, -50., 4990., -0.41, 0.83, x_lab[1], y_lab[1],
-            [], labels[4], mark[4], cols[4], '$M_{DBs}\leq 5000\,[M_{\odot}]$',
-            databases[1], comb_delta_fill],
+        [gs, 1, l_mass_lims[0], l_mass_lims[1], l_mass_lims[2], l_mass_lims[3],
+         x_lab[1], y_lab[1], [], labels[4], mark[4], cols[4],
+         '$M_{DBs}\leq 5000\,[M_{\odot}]$', databases[1], comb_delta_fill],
         # Mass cross_match (large masses)
-        [gs, 2, 5010, 110000, -11., 1.9, x_lab[1], y_lab[2],
-            [], labels[4], mark[4], cols[4], '$M_{DBs}>5000\,[M_{\odot}]$',
-            databases[2], []]
+        [gs, 2, h_mass_lims[0], h_mass_lims[1], h_mass_lims[2], h_mass_lims[3],
+         x_lab[1], y_lab[2], [], labels[4], mark[4], cols[4],
+         '$M_{DBs}>5000\,[M_{\odot}]$', databases[2], []]
     ]
 
     for pl_params in cross_match_lst:

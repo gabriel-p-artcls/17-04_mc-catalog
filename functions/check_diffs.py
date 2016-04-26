@@ -19,12 +19,12 @@ def check_diffs(in_params):
     '''
     gal_names, zarr, zsigma, aarr, asigma, earr, darr, dsigma, rarr, marr,\
         dist_cent, e_d_cent, ra, dec, n_memb, rad_pc, int_colors, cont_ind,\
-        phot_disp = \
+        phot_disp, kde_prob = \
         [in_params[_] for _ in ['gal_names', 'zarr', 'zsigma', 'aarr',
                                 'asigma', 'earr', 'darr', 'dsigma', 'rarr',
                                 'marr', 'dist_cent', 'e_d_cent', 'ra', 'dec',
                                 'n_memb', 'rad_pc', 'int_colors', 'cont_ind',
-                                'phot_disp']]
+                                'phot_disp', 'kde_prob']]
 
     gal = ['SMC', 'LMC']
     age_xmc_f_all = []
@@ -35,6 +35,13 @@ def check_diffs(in_params):
         # print 'Contamination index'
         # for i, name in enumerate(gal_names[j]):
         #     print name, cont_ind[j][i]
+
+        print 'Duong probability for {}'.format(gal[j])
+        print 'Probs<0.25:', ((np.array(kde_prob[j]) < 0.25)).sum()
+        print 'Probs<0.5:', ((np.array(kde_prob[j]) < 0.5)).sum()
+        for i, name in enumerate(gal_names[j]):
+            if kde_prob[j][i] < 0.25:
+                print 'Clust {}, prob: {:0.2f}'.format(name, kde_prob[j][i])
 
         print '\n{} clusters in age/rad range:'.format(gal[j])
         for i, name in enumerate(gal_names[j]):
