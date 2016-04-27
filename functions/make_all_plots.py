@@ -1532,14 +1532,14 @@ def pl_DBs_ASteCA_CMDs(pl_params):
     Star's membership probabilities on cluster's photom diagram.
     '''
     gs, i, x_min_cmd, x_max_cmd, y_min_cmd, y_max_cmd, x_ax, y_ax, cl, db,\
-        gal, cl_reg_fit, cl_reg_no_fit, lit_isoch, asteca_isoch, db_z, db_a,\
-        db_e, db_d, as_z, as_a, as_e, as_d = pl_params
+        gal, cl_reg_fit, cl_reg_no_fit, synth_stars, lit_isoch, asteca_isoch,\
+        db_z, db_a, db_e, db_d, as_z, as_a, as_e, as_d, as_m = pl_params
 
     letter = ['a', '', 'b', '', '', '', 'c', '', 'd', '', '', '', 'e', '',
               'f', '', '', '', 'g', '', 'h', '', '', '', 'i', '', 'j', '']
 
-    # DB isoch fit.
-    ax = plt.subplot(gs[i])
+    # DB/outlier isoch fit.
+    ax0 = plt.subplot(gs[i])
     # Set plot limits
     plt.xlim(x_min_cmd, x_max_cmd)
     plt.ylim(y_min_cmd, y_max_cmd)
@@ -1549,83 +1549,99 @@ def pl_DBs_ASteCA_CMDs(pl_params):
     # Add text box.
     ob0 = offsetbox.AnchoredText(letter[i], loc=2, prop=dict(size=12))
     ob0.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
-    ax.add_artist(ob0)
-    db = 'Lit' if db == 'outliers' else db
-    text = gal + '-' + cl + ' ({})'.format(db)
+    ax0.add_artist(ob0)
+    if db == 'outliers':
+        t = 'Lit'
+    elif db == 'largemass':
+        t = 'Synthetic'
+    else:
+        t = db
+    text = gal + '-' + cl + ' ({})'.format(t)
     ob1 = offsetbox.AnchoredText(text, loc=1, prop=dict(size=11))
     ob1.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
-    ax.add_artist(ob1)
+    ax0.add_artist(ob1)
     text1 = r'$z={}$'.format(db_z)
     text2 = '\n' + r'$log(age/yr)={}$'.format(float(db_a))
     text3 = '\n' + r'$E_{{(B-V)}}={}$'.format(db_e)
     text4 = '\n' + r'$dm={}$'.format(db_d)
-    text = text1 + text2 + text3 + text4
-    ob2 = offsetbox.AnchoredText(text, loc=3, prop=dict(size=11))
+    text5 = '\n' + r'$M={}\,M_{{\odot}}$'.format(int(float(as_m)))
+    if db != 'largemass':
+        text = text1 + text2 + text3 + text4
+        locat = 3
+    else:
+        text = text1 + text2 + text3 + text4 + text5
+        locat = 4 if letter[i] in ['b', 'd'] else 3
+    ob2 = offsetbox.AnchoredText(text, loc=locat, prop=dict(size=11))
     ob2.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
-    ax.add_artist(ob2)
+    ax0.add_artist(ob2)
     # Set minor ticks
-    ax.minorticks_on()
-    ax.xaxis.set_major_locator(MultipleLocator(1.0))
+    ax0.minorticks_on()
+    ax0.xaxis.set_major_locator(MultipleLocator(1.0))
     # Plot grid.
-    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=1,
+    ax0.grid(b=True, which='major', color='gray', linestyle='--', lw=1,
             zorder=1)
     # This reversed colormap means higher prob stars will look redder.
     cm = plt.cm.get_cmap('RdYlBu_r')
     col_select_fit, c_iso = '#4682b4', 'r'
-    # Plot stars used in the best fit process.
-    cl_reg_x = cl_reg_fit[0] + cl_reg_no_fit[0]
-    cl_reg_y = cl_reg_fit[1] + cl_reg_no_fit[1]
+    if db != 'largemass':
+        # Plot stars used in the best fit process.
+        cl_reg_x = cl_reg_fit[0] + cl_reg_no_fit[0]
+        cl_reg_y = cl_reg_fit[1] + cl_reg_no_fit[1]
+    else:
+        cl_reg_x, cl_reg_y = synth_stars
     plt.scatter(cl_reg_x, cl_reg_y, marker='o',
                 c=col_select_fit, s=40, cmap=cm, lw=0.5, zorder=4)
     # Plot isochrone.
     plt.plot(lit_isoch[0], lit_isoch[1], c=c_iso, lw=1.2, zorder=5)
 
     # ASteCA isoch fit.
-    ax = plt.subplot(gs[i + 1])
+    ax1 = plt.subplot(gs[i + 1])
     # Set plot limits
     plt.xlim(x_min_cmd, x_max_cmd)
     plt.ylim(y_min_cmd, y_max_cmd)
     # Set axis labels
     plt.xlabel('$' + x_ax + '$', fontsize=18)
     plt.ylabel('')
-    ax.axes.yaxis.set_ticklabels([])
+    ax1.axes.yaxis.set_ticklabels([])
     # Add text box.
     ob0 = offsetbox.AnchoredText(letter[i], loc=2, prop=dict(size=12))
     ob0.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
-    ax.add_artist(ob0)
+    ax1.add_artist(ob0)
     text = gal + '-' + cl + ' (ASteCA)'
     ob1 = offsetbox.AnchoredText(text, loc=1, prop=dict(size=11))
     ob1.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
-    ax.add_artist(ob1)
-    text1 = r'$z={}$'.format(as_z)
-    text2 = '\n' + r'$log(age/yr)={}$'.format(as_a)
-    text3 = '\n' + r'$E_{{(B-V)}}={}$'.format(as_e)
-    text4 = '\n' + r'$dm={}$'.format(as_d)
-    text = text1 + text2 + text3 + text4
-    ob = offsetbox.AnchoredText(text, loc=3, prop=dict(size=11))
-    ob.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
-    ax.add_artist(ob)
+    ax1.add_artist(ob1)
+    if db != 'largemass':
+        text1 = r'$z={}$'.format(as_z)
+        text2 = '\n' + r'$log(age/yr)={}$'.format(as_a)
+        text3 = '\n' + r'$E_{{(B-V)}}={}$'.format(as_e)
+        text4 = '\n' + r'$dm={}$'.format(as_d)
+        text5 = '\n' + r'$M={}\,M_{{\odot}}$'.format(int(float(as_m)))
+        text = text1 + text2 + text3 + text4 + text5
+        ob = offsetbox.AnchoredText(text, loc=3, prop=dict(size=11))
+        ob.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
+        ax1.add_artist(ob)
     # Set minor ticks
-    ax.minorticks_on()
-    ax.xaxis.set_major_locator(MultipleLocator(1.0))
+    ax1.minorticks_on()
+    ax1.xaxis.set_major_locator(MultipleLocator(1.0))
     # Plot grid.
-    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=1,
+    ax1.grid(b=True, which='major', color='gray', linestyle='--', lw=1,
             zorder=1)
     # This reversed colormap means higher prob stars will look redder.
     cm = plt.cm.get_cmap('RdYlBu_r')
-
     # Get extreme values for colorbar.
     lst_comb = cl_reg_fit[2] + cl_reg_no_fit[2]
     v_min_mp, v_max_mp = round(min(lst_comb), 2), round(max(lst_comb), 2)
     col_select_fit, col_select_no_fit, c_iso = cl_reg_fit[2], \
         cl_reg_no_fit[2], 'g'
+    siz = 40 if db != 'largemass' else 20
     # Plot stars *not* used in the best fit process.
     plt.scatter(cl_reg_no_fit[0], cl_reg_no_fit[1], marker='o',
-                c=col_select_no_fit, s=35, cmap=cm, lw=0.5, alpha=0.5,
+                c=col_select_no_fit, s=siz-5, cmap=cm, lw=0.5, alpha=0.5,
                 vmin=v_min_mp, vmax=v_max_mp, zorder=2)
     # Plot stars used in the best fit process.
     plt.scatter(cl_reg_fit[0], cl_reg_fit[1], marker='o',
-                c=col_select_fit, s=40, cmap=cm, lw=0.5, vmin=v_min_mp,
+                c=col_select_fit, s=siz, cmap=cm, lw=0.5, vmin=v_min_mp,
                 vmax=v_max_mp, zorder=4)
     # Plot isochrone.
     plt.plot(asteca_isoch[0], asteca_isoch[1], c=c_iso, lw=1.2, zorder=5)
@@ -1643,14 +1659,15 @@ def make_DB_ASteCA_CMDs(db, db_cls):
         for cl_data in cl_lst:
 
             x_min_cmd, x_max_cmd, y_min_cmd, y_max_cmd, cl, db, gal, \
-                cl_reg_fit, cl_reg_no_fit, lit_isoch, asteca_isoch, db_z, \
-                db_a, db_e, db_d, as_z, as_a, as_e, as_d = cl_data
+                cl_reg_fit, cl_reg_no_fit, synth_stars, lit_isoch,\
+                asteca_isoch, db_z, db_a, db_e, db_d, as_z, as_a, as_e,\
+                as_d, as_m = cl_data
 
             db_sat_cmd_lst.append(
                 [gs, i, x_min_cmd, x_max_cmd, y_min_cmd, y_max_cmd, '(C-T_1)',
-                    'T_1', cl, db, gal, cl_reg_fit, cl_reg_no_fit, lit_isoch,
-                    asteca_isoch, db_z, db_a, db_e, db_d, as_z, as_a, as_e,
-                    as_d])
+                    'T_1', cl, db, gal, cl_reg_fit, cl_reg_no_fit, synth_stars,
+                    lit_isoch, asteca_isoch, db_z, db_a, db_e, db_d, as_z,
+                    as_a, as_e, as_d, as_m])
 
             # Plotting positions.
             if (j % 2 == 0):  # even
@@ -1664,7 +1681,10 @@ def make_DB_ASteCA_CMDs(db, db_cls):
 
         # Output png file.
         fig.tight_layout()
-        r_path = 'figures/' if db == 'outliers' else 'figures/DB_fit/'
+        if db in ['outliers', 'largemass']:
+            r_path = 'figures/'
+        else:
+            r_path =  'figures/DB_fit/'
         fig_name = r_path + db + '_VS_asteca_' + str(k) + '.png'
         plt.savefig(fig_name, dpi=150, bbox_inches='tight')
 

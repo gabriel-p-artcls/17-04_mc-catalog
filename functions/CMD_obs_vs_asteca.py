@@ -115,7 +115,7 @@ def get_DB_age_ext(r_path, cl, db, in_params):
         gal_names, aarr, earr = [
             in_params[_] for _ in ['gal_names', 'aarr', 'earr']]
         gal = ['SMC', 'LMC']
-        # Extract names, ages, extinction for SMC OCs in literature.
+        # Extract names, ages, extinction for OCs in literature.
         for j in [0, 1]:
             for (cl_n, a, e) in zip(*[gal_names[j], aarr[j][1], earr[j][1]]):
                 if cl_n == cl:
@@ -172,6 +172,10 @@ def get_memb_data(r_path, run, inpt, cl):
     # Path where the members file is stored.
     cl_path = r_path + 'mc-catalog/runs/' + run + \
         '_run/output/' + inpt + '/' + cl + '_memb.dat'
+    # Path where the synthetic stars file is stored.
+    sy_path = r_path + 'mc-catalog/runs/' + run + \
+        '_run/output/' + inpt + '/' + cl + '_synth.dat'
+
     # Read data file
     with open(cl_path) as f:
         cl_reg_fit = [[], [], []]
@@ -191,7 +195,16 @@ def get_memb_data(r_path, run, inpt, cl):
     # Create new list with inverted values so higher prob stars are on top.
     cl_reg_fit = [i[::-1] for i in cl_reg_fit]
 
-    return cl_reg_fit, cl_reg_no_fit
+    # Read data file
+    with open(sy_path) as f:
+        synth_stars = [[], []]
+
+        for line in skip_comments(f):
+            # Store synthetic stars.
+            synth_stars[0].append(float(line.split()[2]))
+            synth_stars[1].append(float(line.split()[0]))
+
+    return cl_reg_fit, cl_reg_no_fit, synth_stars
 
 
 def move_isoch(isochrone, e, d):
@@ -337,7 +350,8 @@ def get_asteca_params(cl):
         for line in skip_comments(f):
             l = line.split()
             if l[0] == cl:
-                as_z, as_a, as_e, as_d = l[20], l[22], l[24], l[26]
+                as_z, as_a, as_e, as_d, as_m = l[20], l[22], l[24], l[26],\
+                    l[28]
                 # Replace 0. values with minimum value.
                 as_z = '0.0001' if float(as_z) < 0.0001 else as_z
                 # Find closest metallicity values from list.
@@ -346,4 +360,4 @@ def get_asteca_params(cl):
                                               float(as_z)))
                 # Pass valid string.
                 as_z_str = met_vals[z_idx]
-                return as_z, as_z_str, as_a, as_e, as_d
+                return as_z, as_z_str, as_a, as_e, as_d, as_m
