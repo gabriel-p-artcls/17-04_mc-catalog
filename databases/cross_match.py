@@ -622,11 +622,7 @@ def get_G10_asteca_data():
         lit_ext, lit_e_ext
 
 
-# def mean_lsts(a):
-#     return sum(a) / len(a)
-
-
-def read_popescu_h03():
+def read_popescu():
     '''
     Read Popescu et al. (2012) LMC database (correlated with H03 and G10).
 
@@ -866,7 +862,7 @@ def main():
     g10 = read_glatt()
 
     # Read Popescu et al. (2012) data.
-    p12 = read_popescu_h03()
+    p12 = read_popescu()
 
     # Cross-match all clusters.
     match_cl = match_clusts(as_names, as_pars, names_ra_dec, lit_ages,
