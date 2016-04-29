@@ -384,13 +384,13 @@ def main():
 
     ax1.set_xlabel('0.5*(P12+H03)>5000')
     ax1.set_ylabel('H03-P12')
-    ax1.scatter((np.array(m_le[0])+np.array(m_le[1]))/2.,
+    ax1.scatter(np.log((np.array(m_le[0])+np.array(m_le[1]))/2.),
                 np.array(m_le[0]) - np.array(m_le[1]), c='r')
 
     ax2.set_xlabel('0.5*(P12+H03)<5000')
     ax2.set_ylabel('H03-P12')
-    ax2.scatter((np.array(m_le[0])+np.array(m_le[1]))/2.,
-                200. * (np.array(m_le[0]) - np.array(m_le[1])) /
+    ax2.scatter(np.log((np.array(m_le[0])+np.array(m_le[1]))/2.),
+                (np.array(m_le[0]) - np.array(m_le[1])) /
                 (np.array(m_le[0])+np.array(m_le[1])), c='b')
 
     plt.show()

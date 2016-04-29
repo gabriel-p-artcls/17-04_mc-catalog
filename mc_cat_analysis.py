@@ -27,7 +27,14 @@ def rpath_fig_folder():
     path = 'figures/'
     try:
         os.makedirs(path)
-        os.makedirs(path + 'DB_fit/')
+    except OSError:
+        if not os.path.isdir(path):
+            raise
+
+    # Create sub-folder for DBs vs ASteCA CMDs.
+    path = 'figures/DB_fit/'
+    try:
+        os.makedirs(path)
     except OSError:
         if not os.path.isdir(path):
             raise
@@ -229,7 +236,7 @@ def main():
     check_diffs(in_params)
 
     # Define which plots to produce.
-    plots = ['8']
+    plots = ['5']
 
     # Only obtain data if the plot is being generated.
     if '0' in plots:

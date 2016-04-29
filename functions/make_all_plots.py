@@ -180,56 +180,56 @@ def make_as_vs_lit_plot(in_params):
 
     as_lit_pl_lst = [
         # Metallicity LMC/SMC
-        [gs, 0, -2.4, 0.45, -2.4, 0.45, '$[Fe/H]_{ASteCA}$', '$[Fe/H]_{lit}$',
-            '', zarr[1][0], zsigma[1][0], zarr[1][1],
+        [gs, 0, -2.4, 0.45, -2.4, 0.45, '$[Fe/H]_{\mathtt{ASteCA}}$',
+         '$[Fe/H]_{lit}$', '', zarr[1][0], zsigma[1][0], zarr[1][1],
             zsigma[1][1], darr[1][0], dm_min, dm_max, [], 'LMC'],
-        [gs, 1, -2.4, 0.45, -2.4, 0.45, '$[Fe/H]_{ASteCA}$', '',
+        [gs, 1, -2.4, 0.45, -2.4, 0.45, '$[Fe/H]_{\mathtt{ASteCA}}$', '',
             '', zarr[0][0], zsigma[0][0], zarr[0][1],
             zsigma[0][1], darr[0][0], dm_min, dm_max, [], 'SMC'],
         # Asteca z vs \delta z with lit values.
-        [gs, 2, -2.4, 0.45, -1.83, 1.43, '$[Fe/H]_{ASteCA}$',
-            '$\Delta [Fe/H]$', '$\mu_{0; ASteCA}$', z_all,
+        [gs, 2, -2.4, 0.45, -1.83, 1.43, '$[Fe/H]_{\mathtt{ASteCA}}$',
+            '$\Delta [Fe/H]$', '$\mu_{0; \mathtt{ASteCA}}$', z_all,
             [0.]*len(z_all), z_delta, z_delta_e, dm_all, dm_min, dm_max,
             par_mean_std[0], ''],
 
         # Age LMC/SMC
-        [gs, 3, 5.8, 10.6, 5.8, 10.6, '$\log(age/yr)_{ASteCA}$',
+        [gs, 3, 5.8, 10.6, 5.8, 10.6, '$\log(age/yr)_{\mathtt{ASteCA}}$',
             '$\log(age/yr)_{lit}$', '', aarr[1][0],
             asigma[1][0], aarr[1][1], asigma[1][1], zarr[1][0], z_min,
             z_max, [], 'LMC'],
-        [gs, 4, 5.8, 10.6, 5.8, 10.6, '$\log(age/yr)_{ASteCA}$',
+        [gs, 4, 5.8, 10.6, 5.8, 10.6, '$\log(age/yr)_{\mathtt{ASteCA}}$',
             '', '', aarr[0][0], asigma[0][0], aarr[0][1], asigma[0][1],
             zarr[0][0], z_min, z_max, [], 'SMC'],
         # Asteca log(age) vs \delta log(age) with lit values.
-        [gs, 5, 5.8, 10.6, -2.4, 2.4, '$\log(age/yr)_{ASteCA}$',
-            '$\Delta \log(age/yr)$', '$[Fe/H]_{ASteCA}$', age_all,
+        [gs, 5, 5.8, 10.6, -2.4, 2.4, '$\log(age/yr)_{\mathtt{ASteCA}}$',
+            '$\Delta \log(age/yr)$', '$[Fe/H]_{\mathtt{ASteCA}}$', age_all,
             [0.]*len(age_all), age_delta, age_delta_e, z_all, z_min,
             z_max, par_mean_std[1], ''],
 
         # Ext LMC/SMC
-        [gs, 6, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{ASteCA}$',
+        [gs, 6, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{\mathtt{ASteCA}}$',
             '$E(B-V)_{lit}$', '', earr[1][0], esigma[1][0], earr[1][1],
             esigma[1][1], aarr[1][0], a_min, a_max, [], 'LMC'],
-        [gs, 7, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{ASteCA}$',
+        [gs, 7, -0.04, 0.29, -0.04, 0.29, '$E(B-V)_{\mathtt{ASteCA}}$',
             '', '', earr[0][0], esigma[0][0], earr[0][1], esigma[0][1],
             aarr[0][0], a_min, a_max, [], 'SMC'],
         # Asteca E(B-V) vs \delta E(B-V) with lit values.
-        [gs, 8, -0.04, 0.29, -0.21, 0.21, '$E(B-V)_{ASteCA}$',
-            '$\Delta E(B-V)$', '$\log(age/yr)_{ASteCA}$', ext_all,
+        [gs, 8, -0.04, 0.29, -0.21, 0.21, '$E(B-V)_{\mathtt{ASteCA}}$',
+            '$\Delta E(B-V)$', '$\log(age/yr)_{\mathtt{ASteCA}}$', ext_all,
             [0.]*len(ext_all), ext_delta, ext_delta_e, age_all, a_min, a_max,
             par_mean_std[2], ''],
 
         # Dits mod LMC/SMC
-        [gs, 9, dm_min, dm_max, dm_min, dm_max, '$\mu_{0;\,ASteCA}$',
+        [gs, 9, dm_min, dm_max, dm_min, dm_max, '$\mu_{0;\,\mathtt{ASteCA}}$',
             '$\mu_{0;\,lit}$', '', darr[1][0], dsigma[1][0], darr[1][1],
             dsigma[1][1], earr[1][0], ext_min, ext_max, [], 'LMC'],
-        [gs, 10, dm_min, dm_max, dm_min, dm_max, '$\mu_{0;\,ASteCA}$',
+        [gs, 10, dm_min, dm_max, dm_min, dm_max, '$\mu_{0;\,\mathtt{ASteCA}}$',
             '', '', darr[0][0], dsigma[0][0], darr[0][1], dsigma[0][1],
             earr[0][0], ext_min, ext_max, [], 'SMC'],
         # Asteca dist_mod vs \delta dist_mod with lit values.
         [gs, 11, dm_min, dm_max, -1. * dm_span, dm_span,
-            '$\mu_{0;\,ASteCA}$', '$\Delta \mu_{0}$',
-            '$E(B-V)_{ASteCA}$', dm_all, [0.]*len(dm_all),
+            '$\mu_{0;\,\mathtt{ASteCA}}$', '$\Delta \mu_{0}$',
+            '$E(B-V)_{\mathtt{ASteCA}}$', dm_all, [0.]*len(dm_all),
             dm_delta, dm_delta_e, ext_all, ext_min, ext_max, par_mean_std[3],
             ''],
     ]
@@ -301,7 +301,8 @@ def as_vs_lit_mass_plots(pl_params):
                          color='k', elinewidth=0.5, zorder=1)
     if i != 0:
         # Text box.
-        pres = [2, 2] if x_lab != '$M_{ASteCA}\,[M_{\odot}]$' else [0, 0]
+        pres = [2, 2] if x_lab != '$M_{\mathtt{ASteCA}}\,[M_{\odot}]$' else\
+            [0, 0]
         text1 = r'$\bar{{\Delta}}={:g}$'.format(round(par_mean_std[0],
                                                 pres[0]))
         text2 = r'$\pm{:g}$'.format(round(par_mean_std[1], pres[1]))
@@ -370,7 +371,8 @@ def make_as_vs_lit_mass_plot(in_params):
         [gs, 0, 10., 3998., 10., 3998., '', '$M_{lit}\,[M_{\odot}]$',
          '$CI$', marr[0][0], msigma[0][0], marr[0][1], msigma_lit,
          cont_ind[0], cbar_min, cbar_max, [], 'SMC (M13)'],
-        [gs, 3, 10., 3998., -3500., 1900., '$M_{ASteCA}\,[M_{\odot}]$',
+        [gs, 3, 10., 3998., -3500., 1900.,
+         '$M_{\mathtt{ASteCA}}\,[M_{\odot}]$',
          '$\Delta M\,[M_{\odot}]$', '$CI$', ma_all, [0.]*len(ma_all),
          ma_delta, ma_delta_err, ci_all, cbar_min, cbar_max, par_mean_std, '']
     ]
@@ -556,15 +558,16 @@ def make_kde_plots(in_params):
         [gs, 1, gs_pos, '', '', aarr[1][0], asigma[1][0], [], [], age_rang,
          age_kde_rang, []],
         #
-        [gs, 2, gs_pos, '', '$[Fe/H]_{ASteCA}$', aarr[0][0], asigma[0][0],
-         zarr[0][0], zsigma[0][0], age_rang, fe_h_rang, rad_pc[0]],
-        [gs, 3, gs_pos, '', '', aarr[1][0], asigma[1][0], zarr[1][0],
-         zsigma[1][0], age_rang, fe_h_rang, rad_pc[1]],
+        [gs, 2, gs_pos, '', '$[Fe/H]_{\mathtt{ASteCA}}$', aarr[0][0],
+         asigma[0][0], zarr[0][0], zsigma[0][0], age_rang, fe_h_rang,
+         rad_pc[0]],
+        [gs, 3, gs_pos, '', '', aarr[1][0], asigma[1][0],
+         zarr[1][0], zsigma[1][0], age_rang, fe_h_rang, rad_pc[1]],
         #
-        [gs, 4, gs_pos, '$\log(age/yr)_{ASteCA}$',
-         '$\log(M/M_{\odot})_{ASteCA}$', aarr[0][0], asigma[0][0],
+        [gs, 4, gs_pos, '$\log(age/yr)_{\mathtt{ASteCA}}$',
+         '$\log(M/M_{\odot})_{\mathtt{ASteCA}}$', aarr[0][0], asigma[0][0],
          log_mass_smc, e_log_mass_smc, age_rang, log_mass_rang, rad_pc[0]],
-        [gs, 5, gs_pos, '$\log(age/yr)_{ASteCA}$', '', aarr[1][0],
+        [gs, 5, gs_pos, '$\log(age/yr)_{\mathtt{ASteCA}}$', '', aarr[1][0],
          asigma[1][0], log_mass_lmc, e_log_mass_lmc, age_rang, log_mass_rang,
          rad_pc[1]],
         #
@@ -592,11 +595,13 @@ def make_kde_plots(in_params):
         [gs, 1, gs_pos, '', '', darr[1][0], dsigma[1][0], [], [], dist_rang[1],
          dist_kde_rang, []],
         #
-        [gs, 4, gs_pos, '$\mu_{0;ASteCA}$', '$E(B-V)_{ASteCA}$', darr[0][0],
+        [gs, 4, gs_pos, '$\mu_{0;\mathtt{ASteCA}}$',
+         '$E(B-V)_{\mathtt{ASteCA}}$', darr[0][0],
          dsigma[0][0], earr[0][0], esigma[0][0], dist_rang[0], ext_rang,
          rad_pc[0]],
-        [gs, 5, gs_pos, '$\mu_{0;ASteCA}$', '', darr[1][0], dsigma[1][0],
-         earr[1][0], esigma[1][0], dist_rang[1], ext_rang, rad_pc[1]],
+        [gs, 5, gs_pos, '$\mu_{0;\mathtt{ASteCA}}$', '', darr[1][0],
+         dsigma[1][0], earr[1][0], esigma[1][0], dist_rang[1], ext_rang,
+         rad_pc[1]],
         #
         # S/LMC E(B-V) KDEs
         [gs, 7, gs_pos, r'$KDE_{\,E(B-V)}$', '', earr[0][0], esigma[0][0],
@@ -761,9 +766,10 @@ def make_lit_ext_plot(in_params):
     xmin, xmax = -0.014, [0.15, 0.4]
     vmin_sf_SMC, vmax_sf_SMC = min(ext_sf[0][0]), max(ext_sf[0][0])
     vmin_sf_LMC, vmax_sf_LMC = min(ext_sf[1][0]), max(ext_sf[1][0])
-    x_lab = '$E(B-V)_{ASteCA}$'
+    x_lab = '$E(B-V)_{\mathtt{ASteCA}}$'
     y_lab = ['$E(B-V)_{MCEV,\,closer}$', '$E(B-V)_{MCEV,\,max}$']
-    z_lab = ['$log(age/yr)_{ASteCA}$', '$E(B-V)_{SF}$', '$dist\,(deg)$']
+    z_lab = ['$log(age/yr)_{\mathtt{ASteCA}}$', '$E(B-V)_{SF}$',
+             '$dist\,(deg)$']
 
     fig = plt.figure(figsize=(16, 25))
     gs = gridspec.GridSpec(4, 2)
@@ -852,8 +858,8 @@ def make_int_cols_plot(in_params):
 
     # Define values to pass.
     xmin, xmax = 6.5, 9.95
-    x_lab, y_lab, z_lab = '$log(age/yr)_{ASteCA}$', \
-        '$(C-T_{1})_{0;\,ASteCA}$', '$M\,[M_{\odot}]$'
+    x_lab, y_lab, z_lab = '$log(age/yr)_{\mathtt{ASteCA}}$', \
+        '$(C-T_{1})_{0;\,\mathtt{ASteCA}}$', '$M\,[M_{\odot}]$'
 
     fig = plt.figure(figsize=(16, 25))  # create the top-level container
     gs = gridspec.GridSpec(4, 1)       # create a GridSpec object
@@ -894,7 +900,8 @@ def make_concent_plot(in_params):
 
     # Define values to pass.
     xmin, xmax = [6.5, -2.3], [10.4, 0.2]
-    x_lab, y_lab, z_lab = ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$'], \
+    x_lab, y_lab, z_lab = ['$log(age/yr)_{\mathtt{ASteCA}}$',
+                           '$[Fe/H]_{\mathtt{ASteCA}}$'], \
         '$Concentration\,(N_{memb}/pc^{2})$', '$M\,[M_{\odot}]$'
 
     fig = plt.figure(figsize=(16, 25))  # create the top-level container
@@ -934,9 +941,11 @@ def make_radius_plot(in_params):
     # Define values to pass.
     xmin, xmax = 0., 40.
     ymin, ymax = 6., 10.
-    x_lab = ['$R_{cl;\,ASteCA}\,(pc)$', '$R_{core;\,ASteCA}\,(pc)$']
-    y_lab = ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,[M_{\odot}]$']
-    z_lab = ['$M\,[M_{\odot}]$', '$log(age/yr)_{ASteCA}$']
+    x_lab = ['$R_{cl;\,\mathtt{ASteCA}}\,(pc)$',
+             '$R_{core;\,\mathtt{ASteCA}}\,(pc)$']
+    y_lab = ['$log(age/yr)_{\mathtt{ASteCA}}$', '$[Fe/H]_{\mathtt{ASteCA}}$',
+             '$M\,[M_{\odot}]$']
+    z_lab = ['$M\,[M_{\odot}]$', '$log(age/yr)_{\mathtt{ASteCA}}$']
 
     for i, gal_name in enumerate(['SMC', 'LMC']):
 
@@ -1035,9 +1044,11 @@ def make_probs_CI_plot(in_params):
                 print '', gal, gal_names[k][i], n_m, kde_prob[k][i]
 
     # Define names of arrays being plotted.
-    x_lab, y_lab, z_lab = '$CI_{ASteCA}$', '$prob_{ASteCA}$', \
-        ['$log(age/yr)_{ASteCA}$', '$[Fe/H]_{ASteCA}$', '$M\,[M_{\odot}]$',
-            '$M\,[M_{\odot}]$', '$log(age/yr)_{ASteCA}$']
+    x_lab, y_lab, z_lab = '$CI_{\mathtt{ASteCA}}$',\
+        '$prob_{\mathtt{ASteCA}}$',\
+        ['$log(age/yr)_{\mathtt{ASteCA}}$', '$[Fe/H]_{\mathtt{ASteCA}}$',
+         '$M\,[M_{\odot}]$', '$M\,[M_{\odot}]$',
+         '$log(age/yr)_{\mathtt{ASteCA}}$']
     xmin, xmax, ymin, ymax = -0.01, 1.02, -0.01, 1.02
 
     fig = plt.figure(figsize=(16, 25))
@@ -1055,9 +1066,9 @@ def make_probs_CI_plot(in_params):
         [gs, 3, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab[1], cont_ind[1],
             kde_prob[1], zarr[1][0], rad_pc[1], ''],
         # Memb number plots
-        [gs, 4, -9, 1000, ymin, ymax, '$N_{ASteCA}$', y_lab, z_lab[0],
+        [gs, 4, -9, 1000, ymin, ymax, '$N_{\mathtt{ASteCA}}$', y_lab, z_lab[0],
          n_memb[0], kde_prob[0], aarr[0][0], rad_pc[0], 'SMC'],
-        [gs, 5, -9, 1000, ymin, ymax, '$N_{ASteCA}$', y_lab, z_lab[0],
+        [gs, 5, -9, 1000, ymin, ymax, '$N_{\mathtt{ASteCA}}$', y_lab, z_lab[0],
          n_memb[1], kde_prob[1], aarr[1][0], rad_pc[1], 'LMC']
     ]
 
@@ -1074,7 +1085,7 @@ def cross_match_ip_plot(pl_params):
     Generate plots for the cross-matched age and mass values.
     '''
     gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, indexes, labels, \
-        mark, cols, text_box, databases, comb_delta_fill = pl_params
+        mark, cols, text_box, databases, comb_delta = pl_params
 
     xy_font_s = 21
     cm = plt.cm.get_cmap('RdYlBu_r')
@@ -1093,51 +1104,45 @@ def cross_match_ip_plot(pl_params):
         a, e_a, b, e_b = indexes
     else:
         a, e_a, b, e_b, s_i, ba_i = 0, 1, 2, 3, 4, 5
-        # ax.yaxis.major.formatter._useMathText = True
-        # plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
 
     # Plot all clusters for each DB.
     for j, DB in enumerate(databases):
-        if DB:
-            xarr, yarr = DB[a], DB[b]
-            xsigma, ysigma = DB[e_a], DB[e_b]
+        xarr, yarr = DB[a], DB[b]
+        xsigma, ysigma = DB[e_a], DB[e_b]
 
-            db_lab = labels[j] + '$\;(N={})$'.format(len(xarr))
-            if i == 0:
-                # Star marker is too small compared to the rest.
-                siz = 90. if mark[j] != '*' else 120.
-                plt.scatter(xarr, yarr, marker=mark[j], c=cols[j], s=siz,
-                            lw=0.3, edgecolor='w', label=db_lab, zorder=3)
-            else:
-                if i == 1:
-                    plt.fill_between([-1000., 6000.], comb_delta_fill[0],
-                                     comb_delta_fill[1], alpha=0.1,
-                                     color='grey')
-                siz = np.array(DB[s_i])*8.
-                SC = plt.scatter(xarr, yarr, marker=mark[j], c=DB[ba_i],
-                                 s=siz, cmap=cm, vmin=0.6, vmax=1.3, lw=0.3,
-                                 edgecolor='k', label=db_lab, zorder=3)
-            # Plot error bars.
-            if xsigma:
-                for k, xy in enumerate(zip(*[xarr, yarr])):
-                    if xsigma[k] > 0.:
-                        plt.errorbar(xy[0], xy[1], xerr=xsigma[k], ls='none',
-                                     color='k', elinewidth=0.2, zorder=1)
-            if ysigma:
-                for k, xy in enumerate(zip(*[xarr, yarr])):
-                    if ysigma[k] > 0:
-                        plt.errorbar(xy[0], xy[1], yerr=ysigma[k], ls='none',
-                                     color='k', elinewidth=0.2, zorder=1)
-            # Legend.
-            if i == 0:
-                leg = plt.legend(loc='upper left', markerscale=1.,
-                                 scatterpoints=1, fontsize=xy_font_s - 7)
-                leg.get_frame().set_alpha(0.5)
-    if i == 0:
-        plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
-    # else:
-    #     # Origin lines.
-    #     plt.plot([-10, 1000000], [0., 0.], 'k', ls='--')
+        db_lab = labels[j] + '$\;(N={})$'.format(len(xarr))
+        if i == 0:
+            # Star marker is too small compared to the rest.
+            siz = 90. if mark[j] != '*' else 120.
+            plt.scatter(xarr, yarr, marker=mark[j], c=cols[j], s=siz,
+                        lw=0.3, edgecolor='w', label=db_lab, zorder=3)
+            plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
+            leg = plt.legend(loc='upper left', markerscale=1.,
+                             scatterpoints=1, fontsize=xy_font_s - 7)
+            leg.get_frame().set_alpha(0.5)
+        else:
+            # 0 line
+            plt.axhline(y=comb_delta[0], xmin=0, xmax=1, color='k', ls='--',
+                        lw=0.85)
+            # Shaded one sigma region.
+            plt.axhspan(comb_delta[0] - comb_delta[1], comb_delta[0] +
+                        comb_delta[1], facecolor='grey', alpha=0.2, zorder=1)
+
+            siz = np.array(DB[s_i])*15.
+            SC = plt.scatter(xarr, yarr, marker=mark[j], c=DB[ba_i],
+                             s=siz, cmap=cm, vmin=-1., vmax=1.5, lw=0.3,
+                             edgecolor='k', label=db_lab, zorder=3)
+        # Plot error bars.
+        if xsigma:
+            for k, xy in enumerate(zip(*[xarr, yarr])):
+                if xsigma[k] > 0.:
+                    plt.errorbar(xy[0], xy[1], xerr=xsigma[k], ls='none',
+                                 color='k', elinewidth=0.2, zorder=1)
+        if ysigma:
+            for k, xy in enumerate(zip(*[xarr, yarr])):
+                if ysigma[k] > 0:
+                    plt.errorbar(xy[0], xy[1], yerr=ysigma[k], ls='none',
+                                 color='k', elinewidth=0.2, zorder=1)
     if text_box:
         # Text box.
         ob = offsetbox.AnchoredText(text_box, loc=1,
@@ -1146,59 +1151,21 @@ def cross_match_ip_plot(pl_params):
         ax.add_artist(ob)
     if i == 2:
         # Position colorbar.
-        axColor = plt.axes([0.74, 0.25, 0.1, 0.023])
+        axColor = plt.axes([0.88, 0.7, 0.1, 0.023])
         cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
-        cbar.set_label('$CI$', fontsize=xy_font_s - 2, labelpad=-45)
-        cbar.set_ticks([0.6, 0.8, 1., 1.2])
+        cbar.set_label(r'$\Delta \log(age/yr)$', fontsize=xy_font_s - 2,
+                       labelpad=-55)
+        cbar.set_ticks([-1., 0., 1.])
         cbar.ax.tick_params(labelsize=xy_font_s - 10)
 
 
 def make_cross_match_ip(cross_match):
     '''
-    Plot ASteCA ages and masses versus the values found in several databases.
+    Plot ASteCA ages and masses versus the values found in the integrated
+    photometry databases.
     '''
-    # unpack databases.
-    p99, p00, h03, r05, c06, g10, p12 = cross_match
-
-    # Labels for each defined plot.
-    # labels_isoch_analy = ['Pietrzynski & Udalski (1999)',
-    #                       'Pietrzynski & Udalski (2000)',
-    #                       'Chiosi et al. (2006)', 'Glatt et al. (2010)']
-    # labels_integ_photo = ['Hunter et al. (2003)',
-    #                       'Rafelski & Zaritsky (2005)',
-    #                       'Popescu et al. (2012)']
-    # labels_smc = ['Hunter et al. (2003)', 'Rafelski & Zaritsky (2005)',
-    #               'Chiosi et al. (2006)', 'Glatt et al. (2010)']
-    # labels_lmc = ['Pietrzynski & Udalski (2000)', 'Hunter et al. (2003)',
-    #               'Glatt et al. (2010)', 'Popescu et al. (2012)']
-    labels_isoch_analy = ['P99', 'P00', 'C06', 'G10']
-    labels_integ_photo = ['H03', 'R05', 'P12']
-    labels_smc = ['P99', 'H03', 'R05', 'C06', 'G10']
-    labels_lmc = ['P00', 'H03', 'G10', 'P12']
-    labels_mass = ['H03', 'P12']
-    labels = [labels_isoch_analy, labels_integ_photo, labels_smc, labels_lmc,
-              labels_mass]
-
-    mark = [['>', '^', 'v', '<'], ['v', '*', 'o'],
-            ['>', 'v', '*', 'v', '<'], ['^', 'v', '<', 'o'], ['v', 'o']]
-    cols = [['chocolate', 'r', 'c', 'g'], ['m', 'k', 'b'],
-            ['chocolate', 'm', 'k', 'c', 'g'], ['r', 'm', 'g', 'b'],
-            ['m', 'b']]
-
-    # # Separate SMC from LMC clusters in H03 and G10 databases.
-    # h03_smc, h03_lmc, g10_smc, g10_lmc = [], [], [], []
-    # for cl in zip(*h03):
-    #     if cl[0] == 'SMC':
-    #         h03_smc.append(cl)
-    #     else:
-    #         h03_lmc.append(cl)
-    # h03_smc, h03_lmc = zip(*h03_smc), zip(*h03_lmc)
-    # for cl in zip(*g10):
-    #     if cl[0] == 'SMC':
-    #         g10_smc.append(cl)
-    #     else:
-    #         g10_lmc.append(cl)
-    # g10_smc, g10_lmc = zip(*g10_smc), zip(*g10_lmc)
+    # Unpack databases.
+    h03, r05, p12 = cross_match[2], cross_match[3], cross_match[6]
 
     # Calculate correlation coefficients.
     h03_p12_comb_mass = np.array(h03[8] + p12[8])
@@ -1228,9 +1195,6 @@ def make_cross_match_ip(cross_match):
     p12_l_mass = zip(*p12_l_mass)
     p12_h_mass = zip(*p12_h_mass)
 
-    # Scale the y axis of Delta masses
-    scale = 10.**4
-
     # ASteCA - DB ages
     print '\nDelta (ASteCA - DB) for ages: mean +- std'
     db_name = ['P99', 'P00', 'H03', 'R05', 'C06', 'G10', 'P12']
@@ -1248,13 +1212,21 @@ def make_cross_match_ip(cross_match):
         diff_std = np.std(np.array(low_m_db[10]) - np.array(low_m_db[8]))
         print '{} Delta diffs small mass: {:.0f} +- {:.0f}'.format(
             db_name[i], diff_mean, diff_std)
-    comb_low_mass = np.array(h03_l_mass[10] + p12_l_mass[10]) -\
-        np.array(h03_l_mass[8] + p12_l_mass[8])
-    comb_mean, comb_std = np.mean(comb_low_mass)/scale,\
-        np.std(comb_low_mass)/scale
-    comb_delta_fill = [comb_mean - comb_std, comb_mean + comb_std]
-    print ("Combined mean +- std for Delta(ASteCA-DB) mass_DB<5000:"
+    comb_delta_l = (np.array(h03_l_mass[10] + p12_l_mass[10]) -\
+        np.array(h03_l_mass[8] + p12_l_mass[8]))
+    print ("Combined Delta(ASteCA-DB) mean +- std; mass_DB<5000:"
+           " {:.2f} +- {:.2f}".format(np.mean(comb_delta_l),
+                                      np.std(comb_delta_l)))
+    # Relative difference for combined H03-P12 sample.
+    comb_l_mass = (np.array(h03_l_mass[10] + p12_l_mass[10]) -\
+        np.array(h03_l_mass[8] + p12_l_mass[8])) /\
+        (np.array(h03_l_mass[10] + p12_l_mass[10]) +\
+        np.array(h03_l_mass[8] + p12_l_mass[8]))
+    comb_mean, comb_std = np.mean(comb_l_mass), np.std(comb_l_mass)
+    comb_rel_delta_l = [comb_mean, comb_std]
+    print ("Combined relative Delta mean +- std; mass_DB<5000:"
            " {:.2f} +- {:.2f}".format(comb_mean, comb_std))
+
     print '\nDelta (ASteCA - DB) for mass_DB>5000: mean +- std'
     print 'H03 OCs:', len(h03_h_mass[0]), 'P12 OCs:', len(p12_h_mass[0])
     db_name = ['H03', 'P12']
@@ -1263,44 +1235,64 @@ def make_cross_match_ip(cross_match):
         diff_std = np.std(np.array(h_m_db[10]) - np.array(h_m_db[8]))
         print '{} Delta diffs large mass: {:.0f} +- {:.0f}'.format(
             db_name[i], diff_mean, diff_std)
+    comb_delta_h = (np.array(h03_h_mass[10] + p12_h_mass[10]) -\
+        np.array(h03_h_mass[8] + p12_h_mass[8]))
+    print ("Combined Delta(ASteCA-DB) mean +- std; mass_DB>5000:"
+           " {:.2f} +- {:.2f}".format(np.mean(comb_delta_h),
+                                      np.std(comb_delta_h)))
+    # Relative difference for combined H03-P12 sample.
+    comb_h_mass = (np.array(h03_h_mass[10] + p12_h_mass[10]) -\
+        np.array(h03_h_mass[8] + p12_h_mass[8])) /\
+        (np.array(h03_h_mass[10] + p12_h_mass[10]) +\
+        np.array(h03_h_mass[8] + p12_h_mass[8]))
+    comb_mean, comb_std = np.mean(comb_h_mass), np.std(comb_h_mass)
+    comb_rel_delta_h = [comb_mean, comb_std]
+    print ("Combined mean +- std for Delta(ASteCA-DB) mass_DB<5000:"
+           " {:.2f} +- {:.2f}".format(comb_mean, comb_std))
 
-    # Differences ASteCA  - DBs
-    h03_mass_diff_l = (np.array(h03_l_mass[10]) -
-                       np.array(h03_l_mass[8]))/scale
-    p12_mass_diff_l = (np.array(p12_l_mass[10]) -
-                       np.array(p12_l_mass[8]))/scale
-    h03_delta_err_l = list(np.sqrt(np.array(h03_l_mass[11])**2 +
-                           np.array(h03_l_mass[9])**2)/scale)
-    p12_delta_err_l = list(np.sqrt(np.array(p12_l_mass[11])**2 +
-                           np.array(p12_l_mass[9])**2)/scale)
-    # High masses.
-    h03_mass_diff_h = (np.array(h03_h_mass[10]) -
-                       np.array(h03_h_mass[8]))/scale
-    p12_mass_diff_h = (np.array(p12_h_mass[10]) -
-                       np.array(p12_h_mass[8]))/scale
-    h03_delta_err_h = list(np.sqrt(np.array(h03_h_mass[11])**2 +
-                           np.array(h03_h_mass[9])**2)/scale)
-    p12_delta_err_h = list(np.sqrt(np.array(p12_h_mass[11])**2 +
-                           np.array(p12_h_mass[9])**2)/scale)
+    # Low masses relative differences ASteCA  - DBs
+    h03_mass_diff_l = (np.array(h03_l_mass[10]) - np.array(h03_l_mass[8])) /\
+        (np.array(h03_l_mass[10]) + np.array(h03_l_mass[8]))
+    p12_mass_diff_l = (np.array(p12_l_mass[10]) - np.array(p12_l_mass[8])) /\
+        (np.array(p12_l_mass[10]) + np.array(p12_l_mass[8]))
+    # Errors.
+    A, s_A, B, s_B = np.array(h03_l_mass[10]), np.array(h03_l_mass[11]),\
+        np.array(h03_l_mass[8]), np.array(h03_l_mass[9])
+    h03_delta_err_l = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
+    A, s_A, B, s_B = np.array(p12_l_mass[10]), np.array(p12_l_mass[11]),\
+        np.array(p12_l_mass[8]), np.array(p12_l_mass[9])
+    p12_delta_err_l = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
+    # Large masses relative differences ASteCA  - DBs
+    h03_mass_diff_h = (np.array(h03_h_mass[10]) - np.array(h03_h_mass[8])) /\
+        (np.array(h03_h_mass[10]) + np.array(h03_h_mass[8]))
+    p12_mass_diff_h = (np.array(p12_h_mass[10]) - np.array(p12_h_mass[8])) /\
+        (np.array(p12_h_mass[10]) + np.array(p12_h_mass[8]))
+    # Errors
+    A, s_A, B, s_B = np.array(h03_h_mass[10]), np.array(h03_h_mass[11]),\
+        np.array(h03_h_mass[8]), np.array(h03_h_mass[9])
+    h03_delta_err_h = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
+    A, s_A, B, s_B = np.array(p12_h_mass[10]), np.array(p12_h_mass[11]),\
+        np.array(p12_h_mass[8]), np.array(p12_h_mass[9])
+    p12_delta_err_h = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
 
+    # Colors for OCs.
+    # Use age deltas, ASteCA-DBs
+    colors_h03_l, colors_p12_l = np.array(h03_l_mass[4]) -\
+        np.array(h03_l_mass[2]), np.array(p12_l_mass[4]) -\
+        np.array(p12_l_mass[2])
     delta_DBs_l = [[h03_l_mass[8], h03_l_mass[9], h03_mass_diff_l,
-                    h03_delta_err_l, h03_l_mass[19], h03_l_mass[20]],
+                    h03_delta_err_l, h03_l_mass[19], colors_h03_l],
                    [p12_l_mass[8], p12_l_mass[9], p12_mass_diff_l,
-                    p12_delta_err_l, p12_l_mass[19], p12_l_mass[20]]]
+                    p12_delta_err_l, p12_l_mass[19], colors_p12_l]]
+    # Colors for OCs.
+    # Use age deltas, ASteCA-DBs
+    colors_h03_h, colors_p12_h = np.array(h03_h_mass[4]) -\
+        np.array(h03_h_mass[2]), np.array(p12_h_mass[4]) -\
+        np.array(p12_h_mass[2])
     delta_DBs_h = [[h03_h_mass[8], h03_h_mass[9], h03_mass_diff_h,
-                    h03_delta_err_h, h03_h_mass[19], h03_h_mass[20]],
+                    h03_delta_err_h, h03_h_mass[19], colors_h03_h],
                    [p12_h_mass[8], p12_h_mass[9], p12_mass_diff_h,
-                    p12_delta_err_h, p12_h_mass[19], p12_h_mass[20]]]
-
-    # # ASteCA values in x axis.
-    # delta_DBs_l = [[h03_l_mass[10], h03_l_mass[11], h03_mass_diff_l,
-    #                 h03_delta_err_l, h03_l_mass[19], h03_l_mass[20]],
-    #                [p12_l_mass[10], p12_l_mass[11], p12_mass_diff_l,
-    #                 p12_delta_err_l, p12_l_mass[19], p12_l_mass[20]]]
-    # delta_DBs_h = [[h03_h_mass[10], h03_h_mass[11], h03_mass_diff_h,
-    #                 h03_delta_err_h, h03_h_mass[19], h03_h_mass[20]],
-    #                [p12_h_mass[10], p12_h_mass[11], p12_mass_diff_h,
-    #                 p12_delta_err_h, p12_h_mass[19], p12_h_mass[20]]]
+                    p12_delta_err_h, p12_h_mass[19], colors_p12_h]]
 
     # Define data to pass.
     databases = [[h03, r05, p12], delta_DBs_l, delta_DBs_h]
@@ -1308,15 +1300,17 @@ def make_cross_match_ip(cross_match):
     # First set is for the ages, second for the masses.
     indexes = [4, 5, 2, 3]
 
+    # Labels for each defined plot.
+    labels_age, labels_mass = ['H03', 'R05', 'P12'], ['H03', 'P12']
+    mark_age, mark_mass = ['v', '*', 'o'], ['v', 'o']
+    cols_age, cols_mass = ['m', 'k', 'b'], ['m', 'b']
+
     # Define names of arrays being plotted.
-    x_lab = ['$\log(age/yr)_{ASteCA}$', '$M_{DBs}\,[M_{\odot}]$']
+    x_lab = ['$\log(age/yr)_{\mathtt{ASteCA}}$', '$M_{DBs}\,[M_{\odot}]$']
     y_lab = ['$\log(age/yr)_{DB}$',
-             r'$\Delta M \times 10^{-4}\,[M_{\odot}]_{ASteCA-DB}$', '']
-    l_mass_lims = [-50., 4990., -0.41, 0.83]
-    h_mass_lims = [5010, 110000, -11., 1.9]
-    # For ASteCA values in the x axis
-    # l_mass_lims = [-50., 8990., -0.41, 0.83]
-    # h_mass_lims = [-50., 41000, -11., 1.9]
+             r'$\overline{\Delta M_r}\;\;(\mathtt{ASteCA}-DBs)$', '']
+    l_mass_lims = [-50., 4990., -1.3, 1.3]
+    h_mass_lims = [4050, 110000, -1.3, 0.6]
 
     # Arbitrary size so plots are actually squared.
     fig = plt.figure(figsize=(19.3, 6.3))
@@ -1325,15 +1319,16 @@ def make_cross_match_ip(cross_match):
     cross_match_lst = [
         # Age cross-match, integrated photometry.
         [gs, 0, 5.8, 10.6, 5.8, 10.6, x_lab[0], y_lab[0],
-            indexes, labels[1], mark[1], cols[1], '', databases[0], []],
+            indexes, labels_age, mark_age, cols_age, '',
+            databases[0], []],
         # Mass cross_match (low mass)
         [gs, 1, l_mass_lims[0], l_mass_lims[1], l_mass_lims[2], l_mass_lims[3],
-         x_lab[1], y_lab[1], [], labels[4], mark[4], cols[4],
-         '$M_{DBs}\leq 5000\,[M_{\odot}]$', databases[1], comb_delta_fill],
+         x_lab[1], y_lab[1], [], labels_mass, mark_mass, cols_mass,
+         '$M_{DBs}\leq 5000\,[M_{\odot}]$', databases[1], comb_rel_delta_l],
         # Mass cross_match (large masses)
         [gs, 2, h_mass_lims[0], h_mass_lims[1], h_mass_lims[2], h_mass_lims[3],
-         x_lab[1], y_lab[2], [], labels[4], mark[4], cols[4],
-         '$M_{DBs}>5000\,[M_{\odot}]$', databases[2], []]
+         x_lab[1], y_lab[2], [], labels_mass, mark_mass, cols_mass,
+         '$M_{DBs}>5000\,[M_{\odot}]$', databases[2], comb_rel_delta_h]
     ]
 
     for pl_params in cross_match_lst:
@@ -1496,9 +1491,11 @@ def make_cross_match_if(cross_match, in_params):
     cols = [['chocolate', 'r', 'c', 'g'], ['m', 'b']]
 
     # Define names of arrays being plotted.
-    x_lab = ['$\Delta \log(age/yr)_{ASteCA-DB}$',
-             '$\Delta \log(age/yr)_{ASteCA-lit}$', '$\log(age/yr)_{ASteCA}$']
-    y_lab = ['$\Delta E(B-V)_{ASteCA-DB}$', '$\Delta E(B-V)_{ASteCA-lit}$',
+    x_lab = ['$\Delta \log(age/yr)_{\mathtt{ASteCA}-DB}$',
+             '$\Delta \log(age/yr)_{\mathtt{ASteCA}-lit}$',
+             '$\log(age/yr)_{\mathtt{ASteCA}}$']
+    y_lab = ['$\Delta E(B-V)_{\mathtt{ASteCA}-DB}$',
+             '$\Delta E(B-V)_{\mathtt{ASteCA}-lit}$',
              '$\log(age/yr)_{DB}$']
     xmm, ymm = [-1.5, 1.5, 5.8], [-0.19, 0.19, 10.6]
 
@@ -1607,7 +1604,7 @@ def pl_DBs_ASteCA_CMDs(pl_params):
     ob0 = offsetbox.AnchoredText(letter[i], loc=2, prop=dict(size=12))
     ob0.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
     ax1.add_artist(ob0)
-    text = gal + '-' + cl + ' (ASteCA)'
+    text = gal + '-' + cl + r'$\,(\mathtt{ASteCA})$'
     ob1 = offsetbox.AnchoredText(text, loc=1, prop=dict(size=11))
     ob1.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
     ax1.add_artist(ob1)
@@ -1684,7 +1681,7 @@ def make_DB_ASteCA_CMDs(db, db_cls):
         if db in ['outliers', 'largemass']:
             r_path = 'figures/'
         else:
-            r_path =  'figures/DB_fit/'
+            r_path = 'figures/DB_fit/'
         fig_name = r_path + db + '_VS_asteca_' + str(k) + '.png'
         plt.savefig(fig_name, dpi=150, bbox_inches='tight')
 
@@ -1839,7 +1836,7 @@ def pl_amr(pl_params):
         for k in [1, 0]:
             # ASteCA values.
             plt.plot(age_vals[k], met_weighted[k][0], c=col[k],
-                     label=leg[k] + ' (ASteCA)', zorder=3)
+                     label=leg[k] + r'$\,(\mathtt{ASteCA})$', zorder=3)
             # Introduce random scatter.
             ax_x, ax_y = 0.15, 0.03
             # Add random scatter.
@@ -1878,8 +1875,8 @@ def pl_amr(pl_params):
             plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
                      dashes=c_dash[j], lw=1.5, zorder=3)
         # ASteCA values.
-        plt.plot(age_vals[1], met_weighted[1][0], c='b', label='ASteCA',
-                 zorder=5)
+        plt.plot(age_vals[1], met_weighted[1][0], c='b',
+                 label=r'$\mathtt{ASteCA}$', zorder=5)
         # Legend.
         leg2 = plt.legend(loc='lower left', handlelength=3.5, scatterpoints=1,
                           fontsize=xy_font_s - 8)
@@ -1899,8 +1896,8 @@ def pl_amr(pl_params):
             plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
                      dashes=c_dash[j], lw=1.5, zorder=3)
         # ASteCA values.
-        plt.plot(age_vals[0], met_weighted[0][0], c='r', label='ASteCA',
-                 zorder=5)
+        plt.plot(age_vals[0], met_weighted[0][0], c='r',
+                 label=r'$\mathtt{ASteCA}$', zorder=5)
         # Legend.
         leg1 = plt.legend(loc='lower left', handlelength=3.5, scatterpoints=1,
                           fontsize=xy_font_s - 8)
@@ -1962,8 +1959,7 @@ def h03_p12_mass_plots(pl_params):
     xy_font_s = 21
     ax = plt.subplot(gs[i], aspect='auto')
     # Text box.
-    ob = offsetbox.AnchoredText(m_limit, loc=4,
-                                prop=dict(size=xy_font_s - 4))
+    ob = offsetbox.AnchoredText(m_limit, loc=1, prop=dict(size=xy_font_s - 4))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
     # 0 line
@@ -1972,7 +1968,7 @@ def h03_p12_mass_plots(pl_params):
     if par_mean_std[0] != par_mean_std[1]:
         plt.axhspan(par_mean_std[0] - par_mean_std[1],
                     par_mean_std[0] + par_mean_std[1], facecolor='grey',
-                    alpha=0.5, zorder=1)
+                    alpha=0.3, zorder=1)
 
     plt.xticks(fontsize=xy_font_s - 6)
     plt.yticks(fontsize=xy_font_s - 6)
@@ -1985,27 +1981,21 @@ def h03_p12_mass_plots(pl_params):
             zorder=1)
     ax.minorticks_on()
 
-    # Introduce random scatter. 1% of axis ranges.
-    ax_ext = (xmax - xmin) * 0.01
-    # Add random scatter.
-    rs_x = xarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
-    rs_y = yarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
-
     # Plot all clusters in dictionary.
-    SC = plt.scatter(rs_x, rs_y, marker='o', c=carr, s=110, lw=0.25,
+    SC = plt.scatter(xarr, yarr, marker='o', c=carr, s=80, lw=0.25,
                      cmap=cm, vmin=v_min_mp, vmax=v_max_mp, zorder=3)
-    # Text box.
-    text1 = r'$\overline{{\Delta M}}={:.1f}$'.format(par_mean_std[0])
-    r = 2 if i == 0 else 0
-    text2 = r'$\pm{:g}\,[10^{{-4}} M_{{\odot}}]$'.format(
-        round(par_mean_std[1], r))
-    text = text1 + text2
-    ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s - 4))
-    ob.patch.set(alpha=0.5)
-    ax.add_artist(ob)
+    # # Text box.
+    # text1 = r'$\overline{{\Delta M}}={:.1f}$'.format(par_mean_std[0])
+    # r = 2 if i == 0 else 0
+    # text2 = r'$\pm{:g}\,[M_{{\odot}}]$'.format(
+    #     round(par_mean_std[1], r))
+    # text = text1 + text2
+    # ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s - 4))
+    # ob.patch.set(alpha=0.5)
+    # ax.add_artist(ob)
     # Position colorbar.
     if i == 3:
-        axColor = plt.axes([0.08, 0.83, 0.1, 0.005])
+        axColor = plt.axes([0.26, 0.63, 0.1, 0.005])
         cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
         cbar.set_label(z_lab, fontsize=xy_font_s - 3, labelpad=-55)
         cbar.set_ticks([-1., 0., 1., 2.])
@@ -2023,47 +2013,51 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
         a_p, m_h, m_p = a_p12[i], m_h03[i], m_p12[i]
         # Separate by average mass limit.
         if .5*(m_h + m_p) <= 5000.:
-            a_le[0].append(a_h)
-            a_le[1].append(a_p)
-            m_le[0].append(m_h)
-            m_le[1].append(m_p)
+            a_le[0].append(a_p)
+            a_le[1].append(a_h)
+            m_le[0].append(m_p)
+            m_le[1].append(m_h)
         elif 5000. < .5*(m_h + m_p) <= 100000.:
-            a_gt[0].append(a_h)
-            a_gt[1].append(a_p)
-            m_gt[0].append(m_h)
-            m_gt[1].append(m_p)
+            a_gt[0].append(a_p)
+            a_gt[1].append(a_h)
+            m_gt[0].append(m_p)
+            m_gt[1].append(m_h)
 
-    scale = 10**4
-    # Mean & StandDev. H03 - P12
-    m_le_delta = (np.array(m_le[0]) - np.array(m_le[1]))/(np.array(m_le[0]) + np.array(m_le[1]))  #/scale
+    # Mean & StandDev. P12-H03
+    m_le_delta = (np.array(m_le[0]) - np.array(m_le[1])) /\
+        (np.array(m_le[0]) + np.array(m_le[1]))
     m_le_mean_std = [np.mean(m_le_delta), np.std(m_le_delta)]
     a_le_delta = np.array(a_le[0]) - np.array(a_le[1])
     #
-    m_gt_delta = (np.array(m_gt[0]) - np.array(m_gt[1]))/scale
+    m_gt_delta = (np.array(m_gt[0]) - np.array(m_gt[1])) /\
+        (np.array(m_gt[0]) + np.array(m_gt[1]))
     m_gt_mean_std = [np.mean(m_gt_delta), np.std(m_gt_delta)]
     a_gt_delta = np.array(a_gt[0]) - np.array(a_gt[1])
 
-    mass_le_avrg = ((np.array(m_le[0]) + np.array(m_le[1])) * 0.5)/scale
-    mass_gt_avrg = ((np.array(m_gt[0]) + np.array(m_gt[1])) * 0.5)/scale
+    scale = 10**4
+    mass_le_avrg = ((np.array(m_le[0]) + np.array(m_le[1])) * 0.5) / scale
+    mass_gt_avrg = ((np.array(m_gt[0]) + np.array(m_gt[1])) * 0.5) / scale
 
     # Generate ASteca vs literature plots.
     fig = plt.figure(figsize=(18.5, 31.25))  # create the top-level container
     gs = gridspec.GridSpec(5, 3)
 
+    xmin, xmax = [0.001, 0.25], [0.52, 9.9]
+    ymin, ymax = [-1.3, -1.3], [1.4, 0.9]
     cbar_min, cbar_max = -1., 2.
 
     as_lit_pl_lst = [
         # H03 vs P12 masses.
-        [gs, 0, 0.001, 0.4998, -1.2, 0.85, '',
-         r'$\Delta M_{(H03-P12)}\,[10^{-4} M_{\odot}]$', '', mass_le_avrg,
+        [gs, 0, xmin[0], xmax[0], ymin[0], ymax[0], '',
+         r'$\overline{\Delta M_r}\;\;(P12-H03)$', '',
+         mass_le_avrg,
          m_le_delta, a_le_delta, cbar_min, cbar_max,
-         m_le_mean_std, r'$\overline{M}_{DB}\leq 5000\,[M_{\odot}]$'],
-        [gs, 3, 0.5, 8.9, -9.8, 12.7,
-         r'$\overline{M}_{DB}\,[10^{-4} M_{\odot}]$',
-         r'$\Delta M_{(H03-P12)}\,[10^{-4} M_{\odot}]$',
-         r'$\Delta \log(age/yr)$',
+         m_le_mean_std, r'$\overline{M}_{DBs}\leq 5000\,[M_{\odot}]$'],
+        [gs, 3, xmin[1], xmax[1], ymin[1], ymax[1],
+         r'$\overline{M}_{DBs}\,[10^{-4} M_{\odot}]$',
+         r'$\overline{\Delta M_r}\;\;(P12-H03)$', r'$\Delta \log(age/yr)$',
          mass_gt_avrg, m_gt_delta, a_gt_delta, cbar_min, cbar_max,
-         m_gt_mean_std, r'$5000<\overline{M}_{DB}<100000\,[M_{\odot}]$']
+         m_gt_mean_std, r'$5000<\overline{M}_{DBs}<100000\,[M_{\odot}]$']
     ]
 
     for pl_params in as_lit_pl_lst:
