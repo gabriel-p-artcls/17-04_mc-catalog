@@ -1950,3 +1950,125 @@ def make_amr_plot(in_params, amr_lit):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/AMR_asteca.png', dpi=300, bbox_inches='tight')
+
+
+def h03_p12_mass_plots(pl_params):
+    '''
+    Generate ASteCA vs literature mass values plot.
+    '''
+    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, xarr, yarr, \
+        carr, v_min_mp, v_max_mp, par_mean_std, m_limit = pl_params
+
+    xy_font_s = 21
+    ax = plt.subplot(gs[i], aspect='auto')
+    # Text box.
+    ob = offsetbox.AnchoredText(m_limit, loc=4,
+                                prop=dict(size=xy_font_s - 4))
+    ob.patch.set(alpha=0.85)
+    ax.add_artist(ob)
+    # 0 line
+    plt.axhline(y=par_mean_std[0], xmin=0, xmax=1, color='k', ls='--')
+    # Shaded one sigma region.
+    if par_mean_std[0] != par_mean_std[1]:
+        plt.axhspan(par_mean_std[0] - par_mean_std[1],
+                    par_mean_std[0] + par_mean_std[1], facecolor='grey',
+                    alpha=0.5, zorder=1)
+
+    plt.xticks(fontsize=xy_font_s - 6)
+    plt.yticks(fontsize=xy_font_s - 6)
+    cm = plt.cm.get_cmap('RdYlBu_r')
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    plt.xlabel(x_lab, fontsize=xy_font_s)
+    plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+            zorder=1)
+    ax.minorticks_on()
+
+    # Introduce random scatter. 1% of axis ranges.
+    ax_ext = (xmax - xmin) * 0.01
+    # Add random scatter.
+    rs_x = xarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
+    rs_y = yarr + np.random.uniform(-ax_ext, ax_ext, len(xarr))
+
+    # Plot all clusters in dictionary.
+    SC = plt.scatter(rs_x, rs_y, marker='o', c=carr, s=110, lw=0.25,
+                     cmap=cm, vmin=v_min_mp, vmax=v_max_mp, zorder=3)
+    # Text box.
+    text1 = r'$\overline{{\Delta M}}={:.1f}$'.format(par_mean_std[0])
+    r = 2 if i == 0 else 0
+    text2 = r'$\pm{:g}\,[10^{{-4}} M_{{\odot}}]$'.format(
+        round(par_mean_std[1], r))
+    text = text1 + text2
+    ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s - 4))
+    ob.patch.set(alpha=0.5)
+    ax.add_artist(ob)
+    # Position colorbar.
+    if i == 3:
+        axColor = plt.axes([0.08, 0.83, 0.1, 0.005])
+        cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
+        cbar.set_label(z_lab, fontsize=xy_font_s - 3, labelpad=-55)
+        cbar.set_ticks([-1., 0., 1., 2.])
+        cbar.ax.tick_params(labelsize=xy_font_s - 10)
+
+
+def make_cross_match_h03_p12(cross_match_h03_p12):
+    """
+    Plot H03 versus P12 cross matched clusters.
+    """
+    a_h03, a_p12, m_h03, m_p12 = cross_match_h03_p12
+
+    a_le, a_gt, m_le, m_gt = [[], []], [[], []], [[], []], [[], []]
+    for i, a_h in enumerate(a_h03):
+        a_p, m_h, m_p = a_p12[i], m_h03[i], m_p12[i]
+        # Separate by average mass limit.
+        if .5*(m_h + m_p) <= 5000.:
+            a_le[0].append(a_h)
+            a_le[1].append(a_p)
+            m_le[0].append(m_h)
+            m_le[1].append(m_p)
+        elif 5000. < .5*(m_h + m_p) <= 100000.:
+            a_gt[0].append(a_h)
+            a_gt[1].append(a_p)
+            m_gt[0].append(m_h)
+            m_gt[1].append(m_p)
+
+    scale = 10**4
+    # Mean & StandDev. H03 - P12
+    m_le_delta = (np.array(m_le[0]) - np.array(m_le[1]))/(np.array(m_le[0]) + np.array(m_le[1]))  #/scale
+    m_le_mean_std = [np.mean(m_le_delta), np.std(m_le_delta)]
+    a_le_delta = np.array(a_le[0]) - np.array(a_le[1])
+    #
+    m_gt_delta = (np.array(m_gt[0]) - np.array(m_gt[1]))/scale
+    m_gt_mean_std = [np.mean(m_gt_delta), np.std(m_gt_delta)]
+    a_gt_delta = np.array(a_gt[0]) - np.array(a_gt[1])
+
+    mass_le_avrg = ((np.array(m_le[0]) + np.array(m_le[1])) * 0.5)/scale
+    mass_gt_avrg = ((np.array(m_gt[0]) + np.array(m_gt[1])) * 0.5)/scale
+
+    # Generate ASteca vs literature plots.
+    fig = plt.figure(figsize=(18.5, 31.25))  # create the top-level container
+    gs = gridspec.GridSpec(5, 3)
+
+    cbar_min, cbar_max = -1., 2.
+
+    as_lit_pl_lst = [
+        # H03 vs P12 masses.
+        [gs, 0, 0.001, 0.4998, -1.2, 0.85, '',
+         r'$\Delta M_{(H03-P12)}\,[10^{-4} M_{\odot}]$', '', mass_le_avrg,
+         m_le_delta, a_le_delta, cbar_min, cbar_max,
+         m_le_mean_std, r'$\overline{M}_{DB}\leq 5000\,[M_{\odot}]$'],
+        [gs, 3, 0.5, 8.9, -9.8, 12.7,
+         r'$\overline{M}_{DB}\,[10^{-4} M_{\odot}]$',
+         r'$\Delta M_{(H03-P12)}\,[10^{-4} M_{\odot}]$',
+         r'$\Delta \log(age/yr)$',
+         mass_gt_avrg, m_gt_delta, a_gt_delta, cbar_min, cbar_max,
+         m_gt_mean_std, r'$5000<\overline{M}_{DB}<100000\,[M_{\odot}]$']
+    ]
+
+    for pl_params in as_lit_pl_lst:
+        h03_p12_mass_plots(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    plt.savefig('figures/H03_P12_mass.png', dpi=300, bbox_inches='tight')

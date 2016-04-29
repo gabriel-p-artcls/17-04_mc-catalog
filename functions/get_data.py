@@ -189,7 +189,7 @@ def get_liter_data():
     return cl_dict
 
 
-def get_cross_match_data(r_path):
+def get_cross_match_asteca(r_path):
     '''
     Read the cross-matched clusters between ASteCA output and several
     databases.
@@ -226,3 +226,24 @@ def get_cross_match_data(r_path):
         cross_match[i] = zip(*lst)
 
     return cross_match
+
+
+def get_cross_match_h03_p12(r_path):
+    """
+    Read cross matched OCs between H03 and P12 databases.
+    """
+    # Path to data file.
+    in_file = 'mc-catalog/databases/matched_H03_P12.dat'
+
+    # Read data file
+    with open(r_path + in_file, 'r') as f:
+        cross_match = []
+
+        for line in skip_comments(f):
+            lin = line.split()
+            cross_match.append(map(float, [lin[3], lin[5], lin[7], lin[9]]))
+
+    # 0: log(age)_h03, 1: log(age)_p12, 2: Mass_h03, 3: Mass_p12
+    c_m_h03_p12 = zip(*cross_match)
+
+    return c_m_h03_p12

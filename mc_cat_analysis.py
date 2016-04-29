@@ -1,7 +1,8 @@
 
 import os
 from functions.get_data import get_asteca_data, get_liter_data, \
-    get_bica_database, get_cross_match_data, get_amr_lit
+    get_bica_database, get_cross_match_asteca, get_cross_match_h03_p12,\
+    get_amr_lit
 from functions.get_params import params
 from functions.match_clusters import match_clusters
 from functions.check_diffs import check_diffs
@@ -11,7 +12,8 @@ from functions.make_all_plots import make_as_vs_lit_plot,\
     make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
     make_concent_plot, make_radius_plot, make_probs_CI_plot, \
     make_cross_match_ip, make_cross_match_if, \
-    make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot
+    make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot,\
+    make_cross_match_h03_p12
 
 
 def rpath_fig_folder():
@@ -138,7 +140,8 @@ def CMD_large_mass(r_path, in_params):
     make_DB_ASteCA_CMDs('largemass', db_cls)
 
 
-def make_plots(r_path, plots, in_params, bica_coords, cross_match, amr_lit):
+def make_plots(r_path, plots, in_params, bica_coords, cross_match,
+               cross_match_h03_p12, amr_lit):
     '''
     Make each plot sequentially.
     '''
@@ -176,34 +179,38 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match, amr_lit):
         print 'Cross-matched integrated photometry clusters.'
 
     if '8' in plots:
+        make_cross_match_h03_p12(cross_match_h03_p12)
+        print "Cross match BA plot for H03 vs P12."
+
+    if '9' in plots:
         CMD_large_mass(r_path, in_params)
         print "CMDs for large mass clusters."
 
-    if '9' in plots:
+    if '10' in plots:
         make_kde_plots(in_params)
         print 'KDE maps.'
 
-    if '10' in plots:
+    if '11' in plots:
         make_amr_plot(in_params, amr_lit)
         print 'AMR maps.'
 
-    if '11' in plots:
+    if '12' in plots:
         make_radius_plot(in_params)
         print 'ASteCA radius (pc) vs parameters plot.'
 
-    if '12' in plots:
+    if '13' in plots:
         make_lit_ext_plot(in_params)
         print 'ASteCA vs MCEV vs SandF extinction plot.'
 
-    if '13' in plots:
+    if '14' in plots:
         make_int_cols_plot(in_params)
         print 'Integrated colors plot.'
 
-    if '14' in plots:
+    if '15' in plots:
         make_concent_plot(in_params)
         print 'Concentration parameter plot.'
 
-    if '15' in plots:
+    if '16' in plots:
         make_probs_CI_plot(in_params)
         print 'ASteCA probabilities versus CI.'
 
@@ -222,7 +229,7 @@ def main():
     check_diffs(in_params)
 
     # Define which plots to produce.
-    plots = ['4', '5']
+    plots = ['8']
 
     # Only obtain data if the plot is being generated.
     if '0' in plots:
@@ -232,12 +239,18 @@ def main():
     else:
         bica_coords = []
     if '6' in plots or '7' in plots:
-        # Read cross-matched clusters.
-        cross_match = get_cross_match_data(r_path)
-        print 'Cross-matched data read.'
+        # Read cross-matched ASteCA clusters.
+        cross_match = get_cross_match_asteca(r_path)
+        print 'Cross-matched ASteCA data read.'
     else:
         cross_match = []
-    if '10' in plots:
+    if '8' in plots:
+        # Read cross-matched H03,P12 clusters.
+        cross_match_h03_p12 = get_cross_match_h03_p12(r_path)
+        print 'Cross-matched H03,P12 data read.'
+    else:
+        cross_match_h03_p12 = []
+    if '11' in plots:
         # Read AMR data from other articles.
         amr_lit = get_amr_lit()
         print 'AMR data from literature read.'
@@ -246,7 +259,8 @@ def main():
 
     # Make final plots.
     print 'Plotting...\n'
-    make_plots(r_path, plots, in_params, bica_coords, cross_match, amr_lit)
+    make_plots(r_path, plots, in_params, bica_coords, cross_match,
+               cross_match_h03_p12, amr_lit)
 
     print '\nEnd.'
 
