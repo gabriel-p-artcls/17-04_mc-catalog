@@ -1177,20 +1177,23 @@ def make_cross_match_ip(cross_match):
     print 'Correlation ASteCA vs Delta mass: {:0.2f}'.format(corr_as[0])
     print 'Correlation H03+P12 vs Delta mass: {:0.2f}'.format(corr_h03_p12[0])
 
-    # Separate clusters with mass < 5000
+    # Separate clusters with mass < m_limit
+    m_limit = 20000.
     h03_l_mass, p12_l_mass, h03_h_mass, p12_h_mass = [], [], [], []
     for cl in zip(*h03):
         # Filter out large masses in DBs.
-        if cl[8] <= 5000.:
+        if 5000 < cl[8] <= m_limit:
             h03_l_mass.append(cl)
-        else:
+        # else:
+        elif m_limit < cl[8]:
             h03_h_mass.append(cl)
     h03_l_mass = zip(*h03_l_mass)
     h03_h_mass = zip(*h03_h_mass)
     for cl in zip(*p12):
-        if cl[8] <= 5000.:
+        if 5000 < cl[8] <= m_limit:
             p12_l_mass.append(cl)
-        else:
+        # else:
+        elif m_limit < cl[8]:
             p12_h_mass.append(cl)
     p12_l_mass = zip(*p12_l_mass)
     p12_h_mass = zip(*p12_h_mass)
@@ -2017,11 +2020,14 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
             a_le[1].append(a_h)
             m_le[0].append(m_p)
             m_le[1].append(m_h)
-        elif 5000. < .5*(m_h + m_p) <= 100000.:
+        elif 5000. < .5*(m_h + m_p) <= 20000.:
+        # else:
             a_gt[0].append(a_p)
             a_gt[1].append(a_h)
             m_gt[0].append(m_p)
             m_gt[1].append(m_h)
+            if .5*(m_h + m_p) > 100000.:
+                print m_h, m_p, .5*(m_h + m_p)
 
     # Mean & StandDev. P12-H03
     m_le_delta = (np.array(m_le[0]) - np.array(m_le[1])) /\

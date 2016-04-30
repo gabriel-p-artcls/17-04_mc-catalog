@@ -61,6 +61,7 @@ target/
 *.sublime-workspace
 
 *.png
+!AMRs/*.png
 .~*
 runs/1st_run/output/*
 runs/2nd_run/output/*
