@@ -1080,11 +1080,106 @@ def make_probs_CI_plot(in_params):
     plt.savefig('figures/as_prob_vs_CI.png', dpi=300, bbox_inches='tight')
 
 
-def cross_match_ip_plot(pl_params):
+def cross_match_ip_plot_age(pl_params):
     '''
-    Generate plots for the cross-matched age and mass values.
+    Generate plots for the cross-matched age values.
     '''
     gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, indexes, labels, \
+        mark, cols, databases = pl_params
+
+    xy_font_s = 21
+    ax = plt.subplot(gs[i])
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    plt.xlabel(x_lab, fontsize=xy_font_s)
+    plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+            zorder=1)
+    ax.minorticks_on()
+    ax.tick_params(labelsize=15)
+
+    a, e_a, b, e_b = indexes
+
+    # Plot all clusters for each DB.
+    for j, DB in enumerate(databases):
+        xarr, yarr = DB[a], DB[b]
+        xsigma, ysigma = DB[e_a], DB[e_b]
+
+        db_lab = labels[j] + '$\;(N={})$'.format(len(xarr))
+        # Star marker is too small compared to the rest.
+        siz = 90. if mark[j] != '*' else 120.
+        plt.scatter(xarr, yarr, marker=mark[j], c=cols[j], s=siz,
+                    lw=0.3, edgecolor='w', label=db_lab, zorder=3)
+        plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
+        leg = plt.legend(loc='upper left', markerscale=1.,
+                         scatterpoints=1, fontsize=xy_font_s - 7)
+        leg.get_frame().set_alpha(0.5)
+        # Plot error bars.
+        if xsigma:
+            for k, xy in enumerate(zip(*[xarr, yarr])):
+                if xsigma[k] > 0.:
+                    plt.errorbar(xy[0], xy[1], xerr=xsigma[k], ls='none',
+                                 color='k', elinewidth=0.2, zorder=1)
+        if ysigma:
+            for k, xy in enumerate(zip(*[xarr, yarr])):
+                if ysigma[k] > 0:
+                    plt.errorbar(xy[0], xy[1], yerr=ysigma[k], ls='none',
+                                 color='k', elinewidth=0.2, zorder=1)
+
+
+def make_cross_match_ip_age(cross_match):
+    '''
+    Plot ASteCA ages versus the values found in the integrated
+    photometry databases.
+    '''
+    # Unpack databases.
+    h03, r05, p12 = cross_match[2], cross_match[3], cross_match[6]
+
+    # ASteCA - DB ages
+    print '\nDelta (ASteCA - DB) for ages: mean +- std'
+    db_name = ['P99', 'P00', 'H03', 'R05', 'C06', 'G10', 'P12']
+    for i, db in enumerate(cross_match):
+        diff_mean = np.mean(np.array(db[4]) - np.array(db[2]))
+        diff_std = np.std(np.array(db[4]) - np.array(db[2]))
+        print '{} Delta diffs ages: {:.2f} +- {:.2f}'.format(
+            db_name[i], diff_mean, diff_std)
+
+    # First set is for the ages, second for the masses.
+    indexes = [4, 5, 2, 3]
+
+    # Labels for each defined plot.
+    labels_age = ['H03', 'R05', 'P12']
+    mark_age = ['v', '*', 'o']
+    cols_age = ['m', 'k', 'b']
+
+    # Define names of arrays being plotted.
+    x_lab = '$\log(age/yr)_{\mathtt{ASteCA}}$'
+    y_lab = '$\log(age/yr)_{DB}$'
+
+    # Arbitrary size so plots are actually squared.
+    fig = plt.figure(figsize=(17.3, 6.3))
+    gs = gridspec.GridSpec(1, 3)
+
+    cross_match_lst = [
+        # Age cross-match, integrated photometry.
+        [gs, 0, 5.8, 10.6, 5.8, 10.6, x_lab, y_lab,
+            indexes, labels_age, mark_age, cols_age, [h03, r05, p12]]
+    ]
+
+    for pl_params in cross_match_lst:
+        cross_match_ip_plot_age(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    plt.savefig('figures/cross_match_ip_ages.png', dpi=300,
+                bbox_inches='tight')
+
+
+def cross_match_ip_plot_mass(pl_params):
+    '''
+    Generate plots for the cross-matched mass values.
+    '''
+    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, labels, \
         mark, cols, text_box, databases, comb_delta = pl_params
 
     xy_font_s = 21
@@ -1100,10 +1195,7 @@ def cross_match_ip_plot(pl_params):
     ax.minorticks_on()
     ax.tick_params(labelsize=15)
 
-    if i == 0:
-        a, e_a, b, e_b = indexes
-    else:
-        a, e_a, b, e_b, s_i, ba_i = 0, 1, 2, 3, 4, 5
+    a, e_a, b, e_b, s_i, ba_i = 0, 1, 2, 3, 4, 5
 
     # Plot all clusters for each DB.
     for j, DB in enumerate(databases):
@@ -1111,27 +1203,17 @@ def cross_match_ip_plot(pl_params):
         xsigma, ysigma = DB[e_a], DB[e_b]
 
         db_lab = labels[j] + '$\;(N={})$'.format(len(xarr))
-        if i == 0:
-            # Star marker is too small compared to the rest.
-            siz = 90. if mark[j] != '*' else 120.
-            plt.scatter(xarr, yarr, marker=mark[j], c=cols[j], s=siz,
-                        lw=0.3, edgecolor='w', label=db_lab, zorder=3)
-            plt.plot([xmin, xmax], [xmin, xmax], 'k', ls='--')  # 1:1 line
-            leg = plt.legend(loc='upper left', markerscale=1.,
-                             scatterpoints=1, fontsize=xy_font_s - 7)
-            leg.get_frame().set_alpha(0.5)
-        else:
-            # 0 line
-            plt.axhline(y=comb_delta[0], xmin=0, xmax=1, color='k', ls='--',
-                        lw=0.85)
-            # Shaded one sigma region.
-            plt.axhspan(comb_delta[0] - comb_delta[1], comb_delta[0] +
-                        comb_delta[1], facecolor='grey', alpha=0.2, zorder=1)
+        # 0 line
+        plt.axhline(y=comb_delta[0], xmin=0, xmax=1, color='k', ls='--',
+                    lw=0.85)
+        # Shaded one sigma region.
+        plt.axhspan(comb_delta[0] - comb_delta[1], comb_delta[0] +
+                    comb_delta[1], facecolor='grey', alpha=0.2, zorder=1)
 
-            siz = np.array(DB[s_i])*15.
-            SC = plt.scatter(xarr, yarr, marker=mark[j], c=DB[ba_i],
-                             s=siz, cmap=cm, vmin=-1., vmax=1.5, lw=0.3,
-                             edgecolor='k', label=db_lab, zorder=3)
+        siz = np.array(DB[s_i])*15.
+        SC = plt.scatter(xarr, yarr, marker=mark[j], c=DB[ba_i],
+                         s=siz, cmap=cm, vmin=-1., vmax=1.5, lw=0.3,
+                         edgecolor='k', label=db_lab, zorder=3)
         # Plot error bars.
         if xsigma:
             for k, xy in enumerate(zip(*[xarr, yarr])):
@@ -1150,8 +1232,13 @@ def cross_match_ip_plot(pl_params):
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
     if i == 2:
+        # Text box.
+        t = r'$\;\;NGC\;419 \,\to\,$' + '\n' + r'$\sim(39, {-}0.87)$'
+        ob = offsetbox.AnchoredText(t, loc=4, prop=dict(size=xy_font_s - 7))
+        ob.patch.set(alpha=0.85)
+        ax.add_artist(ob)
         # Position colorbar.
-        axColor = plt.axes([0.88, 0.7, 0.1, 0.023])
+        axColor = plt.axes([0.885, 0.72, 0.1, 0.023])
         cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
         cbar.set_label(r'$\Delta \log(age/yr)$', fontsize=xy_font_s - 2,
                        labelpad=-55)
@@ -1159,13 +1246,13 @@ def cross_match_ip_plot(pl_params):
         cbar.ax.tick_params(labelsize=xy_font_s - 10)
 
 
-def make_cross_match_ip(cross_match):
+def make_cross_match_ip_mass(cross_match):
     '''
-    Plot ASteCA ages and masses versus the values found in the integrated
+    Plot ASteCA masses versus the values found in the integrated
     photometry databases.
     '''
     # Unpack databases.
-    h03, r05, p12 = cross_match[2], cross_match[3], cross_match[6]
+    h03, p12 = cross_match[2], cross_match[6]
 
     # Calculate correlation coefficients.
     h03_p12_comb_mass = np.array(h03[8] + p12[8])
@@ -1178,36 +1265,32 @@ def make_cross_match_ip(cross_match):
     print 'Correlation H03+P12 vs Delta mass: {:0.2f}'.format(corr_h03_p12[0])
 
     # Separate clusters with mass < m_limit
-    m_limit = 20000.
-    h03_l_mass, p12_l_mass, h03_h_mass, p12_h_mass = [], [], [], []
+    m_low, m_med, m_lar = 5000., 20000., 100000.
+    h03_l_mass, p12_l_mass, h03_m_mass, p12_m_mass, h03_h_mass, p12_h_mass =\
+        [], [], [], [], [], []
     for cl in zip(*h03):
-        # Filter out large masses in DBs.
-        if 5000 < cl[8] <= m_limit:
+        # Filter small masses in DBs.
+        if cl[8] <= m_low:
             h03_l_mass.append(cl)
-        # else:
-        elif m_limit < cl[8]:
+        elif m_low < cl[8] <= m_med:
+            h03_m_mass.append(cl)
+        elif m_med < cl[8]: # <= m_lar:
             h03_h_mass.append(cl)
     h03_l_mass = zip(*h03_l_mass)
+    h03_m_mass = zip(*h03_m_mass)
     h03_h_mass = zip(*h03_h_mass)
     for cl in zip(*p12):
-        if 5000 < cl[8] <= m_limit:
+        if cl[8] <= m_low:
             p12_l_mass.append(cl)
-        # else:
-        elif m_limit < cl[8]:
+        elif m_low < cl[8] <= m_med:
+            p12_m_mass.append(cl)
+        elif m_med < cl[8]:
             p12_h_mass.append(cl)
     p12_l_mass = zip(*p12_l_mass)
+    p12_m_mass = zip(*p12_m_mass)
     p12_h_mass = zip(*p12_h_mass)
 
-    # ASteCA - DB ages
-    print '\nDelta (ASteCA - DB) for ages: mean +- std'
-    db_name = ['P99', 'P00', 'H03', 'R05', 'C06', 'G10', 'P12']
-    for i, db in enumerate(cross_match):
-        diff_mean = np.mean(np.array(db[4]) - np.array(db[2]))
-        diff_std = np.std(np.array(db[4]) - np.array(db[2]))
-        print '{} Delta diffs ages: {:.2f} +- {:.2f}'.format(
-            db_name[i], diff_mean, diff_std)
-
-    # ASteCA - DB masses
+    # Low ASteCA - DB masses
     print '\nDelta (ASteCA - DB) for mass_DB<5000: mean +- std'
     db_name = ['H03', 'P12']
     for i, low_m_db in enumerate([h03_l_mass, p12_l_mass]):
@@ -1215,42 +1298,64 @@ def make_cross_match_ip(cross_match):
         diff_std = np.std(np.array(low_m_db[10]) - np.array(low_m_db[8]))
         print '{} Delta diffs small mass: {:.0f} +- {:.0f}'.format(
             db_name[i], diff_mean, diff_std)
-    comb_delta_l = (np.array(h03_l_mass[10] + p12_l_mass[10]) -\
-        np.array(h03_l_mass[8] + p12_l_mass[8]))
+    comb_delta_l = (np.array(h03_l_mass[10] + p12_l_mass[10]) -
+                    np.array(h03_l_mass[8] + p12_l_mass[8]))
     print ("Combined Delta(ASteCA-DB) mean +- std; mass_DB<5000:"
            " {:.2f} +- {:.2f}".format(np.mean(comb_delta_l),
                                       np.std(comb_delta_l)))
     # Relative difference for combined H03-P12 sample.
-    comb_l_mass = (np.array(h03_l_mass[10] + p12_l_mass[10]) -\
-        np.array(h03_l_mass[8] + p12_l_mass[8])) /\
-        (np.array(h03_l_mass[10] + p12_l_mass[10]) +\
-        np.array(h03_l_mass[8] + p12_l_mass[8]))
+    comb_l_mass = (np.array(h03_l_mass[10] + p12_l_mass[10]) -
+                   np.array(h03_l_mass[8] + p12_l_mass[8])) /\
+        (np.array(h03_l_mass[10] + p12_l_mass[10]) +
+         np.array(h03_l_mass[8] + p12_l_mass[8]))
     comb_mean, comb_std = np.mean(comb_l_mass), np.std(comb_l_mass)
     comb_rel_delta_l = [comb_mean, comb_std]
     print ("Combined relative Delta mean +- std; mass_DB<5000:"
            " {:.2f} +- {:.2f}".format(comb_mean, comb_std))
 
-    print '\nDelta (ASteCA - DB) for mass_DB>5000: mean +- std'
+    # Medium ASteCA - DB masses
+    print '\nDelta (ASteCA - DB) for 5000<mass_DB<20000: mean +- std'
+    for i, med_m_db in enumerate([h03_m_mass, p12_m_mass]):
+        diff_mean = np.mean(np.array(med_m_db[10]) - np.array(med_m_db[8]))
+        diff_std = np.std(np.array(med_m_db[10]) - np.array(med_m_db[8]))
+        print '{} Delta diffs medium mass: {:.0f} +- {:.0f}'.format(
+            db_name[i], diff_mean, diff_std)
+    comb_delta_m = (np.array(h03_m_mass[10] + p12_m_mass[10]) -
+                    np.array(h03_m_mass[8] + p12_m_mass[8]))
+    print ("Combined Delta(ASteCA-DB) mean +- std; 5000<mass_DB<20000:"
+           " {:.2f} +- {:.2f}".format(np.mean(comb_delta_m),
+                                      np.std(comb_delta_m)))
+    # Relative difference for combined H03-P12 sample.
+    comb_m_mass = (np.array(h03_m_mass[10] + p12_m_mass[10]) -
+                   np.array(h03_m_mass[8] + p12_m_mass[8])) /\
+        (np.array(h03_m_mass[10] + p12_m_mass[10]) +
+         np.array(h03_m_mass[8] + p12_m_mass[8]))
+    comb_mean, comb_std = np.mean(comb_m_mass), np.std(comb_m_mass)
+    comb_rel_delta_m = [comb_mean, comb_std]
+    print ("Combined relative Delta mean +- std; 5000<mass_DB<20000:"
+           " {:.2f} +- {:.2f}".format(comb_mean, comb_std))
+
+    # Large ASteCA - DB masses
+    print '\nDelta (ASteCA - DB) for mass_DB>20000: mean +- std'
     print 'H03 OCs:', len(h03_h_mass[0]), 'P12 OCs:', len(p12_h_mass[0])
-    db_name = ['H03', 'P12']
     for i, h_m_db in enumerate([h03_h_mass, p12_h_mass]):
         diff_mean = np.mean(np.array(h_m_db[10]) - np.array(h_m_db[8]))
         diff_std = np.std(np.array(h_m_db[10]) - np.array(h_m_db[8]))
         print '{} Delta diffs large mass: {:.0f} +- {:.0f}'.format(
             db_name[i], diff_mean, diff_std)
-    comb_delta_h = (np.array(h03_h_mass[10] + p12_h_mass[10]) -\
-        np.array(h03_h_mass[8] + p12_h_mass[8]))
-    print ("Combined Delta(ASteCA-DB) mean +- std; mass_DB>5000:"
+    comb_delta_h = (np.array(h03_h_mass[10] + p12_h_mass[10]) -
+                    np.array(h03_h_mass[8] + p12_h_mass[8]))
+    print ("Combined Delta(ASteCA-DB) mean +- std; mass_DB>20000:"
            " {:.2f} +- {:.2f}".format(np.mean(comb_delta_h),
                                       np.std(comb_delta_h)))
     # Relative difference for combined H03-P12 sample.
-    comb_h_mass = (np.array(h03_h_mass[10] + p12_h_mass[10]) -\
-        np.array(h03_h_mass[8] + p12_h_mass[8])) /\
-        (np.array(h03_h_mass[10] + p12_h_mass[10]) +\
-        np.array(h03_h_mass[8] + p12_h_mass[8]))
+    comb_h_mass = (np.array(h03_h_mass[10] + p12_h_mass[10]) -
+                   np.array(h03_h_mass[8] + p12_h_mass[8])) /\
+        (np.array(h03_h_mass[10] + p12_h_mass[10]) +
+         np.array(h03_h_mass[8] + p12_h_mass[8]))
     comb_mean, comb_std = np.mean(comb_h_mass), np.std(comb_h_mass)
     comb_rel_delta_h = [comb_mean, comb_std]
-    print ("Combined mean +- std for Delta(ASteCA-DB) mass_DB<5000:"
+    print ("Combined mean +- std for Delta(ASteCA-DB) mass_DB>20000:"
            " {:.2f} +- {:.2f}".format(comb_mean, comb_std))
 
     # Low masses relative differences ASteCA  - DBs
@@ -1265,6 +1370,18 @@ def make_cross_match_ip(cross_match):
     A, s_A, B, s_B = np.array(p12_l_mass[10]), np.array(p12_l_mass[11]),\
         np.array(p12_l_mass[8]), np.array(p12_l_mass[9])
     p12_delta_err_l = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
+    # Medium masses relative differences ASteCA  - DBs
+    h03_mass_diff_m = (np.array(h03_m_mass[10]) - np.array(h03_m_mass[8])) /\
+        (np.array(h03_m_mass[10]) + np.array(h03_m_mass[8]))
+    p12_mass_diff_m = (np.array(p12_m_mass[10]) - np.array(p12_m_mass[8])) /\
+        (np.array(p12_m_mass[10]) + np.array(p12_m_mass[8]))
+    # Errors.
+    A, s_A, B, s_B = np.array(h03_m_mass[10]), np.array(h03_m_mass[11]),\
+        np.array(h03_m_mass[8]), np.array(h03_m_mass[9])
+    h03_delta_err_m = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
+    A, s_A, B, s_B = np.array(p12_m_mass[10]), np.array(p12_m_mass[11]),\
+        np.array(p12_m_mass[8]), np.array(p12_m_mass[9])
+    p12_delta_err_m = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
     # Large masses relative differences ASteCA  - DBs
     h03_mass_diff_h = (np.array(h03_h_mass[10]) - np.array(h03_h_mass[8])) /\
         (np.array(h03_h_mass[10]) + np.array(h03_h_mass[8]))
@@ -1287,59 +1404,66 @@ def make_cross_match_ip(cross_match):
                     h03_delta_err_l, h03_l_mass[19], colors_h03_l],
                    [p12_l_mass[8], p12_l_mass[9], p12_mass_diff_l,
                     p12_delta_err_l, p12_l_mass[19], colors_p12_l]]
+    # Use age deltas, ASteCA-DBs
+    colors_h03_m, colors_p12_m = np.array(h03_m_mass[4]) -\
+        np.array(h03_m_mass[2]), np.array(p12_m_mass[4]) -\
+        np.array(p12_m_mass[2])
+    delta_DBs_m = [[np.array(h03_m_mass[8])/10.**4, h03_m_mass[9], h03_mass_diff_m,
+                    h03_delta_err_m, h03_m_mass[19], colors_h03_m],
+                   [p12_m_mass[8], p12_m_mass[9], p12_mass_diff_m,
+                    p12_delta_err_m, p12_m_mass[19], colors_p12_m]]
     # Colors for OCs.
     # Use age deltas, ASteCA-DBs
     colors_h03_h, colors_p12_h = np.array(h03_h_mass[4]) -\
         np.array(h03_h_mass[2]), np.array(p12_h_mass[4]) -\
         np.array(p12_h_mass[2])
-    delta_DBs_h = [[h03_h_mass[8], h03_h_mass[9], h03_mass_diff_h,
+    delta_DBs_h = [[np.array(h03_h_mass[8])/10.**4, h03_h_mass[9], h03_mass_diff_h,
                     h03_delta_err_h, h03_h_mass[19], colors_h03_h],
                    [p12_h_mass[8], p12_h_mass[9], p12_mass_diff_h,
                     p12_delta_err_h, p12_h_mass[19], colors_p12_h]]
 
     # Define data to pass.
-    databases = [[h03, r05, p12], delta_DBs_l, delta_DBs_h]
-
-    # First set is for the ages, second for the masses.
-    indexes = [4, 5, 2, 3]
+    databases = [delta_DBs_l, delta_DBs_m, delta_DBs_h]
 
     # Labels for each defined plot.
-    labels_age, labels_mass = ['H03', 'R05', 'P12'], ['H03', 'P12']
-    mark_age, mark_mass = ['v', '*', 'o'], ['v', 'o']
-    cols_age, cols_mass = ['m', 'k', 'b'], ['m', 'b']
+    labels_mass = ['H03', 'P12']
+    mark_mass = ['v', 'o']
+    cols_mass = ['m', 'b']
 
     # Define names of arrays being plotted.
-    x_lab = ['$\log(age/yr)_{\mathtt{ASteCA}}$', '$M_{DBs}\,[M_{\odot}]$']
-    y_lab = ['$\log(age/yr)_{DB}$',
-             r'$\overline{\Delta M_r}\;\;(\mathtt{ASteCA}-DBs)$', '']
-    l_mass_lims = [-50., 4990., -1.3, 1.3]
-    h_mass_lims = [4050, 110000, -1.3, 0.6]
+    x_lab = ['$M_{DBs}\,[M_{\odot}]$', '$M_{DBs}\,[10^{-4}M_{\odot}]$']
+    y_lab = [r'$\overline{\Delta M_r}\;\;(\mathtt{ASteCA}-DBs)$', '']
+    l_mass_lims = [-50., 4990., -1.19, 1.3]
+    m_mass_lims = [0.5, 2.05, -1.19, 0.6]
+    h_mass_lims = [2.05, 10.5, -1.05, -0.42]
 
     # Arbitrary size so plots are actually squared.
     fig = plt.figure(figsize=(19.3, 6.3))
     gs = gridspec.GridSpec(1, 3)
 
     cross_match_lst = [
-        # Age cross-match, integrated photometry.
-        [gs, 0, 5.8, 10.6, 5.8, 10.6, x_lab[0], y_lab[0],
-            indexes, labels_age, mark_age, cols_age, '',
-            databases[0], []],
         # Mass cross_match (low mass)
-        [gs, 1, l_mass_lims[0], l_mass_lims[1], l_mass_lims[2], l_mass_lims[3],
-         x_lab[1], y_lab[1], [], labels_mass, mark_mass, cols_mass,
-         '$M_{DBs}\leq 5000\,[M_{\odot}]$', databases[1], comb_rel_delta_l],
+        [gs, 0, l_mass_lims[0], l_mass_lims[1], l_mass_lims[2], l_mass_lims[3],
+         x_lab[0], y_lab[0], labels_mass, mark_mass, cols_mass,
+         '$M_{DBs}\leq 5000\,[M_{\odot}]$', databases[0], comb_rel_delta_l],
+        # Mass cross_match (medium masses)
+        [gs, 1, m_mass_lims[0], m_mass_lims[1], m_mass_lims[2], m_mass_lims[3],
+         x_lab[1], y_lab[1], labels_mass, mark_mass, cols_mass,
+         '$5000<M_{DBs}\leq 20000\,[M_{\odot}]$', databases[1],
+         comb_rel_delta_m],
         # Mass cross_match (large masses)
         [gs, 2, h_mass_lims[0], h_mass_lims[1], h_mass_lims[2], h_mass_lims[3],
-         x_lab[1], y_lab[2], [], labels_mass, mark_mass, cols_mass,
-         '$M_{DBs}>5000\,[M_{\odot}]$', databases[2], comb_rel_delta_h]
+         x_lab[1], y_lab[1], labels_mass, mark_mass, cols_mass,
+         '$M_{DBs}>20000\,[M_{\odot}]$', databases[2], comb_rel_delta_h]
     ]
 
     for pl_params in cross_match_lst:
-        cross_match_ip_plot(pl_params)
+        cross_match_ip_plot_mass(pl_params)
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/cross_match_ip.png', dpi=300, bbox_inches='tight')
+    plt.savefig('figures/cross_match_ip_mass.png', dpi=300,
+                bbox_inches='tight')
 
 
 def cross_match_if_plot(pl_params):

@@ -11,7 +11,7 @@ from functions.make_all_plots import make_as_vs_lit_plot,\
     make_as_vs_lit_mass_plot, make_kde_plots, \
     make_ra_dec_plots, make_lit_ext_plot, make_int_cols_plot, \
     make_concent_plot, make_radius_plot, make_probs_CI_plot, \
-    make_cross_match_ip, make_cross_match_if, \
+    make_cross_match_ip_age, make_cross_match_ip_mass, make_cross_match_if, \
     make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot,\
     make_cross_match_h03_p12
 
@@ -182,8 +182,10 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match,
         print 'Cross-matched isochrone fitting clusters.'
 
     if '7' in plots:
-        make_cross_match_ip(cross_match)
-        print 'Cross-matched integrated photometry clusters.'
+        make_cross_match_ip_age(cross_match)
+        print 'Cross-matched integrated photometry clusters, ages.'
+        make_cross_match_ip_mass(cross_match)
+        print 'Cross-matched integrated photometry clusters, masses.'
 
     if '8' in plots:
         make_cross_match_h03_p12(cross_match_h03_p12)
