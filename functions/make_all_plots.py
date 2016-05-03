@@ -1179,7 +1179,7 @@ def cross_match_ip_plot_mass(pl_params):
     '''
     Generate plots for the cross-matched mass values.
     '''
-    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, labels, \
+    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, \
         mark, cols, text_box, databases, comb_delta = pl_params
 
     xy_font_s = 21
@@ -1202,7 +1202,6 @@ def cross_match_ip_plot_mass(pl_params):
         xarr, yarr = DB[a], DB[b]
         xsigma, ysigma = DB[e_a], DB[e_b]
 
-        db_lab = labels[j] + '$\;(N={})$'.format(len(xarr))
         # 0 line
         plt.axhline(y=comb_delta[0], xmin=0, xmax=1, color='k', ls='--',
                     lw=0.85)
@@ -1213,18 +1212,18 @@ def cross_match_ip_plot_mass(pl_params):
         siz = np.array(DB[s_i])*15.
         SC = plt.scatter(xarr, yarr, marker=mark[j], c=DB[ba_i],
                          s=siz, cmap=cm, vmin=-1., vmax=1.5, lw=0.3,
-                         edgecolor='k', label=db_lab, zorder=3)
+                         edgecolor='k', zorder=3)
         # Plot error bars.
-        if xsigma:
-            for k, xy in enumerate(zip(*[xarr, yarr])):
-                if xsigma[k] > 0.:
-                    plt.errorbar(xy[0], xy[1], xerr=xsigma[k], ls='none',
-                                 color='k', elinewidth=0.2, zorder=1)
-        if ysigma:
-            for k, xy in enumerate(zip(*[xarr, yarr])):
-                if ysigma[k] > 0:
-                    plt.errorbar(xy[0], xy[1], yerr=ysigma[k], ls='none',
-                                 color='k', elinewidth=0.2, zorder=1)
+        # x axis error
+        for k, xy in enumerate(zip(*[xarr, yarr])):
+            if xsigma[k] > 0.:
+                plt.errorbar(xy[0], xy[1], xerr=xsigma[k], ls='none',
+                             color='k', elinewidth=0.2, zorder=1)
+        # y axis error
+        for k, xy in enumerate(zip(*[xarr, yarr])):
+            if ysigma[k] > 0:
+                plt.errorbar(xy[0], xy[1], yerr=ysigma[k], ls='none',
+                             color='k', elinewidth=0.2, zorder=1)
     if text_box:
         # Text box.
         ob = offsetbox.AnchoredText(text_box, loc=1,
@@ -1238,9 +1237,9 @@ def cross_match_ip_plot_mass(pl_params):
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
         # Position colorbar.
-        axColor = plt.axes([0.885, 0.72, 0.1, 0.023])
+        axColor = plt.axes([0.885, 0.75, 0.1, 0.023])
         cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
-        cbar.set_label(r'$\Delta \log(age/yr)$', fontsize=xy_font_s - 2,
+        cbar.set_label(r'$\Delta \log(age/yr)$', fontsize=xy_font_s - 3,
                        labelpad=-55)
         cbar.set_ticks([-1., 0., 1.])
         cbar.ax.tick_params(labelsize=xy_font_s - 10)
@@ -1265,7 +1264,7 @@ def make_cross_match_ip_mass(cross_match):
     print 'Correlation H03+P12 vs Delta mass: {:0.2f}'.format(corr_h03_p12[0])
 
     # Separate clusters with mass < m_limit
-    m_low, m_med, m_lar = 5000., 20000., 100000.
+    m_low, m_med = 5000., 20000.
     h03_l_mass, p12_l_mass, h03_m_mass, p12_m_mass, h03_h_mass, p12_h_mass =\
         [], [], [], [], [], []
     for cl in zip(*h03):
@@ -1274,8 +1273,9 @@ def make_cross_match_ip_mass(cross_match):
             h03_l_mass.append(cl)
         elif m_low < cl[8] <= m_med:
             h03_m_mass.append(cl)
-        elif m_med < cl[8]: # <= m_lar:
+        elif m_med < cl[8]:
             h03_h_mass.append(cl)
+            print 'Large mass H03 OC:', cl
     h03_l_mass = zip(*h03_l_mass)
     h03_m_mass = zip(*h03_m_mass)
     h03_h_mass = zip(*h03_h_mass)
@@ -1286,6 +1286,7 @@ def make_cross_match_ip_mass(cross_match):
             p12_m_mass.append(cl)
         elif m_med < cl[8]:
             p12_h_mass.append(cl)
+            print 'Large mass P12 OC:', cl
     p12_l_mass = zip(*p12_l_mass)
     p12_m_mass = zip(*p12_m_mass)
     p12_h_mass = zip(*p12_h_mass)
@@ -1395,8 +1396,7 @@ def make_cross_match_ip_mass(cross_match):
         np.array(p12_h_mass[8]), np.array(p12_h_mass[9])
     p12_delta_err_h = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
 
-    # Colors for OCs.
-    # Use age deltas, ASteCA-DBs
+    # Low mass ASteCA-DBs. Use age deltas for Colors.
     colors_h03_l, colors_p12_l = np.array(h03_l_mass[4]) -\
         np.array(h03_l_mass[2]), np.array(p12_l_mass[4]) -\
         np.array(p12_l_mass[2])
@@ -1404,38 +1404,41 @@ def make_cross_match_ip_mass(cross_match):
                     h03_delta_err_l, h03_l_mass[19], colors_h03_l],
                    [p12_l_mass[8], p12_l_mass[9], p12_mass_diff_l,
                     p12_delta_err_l, p12_l_mass[19], colors_p12_l]]
-    # Use age deltas, ASteCA-DBs
+    # Medium mass ASteCA-DBs.
     colors_h03_m, colors_p12_m = np.array(h03_m_mass[4]) -\
         np.array(h03_m_mass[2]), np.array(p12_m_mass[4]) -\
         np.array(p12_m_mass[2])
-    delta_DBs_m = [[np.array(h03_m_mass[8])/10.**4, h03_m_mass[9], h03_mass_diff_m,
+    scale = 10.**4
+    delta_DBs_m = [[np.array(h03_m_mass[8])/scale,
+                    np.array(h03_m_mass[9])/scale, h03_mass_diff_m,
                     h03_delta_err_m, h03_m_mass[19], colors_h03_m],
-                   [p12_m_mass[8], p12_m_mass[9], p12_mass_diff_m,
+                   [np.array(p12_m_mass[8])/scale,
+                    np.array(p12_m_mass[9])/scale, p12_mass_diff_m,
                     p12_delta_err_m, p12_m_mass[19], colors_p12_m]]
-    # Colors for OCs.
-    # Use age deltas, ASteCA-DBs
+    # Large mass ASteCA-DBs.
     colors_h03_h, colors_p12_h = np.array(h03_h_mass[4]) -\
         np.array(h03_h_mass[2]), np.array(p12_h_mass[4]) -\
         np.array(p12_h_mass[2])
-    delta_DBs_h = [[np.array(h03_h_mass[8])/10.**4, h03_h_mass[9], h03_mass_diff_h,
+    delta_DBs_h = [[np.array(h03_h_mass[8])/scale,
+                    np.array(h03_h_mass[9])/scale, h03_mass_diff_h,
                     h03_delta_err_h, h03_h_mass[19], colors_h03_h],
-                   [p12_h_mass[8], p12_h_mass[9], p12_mass_diff_h,
+                   [np.array(p12_h_mass[8])/scale,
+                    np.array(p12_h_mass[9])/scale, p12_mass_diff_h,
                     p12_delta_err_h, p12_h_mass[19], colors_p12_h]]
 
     # Define data to pass.
     databases = [delta_DBs_l, delta_DBs_m, delta_DBs_h]
 
     # Labels for each defined plot.
-    labels_mass = ['H03', 'P12']
     mark_mass = ['v', 'o']
     cols_mass = ['m', 'b']
 
     # Define names of arrays being plotted.
     x_lab = ['$M_{DBs}\,[M_{\odot}]$', '$M_{DBs}\,[10^{-4}M_{\odot}]$']
     y_lab = [r'$\overline{\Delta M_r}\;\;(\mathtt{ASteCA}-DBs)$', '']
-    l_mass_lims = [-50., 4990., -1.19, 1.3]
-    m_mass_lims = [0.5, 2.05, -1.19, 0.6]
-    h_mass_lims = [2.05, 10.5, -1.05, -0.42]
+    l_mass_lims = [-50., 4990., -1.19, 1.19]
+    m_mass_lims = [0.5, 2.05, -1.19, 0.45]
+    h_mass_lims = [2.05, 10.6, -1.02, -0.51]
 
     # Arbitrary size so plots are actually squared.
     fig = plt.figure(figsize=(19.3, 6.3))
@@ -1444,16 +1447,16 @@ def make_cross_match_ip_mass(cross_match):
     cross_match_lst = [
         # Mass cross_match (low mass)
         [gs, 0, l_mass_lims[0], l_mass_lims[1], l_mass_lims[2], l_mass_lims[3],
-         x_lab[0], y_lab[0], labels_mass, mark_mass, cols_mass,
+         x_lab[0], y_lab[0], mark_mass, cols_mass,
          '$M_{DBs}\leq 5000\,[M_{\odot}]$', databases[0], comb_rel_delta_l],
         # Mass cross_match (medium masses)
         [gs, 1, m_mass_lims[0], m_mass_lims[1], m_mass_lims[2], m_mass_lims[3],
-         x_lab[1], y_lab[1], labels_mass, mark_mass, cols_mass,
+         x_lab[1], y_lab[1], mark_mass, cols_mass,
          '$5000<M_{DBs}\leq 20000\,[M_{\odot}]$', databases[1],
          comb_rel_delta_m],
         # Mass cross_match (large masses)
         [gs, 2, h_mass_lims[0], h_mass_lims[1], h_mass_lims[2], h_mass_lims[3],
-         x_lab[1], y_lab[1], labels_mass, mark_mass, cols_mass,
+         x_lab[1], y_lab[1], mark_mass, cols_mass,
          '$M_{DBs}>20000\,[M_{\odot}]$', databases[2], comb_rel_delta_h]
     ]
 
@@ -2121,11 +2124,11 @@ def h03_p12_mass_plots(pl_params):
     # ob.patch.set(alpha=0.5)
     # ax.add_artist(ob)
     # Position colorbar.
-    if i == 3:
-        axColor = plt.axes([0.26, 0.63, 0.1, 0.005])
+    if i == 2:
+        axColor = plt.axes([0.885, 0.2, 0.1, 0.023])
         cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
-        cbar.set_label(z_lab, fontsize=xy_font_s - 3, labelpad=-55)
-        cbar.set_ticks([-1., 0., 1., 2.])
+        cbar.set_label(z_lab, fontsize=xy_font_s - 3, labelpad=-45)
+        cbar.set_ticks([-2., -1., 0., 1.])
         cbar.ax.tick_params(labelsize=xy_font_s - 10)
 
 
@@ -2135,59 +2138,85 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
     """
     a_h03, a_p12, m_h03, m_p12 = cross_match_h03_p12
 
-    a_le, a_gt, m_le, m_gt = [[], []], [[], []], [[], []], [[], []]
+    a_l, a_m, a_g, m_l, m_m, m_g = [[], []], [[], []], [[], []], [[], []],\
+        [[], []], [[], []]
+    m_low, m_med = 5000., 20000.
     for i, a_h in enumerate(a_h03):
         a_p, m_h, m_p = a_p12[i], m_h03[i], m_p12[i]
+        avr_mass = .5 * (m_h + m_p)
         # Separate by average mass limit.
-        if .5*(m_h + m_p) <= 5000.:
-            a_le[0].append(a_p)
-            a_le[1].append(a_h)
-            m_le[0].append(m_p)
-            m_le[1].append(m_h)
-        elif 5000. < .5*(m_h + m_p) <= 20000.:
-        # else:
-            a_gt[0].append(a_p)
-            a_gt[1].append(a_h)
-            m_gt[0].append(m_p)
-            m_gt[1].append(m_h)
-            if .5*(m_h + m_p) > 100000.:
-                print m_h, m_p, .5*(m_h + m_p)
+        if avr_mass <= m_low:
+            a_l[0].append(a_p)
+            a_l[1].append(a_h)
+            m_l[0].append(m_p)
+            m_l[1].append(m_h)
+        elif m_low < avr_mass <= m_med:
+            a_m[0].append(a_p)
+            a_m[1].append(a_h)
+            m_m[0].append(m_p)
+            m_m[1].append(m_h)
+        elif m_med < avr_mass:
+            a_g[0].append(a_p)
+            a_g[1].append(a_h)
+            m_g[0].append(m_p)
+            m_g[1].append(m_h)
+            if avr_mass > 100000.:
+                print 'Large average DB mass OCs:', m_h, m_p, avr_mass
 
     # Mean & StandDev. P12-H03
-    m_le_delta = (np.array(m_le[0]) - np.array(m_le[1])) /\
-        (np.array(m_le[0]) + np.array(m_le[1]))
-    m_le_mean_std = [np.mean(m_le_delta), np.std(m_le_delta)]
-    a_le_delta = np.array(a_le[0]) - np.array(a_le[1])
-    #
-    m_gt_delta = (np.array(m_gt[0]) - np.array(m_gt[1])) /\
-        (np.array(m_gt[0]) + np.array(m_gt[1]))
-    m_gt_mean_std = [np.mean(m_gt_delta), np.std(m_gt_delta)]
-    a_gt_delta = np.array(a_gt[0]) - np.array(a_gt[1])
+    # Low mass region.
+    m_l_delta = (np.array(m_l[0]) - np.array(m_l[1])) /\
+        (np.array(m_l[0]) + np.array(m_l[1]))
+    m_l_mean_std = [np.mean(m_l_delta), np.std(m_l_delta)]
+    print 'Low mass Delta M_r mean +- std:', m_l_mean_std
+    a_l_delta = np.array(a_l[0]) - np.array(a_l[1])
+    # Medium mass region.
+    m_m_delta = (np.array(m_m[0]) - np.array(m_m[1])) /\
+        (np.array(m_m[0]) + np.array(m_m[1]))
+    m_m_mean_std = [np.mean(m_m_delta), np.std(m_m_delta)]
+    print 'Medium mass Delta M_r mean +- std:', m_m_mean_std
+    a_m_delta = np.array(a_m[0]) - np.array(a_m[1])
+    # Large mass region.
+    m_g_delta = (np.array(m_g[0]) - np.array(m_g[1])) /\
+        (np.array(m_g[0]) + np.array(m_g[1]))
+    m_g_mean_std = [np.mean(m_g_delta), np.std(m_g_delta)]
+    print 'Large mass Delta M_r mean +- std:', m_g_mean_std
+    a_g_delta = np.array(a_g[0]) - np.array(a_g[1])
 
     scale = 10**4
-    mass_le_avrg = ((np.array(m_le[0]) + np.array(m_le[1])) * 0.5) / scale
-    mass_gt_avrg = ((np.array(m_gt[0]) + np.array(m_gt[1])) * 0.5) / scale
+    mass_l_avrg = ((np.array(m_l[0]) + np.array(m_l[1])) * 0.5)
+    mass_m_avrg = ((np.array(m_m[0]) + np.array(m_m[1])) * 0.5) / scale
+    mass_g_avrg = ((np.array(m_g[0]) + np.array(m_g[1])) * 0.5) / scale
 
     # Generate ASteca vs literature plots.
-    fig = plt.figure(figsize=(18.5, 31.25))  # create the top-level container
-    gs = gridspec.GridSpec(5, 3)
+    fig = plt.figure(figsize=(19.3, 6.3))
+    gs = gridspec.GridSpec(1, 3)
 
-    xmin, xmax = [0.001, 0.25], [0.52, 9.9]
-    ymin, ymax = [-1.3, -1.3], [1.4, 0.9]
-    cbar_min, cbar_max = -1., 2.
+    xmin, xmax = [-50., 0.5, 2.05], [5000., 2.05, 10.5]
+    ymin, ymax = [-1.19, -1.19, -1.29], [1.3, 1.19, 0.7]
+
+    cbar_min = min(a_l_delta.min(), a_m_delta.min(), a_g_delta.min())
+    cbar_max = max(a_l_delta.max(), a_m_delta.max(), a_g_delta.max())
+    print 'Delta age min, max:', cbar_min, cbar_max
 
     as_lit_pl_lst = [
-        # H03 vs P12 masses.
-        [gs, 0, xmin[0], xmax[0], ymin[0], ymax[0], '',
+        # Low H03 vs P12 masses.
+        [gs, 0, xmin[0], xmax[0], ymin[0], ymax[0],
+         r'$\overline{M}_{DBs}\,[M_{\odot}]$',
          r'$\overline{\Delta M_r}\;\;(P12-H03)$', '',
-         mass_le_avrg,
-         m_le_delta, a_le_delta, cbar_min, cbar_max,
-         m_le_mean_std, r'$\overline{M}_{DBs}\leq 5000\,[M_{\odot}]$'],
-        [gs, 3, xmin[1], xmax[1], ymin[1], ymax[1],
-         r'$\overline{M}_{DBs}\,[10^{-4} M_{\odot}]$',
-         r'$\overline{\Delta M_r}\;\;(P12-H03)$', r'$\Delta \log(age/yr)$',
-         mass_gt_avrg, m_gt_delta, a_gt_delta, cbar_min, cbar_max,
-         m_gt_mean_std, r'$5000<\overline{M}_{DBs}<100000\,[M_{\odot}]$']
+         mass_l_avrg, m_l_delta, a_l_delta, cbar_min, cbar_max,
+         m_l_mean_std, r'$\overline{M}_{DBs}\leq 5000\,[M_{\odot}]$'],
+        # Medium H03 vs P12 masses.
+        [gs, 1, xmin[1], xmax[1], ymin[1], ymax[1],
+         r'$\overline{M}_{DBs}\,[10^{-4} M_{\odot}]$', '', '',
+         mass_m_avrg, m_m_delta, a_m_delta, cbar_min, cbar_max,
+         m_m_mean_std, r'$5000<\overline{M}_{DBs}\leq 20000\,[M_{\odot}]$'],
+        # Large H03 vs P12 masses.
+        [gs, 2, xmin[2], xmax[2], ymin[2], ymax[2],
+         r'$\overline{M}_{DBs}\,[10^{-4} M_{\odot}]$', '',
+         r'$\Delta \log(age/yr)$',
+         mass_g_avrg, m_g_delta, a_g_delta, cbar_min, cbar_max,
+         m_g_mean_std, r'$\overline{M}_{DBs}>20000\,[M_{\odot}]$']
     ]
 
     for pl_params in as_lit_pl_lst:
