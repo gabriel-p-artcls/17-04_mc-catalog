@@ -13,7 +13,7 @@ from functions.make_all_plots import make_as_vs_lit_plot,\
     make_concent_plot, make_radius_plot, make_probs_CI_plot, \
     make_cross_match_ip_age, make_cross_match_ip_mass, make_cross_match_if, \
     make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot,\
-    make_cross_match_h03_p12
+    make_cross_match_h03_p12, make_age_mass_corr
 
 
 def rpath_fig_folder():
@@ -192,34 +192,38 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match,
         print "Cross match BA plot for H03 vs P12."
 
     if '9' in plots:
+        make_age_mass_corr(cross_match, cross_match_h03_p12)
+        print "Age vs mass delta plots for ASteCA, P12, H03."
+
+    if '10' in plots:
         CMD_large_mass(r_path, in_params)
         print "CMDs for large mass clusters."
 
-    if '10' in plots:
+    if '11' in plots:
         make_kde_plots(in_params)
         print 'KDE maps.'
 
-    if '11' in plots:
+    if '12' in plots:
         make_amr_plot(in_params, amr_lit)
         print 'AMR maps.'
 
-    if '12' in plots:
+    if '13' in plots:
         make_radius_plot(in_params)
         print 'ASteCA radius (pc) vs parameters plot.'
 
-    if '13' in plots:
+    if '14' in plots:
         make_lit_ext_plot(in_params)
         print 'ASteCA vs MCEV vs SandF extinction plot.'
 
-    if '14' in plots:
+    if '15' in plots:
         make_int_cols_plot(in_params)
         print 'Integrated colors plot.'
 
-    if '15' in plots:
+    if '16' in plots:
         make_concent_plot(in_params)
         print 'Concentration parameter plot.'
 
-    if '16' in plots:
+    if '17' in plots:
         make_probs_CI_plot(in_params)
         print 'ASteCA probabilities versus CI.'
 
@@ -238,33 +242,26 @@ def main():
     check_diffs(in_params)
 
     # Define which plots to produce.
-    plots = ['8']
+    plots = ['9']
 
+    bica_coords, cross_match, cross_match_h03_p12, amr_lit = [], [], [], []
     # Only obtain data if the plot is being generated.
     if '0' in plots:
         # Read Bica et al. (2008) database.
         bica_coords = get_bica_database()
         print 'Bica et al. (2008) data read.'
-    else:
-        bica_coords = []
-    if '6' in plots or '7' in plots:
+    if any(i in ['6', '7', '9'] for i in plots):
         # Read cross-matched ASteCA clusters.
         cross_match = get_cross_match_asteca(r_path)
         print 'Cross-matched ASteCA data read.'
-    else:
-        cross_match = []
-    if '8' in plots:
+    if any(i in ['8', '9'] for i in plots):
         # Read cross-matched H03,P12 clusters.
         cross_match_h03_p12 = get_cross_match_h03_p12(r_path)
         print 'Cross-matched H03,P12 data read.'
-    else:
-        cross_match_h03_p12 = []
-    if '11' in plots:
+    if '12' in plots:
         # Read AMR data from other articles.
         amr_lit = get_amr_lit()
         print 'AMR data from literature read.'
-    else:
-        amr_lit = []
 
     # Make final plots.
     print 'Plotting...\n'

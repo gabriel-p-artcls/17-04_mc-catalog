@@ -2225,3 +2225,122 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/H03_P12_mass.png', dpi=300, bbox_inches='tight')
+
+
+def age_mass_corr_plot(pl_params):
+    '''
+    Generate plots for the cross-matched isochrone fitted OCs.
+    '''
+    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, data, labels, mark, cols, \
+        kde_cont = pl_params
+
+    xy_font_s = 21
+    ax = plt.subplot(gs[i])
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    plt.xlabel(x_lab, fontsize=xy_font_s)
+    plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+            zorder=1)
+    ax.minorticks_on()
+    ax.tick_params(labelsize=13)
+    if i == 1:
+        ax.set_yticklabels([])
+
+    # Origin lines.
+    plt.plot([-10, 10], [0., 0.], 'k', ls='--')
+    plt.plot([0., 0.], [-10, 10], 'k', ls='--')
+    # Plot all clusters.
+    xarr, yarr = data[0], data[1]
+    plt.scatter(xarr, yarr, marker=mark, c=cols, s=50,
+                lw=0.25, edgecolor='w', label=labels, zorder=0)
+    # Plot KDE.
+    x, y, kde = kde_cont
+    plt.contour(x, y, kde, 5, colors='k', linewidths=1.5, zorder=5)
+
+    # Legend.
+    leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
+                     fontsize=xy_font_s - 7)
+    # Set the alpha value of the legend.
+    leg.get_frame().set_alpha(0.5)
+    ax.set_aspect('auto')
+
+
+def make_age_mass_corr(cross_match, cross_match_h03_p12):
+    '''
+    Plot the differences between extinction and age for ASteCA values versus
+    Washington values (ie: Piatti et al. values) and ASteCA values versus
+    the databases where the isochrone fitting method was used.
+    '''
+    # unpack databases.
+    h03, p12 = cross_match[2], cross_match[6]
+    a_h03, a_p12, m_h03, m_p12 = cross_match_h03_p12
+
+    # Define lists of difference between ages and extinctions.
+    # Age indexes (DB, ASteCA) -> 2, 4
+    # Mass indexes (DB, ASteCA) -> 8, 10
+
+    # ASteCA minus database log(age) diffs.
+    diffs_ages_h03 = np.array(h03[4]) - np.array(h03[2])
+    diffs_ages_p12 = np.array(p12[4]) - np.array(p12[2])
+    # Combine into single list
+    as_h03_p12_ages = list(diffs_ages_h03) + list(diffs_ages_p12)
+
+    # ASteCA minus database log(mass) diffs.
+    diffs_mass_h03 = np.log(np.array(h03[10])) - np.log(np.array(h03[8]))
+    diffs_mass_p12 = np.log(np.array(p12[10])) - np.log(np.array(p12[8]))
+    # Combine into single list
+    as_h03_p12_mass = list(diffs_mass_h03) + list(diffs_mass_p12)
+
+    # P12-H03 ages and masses.
+    p12_h03_ages = np.array(a_p12) - np.array(a_h03)
+    p12_h03_mass = np.log(np.array(m_p12)) - np.log(np.array(m_h03))
+
+    # Order data to plot.
+    age_mass_data = [[as_h03_p12_ages, as_h03_p12_mass],
+                     [p12_h03_ages, p12_h03_mass]]
+
+    xmm = [-1.95, 1.95]
+    ymm = [-3.95, 3.95]
+    # Obtain a Gaussian KDE for each plot.
+    # Define x,y grid.
+    gd_c = complex(0, 100)
+    kde_cont = []
+    for xarr, yarr in age_mass_data:
+        values = np.vstack([xarr, yarr])
+        kernel = stats.gaussian_kde(values)
+        xmin, xmax, ymin, ymax = xmm[0], xmm[1], ymm[0], ymm[1]
+        x, y = np.mgrid[xmin:xmax:gd_c, ymin:ymax:gd_c]
+        positions = np.vstack([x.ravel(), y.ravel()])
+        # Evaluate kernel in grid positions.
+        k_pos = kernel(positions)
+        kde = np.reshape(k_pos.T, x.shape)
+        kde_cont.append([x, y, kde])
+
+    # Define names of arrays being plotted.
+    x_lab = ['$\Delta \log(age/yr)_{\mathtt{ASteCA}-DBs}$',
+             '$\Delta \log(age/yr)_{P12-H03}$']
+    y_lab = ['$\Delta \log(M/M_{\odot})$', '']
+    labels = ['$\mathtt{ASteCA}-DBs$', 'P12-H03']
+    mark = ['>', '^']
+    cols = ['c', 'm']
+
+    # Arbitrary size so plots are actually squared.
+    fig = plt.figure(figsize=(17, 6))
+    gs = gridspec.GridSpec(1, 3)
+
+    cross_match_lst = [
+        # Age vs mass delta plots for ASteCA-DBs
+        [gs, 0, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[0], y_lab[0],
+            age_mass_data[0], labels[0], mark[0], cols[0], kde_cont[0]],
+        # Age vs mass delta plots for P12-H03
+        [gs, 1, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[1], y_lab[1],
+            age_mass_data[1], labels[1], mark[1], cols[1], kde_cont[1]]
+    ]
+
+    for pl_params in cross_match_lst:
+        age_mass_corr_plot(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    plt.savefig('figures/age_mass_corr.png', dpi=300, bbox_inches='tight')
