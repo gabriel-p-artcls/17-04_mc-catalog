@@ -82,8 +82,8 @@ def check_diffs(in_params):
                     rel_diff = aarr[j][1][i] - aarr[j][0][i]
                     print ("{}-{} & {:.5f} & {:.5f} & {:.2f} & "
                            "{:.2f} & {:.2f}\\\\".format(
-                            gal[j][0], name, ra[j][i], dec[j][i],
-                            aarr[j][1][i], aarr[j][0][i], rel_diff))
+                               gal[j][0], name, ra[j][i], dec[j][i],
+                               aarr[j][1][i], aarr[j][0][i], rel_diff))
 
         print '{}, Clusters with \delta log(age)>{}: {}\n'.format(
             gal[j], a_diff, len(age_diff))
@@ -94,7 +94,7 @@ def check_diffs(in_params):
             for i, (ma, ml) in enumerate(zip(*[marr[0][0], marr[0][1]])):
                 if abs(ml) < 5000:
                     print '{}: {} - {} = {}, {}'.format(
-                        gal_names[j][i], ma, ml, ma-ml, cont_ind[0][i])
+                        gal_names[j][i], ma, ml, ma - ml, cont_ind[0][i])
                     m_lim = 1500.
                     if abs(ma-ml) < m_lim:
                         avrg_mass.append(ma-ml)
@@ -161,8 +161,8 @@ def check_diffs(in_params):
             if e_rgc < e_rgc_max:
                 print ("OCs w e_R_gc < {}: {} / ra, dec, dm, e_dm: "
                        "{}, {}, {}, {}".format(
-                            e_rgc_max, gal_names[j][i], ra[j][i],
-                            dec[j][i], darr[j][0][i], dsigma[j][0][i]))
+                           e_rgc_max, gal_names[j][i], ra[j][i],
+                           dec[j][i], darr[j][0][i], dsigma[j][0][i]))
 
         print '\nAverage ASteCA E(B-V) for the {}: {} +- {}'.format(
             gal[j], np.mean(earr[j][0]), np.std(earr[j][0]))
@@ -171,7 +171,7 @@ def check_diffs(in_params):
         print 'Average ASteCA radius for the {}: {}'.format(
             gal[j], np.mean(rarr[j][0]))
         print 'Average ASteCA density for the {}: {}'.format(
-            gal[j], np.mean(n_memb[j]/(np.pi*np.array(rarr[j][0])**2)))
+            gal[j], np.mean(n_memb[j] / (np.pi*np.array(rarr[j][0])**2)))
 
         print '\nMean literature e_log(age) for {}: {}\n'.format(
             gal[j], np.mean(asigma[j][1]))
