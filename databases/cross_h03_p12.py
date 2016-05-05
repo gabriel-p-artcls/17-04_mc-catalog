@@ -23,6 +23,7 @@ def find_dup_cls_in_database(db_name, db):
     (where 'quality' is present only for the H03 database)
     '''
 
+    print '\n\nDuplicated entries found in {}'.format(db_name)
     dup_names, dup_vals = [[] for _ in db], [[] for _ in db]
     indx_dup = []
     for i, el1 in enumerate(db):
@@ -354,7 +355,7 @@ def main():
     idx, d2d, d3d = cp12.match_to_catalog_sky(ch03)
 
     # Write cross-matched data to file.
-    # write_out_data(h03, p12, idx, d2d)
+    write_out_data(h03, p12, idx, d2d)
 
     # Some stats on this data.
     print '\n\n'
@@ -363,37 +364,38 @@ def main():
     for i, j in enumerate(idx):
         if d2d[i].deg < 0.00556:  # 20 arcsec ~ 0.00556
             n += 1
-            if .5*(h03[j][4]+p12[i][4]) <= 500000.:
-                m_le[0].append(h03[j][4])
-                m_le[1].append(p12[i][4])
-            else:
-                m_gt[0].append(h03[j][4])
-                m_gt[1].append(p12[i][4])
-            if .5*(h03[j][4]+p12[i][4]) > 100000.:
-                print p12[i][1], p12[i][-1][0], p12[i][-1][1],\
-                    h03[j][2], p12[i][2],  h03[j][4], p12[i][4]
+            # if .5*(h03[j][4]+p12[i][4]) <= 500000.:
+            #     m_le[0].append(h03[j][4])
+            #     m_le[1].append(p12[i][4])
+            # else:
+            #     m_gt[0].append(h03[j][4])
+            #     m_gt[1].append(p12[i][4])
+            # if .5*(h03[j][4]+p12[i][4]) > 100000.:
+            #     print p12[i][1], p12[i][-1][0], p12[i][-1][1],\
+            #         h03[j][2], p12[i][2],  h03[j][4], p12[i][4]
         else:
             # OCs in P12 not matched in H03.
-            # print d2d[i].deg, p12[i]
+            print d2d[i].deg, p12[i][1], p12[i][-1][0], p12[i][-1][1],\
+                h03[j][2], p12[i][2], h03[j][4], p12[i][4]
             pass
 
     print '\nOCs in H03, P12:', len(h03), len(p12)
     print 'OCs matched:', n
 
-    f, (ax1, ax2) = plt.subplots(1, 2)
+    # f, (ax1, ax2) = plt.subplots(1, 2)
 
-    ax1.set_xlabel('0.5*(P12+H03)>5000')
-    ax1.set_ylabel('H03-P12')
-    ax1.scatter(np.log((np.array(m_le[0])+np.array(m_le[1]))/2.),
-                np.array(m_le[0]) - np.array(m_le[1]), c='r')
+    # ax1.set_xlabel('0.5*(P12+H03)>5000')
+    # ax1.set_ylabel('H03-P12')
+    # ax1.scatter(np.log((np.array(m_le[0])+np.array(m_le[1]))/2.),
+    #             np.array(m_le[0]) - np.array(m_le[1]), c='r')
 
-    ax2.set_xlabel('0.5*(P12+H03)<5000')
-    ax2.set_ylabel('H03-P12')
-    ax2.scatter(np.log((np.array(m_le[0])+np.array(m_le[1]))/2.),
-                (np.array(m_le[0]) - np.array(m_le[1])) /
-                (np.array(m_le[0])+np.array(m_le[1])), c='b')
+    # ax2.set_xlabel('0.5*(P12+H03)<5000')
+    # ax2.set_ylabel('H03-P12')
+    # ax2.scatter(np.log((np.array(m_le[0])+np.array(m_le[1]))/2.),
+    #             (np.array(m_le[0]) - np.array(m_le[1])) /
+    #             (np.array(m_le[0])+np.array(m_le[1])), c='b')
 
-    plt.show()
+    # plt.show()
 
 if __name__ == "__main__":
     main()
