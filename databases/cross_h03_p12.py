@@ -364,15 +364,15 @@ def main():
     for i, j in enumerate(idx):
         if d2d[i].deg < 0.00556:  # 20 arcsec ~ 0.00556
             n += 1
-            # if .5*(h03[j][4]+p12[i][4]) <= 500000.:
-            #     m_le[0].append(h03[j][4])
-            #     m_le[1].append(p12[i][4])
-            # else:
-            #     m_gt[0].append(h03[j][4])
-            #     m_gt[1].append(p12[i][4])
-            # if .5*(h03[j][4]+p12[i][4]) > 100000.:
-            #     print p12[i][1], p12[i][-1][0], p12[i][-1][1],\
-            #         h03[j][2], p12[i][2],  h03[j][4], p12[i][4]
+            if .5*(h03[j][4]+p12[i][4]) <= 500000.:
+                m_le[0].append(h03[j][4])
+                m_le[1].append(p12[i][4])
+            else:
+                m_gt[0].append(h03[j][4])
+                m_gt[1].append(p12[i][4])
+            if .5*(h03[j][4]+p12[i][4]) > 100000.:
+                print p12[i][1], p12[i][-1][0], p12[i][-1][1],\
+                    h03[j][2], p12[i][2],  h03[j][4], p12[i][4]
         else:
             # OCs in P12 not matched in H03.
             print d2d[i].deg, p12[i][1], p12[i][-1][0], p12[i][-1][1],\
