@@ -55,30 +55,21 @@ photometry.
  [Bonato & Bica (2010)](http://cdsads.u-strasbg.fr/abs/2010MNRAS.403..996B).
  Only 285 out of the 690 clusters have an age value assigned.
 
-* `chiosi_06.dat`
+* `McL_vdM05.dat`
 
- Contains 311 SMC clusters younger than 1 Gyr (ages determined using isochrone
- fitting) from the work by [Chiosi et al. (2006)](http://adsabs.harvard.edu/
- abs/2006A%26A...452..179C). Also lists several other structures/objects, ie:
- association, supernovas, H II regions and entities in between.
+ Masses from [McLaughlin & van der Marel (2005)](http://adsabs.harvard.edu/
+ abs/2005ApJS..161..304M). Only three OCs could be cross matched: LMC-NGC1860,
+ LMC-SL663, and SMC-NGC339.
 
-* `cross_match.py`
+* `pietrz_99_SMC.dat`
 
- Matches the data in the above databases to those clusters processed by
- ASteCA.
+ Ages for 93 SMC clusters obtained in [Pietrzynski & Udalski (1999)](http://
+ adsabs.harvard.edu/abs/1999AcA....49..157P).
 
-* `glatt_10.dat`
+* `pietrz_00_LMC.dat`
 
- CMD ages taken from the [Glatt et al. (2010)](http://www.aanda.org/10.1051/
- 0004-6361/201014187) catalog for 1194 LMC clusters and 322 SMC clusters.
-
-* `H03_duplicated_clusters.ods`
-
- List of duplicated entries in the H03 database.
-
-* `DBs_cross_match_analy.ods`
-
- Analysis of the age differences between matched clusters (not important).
+  Ages for 600 LMC clusters obtained in [Pietrzynski & Udalski (2000)](http://
+  adsabs.harvard.edu/abs/2000AcA....50..337P).
 
 * `hunter_03.dat`
 
@@ -86,25 +77,23 @@ photometry.
   abs/2003AJ....126.1836H), 748 belong to the LMC and 191 to the SMC for a
   total of 939 clusters.
 
-* `matched_clusters.dat`
+* `rafelski_05_SMC.dat`
 
- Final data file with all matched clusters between **ASteCA** and the
- databases in the literature.
+  Ages for 195 SMC clusters from [Rafelski & Zaritsky (2005)](http://
+  adsabs.harvard.edu/abs/2005AJ....129.2701R), obtained via
+  integrated photometry.
 
-* `matched_clusters_G10.dat`
+* `chiosi_06.dat`
 
- Idem above but using the G10 data as input to match with the P99, P00, and
- C06 databases, and compare their ages.
+ Contains 311 SMC clusters younger than 1 Gyr (ages determined using isochrone
+ fitting) from the work by [Chiosi et al. (2006)](http://adsabs.harvard.edu/
+ abs/2006A%26A...452..179C). Also lists several other structures/objects, ie:
+ association, supernovas, H II regions and entities in between.
 
-* `pietrz_00_LMC.dat`
+* `glatt_10.dat`
 
-  Ages for 600 LMC clusters obtained in [Pietrzynski & Udalski (2000)](http://
-  adsabs.harvard.edu/abs/2000AcA....50..337P).
-
-* `pietrz_99_SMC.dat`
-
- Ages for 93 SMC clusters obtained in [Pietrzynski & Udalski (1999)](http://
- adsabs.harvard.edu/abs/1999AcA....49..157P).
+ CMD ages taken from the [Glatt et al. (2010)](http://www.aanda.org/10.1051/
+ 0004-6361/201014187) catalog for 1194 LMC clusters and 322 SMC clusters.
 
 * `popescu_12_LMC.dat`
 
@@ -117,11 +106,28 @@ photometry.
  Idem above, but also adds ages taken from the *Glatt et al.* catalog, for
  288 clusters in the *Hunter et al.* catalog.
 
-* `rafelski_05_SMC.dat`
+* `cross_match.py`
 
-  Ages for 195 SMC clusters from [Rafelski & Zaritsky (2005)](http://
-  adsabs.harvard.edu/abs/2005AJ....129.2701R), obtained via
-  integrated photometry.
+ Matches the data in the above databases to those clusters processed by
+ ASteCA.
+
+* `matched_clusters.dat`
+
+ Final data file with all matched clusters between **ASteCA** and the
+ databases in the literature.
+
+* `matched_clusters_G10.dat`
+
+ Idem above but using the G10 data as input to match with the P99, P00, and
+ C06 databases, and compare their ages.
+
+* `cross_h03_p12.py`
+
+ Matches the data in the H03 and P12 databases.
+
+* `matched_H03_P12.dat`
+
+ Crossed-matched OCs from H03 and P12.
 
 
 ### `AMRs/`
