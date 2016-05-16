@@ -1400,38 +1400,39 @@ def make_cross_match_ip_mass(cross_match):
     colors_h03_l, colors_p12_l = np.array(h03_l_mass[4]) -\
         np.array(h03_l_mass[2]), np.array(p12_l_mass[4]) -\
         np.array(p12_l_mass[2])
+    # Use this for averaged values in the x axis. Replace these lists in the 0th
+    # positions of both sub-lists, in the delta_DBs_X lists.
     h03_avr_l_mass = (np.array(h03_l_mass[10]) + np.array(h03_l_mass[8])) / 2.
     p12_avr_l_mass = (np.array(p12_l_mass[10]) + np.array(p12_l_mass[8])) / 2.
-    # h03_l_mass[8], p12_l_mass[8]
-    delta_DBs_l = [[h03_avr_l_mass, h03_l_mass[9], h03_mass_diff_l,
+    delta_DBs_l = [[h03_l_mass[8], h03_l_mass[9], h03_mass_diff_l,
                     h03_delta_err_l, h03_l_mass[19], colors_h03_l],
-                   [p12_avr_l_mass, p12_l_mass[9], p12_mass_diff_l,
+                   [p12_l_mass[8], p12_l_mass[9], p12_mass_diff_l,
                     p12_delta_err_l, p12_l_mass[19], colors_p12_l]]
     # Medium mass ASteCA-DBs.
     colors_h03_m, colors_p12_m = np.array(h03_m_mass[4]) -\
         np.array(h03_m_mass[2]), np.array(p12_m_mass[4]) -\
         np.array(p12_m_mass[2])
     scale = 10.**4
-    h03_avr_m_mass = (np.array(h03_m_mass[10]) + np.array(h03_m_mass[8])) / 2.
-    p12_avr_m_mass = (np.array(p12_m_mass[10]) + np.array(p12_m_mass[8])) / 2.
-    # np.array(h03_m_mass[8]), np.array(p12_m_mass[8])
-    delta_DBs_m = [[h03_avr_m_mass / scale,
+    # Averaged masses in x axis.
+    # h03_avr_m_mass = (np.array(h03_m_mass[10]) + np.array(h03_m_mass[8])) / 2.
+    # p12_avr_m_mass = (np.array(p12_m_mass[10]) + np.array(p12_m_mass[8])) / 2.
+    delta_DBs_m = [[np.array(h03_m_mass[8]) / scale,
                     np.array(h03_m_mass[9]) / scale, h03_mass_diff_m,
                     h03_delta_err_m, h03_m_mass[19], colors_h03_m],
-                   [p12_avr_m_mass / scale,
+                   [np.array(p12_m_mass[8]) / scale,
                     np.array(p12_m_mass[9]) / scale, p12_mass_diff_m,
                     p12_delta_err_m, p12_m_mass[19], colors_p12_m]]
     # Large mass ASteCA-DBs.
     colors_h03_h, colors_p12_h = np.array(h03_h_mass[4]) -\
         np.array(h03_h_mass[2]), np.array(p12_h_mass[4]) -\
         np.array(p12_h_mass[2])
-    h03_avr_h_mass = (np.array(h03_h_mass[10]) + np.array(h03_h_mass[8])) / 2.
-    p12_avr_h_mass = (np.array(p12_h_mass[10]) + np.array(p12_h_mass[8])) / 2.
-    # np.array(h03_h_mass[8]), np.array(p12_h_mass[8])
-    delta_DBs_h = [[h03_avr_h_mass / scale,
+    # Averaged masses in x axis.
+    # h03_avr_h_mass = (np.array(h03_h_mass[10]) + np.array(h03_h_mass[8])) / 2.
+    # p12_avr_h_mass = (np.array(p12_h_mass[10]) + np.array(p12_h_mass[8])) / 2.
+    delta_DBs_h = [[np.array(h03_h_mass[8]) / scale,
                     np.array(h03_h_mass[9]) / scale, h03_mass_diff_h,
                     h03_delta_err_h, h03_h_mass[19], colors_h03_h],
-                   [p12_avr_h_mass / scale,
+                   [np.array(p12_h_mass[8]) / scale,
                     np.array(p12_h_mass[9]) / scale, p12_mass_diff_h,
                     p12_delta_err_h, p12_h_mass[19], colors_p12_h]]
 
@@ -1445,12 +1446,14 @@ def make_cross_match_ip_mass(cross_match):
     # Define names of arrays being plotted.
     x_lab = ['$M_{DBs}\,[M_{\odot}]$', '$M_{DBs}\,[10^{-4}M_{\odot}]$']
     y_lab = [r'$\overline{\Delta M_r}\;\;(\mathtt{ASteCA}-DBs)$', '']
-    # l_mass_lims = [-50., 4990., -1.19, 1.19]
-    # m_mass_lims = [0.5, 2.05, -1.19, 0.45]
-    # h_mass_lims = [2.05, 10.6, -1.02, -0.51]
-    l_mass_lims = [-50., 5990., -1.19, 1.19]
-    m_mass_lims = [0.3, 3.05, -1.19, 0.45]
-    h_mass_lims = [1.05, 10.6, -1.02, -0.51]
+    # Limits when using DBs masses in x axis.
+    l_mass_lims = [-50., 4990., -1.19, 1.19]
+    m_mass_lims = [0.5, 2.05, -1.19, 0.45]
+    h_mass_lims = [2.05, 10.6, -1.02, -0.51]
+    # Limits when using averaged masses in x axis.
+    # l_mass_lims = [-50., 5990., -1.19, 1.19]
+    # m_mass_lims = [0.3, 3.05, -1.19, 0.45]
+    # h_mass_lims = [1.05, 10.6, -1.02, -0.51]
 
     # Arbitrary size so plots are actually squared.
     fig = plt.figure(figsize=(19.3, 6.3))
