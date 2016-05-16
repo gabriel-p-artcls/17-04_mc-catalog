@@ -1037,10 +1037,10 @@ def make_probs_CI_plot(in_params):
             float(len(kde_prob[i])), '({})'.format(sum(_ < 0.25 for _ in
                                                        kde_prob[i]))
 
-    print '\n* Clusters with n_memb > 50 & prob < 0.5'
+    print '\n* Clusters with n_memb >= 50 & prob =< 0.25'
     for k, gal in enumerate(['SMC', 'LMC']):
         for i, n_m in enumerate(n_memb[k]):
-            if n_m > 50 and kde_prob[k][i] < 0.5:
+            if n_m >= 50 and kde_prob[k][i] <= 0.25:
                 print '', gal, gal_names[k][i], n_m, kde_prob[k][i]
 
     # Define names of arrays being plotted.

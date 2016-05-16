@@ -18,13 +18,12 @@ def check_diffs(in_params):
     parameters.
     '''
     gal_names, zarr, zsigma, aarr, asigma, earr, darr, dsigma, rarr, marr,\
-        dist_cent, e_d_cent, ra, dec, n_memb, rad_pc, int_colors, cont_ind,\
-        phot_disp, kde_prob = \
+        ra, dec, n_memb, rad_pc, int_colors, cont_ind, phot_disp, kde_prob = \
         [in_params[_] for _ in ['gal_names', 'zarr', 'zsigma', 'aarr',
                                 'asigma', 'earr', 'darr', 'dsigma', 'rarr',
-                                'marr', 'dist_cent', 'e_d_cent', 'ra', 'dec',
-                                'n_memb', 'rad_pc', 'int_colors', 'cont_ind',
-                                'phot_disp', 'kde_prob']]
+                                'marr', 'ra', 'dec', 'n_memb', 'rad_pc',
+                                'int_colors', 'cont_ind', 'phot_disp',
+                                'kde_prob']]
 
     gal = ['SMC', 'LMC']
     age_xmc_f_all = []
@@ -144,25 +143,6 @@ def check_diffs(in_params):
         perc = float(err_c)/len(asigma[j][0])
         print 'Perc of OC with age errors below {}: {}\n'.format(err_thresh,
                                                                  perc)
-
-        min_rgc, max_rgc = 3500., 5500.
-        min_a, max_a = 7.5, 8.5
-        for i, a in enumerate(aarr[j][0]):
-            R_gc = dist_cent[j][i]
-            if min_rgc < R_gc < max_rgc and min_a < a < max_a:
-                print 'OCs in {} < R_gc < {} & {} < age < {}: {}'.format(
-                    min_rgc, max_rgc, min_a, max_a, gal_names[j][i])
-                print '  OC R_gc error:', e_d_cent[j][i]
-
-        print ''
-        e_rgc_max = 100.
-        for i, R_gc in enumerate(dist_cent[j]):
-            e_rgc = e_d_cent[j][i]
-            if e_rgc < e_rgc_max:
-                print ("OCs w e_R_gc < {}: {} / ra, dec, dm, e_dm: "
-                       "{}, {}, {}, {}".format(
-                           e_rgc_max, gal_names[j][i], ra[j][i],
-                           dec[j][i], darr[j][0][i], dsigma[j][0][i]))
 
         print '\nAverage ASteCA E(B-V) for the {}: {} +- {}'.format(
             gal[j], np.mean(earr[j][0]), np.std(earr[j][0]))

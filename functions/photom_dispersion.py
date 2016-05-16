@@ -13,7 +13,8 @@ def get_disp(r_path, cl):
     # membership file.
     inpt = cmd.get_input_folder(r_path, cl, run)
     # Membership data for cluster.
-    cl_reg_fit, cl_reg_no_fit = cmd.get_memb_data(r_path, run, inpt, cl)
+    cl_reg_fit, cl_reg_no_fit, synth_stars = cmd.get_memb_data(r_path, run,
+                                                               inpt, cl)
 
     # Obtain photometric dispersion
     p_mean_col = np.mean(cl_reg_fit[0])
