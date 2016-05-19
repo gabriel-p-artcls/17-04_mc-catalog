@@ -2009,13 +2009,14 @@ def pl_amr(pl_params):
     # Literature values.
     elif i == 1:
         ax.set_xticklabels([])
-        plt.ylim(-1.23, -0.06)
+        plt.ylim(-1.26, -0.1)
         ax.set_title("LMC", x=0.5, y=0.92, fontsize=xy_font_s - 4,
                      bbox=dict(facecolor=(1, 1, 1, 0.5),
                                edgecolor=(0, 0, 0, 1)))
-        col = ['m', 'y', 'g', 'c', 'k']
-        c_dash = [[8, 4], [8, 4], [2, 2], [8, 4, 2, 4, 2, 4], [8, 4, 2, 4]]
-        amr_lab = ['PT98', 'C08', 'HZ09', 'R12', 'PG13']
+        col = ['m', '#b22222', 'y', 'g', 'c', 'k']
+        c_dash = [[8, 4], [2, 2], [8, 4], [2, 2], [8, 4, 2, 4, 2, 4],
+                  [8, 4, 2, 4]]
+        amr_lab = ['PT98', 'G98', 'C08', 'HZ09', 'R12', 'PG13']
         for j, amr in enumerate(amr_lit):
             plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
                      dashes=c_dash[j], lw=1.5, zorder=3)

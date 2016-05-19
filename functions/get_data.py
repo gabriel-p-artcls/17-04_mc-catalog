@@ -69,6 +69,17 @@ def get_amr_lit():
     # Put SMC values first and LMC second.
     amr_smc_PT98, amr_lmc_PT98 = zip(*amr_PT98_t[0]), zip(*amr_PT98_t[1])
 
+    # Path to data G98 file.
+    in_file = 'AMRs/G98_lmc_amr.dat'
+    # Read data file
+    with open(in_file) as f:
+        amr_lmc_G98 = [[], []]
+        for line in skip_comments(f):
+            l = line.split()
+            # Read coordinates.
+            amr_lmc_G98[0].append(float(l[0]))
+            amr_lmc_G98[1].append(float(l[1]))
+
     # Path to data C08 file.
     in_file = 'AMRs/C08_lmc_amr.dat'
     # Read data file
@@ -168,8 +179,8 @@ def get_amr_lit():
 
     amr_lit_smc = [amr_smc_PT98, amr_smc_HZ04, amr_smc_N09, amr_smc_TB09_1,
                    amr_smc_TB09_2, amr_smc_C13_B, amr_smc_C13_C, amr_smc_PG13]
-    amr_lit_lmc = [amr_lmc_PT98, amr_lmc_C08, amr_lmc_HZ09, amr_lmc_R12,
-                   amr_lmc_PG13]
+    amr_lit_lmc = [amr_lmc_PT98, amr_lmc_G98, amr_lmc_C08, amr_lmc_HZ09,
+                   amr_lmc_R12, amr_lmc_PG13]
     amr_lit = [amr_lit_smc, amr_lit_lmc]
 
     return amr_lit

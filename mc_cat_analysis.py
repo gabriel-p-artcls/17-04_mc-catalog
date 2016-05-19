@@ -239,7 +239,7 @@ def main():
     check_diffs(in_params)
 
     # Define which plots to produce.
-    plots = ['17']
+    plots = ['12']
 
     bica_coords, cross_match, cross_match_h03_p12, amr_lit = [], [], [], []
     # Only obtain data if the plot is being generated.
