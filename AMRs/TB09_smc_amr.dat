@@ -3,6 +3,10 @@
 # Formation of the Small Magellanic Cloud. The Astrophysical Journal Letters
 # 700, L69–L72 (2009).
 #
+# Model 1: no merger
+# Model 2: equal mass merger
+# Model 3: merger with the mass ratio of one to four is included
+#
 #Age(Gyr) [Fe/H]_1   [Fe/H]_2   [Fe/H]_3
 0         -0.52      -0.7       -0.76
 1         -0.57      -0.73      -0.81

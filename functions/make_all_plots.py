@@ -2013,7 +2013,7 @@ def pl_amr(pl_params):
         ax.set_title("LMC", x=0.5, y=0.92, fontsize=xy_font_s - 4,
                      bbox=dict(facecolor=(1, 1, 1, 0.5),
                                edgecolor=(0, 0, 0, 1)))
-        col = ['m', '#b22222', 'y', 'g', 'c', 'k']
+        col = ['#ff661a', 'm', 'y', 'g', 'c', 'k']
         c_dash = [[8, 4], [2, 2], [8, 4], [2, 2], [8, 4, 2, 4, 2, 4],
                   [8, 4, 2, 4]]
         amr_lab = ['PT98', 'G98', 'C08', 'HZ09', 'R12', 'PG13']
@@ -2028,15 +2028,17 @@ def pl_amr(pl_params):
                           fontsize=xy_font_s - 8)
         leg2.get_frame().set_alpha(0.85)
     elif i == 2:
-        plt.ylim(-1.39, -0.25)
+        plt.ylim(-1.39, -0.29)
         plt.xlabel(x_lab, fontsize=xy_font_s)
         ax.set_title("SMC", x=0.5, y=0.92, fontsize=xy_font_s - 4,
                      bbox=dict(facecolor=(1, 1, 1, 0.5),
                                edgecolor=(0, 0, 0, 1)))
-        col = ['m', '#b22222', 'g', 'c', 'y', 'y', '#b22222', 'k']
+        col = ['#ff661a', '#8080ff', 'c', '#33cc33', 'm', 'g', 'y', '#b22222',
+               'k']
         c_dash = [[8, 4], [8, 4, 2, 4], [2, 2], [8, 4, 2, 4, 2, 4],
-                  [8, 4, 2, 4, 2, 4], [8, 4], [2, 2], [8, 4, 2, 4]]
-        amr_lab = ['PT98', 'HZ04', 'N09', 'TB09-1', 'TB09-2',
+                  [8, 4, 2, 4, 2, 4], [8, 4, 2, 4, 2, 4], [8, 4], [2, 2],
+                  [8, 4, 2, 4]]
+        amr_lab = ['PT98', 'HZ04', 'N09', 'TB09-1', 'TB09-2', 'TB09-3',
                    'C13-B', 'C13-C', 'PG13']
         for j, amr in enumerate(amr_lit):
             plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],

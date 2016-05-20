@@ -572,9 +572,14 @@ added to the final output file.
 
 Re-process 5 OCs whose masses differ greatly from the H03 and P12 estimates.
 We use:
+
 * no DA + no local removal of field stars
 * no bootstrap
 * max mass limit of 400000 with a step of 5000 (Mo)
 
 All other parameter ranges are kept from 3rd run.
 
+#### `22nd_run`
+
+Re-process NGC 419 with a larger radius: 310px in 21st run vs 460px here. The largest
+mass value found (with no field star cleaning applied) is 9e04.
