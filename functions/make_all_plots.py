@@ -1980,7 +1980,7 @@ def pl_amr(pl_params):
         col, leg = ['r', 'b'], ['SMC', 'LMC']
         for k in [1, 0]:
             # ASteCA values.
-            plt.plot(age_vals[k], met_weighted[k][0], c=col[k],
+            plt.plot(age_vals[k], met_weighted[k][0], c=col[k], lw=1.2,
                      label=leg[k] + r'$\,(\mathtt{ASteCA})$', zorder=3)
             # Introduce random scatter.
             ax_x, ax_y = 0.15, 0.03
@@ -2021,7 +2021,7 @@ def pl_amr(pl_params):
             plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
                      dashes=c_dash[j], lw=1.5, zorder=3)
         # ASteCA values.
-        plt.plot(age_vals[1], met_weighted[1][0], c='b',
+        plt.plot(age_vals[1], met_weighted[1][0], c='b', lw=1.2,
                  label=r'$\mathtt{ASteCA}$', zorder=5)
         # Legend.
         leg2 = plt.legend(loc='lower left', handlelength=3.5, scatterpoints=1,
@@ -2036,15 +2036,17 @@ def pl_amr(pl_params):
         col = ['#ff661a', '#8080ff', 'c', '#33cc33', 'm', 'g', 'y', '#b22222',
                'k']
         c_dash = [[8, 4], [8, 4, 2, 4], [2, 2], [8, 4, 2, 4, 2, 4],
-                  [8, 4, 2, 4, 2, 4], [8, 4, 2, 4, 2, 4], [8, 4], [2, 2],
+                  [1000, 1], [8, 4, 2, 4, 2, 4], [8, 4], [2, 2],
                   [8, 4, 2, 4]]
         amr_lab = ['PT98', 'HZ04', 'N09', 'TB09-1', 'TB09-2', 'TB09-3',
                    'C13-B', 'C13-C', 'PG13']
         for j, amr in enumerate(amr_lit):
+            # The continuous line for TB09-2 should be thinner.
+            l_w = 1.5 if j != 4 else 0.85
             plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
-                     dashes=c_dash[j], lw=1.5, zorder=3)
+                     dashes=c_dash[j], lw=l_w, zorder=3)
         # ASteCA values.
-        plt.plot(age_vals[0], met_weighted[0][0], c='r',
+        plt.plot(age_vals[0], met_weighted[0][0], c='r', lw=1.2,
                  label=r'$\mathtt{ASteCA}$', zorder=5)
         # Legend.
         leg1 = plt.legend(loc='lower left', handlelength=3.5, scatterpoints=1,
