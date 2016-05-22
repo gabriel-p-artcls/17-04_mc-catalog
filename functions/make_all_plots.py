@@ -2016,7 +2016,7 @@ def pl_amr(pl_params):
         col = ['#ff661a', 'm', 'y', 'g', 'c', 'k']
         c_dash = [[8, 4], [2, 2], [8, 4], [2, 2], [8, 4, 2, 4, 2, 4],
                   [8, 4, 2, 4]]
-        amr_lab = ['PT98', 'G98', 'C08', 'HZ09', 'R12', 'PG13']
+        amr_lab = ['PT98', 'G98', 'C08a', 'HZ09', 'R12', 'PG13']
         for j, amr in enumerate(amr_lit):
             plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
                      dashes=c_dash[j], lw=1.5, zorder=3)
@@ -2024,34 +2024,45 @@ def pl_amr(pl_params):
         plt.plot(age_vals[1], met_weighted[1][0], c='b', lw=1.2,
                  label=r'$\mathtt{ASteCA}$', zorder=5)
         # Legend.
-        leg2 = plt.legend(loc='lower left', handlelength=3.5, scatterpoints=1,
+        leg1 = plt.legend(loc='lower left', handlelength=3.5, scatterpoints=1,
                           fontsize=xy_font_s - 8)
-        leg2.get_frame().set_alpha(0.85)
+        leg1.get_frame().set_alpha(0.85)
     elif i == 2:
-        plt.ylim(-1.39, -0.29)
+        plt.ylim(-1.34, -0.29)
         plt.xlabel(x_lab, fontsize=xy_font_s)
         ax.set_title("SMC", x=0.5, y=0.92, fontsize=xy_font_s - 4,
                      bbox=dict(facecolor=(1, 1, 1, 0.5),
                                edgecolor=(0, 0, 0, 1)))
-        col = ['#ff661a', '#8080ff', 'c', '#33cc33', 'm', 'g', 'y', '#b22222',
-               'k']
-        c_dash = [[8, 4], [8, 4, 2, 4], [2, 2], [8, 4, 2, 4, 2, 4],
+        col = ['#ff661a', '#8080ff', 'y', 'c', '#33cc33', 'm', 'g', '#b22222',
+               '#b22222', 'k']
+        c_dash = [[8, 4], [8, 4, 2, 4], [8, 4], [2, 2], [8, 4, 2, 4, 2, 4],
                   [1000, 1], [8, 4, 2, 4, 2, 4], [8, 4], [2, 2],
                   [8, 4, 2, 4]]
-        amr_lab = ['PT98', 'HZ04', 'N09', 'TB09-1', 'TB09-2', 'TB09-3',
+        amr_lab = ['PT98', 'HZ04', 'C08b', 'N09', 'TB09-1', 'TB09-2', 'TB09-3',
                    'C13-B', 'C13-C', 'PG13']
+        hand1, hand2 = [], []  # Store handles.
         for j, amr in enumerate(amr_lit):
             # The continuous line for TB09-2 should be thinner.
-            l_w = 1.5 if j != 4 else 0.85
-            plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
-                     dashes=c_dash[j], lw=l_w, zorder=3)
+            l_w = 1.5 if j != 5 else 0.85
+            pl, = plt.plot(amr[0], amr[1], color=col[j], label=amr_lab[j],
+                           dashes=c_dash[j], lw=l_w, zorder=3)
+            # Using two legends.
+            if j < 7:
+                hand1.append(pl)
+            else:
+                hand2.append(pl)
         # ASteCA values.
-        plt.plot(age_vals[0], met_weighted[0][0], c='r', lw=1.2,
-                 label=r'$\mathtt{ASteCA}$', zorder=5)
+        pl, = plt.plot(age_vals[0], met_weighted[0][0], c='r', lw=1.2,
+                       label=r'$\mathtt{ASteCA}$', zorder=5)
+        hand2.append(pl)
         # Legend.
-        leg1 = plt.legend(loc='lower left', handlelength=3.5, scatterpoints=1,
-                          fontsize=xy_font_s - 8)
+        leg1 = plt.legend(handles=hand1, loc='upper right', handlelength=3.5,
+                          scatterpoints=1, fontsize=xy_font_s - 8)
+        leg2 = plt.legend(handles=hand2, loc='lower left', handlelength=3.5,
+                          scatterpoints=1, fontsize=xy_font_s - 8)
         leg1.get_frame().set_alpha(0.85)
+        leg2.get_frame().set_alpha(0.85)
+        plt.gca().add_artist(leg1)
 
 
 def make_amr_plot(in_params, amr_lit):
