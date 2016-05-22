@@ -1963,7 +1963,7 @@ def pl_amr(pl_params):
     Plot AMRs.
     '''
 
-    gs, i, age_vals, met_weighted, age_gyr, amr_lit, zarr, rad_pc, x_lab,\
+    gs, i, age_vals, met_weighted, age_gyr, amr_lit, feh, rad_pc, x_lab,\
         y_lab = pl_params
 
     xy_font_s = 16
@@ -1987,8 +1987,7 @@ def pl_amr(pl_params):
             # Add random scatter.
             rs_x = age_gyr[k][0] + np.random.uniform(-ax_x, ax_x,
                                                      len(age_gyr[k][0]))
-            rs_y = zarr[k][0] + np.random.uniform(-ax_y, ax_y,
-                                                  len(zarr[k][0]))
+            rs_y = feh[k] + np.random.uniform(-ax_y, ax_y, len(feh[k]))
             siz = np.array(rad_pc[k]) * 5.
             plt.scatter(rs_x, rs_y, marker='*', s=siz, edgecolors=col[k],
                         facecolor='none', lw=0.4, label=leg[k], zorder=3)
@@ -2076,17 +2075,29 @@ def make_amr_plot(in_params, amr_lit):
     # First index k indicates the galaxy (0 for SMC, 1 for LMC), the second
     # index 0 indicates ASteCA values.
     # k=0 -> SMC, k=1 ->LMC
-    age_gyr, age_vals, met_weighted = [[], []], [[], []], [[], []]
+    age_gyr, age_vals, met_weighted, feh_f = [[], []], [[], []], [[], []],\
+        [[], []]
     for k in [0, 1]:
+        # Exclude OCs with extremely low metallicities.
+        age_f, age_err_f, feh_err_f = [], [], []
+        for v in zip(*[aarr[k][0], asigma[k][0], zarr[k][0], zsigma[k][0]]):
+            if v[2] > -15:  # To filter out HW85 and NGC294, use -1.5
+                age_f.append(v[0])
+                age_err_f.append(v[1])
+                feh_f[k].append(v[2])
+                feh_err_f.append(v[3])
+            else:
+                print v
+
         # Age in Gyrs.
-        age_gyr[k] = [10 ** (np.asarray(aarr[k][0]) - 9),
-                      np.asarray(asigma[k][0]) * np.asarray(aarr[k][0]) *
+        age_gyr[k] = [10 ** (np.asarray(age_f) - 9),
+                      np.asarray(age_err_f) * np.asarray(age_f) *
                       np.log(10) / 5.]
         # Weighted metallicity values for an array of ages.
         # Max limit on very large met errors.
-        zsig = [min(2., _) for _ in zsigma[k][0]]
+        zsig = [min(2., _) for _ in feh_err_f]
         age_vals[k], met_weighted[k] = age_met_rel(
-            age_gyr[k][0], age_gyr[k][1], zarr[k][0], zsig)
+            age_gyr[k][0], age_gyr[k][1], feh_f[k], zsig)
 
     fig = plt.figure(figsize=(5.25, 13.5))
     gs = gridspec.GridSpec(3, 1)
@@ -2094,11 +2105,11 @@ def make_amr_plot(in_params, amr_lit):
     amr_lit_smc, amr_lit_lmc = amr_lit
 
     amr_lst = [
-        [gs, 0, age_vals, met_weighted, age_gyr, [], zarr, rad_pc, '',
+        [gs, 0, age_vals, met_weighted, age_gyr, [], feh_f, rad_pc, '',
          '$[Fe/H]$'],
-        [gs, 1, age_vals, met_weighted, age_gyr, amr_lit_lmc, zarr, [],
+        [gs, 1, age_vals, met_weighted, age_gyr, amr_lit_lmc, [], [],
          '', '$[Fe/H]$'],
-        [gs, 2, age_vals, met_weighted, age_gyr, amr_lit_smc, zarr, [],
+        [gs, 2, age_vals, met_weighted, age_gyr, amr_lit_smc, [], [],
          '$Age\,[Gyr]$', '$[Fe/H]$']
     ]
 
