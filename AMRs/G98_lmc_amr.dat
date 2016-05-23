@@ -3,8 +3,13 @@
 # Geha et al. (1998), Stellar Populations in Three Outer Fields of the
 # Large Magellanic Cloud
 #
+# Holtzman et al. (1997); SFH with \alpha=-2.35, Fig. 10 (e).
+#
+# z values converted to [Fe/H] using z_sol=0.02
+#
 #Age(Gyr) [Fe/H]
 #
+0.     -0.4
 0.480  -0.47
 1.978  -0.72
 10.006  -1.3
