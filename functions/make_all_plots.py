@@ -2075,13 +2075,29 @@ def make_amr_plot(in_params, amr_lit):
         # Exclude OCs with extremely low metallicities.
         age_f, age_err_f, feh_err_f = [], [], []
         for v in zip(*[aarr[k][0], asigma[k][0], zarr[k][0], zsigma[k][0]]):
-            if v[2] > -15:  # To filter out HW85 and NGC294, use -1.5
+            # To filter out HW85 and NGC294
+            # if v[2] > -1.5:
+            # To filter out the 4 LMC OCs with large ages ans metallicities.
+            # if not (9.48 < v[0] < 9.6 and v[2] > -0.3):
+            # To include all OCs.
+            if True:
                 age_f.append(v[0])
                 age_err_f.append(v[1])
                 feh_f[k].append(v[2])
                 feh_err_f.append(v[3])
             else:
                 print v
+
+        # # Add old LMC OCs taken from Piatti & Geisler (2013)
+        # old_lmc_OCs = [[9.93, 10.09, 10.13, 10.11, 10.13, 10.09, 10.13, 10.15,
+        #                 10.17, 10.09, 10.09, 10.09],
+        #                [-1.049, -1.202, -1.369, -1.418, -1.62, -1.746,
+        #                 -1.847, -1.865, -2.049, -1.997, -2.095, -2.196]]
+        # if k == 1:
+        #     age_f = age_f + old_lmc_OCs[0]
+        #     age_err_f = age_err_f + [0.05]*len(old_lmc_OCs[0])
+        #     feh_f[k] = feh_f[k] + old_lmc_OCs[1]
+        #     feh_err_f = feh_err_f + [0.05]*len(old_lmc_OCs[0])
 
         # Age in Gyrs.
         age_gyr[k] = [10 ** (np.asarray(age_f) - 9),
