@@ -2,7 +2,6 @@
 import numpy as np
 from kde_map import kde_2d
 from astroML.plotting import hist as h_ML
-from scipy.integrate import simps
 
 
 def age_met_rel(xarr, xsigma, yarr, ysigma, grid_step):
@@ -72,12 +71,11 @@ def age_met_rel(xarr, xsigma, yarr, ysigma, grid_step):
     return age_vals, met_weighted
 
 
-def feh_avrg_integ(age_gyr, bn, age_vals, met_weighted):
+def feh_avrg(age_gyr, bn, age_vals, met_weighted):
     """
     1- Obtain bin edges for the entire age range.
-    2- For each age range, obtain the average integral of the weighted [Fe/H],
-       using Simpson's rule. The associated age value is the mid point of the
-       age range.
+    2- For each age range, obtain the average of the weighted [Fe/H],
+       The associated age value is the mid point of the age range.
     3- Use Monte Carlo to calculate errors for the representative [Fe/H] value
        for that age range.
     """
@@ -103,7 +101,7 @@ def feh_avrg_integ(age_gyr, bn, age_vals, met_weighted):
               ' limits'.format(gal[k], len(age_rang), delta, min(age_rang),
                                max(age_rang)))
 
-        # Obtain average integral in each age range. This is the [Fe/H] value
+        # Obtain average [Fe/H] in each age range. This is the [Fe/H] value
         # for that range.
         for i, edge in enumerate(age_rang):
             # Separate values for each interval in the age range, defined by
@@ -121,32 +119,27 @@ def feh_avrg_integ(age_gyr, bn, age_vals, met_weighted):
                     met_in_bin[0].append(a)
                     met_in_bin[1].append(m)
                     met_in_bin[2].append(e_m)
-            # Integrate the age interval, using Simpson's rule. Leave out
-            # points were the integration fails.
-            try:
-                # Compute the area using the composite Simpson's rule.
-                fe_h_int = simps(met_in_bin[1], met_in_bin[0])
-                # Integration limits.
-                a_0, a_1 = min(met_in_bin[0]), max(met_in_bin[0])
-                # The x axis value (age) is the average age for the interval.
-                # The y axis value ([Fe/H]) is the average of the integral.
-                age_avrg, fe_h_avrg= (a_0+a_1)/2., fe_h_int/(a_1-a_0)
-                # Store unique AMR x,y values.
-                age_temp.append(age_avrg)
-                met_temp.append(fe_h_avrg)
-                # Obtain associated error for this average [Fe/H]_age value,
-                # using Monte Carlo.
-                mc_met = []
-                for _ in range(500):
-                    # Draw [Fe/H] random values from Gaussian distribution.
-                    feh_ran = np.random.normal(met_in_bin[1], met_in_bin[2])
-                    # Store integral.
-                    mc_met.append(simps(feh_ran, met_in_bin[0])/(a_1-a_0))
-                # The standard deviation of the above MC integrals, is the
-                # associated error of the [Fe/H] value for this age range.
-                met_err_temp.append(np.std(mc_met))
-            except:
-                pass
+
+            # Age interval limits.
+            a_0, a_1 = min(met_in_bin[0]), max(met_in_bin[0])
+            # The x axis value (age) is the average for the interval.
+            age_avrg = (a_0 + a_1)/2.
+            # The y axis value ([Fe/H]) is the average for the interval.
+            fe_h_avrg = np.mean(met_in_bin[1])
+            # Store unique AMR x,y values.
+            age_temp.append(age_avrg)
+            met_temp.append(fe_h_avrg)
+            # Obtain associated error for this average [Fe/H]_age value,
+            # using Monte Carlo.
+            mc_met = []
+            for _ in range(500):
+                # Draw [Fe/H] random values from Gaussian distribution.
+                feh_ran = np.random.normal(met_in_bin[1], met_in_bin[2])
+                # Store average.
+                mc_met.append(np.mean(feh_ran))
+            # The standard deviation of the above MC means, is the
+            # associated error of the [Fe/H] value for this age range.
+            met_err_temp.append(np.std(mc_met))
         # plt.show()
         # Store AMR function values.
         age_vals_int[k], met_weighted_int[k], age_rang_MCs[k] =\
@@ -167,7 +160,7 @@ def get_amr_asteca(in_params):
        allowing sampling a fine grid in the age-metallicity space.
     4- Obtain equispaced age values in grid, and *weighted* [Fe/H]
        values in grid (age_vals, met_weighted).
-    5- Call function to obtain an average integral [Fe/H] value for each age
+    5- Call function to obtain an average [Fe/H] value for each age
        range (along with its Monte Carlo error)
     """
 
@@ -227,12 +220,12 @@ def get_amr_asteca(in_params):
     # THIS NUMBER WILL AFFECT THE SHAPE OF THE FINAL AMR.
     # Define method or number of bins for the age range.
     bn = 'knuth'
-    # Obtain average integral [Fe/H] value for each age range.
-    age_vals, met_weighted, age_rang_MCs = feh_avrg_integ(
+    # Obtain average [Fe/H] value for each age range.
+    age_vals, met_weighted, age_rang_MCs = feh_avrg(
         age_gyr, bn, age_vals, met_weighted)
     #
     # # Replace the above by this line to skip the calculation of the average
-    # # integral [Fe/H], and just keep the weighted values.
+    # # [Fe/H], and just keep the weighted values.
     # age_rang_MCs = [np.arange(-2., -1., 0.1), np.arange(-2., -1., 0.1)]
 
     amr_asteca = [age_vals, met_weighted, age_gyr, feh_f, age_rang_MCs]
