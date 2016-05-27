@@ -2004,7 +2004,7 @@ def pl_amr(pl_params):
             plt.plot(age_vals[k], met_weighted[k][0], c=col[k], lw=1.2,
                      label=leg[k] + r'$\,(\mathtt{ASteCA})$', zorder=8)
         # Legend.
-        leg0 = plt.legend(loc='lower right', bbox_to_anchor=(1., 0.12),
+        leg0 = plt.legend(loc='upper right',  # bbox_to_anchor=(1., 0.12),
                           handlelength=2.5, scatterpoints=1,
                           fontsize=xy_font_s - 8)
         leg0.legendHandles[0]._sizes = [10]
