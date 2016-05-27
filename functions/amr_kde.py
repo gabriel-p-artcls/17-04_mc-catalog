@@ -120,26 +120,29 @@ def feh_avrg(age_gyr, bn, age_vals, met_weighted):
                     met_in_bin[1].append(m)
                     met_in_bin[2].append(e_m)
 
-            # Age interval limits.
-            a_0, a_1 = min(met_in_bin[0]), max(met_in_bin[0])
-            # The x axis value (age) is the average for the interval.
-            age_avrg = (a_0 + a_1)/2.
-            # The y axis value ([Fe/H]) is the average for the interval.
-            fe_h_avrg = np.mean(met_in_bin[1])
-            # Store unique AMR x,y values.
-            age_temp.append(age_avrg)
-            met_temp.append(fe_h_avrg)
-            # Obtain associated error for this average [Fe/H]_age value,
-            # using Monte Carlo.
-            mc_met = []
-            for _ in range(500):
-                # Draw [Fe/H] random values from Gaussian distribution.
-                feh_ran = np.random.normal(met_in_bin[1], met_in_bin[2])
-                # Store average.
-                mc_met.append(np.mean(feh_ran))
-            # The standard deviation of the above MC means, is the
-            # associated error of the [Fe/H] value for this age range.
-            met_err_temp.append(np.std(mc_met))
+            try:
+                # Age interval limits.
+                a_0, a_1 = min(met_in_bin[0]), max(met_in_bin[0])
+                # The x axis value (age) is the average for the interval.
+                age_avrg = (a_0 + a_1)/2.
+                # The y axis value ([Fe/H]) is the average for the interval.
+                fe_h_avrg = np.mean(met_in_bin[1])
+                # Store unique AMR x,y values.
+                age_temp.append(age_avrg)
+                met_temp.append(fe_h_avrg)
+                # Obtain associated error for this average [Fe/H]_age value,
+                # using Monte Carlo.
+                mc_met = []
+                for _ in range(500):
+                    # Draw [Fe/H] random values from Gaussian distribution.
+                    feh_ran = np.random.normal(met_in_bin[1], met_in_bin[2])
+                    # Store average.
+                    mc_met.append(np.mean(feh_ran))
+                # The standard deviation of the above MC means, is the
+                # associated error of the [Fe/H] value for this age range.
+                met_err_temp.append(np.std(mc_met))
+            except:
+                pass
         # plt.show()
         # Store AMR function values.
         age_vals_int[k], met_weighted_int[k], age_rang_MCs[k] =\
