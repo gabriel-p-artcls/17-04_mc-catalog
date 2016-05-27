@@ -8,7 +8,6 @@ from matplotlib.ticker import MultipleLocator
 from scipy import stats
 from ra_dec_map import ra_dec_plots
 from kde_map import kde_2d, kde_1d
-from amr_kde import age_met_rel
 
 
 def ccc(l1, l2):
@@ -1970,18 +1969,20 @@ def pl_amr(pl_params):
     ax = plt.subplot(gs[i])
     plt.tick_params(axis='both', which='major', labelsize=10)
     plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.minorticks_on()
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
             zorder=1)
-    ax.minorticks_on()
     plt.xlim(-0.02, 8.4)
     if i == 0:
         plt.ylim(-2.45, 0.4)
         ax.set_xticklabels([])
         col, leg = ['r', 'b'], ['SMC', 'LMC']
-        for k in [1, 0]:
-            # ASteCA values.
-            plt.plot(age_vals[k], met_weighted[k][0], c=col[k], lw=1.2,
-                     label=leg[k] + r'$\,(\mathtt{ASteCA})$', zorder=3)
+        for k in [0, 1]:
+            for x_ed in amr_lit[k]:
+                # vertical lines
+                vl_lim = [-5., -2.2] if k == 0 else [0.2, 1.]
+                ax.vlines(x=x_ed, ymin=vl_lim[0], ymax=vl_lim[1],
+                          linestyle='-', color=col[k], lw=1.5, zorder=1)
             # Introduce random scatter.
             ax_x, ax_y = 0.15, 0.03
             # Add random scatter.
@@ -1991,16 +1992,20 @@ def pl_amr(pl_params):
             siz = np.array(rad_pc[k]) * 5.
             plt.scatter(rs_x, rs_y, marker='*', s=siz, edgecolors=col[k],
                         facecolor='none', lw=0.4, label=leg[k] + ' OCs',
-                        zorder=3)
+                        zorder=4)
             # ASteCA 1 sigma error regions.
             y_err_min = np.array(met_weighted[k][0]) -\
                 np.array(met_weighted[k][1])
             y_err_max = np.array(met_weighted[k][0]) +\
                 np.array(met_weighted[k][1])
             plt.fill_between(age_vals[k], y_err_min, y_err_max, alpha=0.1,
-                             color=col[k])
+                             color=col[k], zorder=5)
+            # ASteCA AMR.
+            plt.plot(age_vals[k], met_weighted[k][0], c=col[k], lw=1.2,
+                     label=leg[k] + r'$\,(\mathtt{ASteCA})$', zorder=8)
         # Legend.
-        leg0 = plt.legend(loc='lower right', handlelength=2.5, scatterpoints=1,
+        leg0 = plt.legend(loc='lower right', bbox_to_anchor=(1., 0.12),
+                          handlelength=2.5, scatterpoints=1,
                           fontsize=xy_font_s - 8)
         leg0.legendHandles[0]._sizes = [10]
         leg0.legendHandles[1]._sizes = [10]
@@ -2058,65 +2063,22 @@ def pl_amr(pl_params):
         plt.gca().add_artist(leg1)
 
 
-def make_amr_plot(in_params, amr_lit):
+def make_amr_plot(in_params, amr_lit, amr_asteca):
     '''
     Make age-metallicity relation plot for both galaxies.
     '''
 
-    zarr, zsigma, aarr, asigma, rad_pc = [
-        in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'rad_pc']]
-
-    # First index k indicates the galaxy (0 for SMC, 1 for LMC), the second
-    # index 0 indicates ASteCA values.
-    # k=0 -> SMC, k=1 ->LMC
-    age_gyr, age_vals, met_weighted, feh_f = [[], []], [[], []], [[], []],\
-        [[], []]
-    for k in [0, 1]:
-        # Exclude OCs with extremely low metallicities.
-        age_f, age_err_f, feh_err_f = [], [], []
-        for v in zip(*[aarr[k][0], asigma[k][0], zarr[k][0], zsigma[k][0]]):
-            # To filter out HW85 and NGC294
-            # if v[2] > -1.5:
-            # To filter out the 4 LMC OCs with large ages ans metallicities.
-            # if not (9.48 < v[0] < 9.6 and v[2] > -0.3):
-            # To include all OCs.
-            if True:
-                age_f.append(v[0])
-                age_err_f.append(v[1])
-                feh_f[k].append(v[2])
-                feh_err_f.append(v[3])
-            else:
-                print v
-
-        # # Add old LMC OCs taken from Piatti & Geisler (2013)
-        # old_lmc_OCs = [[9.93, 10.09, 10.13, 10.11, 10.13, 10.09, 10.13, 10.15,
-        #                 10.17, 10.09, 10.09, 10.09],
-        #                [-1.049, -1.202, -1.369, -1.418, -1.62, -1.746,
-        #                 -1.847, -1.865, -2.049, -1.997, -2.095, -2.196]]
-        # if k == 1:
-        #     age_f = age_f + old_lmc_OCs[0]
-        #     age_err_f = age_err_f + [0.05]*len(old_lmc_OCs[0])
-        #     feh_f[k] = feh_f[k] + old_lmc_OCs[1]
-        #     feh_err_f = feh_err_f + [0.05]*len(old_lmc_OCs[0])
-
-        # Age in Gyrs.
-        age_gyr[k] = [10 ** (np.asarray(age_f) - 9),
-                      np.asarray(age_err_f) * np.asarray(age_f) *
-                      np.log(10) / 5.]
-        # Weighted metallicity values for an array of ages.
-        # Max limit on very large met errors.
-        zsig = [min(2., _) for _ in feh_err_f]
-        age_vals[k], met_weighted[k] = age_met_rel(
-            age_gyr[k][0], age_gyr[k][1], feh_f[k], zsig)
+    rad_pc = in_params['rad_pc']
 
     fig = plt.figure(figsize=(5.25, 13.5))
     gs = gridspec.GridSpec(3, 1)
 
     amr_lit_smc, amr_lit_lmc = amr_lit
+    age_vals, met_weighted, age_gyr, feh_f, age_rang_MCs = amr_asteca
 
     amr_lst = [
-        [gs, 0, age_vals, met_weighted, age_gyr, [], feh_f, rad_pc, '',
-         '$[Fe/H]$'],
+        [gs, 0, age_vals, met_weighted, age_gyr, age_rang_MCs, feh_f, rad_pc,
+         '', '$[Fe/H]$'],
         [gs, 1, age_vals, met_weighted, age_gyr, amr_lit_lmc, [], [],
          '', '$[Fe/H]$'],
         [gs, 2, age_vals, met_weighted, age_gyr, amr_lit_smc, [], [],

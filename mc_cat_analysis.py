@@ -3,6 +3,7 @@ import os
 from functions.get_data import get_asteca_data, get_liter_data, \
     get_bica_database, get_cross_match_asteca, get_cross_match_h03_p12,\
     get_amr_lit
+from functions.amr_kde import get_amr_asteca
 from functions.get_params import params
 from functions.match_clusters import match_clusters
 from functions.check_diffs import check_diffs
@@ -145,7 +146,7 @@ def CMD_large_mass(r_path, in_params):
 
 
 def make_plots(r_path, plots, in_params, bica_coords, cross_match,
-               cross_match_h03_p12, amr_lit):
+               cross_match_h03_p12, amr_lit, amr_asteca):
     '''
     Make each plot sequentially.
     '''
@@ -201,7 +202,7 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match,
         print 'KDE maps.'
 
     if '12' in plots:
-        make_amr_plot(in_params, amr_lit)
+        make_amr_plot(in_params, amr_lit, amr_asteca)
         print 'AMR maps.'
 
     if '13' in plots:
@@ -241,7 +242,8 @@ def main():
     # Define which plots to produce.
     plots = ['12']
 
-    bica_coords, cross_match, cross_match_h03_p12, amr_lit = [], [], [], []
+    bica_coords, cross_match, cross_match_h03_p12, amr_lit, amr_asteca =\
+        [], [], [], [], []
     # Only obtain data if the plot is being generated.
     if '0' in plots:
         # Read Bica et al. (2008) database.
@@ -259,11 +261,13 @@ def main():
         # Read AMR data from other articles.
         amr_lit = get_amr_lit()
         print 'AMR data from literature read.'
+        amr_asteca = get_amr_asteca(in_params)
+        print 'ASteCA AMR for both MCs obtained.'
 
     # Make final plots.
     print 'Plotting...\n'
     make_plots(r_path, plots, in_params, bica_coords, cross_match,
-               cross_match_h03_p12, amr_lit)
+               cross_match_h03_p12, amr_lit, amr_asteca)
 
     print '\nEnd.'
 
