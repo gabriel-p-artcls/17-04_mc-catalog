@@ -61,6 +61,12 @@ photometry.
  abs/2005ApJS..161..304M). Only three OCs could be cross matched: LMC-NGC1860,
  LMC-SL663, and SMC-NGC339.
 
+* `Maia_13_mass.out`
+
+ [Maia et al. (2013)](http://adsabs.harvard.edu/abs/2013arXiv1310.5934M) mass
+ distribution and structural parameters of 29 Small Magellanic Cloud star
+ clusters.
+
 * `pietrz_99_SMC.dat`
 
  Ages for 93 SMC clusters obtained in [Pietrzynski & Udalski (1999)](http://
