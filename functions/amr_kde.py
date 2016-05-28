@@ -41,20 +41,8 @@ def age_met_rel(xarr, xsigma, yarr, ysigma, grid_step):
     # Obtain metallicity weighted average for each age value.
     met_weighted = [[], []]
     for age_col in a_m_kde:
-        # # Filter out points with very small values (assign 0. value)
-        # min_w = max(age_col) / 20.
-        # age_col2 = []
-        # N = 0
-        # for _ in age_col:
-        #     if _ < min_w:
-        #         age_col2.append(0.)
-        #         N += 1
-        #     else:
-        #         age_col2.append(_)
-        # age_col = np.array(age_col2)
-
-        # Metallicity values given by the KDE for the entire metallicity range,
-        # for a single age value.
+        # Metallicity values given by the KDE for all the grid points defined
+        # in the metallicity range, for a single age value.
         age_col = np.array(age_col)
 
         # Obtain weighted metallicity for this *single* age value.
@@ -76,8 +64,7 @@ def feh_avrg(age_gyr, bn, age_vals, met_weighted):
     1- Obtain bin edges for the entire age range.
     2- For each age range, obtain the average of the weighted [Fe/H],
        The associated age value is the mid point of the age range.
-    3- Use Monte Carlo to calculate errors for the representative [Fe/H] value
-       for that age range.
+    3- Propagate errors to the representative [Fe/H] value for that age range.
     """
 
     age_vals_int, met_weighted_int, age_rang_MCs = [[], []], [[], []], [[], []]
@@ -130,17 +117,11 @@ def feh_avrg(age_gyr, bn, age_vals, met_weighted):
                 # Store unique AMR x,y values.
                 age_temp.append(age_avrg)
                 met_temp.append(fe_h_avrg)
-                # Obtain associated error for this average [Fe/H]_age value,
-                # using Monte Carlo.
-                mc_met = []
-                for _ in range(500):
-                    # Draw [Fe/H] random values from Gaussian distribution.
-                    feh_ran = np.random.normal(met_in_bin[1], met_in_bin[2])
-                    # Store average.
-                    mc_met.append(np.mean(feh_ran))
-                # The standard deviation of the above MC means, is the
-                # associated error of the [Fe/H] value for this age range.
-                met_err_temp.append(np.std(mc_met))
+                # Obtain associated error for this average [Fe/H]_age value.
+                # (Bevington and Robinson, 1992)
+                met_err = np.sqrt((1./(len(met_in_bin[2])**2)) *
+                           sum(np.asarray(met_in_bin[2])**2))
+                met_err_temp.append(met_err)
             except:
                 pass
         # plt.show()
@@ -164,7 +145,7 @@ def get_amr_asteca(in_params):
     4- Obtain equispaced age values in grid, and *weighted* [Fe/H]
        values in grid (age_vals, met_weighted).
     5- Call function to obtain an average [Fe/H] value for each age
-       range (along with its Monte Carlo error)
+       range, along with its error.
     """
 
     zarr, zsigma, aarr, asigma = [
