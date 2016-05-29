@@ -27,13 +27,6 @@ photometry.
 
  Literature data on each cluster.
 
-* `bb_cat.dat`
-
- RA & DEC positions for the 3740 clusters in the
- [Bica et al. (2008)](http://cdsads.u-strasbg.fr/abs/2008MNRAS.389..678B)
- catalog ([Table 3](http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=J/
- MNRAS/389/678/table3)).
-
 * `mc_cat_analysis.py`
 
  Script that Produces the main figures by comparing parameters with each other
@@ -48,6 +41,13 @@ photometry.
 
 
 ### `databases/`
+
+* `bb_cat.dat`
+
+ RA & DEC positions for the 3740 clusters in the
+ [Bica et al. (2008)](http://cdsads.u-strasbg.fr/abs/2008MNRAS.389..678B)
+ catalog ([Table 3](http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=J/
+ MNRAS/389/678/table3)).
 
 * `BB_10.dat`
 

@@ -1,3 +1,6 @@
+#
+# RA & DEC positions for the 3740 clusters in the Bica et al. (2008) catalog
+#
 #|  ra	|  dec	|      
 #|  double	|  double	| 
 357.245833333	-72.945277778

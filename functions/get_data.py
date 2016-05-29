@@ -37,7 +37,7 @@ def get_bica_database():
     Read Bica et el. (2008) database.
     '''
     # Path to data file.
-    bb_file = 'bb_cat.dat'
+    bb_file = 'databases/bb_cat.dat'
 
     # Read data file
     with open(bb_file) as f:
