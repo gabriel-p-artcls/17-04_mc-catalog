@@ -23,7 +23,7 @@ photometry.
 
  This file.
 
-* `lista_unica_cumulos.ods`
+* `lit_OCs_data.ods`
 
  Literature data on each cluster.
 

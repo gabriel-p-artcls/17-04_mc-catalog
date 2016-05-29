@@ -226,7 +226,7 @@ def get_liter_data():
     '''
 
     # Read .ods file with literature data.
-    cl_file = ODSBook('lista_unica_cumulos.ods')
+    cl_file = ODSBook('lit_OCs_data.ods')
     # Store as dictionary and then as list.
     cl_dict = cl_file.sheets()["S-LMC"]
 
