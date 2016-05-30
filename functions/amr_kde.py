@@ -183,8 +183,8 @@ def get_amr_asteca(in_params):
         #     age_f = age_f + old_lmc_OCs[0]
         #     feh_f[k] = feh_f[k] + old_lmc_OCs[1]
         #     # Add a reasonable but small error.
-        #     age_err_f = age_err_f + [0.05]*len(old_lmc_OCs[0])
-        #     feh_err_f = feh_err_f + [0.05]*len(old_lmc_OCs[0])
+        #     age_err_f = age_err_f + [0.1]*len(old_lmc_OCs[0])
+        #     feh_err_f = feh_err_f + [0.1]*len(old_lmc_OCs[0])
         # #####################################################################
 
         # Age in Gyrs.
