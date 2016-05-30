@@ -76,51 +76,47 @@ def feh_avrg(age_gyr, bn, age_vals, met_weighted):
         # Obtain bin edges for the entire age range.
         astroML_edges = h_ML(age_gyr[k][0], bins=bn, color='black',  # ax=ax2,
                              histtype='step', normed=True)
-        age_temp, met_temp, met_err_temp = [], [], []
-        # Add to list the min and max value of age where the KDE was obtained.
-        age_rang = [min(age_vals[k])] + list(astroML_edges[1]) +\
-            [max(age_vals[k])]
-
+        # Bin width.
+        delta = astroML_edges[1][1] - astroML_edges[1][0]
+        # Extend one bin to the left and right.
+        age_rang = [astroML_edges[1][0] - delta] + list(astroML_edges[1]) +\
+            [astroML_edges[1][-1] + delta]
         # Print info to screen.
         gal = ['SMC', 'LMC']
-        delta = np.mean([abs(j-i) for i, j in zip(age_rang, age_rang[1:])])
-        print('{}:  {} bins; {:.2f} average bin width; {:.2f}-{:.2f}'
+        print('{}:  {} bins; {:.2f} bin width; {:.2f}-{:.2f}'
               ' limits'.format(gal[k], len(age_rang), delta, min(age_rang),
                                max(age_rang)))
 
         # Obtain average [Fe/H] in each age range. This is the [Fe/H] value
         # for that range.
-        for i, edge in enumerate(age_rang):
+        age_temp, met_temp, met_err_temp = [], [], []
+        for i, edge in enumerate(age_rang[:-1]):
+            # Define edges of bin.
+            min_a, max_a = edge, age_rang[i+1]
             # Separate values for each interval in the age range, defined by
             # the edges obtained above.
-            if i != (len(age_rang) - 1):
-                min_a = edge
-                max_a = age_rang[i+1]
-            else:
-                min_a = edge
-                max_a = max(age_vals[k])
-            met_in_bin = [[], [], []]
+            in_bin = [[], [], []]
             for a, m, e_m in zip(*[age_vals[k], met_weighted[k][0],
                                  met_weighted[k][1]]):
                 if min_a <= a < max_a:
-                    met_in_bin[0].append(a)
-                    met_in_bin[1].append(m)
-                    met_in_bin[2].append(e_m)
+                    in_bin[0].append(a)
+                    in_bin[1].append(m)
+                    in_bin[2].append(e_m)
 
             try:
                 # Age interval limits.
-                a_0, a_1 = min(met_in_bin[0]), max(met_in_bin[0])
+                a_0, a_1 = min(in_bin[0]), max(in_bin[0])
                 # The x axis value (age) is the average for the interval.
                 age_avrg = (a_0 + a_1)/2.
                 # The y axis value ([Fe/H]) is the average for the interval.
-                fe_h_avrg = np.mean(met_in_bin[1])
+                fe_h_avrg = np.mean(in_bin[1])
                 # Store unique AMR x,y values.
                 age_temp.append(age_avrg)
                 met_temp.append(fe_h_avrg)
                 # Obtain associated error for this average [Fe/H]_age value.
                 # (Bevington and Robinson, 1992)
-                met_err = np.sqrt((1./(len(met_in_bin[2])**2)) *
-                           sum(np.asarray(met_in_bin[2])**2))
+                met_err = np.sqrt((1./(len(in_bin[2])**2)) *
+                           sum(np.asarray(in_bin[2])**2))
                 met_err_temp.append(met_err)
             except:
                 pass
@@ -148,27 +144,36 @@ def get_amr_asteca(in_params):
        range, along with its error.
     """
 
-    zarr, zsigma, aarr, asigma = [
-        in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma']]
+    zarr, zsigma, aarr, asigma, gal_names = [
+        in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma',
+                               'gal_names']]
 
-    # First index k indicates the galaxy (0 for SMC, 1 for LMC), the second
+    # First index j indicates the galaxy (0 for SMC, 1 for LMC), the second
     # index 0 indicates ASteCA values.
-    # k=0 -> SMC, k=1 ->LMC
+    # j=0 -> SMC, j=1 ->LMC
     age_gyr, age_vals, met_weighted, feh_f =\
         [[], []], [[], []], [[], []], [[], []]
-    for k in [0, 1]:
-        # Exclude OCs with extremely low metallicities.
+    for j in [0, 1]:
+
+        # k=0 --> ASteCA, k==1 --> Literature
+        k = 0
+
+        # Filter block.
         age_f, age_err_f, feh_err_f = [], [], []
-        for v in zip(*[aarr[k][0], asigma[k][0], zarr[k][0], zsigma[k][0]]):
-            # To filter out HW85 and NGC294
+        for v in zip(*[aarr[j][k], asigma[j][k], zarr[j][k], zsigma[j][k],
+                       gal_names[j]]):
+            # To filter literature OCs with no [Fe/H] values
+            # if v[3] > -10.:
+            #     feh_err_f.append(max(v[3], 0.05))
+            # To filter out HW85 and NGC294 (lowest metallicities)
             # if v[2] > -1.5:
-            # To filter out the 4 LMC OCs with large ages ans metallicities.
+            # To filter out the 4 LMC OCs with large ages and metallicities.
             # if not (9.48 < v[0] < 9.6 and v[2] > -0.3):
             # To include all OCs.
             if True:
                 age_f.append(v[0])
                 age_err_f.append(v[1])
-                feh_f[k].append(v[2])
+                feh_f[j].append(v[2])
                 feh_err_f.append(v[3])
             else:
                 print v
@@ -179,16 +184,16 @@ def get_amr_asteca(in_params):
         #                 10.15, 10.17, 10.09, 10.09, 10.09],
         #                [-1.049, -1.202, -1.369, -1.418, -1.62, -1.746,
         #                 -1.847, -1.865, -2.049, -1.997, -2.095, -2.196]]
-        # if k == 1:
+        # if j == 1:
         #     age_f = age_f + old_lmc_OCs[0]
-        #     feh_f[k] = feh_f[k] + old_lmc_OCs[1]
+        #     feh_f[j] = feh_f[j] + old_lmc_OCs[1]
         #     # Add a reasonable but small error.
         #     age_err_f = age_err_f + [0.1]*len(old_lmc_OCs[0])
         #     feh_err_f = feh_err_f + [0.1]*len(old_lmc_OCs[0])
         # #####################################################################
 
         # Age in Gyrs.
-        age_gyr[k] = [10 ** (np.asarray(age_f) - 9),
+        age_gyr[j] = [10 ** (np.asarray(age_f) - 9),
                       np.asarray(age_err_f) * np.asarray(age_f) *
                       np.log(10) / 5.]
 
@@ -198,8 +203,8 @@ def get_amr_asteca(in_params):
         # Weighted metallicity values for an array of ages.
         # Max limit on very large met errors.
         zsig = [min(2., _) for _ in feh_err_f]
-        age_vals[k], met_weighted[k] = age_met_rel(
-            age_gyr[k][0], age_gyr[k][1], feh_f[k], zsig, grid_step)
+        age_vals[j], met_weighted[j] = age_met_rel(
+            age_gyr[j][0], age_gyr[j][1], feh_f[j], zsig, grid_step)
 
     # THIS NUMBER WILL AFFECT THE SHAPE OF THE FINAL AMR.
     # Define method or number of bins for the age range.
