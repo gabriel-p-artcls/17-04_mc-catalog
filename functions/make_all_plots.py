@@ -1963,7 +1963,7 @@ def pl_amr(pl_params):
     '''
 
     gs, i, age_vals, met_weighted, age_gyr, amr_lit, feh, rad_pc, x_lab,\
-        y_lab = pl_params
+        y_lab, ast_lit = pl_params
 
     xy_font_s = 16
     ax = plt.subplot(gs[i])
@@ -1973,6 +1973,8 @@ def pl_amr(pl_params):
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
             zorder=1)
     plt.xlim(-0.02, 8.4)
+    l = r'$\,\mathtt{ASteCA}$' if ast_lit == 0 else 'Literature'
+
     if i == 0:
         plt.ylim(-2.45, 0.4)
         ax.set_xticklabels([])
@@ -1993,16 +1995,16 @@ def pl_amr(pl_params):
             plt.scatter(rs_x, rs_y, marker='*', s=siz, edgecolors=col[k],
                         facecolor='none', lw=0.4, label=leg[k] + ' OCs',
                         zorder=4)
-            # ASteCA 1 sigma error regions.
+            # 1 sigma error regions.
             y_err_min = np.array(met_weighted[k][0]) -\
                 np.array(met_weighted[k][1])
             y_err_max = np.array(met_weighted[k][0]) +\
                 np.array(met_weighted[k][1])
             plt.fill_between(age_vals[k], y_err_min, y_err_max, alpha=0.1,
                              color=col[k], zorder=5)
-            # ASteCA AMR.
+            # ASteCA/Literature AMR.
             plt.plot(age_vals[k], met_weighted[k][0], c=col[k], lw=1.2,
-                     label=leg[k] + r'$\,(\mathtt{ASteCA})$', zorder=8)
+                     label=leg[k] + '(' + l + ')', zorder=8)
         # Legend.
         leg0 = plt.legend(loc='upper right',  # bbox_to_anchor=(1., 0.12),
                           handlelength=2.5, scatterpoints=1,
@@ -2049,9 +2051,9 @@ def pl_amr(pl_params):
                 hand1.append(pl)
             else:
                 hand2.append(pl)
-        # ASteCA values.
+        # ASteCA/Literature values.
         pl, = plt.plot(age_vals[k], met_weighted[k][0], c=c_as, lw=1.2,
-                       label=r'$\mathtt{ASteCA}$', zorder=5)
+                       label=l, zorder=5)
         hand2.append(pl)
         # Legend.
         leg1 = plt.legend(handles=hand1, loc='upper right', handlelength=3.5,
@@ -2074,15 +2076,15 @@ def make_amr_plot(in_params, amr_lit, amr_asteca):
     gs = gridspec.GridSpec(3, 1)
 
     amr_lit_smc, amr_lit_lmc = amr_lit
-    age_vals, met_weighted, age_gyr, feh_f, age_rang_MCs = amr_asteca
+    age_vals, met_weighted, age_gyr, feh_f, age_rang_MCs, ast_lit = amr_asteca
 
     amr_lst = [
         [gs, 0, age_vals, met_weighted, age_gyr, age_rang_MCs, feh_f, rad_pc,
-         '', '$[Fe/H]$'],
+         '', '$[Fe/H]$', ast_lit],
         [gs, 1, age_vals, met_weighted, age_gyr, amr_lit_lmc, [], [],
-         '', '$[Fe/H]$'],
+         '', '$[Fe/H]$', ast_lit],
         [gs, 2, age_vals, met_weighted, age_gyr, amr_lit_smc, [], [],
-         '$Age\,[Gyr]$', '$[Fe/H]$']
+         '$Age\,[Gyr]$', '$[Fe/H]$', ast_lit]
     ]
 
     for pl_params in amr_lst:

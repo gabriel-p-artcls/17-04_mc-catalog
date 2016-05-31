@@ -148,6 +148,9 @@ def get_amr_asteca(in_params):
         in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma',
                                'gal_names']]
 
+    # k=0 --> ASteCA, k==1 --> Literature
+    k = 0
+
     # First index j indicates the galaxy (0 for SMC, 1 for LMC), the second
     # index 0 indicates ASteCA values.
     # j=0 -> SMC, j=1 ->LMC
@@ -155,26 +158,35 @@ def get_amr_asteca(in_params):
         [[], []], [[], []], [[], []], [[], []]
     for j in [0, 1]:
 
-        # k=0 --> ASteCA, k==1 --> Literature
-        k = 0
-
         # Filter block.
         age_f, age_err_f, feh_err_f = [], [], []
         for v in zip(*[aarr[j][k], asigma[j][k], zarr[j][k], zsigma[j][k],
                        gal_names[j]]):
-            # To filter literature OCs with no [Fe/H] values
-            # if v[3] > -10.:
-            #     feh_err_f.append(max(v[3], 0.05))
-            # To filter out HW85 and NGC294 (lowest metallicities)
-            # if v[2] > -1.5:
-            # To filter out the 4 LMC OCs with large ages and metallicities.
-            # if not (9.48 < v[0] < 9.6 and v[2] > -0.3):
-            # To include all OCs.
-            if True:
+            # Filter cluster.
+            include = False
+            if k == 0:
+                # To filter out HW85 and NGC294 (lowest metallicities)
+                # if v[2] > -1.5:
+                # To filter out the 4 LMC OCs with large ages and
+                # metallicities.
+                # if not (9.48 < v[0] < 9.6 and v[2] > -0.3):
+                # To include all OCs.
+                if True:
+                    include = True
+                    # Max limit on very large met errors.
+                    feh_e = min(v[3], 2.)
+            else:
+                # Filter literature OCs with no [Fe/H] values.
+                if v[3] > -10.:
+                    include = True
+                    # Min limit on 0. met errors.
+                    feh_e = max(v[3], 0.05)
+
+            if include:
                 age_f.append(v[0])
                 age_err_f.append(v[1])
                 feh_f[j].append(v[2])
-                feh_err_f.append(v[3])
+                feh_err_f.append(feh_e)
             else:
                 print v
 
@@ -201,10 +213,8 @@ def get_amr_asteca(in_params):
         grid_step = 0.01
 
         # Weighted metallicity values for an array of ages.
-        # Max limit on very large met errors.
-        zsig = [min(2., _) for _ in feh_err_f]
         age_vals[j], met_weighted[j] = age_met_rel(
-            age_gyr[j][0], age_gyr[j][1], feh_f[j], zsig, grid_step)
+            age_gyr[j][0], age_gyr[j][1], feh_f[j], feh_err_f, grid_step)
 
     # THIS NUMBER WILL AFFECT THE SHAPE OF THE FINAL AMR.
     # Define method or number of bins for the age range.
@@ -217,5 +227,5 @@ def get_amr_asteca(in_params):
     # # [Fe/H], and just keep the weighted values.
     # age_rang_MCs = [np.arange(-2., -1., 0.1), np.arange(-2., -1., 0.1)]
 
-    amr_asteca = [age_vals, met_weighted, age_gyr, feh_f, age_rang_MCs]
+    amr_asteca = [age_vals, met_weighted, age_gyr, feh_f, age_rang_MCs, k]
     return amr_asteca
