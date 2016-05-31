@@ -101,7 +101,7 @@ def get_DB_age_ext(r_path, cl, db, in_params):
     '''
     if db != 'outliers':
         f_path = r_path + 'mc-catalog/databases/matched_clusters.dat'
-        # INdexes for age, extinction and galaxy.
+        # Indexes for age, extinction and galaxy.
         a_i, e_i, g_i = 3, 15, 1
         # Read data file
         with open(f_path) as f:

@@ -1693,7 +1693,7 @@ def pl_DBs_ASteCA_CMDs(pl_params):
     ax0.add_artist(ob0)
     if db == 'outliers':
         t = 'Lit'
-    elif db == 'largemass':
+    elif db in ['largemass', 'largemet']:
         t = 'Synthetic'
     else:
         t = db
@@ -1706,12 +1706,15 @@ def pl_DBs_ASteCA_CMDs(pl_params):
     text3 = '\n' + r'$E_{{(B-V)}}={}$'.format(db_e)
     text4 = '\n' + r'$dm={}$'.format(db_d)
     text5 = '\n' + r'$M={}\,M_{{\odot}}$'.format(int(float(as_m)))
-    if db != 'largemass':
+    if db not in ['largemass', 'largemet']:
         text = text1 + text2 + text3 + text4
         locat = 3
     else:
         text = text1 + text2 + text3 + text4 + text5
-        locat = 4 if letter[i] in ['b', 'd'] else 3
+        if db == 'largemass':
+            locat = 4 if letter[i] in ['b', 'd'] else 3
+        else:
+            locat = 3
     ob2 = offsetbox.AnchoredText(text, loc=locat, prop=dict(size=11))
     ob2.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
     ax0.add_artist(ob2)
@@ -1720,11 +1723,11 @@ def pl_DBs_ASteCA_CMDs(pl_params):
     ax0.xaxis.set_major_locator(MultipleLocator(1.0))
     # Plot grid.
     ax0.grid(b=True, which='major', color='gray', linestyle='--', lw=1,
-            zorder=1)
+             zorder=1)
     # This reversed colormap means higher prob stars will look redder.
     cm = plt.cm.get_cmap('RdYlBu_r')
     col_select_fit, c_iso = '#4682b4', 'r'
-    if db != 'largemass':
+    if db not in ['largemass', 'largemet']:
         # Plot stars used in the best fit process.
         cl_reg_x = cl_reg_fit[0] + cl_reg_no_fit[0]
         cl_reg_y = cl_reg_fit[1] + cl_reg_no_fit[1]
@@ -1752,7 +1755,7 @@ def pl_DBs_ASteCA_CMDs(pl_params):
     ob1 = offsetbox.AnchoredText(text, loc=1, prop=dict(size=11))
     ob1.patch.set(boxstyle='square,pad=-0.2', alpha=0.75)
     ax1.add_artist(ob1)
-    if db != 'largemass':
+    if db not in ['largemass', 'largemet']:
         text1 = r'$z={}$'.format(as_z)
         text2 = '\n' + r'$log(age/yr)={}$'.format(as_a)
         text3 = '\n' + r'$E_{{(B-V)}}={}$'.format(as_e)
@@ -1767,7 +1770,7 @@ def pl_DBs_ASteCA_CMDs(pl_params):
     ax1.xaxis.set_major_locator(MultipleLocator(1.0))
     # Plot grid.
     ax1.grid(b=True, which='major', color='gray', linestyle='--', lw=1,
-            zorder=1)
+             zorder=1)
     # This reversed colormap means higher prob stars will look redder.
     cm = plt.cm.get_cmap('RdYlBu_r')
     # Get extreme values for colorbar.
@@ -1822,7 +1825,7 @@ def make_DB_ASteCA_CMDs(db, db_cls):
 
         # Output png file.
         fig.tight_layout()
-        if db in ['outliers', 'largemass']:
+        if db in ['outliers', 'largemass', 'largemet']:
             r_path = 'figures/'
         else:
             r_path = 'figures/DB_fit/'

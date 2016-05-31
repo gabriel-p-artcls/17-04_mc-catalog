@@ -16,6 +16,9 @@ def get_cross_match_OCs(db):
         mc_cls = [['NGC419', 'NGC1917', 'NGC1751', 'L27', 'SL244']]
         # Use this list to pass galaxies info.
         isochs = [['SMC', 'LMC', 'LMC', 'SMC', 'LMC']]
+    elif db == 'largemet':
+        mc_cls = [['SL33', 'H3', 'SL5', 'KMHK586']]
+        isochs = [['LMC', 'LMC', 'LMC', 'LMC']]
     else:
         isochs = []  # dummy
         # Path to data file.
@@ -90,17 +93,17 @@ def get_CMD_data(r_path, db, in_params, mc_cls, isochs):
             asteca_isoch = cmd.get_isoch(r_path, 'AS', '', as_z_str, as_a,
                                          as_e, as_d)
 
-            # Literature values.
-            if db != 'largemass':
-                gal, db_z, db_a, db_e, db_d, lit_isoch = get_lit_params(
-                    r_path, cl, db, in_params, isochs, i, j)
-            else:
+            if db in ['largemass', 'largemet']:
                 # For 'largemass' OCs, this list passes galaxies info instead
                 # of isochrones.
                 gal = isochs[i][j]
                 # Take the rest of the info from ASteCA values.
                 db_z, db_a, db_e, db_d, lit_isoch = as_z, as_a, as_e, as_d,\
                     asteca_isoch
+            # Literature values.
+            else:
+                gal, db_z, db_a, db_e, db_d, lit_isoch = get_lit_params(
+                    r_path, cl, db, in_params, isochs, i, j)
 
             # Fetch which run holds this cluster's membership data.
             run = cmd.get_cl_run(cl)
@@ -127,8 +130,7 @@ def get_CMD_data(r_path, db, in_params, mc_cls, isochs):
 
 def get_DBs_ASteCA_CMD_data(r_path, db, in_params):
     """
-    Gather information to plot CMDs of cross-matched OCs in databases, and
-    age outliers.
+    Gather information to plot CMDs of several OCs in databases.
     """
     # Read OCs names and set of isochrones used.
     mc_cls, isochs = get_cross_match_OCs(db)

@@ -145,6 +145,15 @@ def CMD_large_mass(r_path, in_params):
     make_DB_ASteCA_CMDs('largemass', db_cls)
 
 
+def CMD_LMC_large_met(r_path, in_params):
+    """
+    CMDs of clusters with large metallicities and ages in the LMC.
+    """
+    print 'Generating CMDs of large [Fe/H] and age for the LMC.'
+    db_cls = get_DBs_ASteCA_CMD_data(r_path, 'largemet', in_params)
+    make_DB_ASteCA_CMDs('largemet', db_cls)
+
+
 def make_plots(r_path, plots, in_params, bica_coords, cross_match,
                cross_match_h03_p12, amr_lit, amr_asteca):
     '''
@@ -225,6 +234,10 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match,
         make_probs_CI_plot(in_params)
         print 'ASteCA probabilities versus CI.'
 
+    if '18' in plots:
+        CMD_LMC_large_met(r_path, in_params)
+        print "CMDs for large [Fe/H] LMC clusters."
+
 
 def main():
     '''
@@ -240,7 +253,7 @@ def main():
     check_diffs(in_params)
 
     # Define which plots to produce.
-    plots = ['12']
+    plots = ['18']
 
     bica_coords, cross_match, cross_match_h03_p12, amr_lit, amr_asteca =\
         [], [], [], [], []
