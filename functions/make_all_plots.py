@@ -2003,7 +2003,7 @@ def pl_amr(pl_params):
             plt.fill_between(age_vals[k], y_err_min, y_err_max, alpha=0.1,
                              color=col[k], zorder=5)
             # ASteCA/Literature AMR.
-            plt.plot(age_vals[k], met_weighted[k][0], c=col[k], lw=1.2,
+            plt.plot(age_vals[k], met_weighted[k][0], c=col[k], lw=1.7,
                      label=leg[k] + '(' + l + ')', zorder=8)
         # Legend.
         leg0 = plt.legend(loc='upper right',  # bbox_to_anchor=(1., 0.12),
@@ -2052,7 +2052,7 @@ def pl_amr(pl_params):
             else:
                 hand2.append(pl)
         # ASteCA/Literature values.
-        pl, = plt.plot(age_vals[k], met_weighted[k][0], c=c_as, lw=1.2,
+        pl, = plt.plot(age_vals[k], met_weighted[k][0], c=c_as, lw=1.7,
                        label=l, zorder=5)
         hand2.append(pl)
         # Legend.
@@ -2092,7 +2092,8 @@ def make_amr_plot(in_params, amr_lit, amr_asteca):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/AMR_asteca.png', dpi=300, bbox_inches='tight')
+    s = 'asteca' if ast_lit == 0 else 'literature'
+    plt.savefig('figures/AMR_' + s + '.png', dpi=300, bbox_inches='tight')
 
 
 def h03_p12_mass_plots(pl_params):
