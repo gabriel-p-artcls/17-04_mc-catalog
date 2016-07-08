@@ -2,7 +2,7 @@
 import os
 from functions.get_data import get_asteca_data, get_liter_data, \
     get_bica_database, get_cross_match_asteca, get_cross_match_h03_p12,\
-    get_amr_lit
+    get_amr_lit, get_massclean_data
 from functions.amr_kde import get_amr_asteca
 from functions.get_params import params
 from functions.match_clusters import match_clusters
@@ -14,7 +14,7 @@ from functions.make_all_plots import make_as_vs_lit_plot,\
     make_concent_plot, make_radius_plot, make_probs_CI_plot, \
     make_cross_match_ip_age, make_cross_match_ip_mass, make_cross_match_if, \
     make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot,\
-    make_cross_match_h03_p12, make_age_mass_corr
+    make_cross_match_h03_p12, make_age_mass_corr, make_massclean_plot
 
 
 def rpath_fig_folder():
@@ -155,7 +155,7 @@ def CMD_LMC_large_met(r_path, in_params):
 
 
 def make_plots(r_path, plots, in_params, bica_coords, cross_match,
-               cross_match_h03_p12, amr_lit, amr_asteca):
+               cross_match_h03_p12, amr_lit, amr_asteca, massclean_data_pars):
     '''
     Make each plot sequentially.
     '''
@@ -215,26 +215,30 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match,
         print 'AMR maps.'
 
     if '13' in plots:
+        make_massclean_plot(massclean_data_pars)
+        print 'MASSCLEAN plot.'
+
+    if '14' in plots:
         make_radius_plot(in_params)
         print 'ASteCA radius (pc) vs parameters plot.'
 
-    if '14' in plots:
+    if '15' in plots:
         make_lit_ext_plot(in_params)
         print 'ASteCA vs MCEV vs SandF extinction plot.'
 
-    if '15' in plots:
+    if '16' in plots:
         make_int_cols_plot(in_params)
         print 'Integrated colors plot.'
 
-    if '16' in plots:
+    if '17' in plots:
         make_concent_plot(in_params)
         print 'Concentration parameter plot.'
 
-    if '17' in plots:
+    if '18' in plots:
         make_probs_CI_plot(in_params)
         print 'ASteCA probabilities versus CI.'
 
-    if '18' in plots:
+    if '19' in plots:
         CMD_LMC_large_met(r_path, in_params)
         print "CMDs for large [Fe/H] LMC clusters."
 
@@ -253,10 +257,10 @@ def main():
     check_diffs(in_params)
 
     # Define which plots to produce.
-    plots = ['18']
+    plots = ['13']
 
-    bica_coords, cross_match, cross_match_h03_p12, amr_lit, amr_asteca =\
-        [], [], [], [], []
+    bica_coords, cross_match, cross_match_h03_p12, amr_lit, amr_asteca, \
+        massclean_data_pars = [], [], [], [], [], []
     # Only obtain data if the plot is being generated.
     if '0' in plots:
         # Read Bica et al. (2008) database.
@@ -276,11 +280,14 @@ def main():
         print 'AMR data from literature read.'
         amr_asteca = get_amr_asteca(in_params)
         print 'ASteCA AMR for both MCs obtained.'
+    if '13' in plots:
+        massclean_data_pars = get_massclean_data()
+        print 'MASSCLEAN data read.'
 
     # Make final plots.
     print 'Plotting...\n'
     make_plots(r_path, plots, in_params, bica_coords, cross_match,
-               cross_match_h03_p12, amr_lit, amr_asteca)
+               cross_match_h03_p12, amr_lit, amr_asteca, massclean_data_pars)
 
     print '\nEnd.'
 

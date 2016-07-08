@@ -1,5 +1,6 @@
 
 from pyexcel_ods import ODSBook
+import re
 
 
 def skip_comments(f):
@@ -30,6 +31,37 @@ def get_asteca_data():
             as_pars.append(line.split()[1:])
 
     return as_names, as_pars
+
+
+def get_massclean_data():
+    '''
+    Read the ASteCA output data file 'asteca_output.dat' for the synthetic
+    clusters generated with MASSCLEAN.
+    '''
+
+    # Path to data file.
+    mc_files = ['OCs_data/asteca_output_massclean_smc.dat',
+                'OCs_data/asteca_output_massclean_lmc.dat']
+
+    # Read data files
+    mc_data, mc_pars = [[], []], [[], []]
+    for i, mc_f in enumerate(mc_files):
+        with open(mc_f) as f:
+            for line in skip_comments(f):
+                # Store Real age, met, and total mass
+                # Separate mass, age and metallicity.
+                delimiters = "/", "_"
+                regexPattern = '|'.join(map(re.escape, delimiters))
+                mma = re.split(regexPattern, line.split()[0])
+                mass = float(mma[0]) * 1000. if mma[0] != '0005' else 500.
+                met = float('0.' + mma[2][1:])
+                age = float(mma[3]) * 0.01
+                mc_data[i].append([met, age, mass])
+                # Read clusters parameters obtained by ASteCA.
+                mc_pars[i].append(line.split()[1:])
+
+    massclean_data_pars = [mc_data, mc_pars]
+    return massclean_data_pars
 
 
 def get_bica_database():

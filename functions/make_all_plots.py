@@ -2208,7 +2208,7 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
     mass_m_avrg = ((np.array(m_m[0]) + np.array(m_m[1])) * 0.5) / scale
     mass_g_avrg = ((np.array(m_g[0]) + np.array(m_g[1])) * 0.5) / scale
 
-    # Generate ASteca vs literature plots.
+    # Generate plot.
     fig = plt.figure(figsize=(19.3, 6.3))
     gs = gridspec.GridSpec(1, 3)
 
@@ -2245,6 +2245,101 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/H03_P12_mass.png', dpi=300, bbox_inches='tight')
+
+
+def make_massclean_plot(massclean_data_pars):
+    """
+    Plot MASSCLEAN masses versus the ones obtained by ASteCA.
+    """
+    mc_data, mc_pars = massclean_data_pars
+
+    a_l, a_m, a_g, m_l, m_m, m_g = [[], []], [[], []], [[], []], [[], []],\
+        [[], []], [[], []]
+    m_low, m_med = 5000., 20000.
+    for i, m_as in enumerate(zip(*mc_pars[0])[27]):
+        m_as = float(m_as)
+        a_as, a_ml, m_ml = map(float, [mc_pars[0][i][21], mc_data[0][i][1], mc_data[0][i][2]])
+        print m_as, m_ml, a_as, a_ml
+        avr_mass = .5 * (m_as + m_ml)
+        # Separate by average mass limit.
+        if avr_mass <= m_low:
+            a_l[0].append(a_as)
+            a_l[1].append(a_ml)
+            m_l[0].append(m_as)
+            m_l[1].append(m_ml)
+        elif m_low < avr_mass <= m_med:
+            a_m[0].append(a_as)
+            a_m[1].append(a_ml)
+            m_m[0].append(m_as)
+            m_m[1].append(m_ml)
+        elif m_med < avr_mass:
+            a_g[0].append(a_as)
+            a_g[1].append(a_ml)
+            m_g[0].append(m_as)
+            m_g[1].append(m_ml)
+
+    # Mean & StandDev. ASteCA-MASSCLEAN
+    # Low mass region.
+    m_l_delta = (np.array(m_l[0]) - np.array(m_l[1])) /\
+        (np.array(m_l[0]) + np.array(m_l[1]))
+    m_l_mean_std = [np.mean(m_l_delta), np.std(m_l_delta)]
+    print 'Low mass Delta M_r mean +- std:', m_l_mean_std
+    a_l_delta = np.array(a_l[0]) - np.array(a_l[1])
+    # Medium mass region.
+    m_m_delta = (np.array(m_m[0]) - np.array(m_m[1])) /\
+        (np.array(m_m[0]) + np.array(m_m[1]))
+    m_m_mean_std = [np.mean(m_m_delta), np.std(m_m_delta)]
+    print 'Medium mass Delta M_r mean +- std:', m_m_mean_std
+    a_m_delta = np.array(a_m[0]) - np.array(a_m[1])
+    # Large mass region.
+    m_g_delta = (np.array(m_g[0]) - np.array(m_g[1])) /\
+        (np.array(m_g[0]) + np.array(m_g[1]))
+    m_g_mean_std = [np.mean(m_g_delta), np.std(m_g_delta)]
+    print 'Large mass Delta M_r mean +- std:', m_g_mean_std
+    a_g_delta = np.array(a_g[0]) - np.array(a_g[1])
+
+    scale = 10**4
+    mass_l_avrg = ((np.array(m_l[0]) + np.array(m_l[1])) * 0.5)
+    mass_m_avrg = ((np.array(m_m[0]) + np.array(m_m[1])) * 0.5) / scale
+    mass_g_avrg = ((np.array(m_g[0]) + np.array(m_g[1])) * 0.5) / scale
+
+    # Generate plot.
+    fig = plt.figure(figsize=(19.3, 6.3))
+    gs = gridspec.GridSpec(1, 3)
+
+    xmin, xmax = [-50., 0.5, 2.05], [5000., 2.05, 28.]
+    ymin, ymax = [-1.09, -1.09, -1.09], [1.09, 1.09, 1.09]
+
+    cbar_min = min(a_l_delta.min(), a_m_delta.min(), a_g_delta.min())
+    cbar_max = max(a_l_delta.max(), a_m_delta.max(), a_g_delta.max())
+    print 'Delta age min, max:', cbar_min, cbar_max
+
+    as_lit_pl_lst = [
+        # Low masses.
+        [gs, 0, xmin[0], xmax[0], ymin[0], ymax[0],
+         r'$\overline{M}_{DBs}\,[M_{\odot}]$',
+         r'$\overline{\Delta M_r}\;\;(P12-H03)$', '',
+         mass_l_avrg, m_l_delta, a_l_delta, cbar_min, cbar_max,
+         m_l_mean_std, r'$\overline{M}_{DBs}\leq 5000\,[M_{\odot}]$'],
+        # Medium H03 vs P12 masses.
+        [gs, 1, xmin[1], xmax[1], ymin[1], ymax[1],
+         r'$\overline{M}_{DBs}\,[10^{-4} M_{\odot}]$', '', '',
+         mass_m_avrg, m_m_delta, a_m_delta, cbar_min, cbar_max,
+         m_m_mean_std, r'$5000<\overline{M}_{DBs}\leq 20000\,[M_{\odot}]$'],
+        # Large H03 vs P12 masses.
+        [gs, 2, xmin[2], xmax[2], ymin[2], ymax[2],
+         r'$\overline{M}_{DBs}\,[10^{-4} M_{\odot}]$', '',
+         r'$\Delta \log(age/yr)$',
+         mass_g_avrg, m_g_delta, a_g_delta, cbar_min, cbar_max,
+         m_g_mean_std, r'$\overline{M}_{DBs}>20000\,[M_{\odot}]$']
+    ]
+
+    for pl_params in as_lit_pl_lst:
+        h03_p12_mass_plots(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    plt.savefig('figures/massclean_mass.png', dpi=300, bbox_inches='tight')
 
 
 def age_mass_corr_plot(pl_params):
