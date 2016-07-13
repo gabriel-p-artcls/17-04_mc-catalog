@@ -2247,99 +2247,371 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
     plt.savefig('figures/H03_P12_mass.png', dpi=300, bbox_inches='tight')
 
 
-def make_massclean_plot(massclean_data_pars):
+def massclean_mass_plots(pl_params):
+    '''
+    Generate ASteCA vs MASSCLEAN mass values plot.
+    '''
+    gs, i, xmin, xmax, ymin, ymax, x_lab, y_lab, z_lab, xarr, yarr, \
+        carr, v_min_mp, v_max_mp, par_mean_std, m_limit = pl_params
+
+    xy_font_s = 21
+    ax = plt.subplot(gs[i], aspect='auto')
+    # Text box.
+    ob = offsetbox.AnchoredText(m_limit, loc=1, prop=dict(size=xy_font_s - 4))
+    ob.patch.set(alpha=0.85)
+    ax.add_artist(ob)
+    # 0 line
+    plt.axhline(y=par_mean_std[0], xmin=0, xmax=1, color='k', ls='--')
+    # Shaded one sigma region.
+    if par_mean_std[0] != par_mean_std[1]:
+        plt.axhspan(par_mean_std[0] - par_mean_std[1],
+                    par_mean_std[0] + par_mean_std[1], facecolor='grey',
+                    alpha=0.3, zorder=1)
+
+    plt.xticks(fontsize=xy_font_s - 6)
+    plt.yticks(fontsize=xy_font_s - 6)
+    cm = plt.cm.get_cmap('RdYlBu_r')
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    plt.xlabel(x_lab, fontsize=xy_font_s)
+    plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+            zorder=1)
+    ax.minorticks_on()
+
+    # Plot all clusters in dictionary.
+    m = 'o' if x_lab == '' else '>'
+    l = 'SMC' if x_lab == '' else 'LMC'
+    SC = plt.scatter(xarr, yarr, marker=m, c=carr, s=130, lw=0.25,
+                     edgecolor='k', cmap=cm, vmin=v_min_mp, vmax=v_max_mp,
+                     label=l, zorder=3)
+    if i == 0:
+        # Legend.
+        leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
+                         fontsize=xy_font_s - 7)
+        # Set the alpha value of the legend.
+        leg.get_frame().set_alpha(0.85)
+        ax.set_aspect('auto')
+    # Position colorbar.
+    if i == 2:
+        axColor = plt.axes([0.885, 0.2, 0.1, 0.023])
+        cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
+        cbar.set_label(z_lab, fontsize=xy_font_s - 3, labelpad=-45)
+        cbar.set_ticks([-2., -1., 0., 1.])
+        cbar.ax.tick_params(labelsize=xy_font_s - 10)
+
+
+def rand_jitter(arr, jitter):
+    """
+    Add random scatter to array.
+    """
+    stdev = jitter*(max(arr)-min(arr))
+    return arr + np.random.randn(len(arr)) * stdev
+
+
+def massclean_mass_plot(massclean_data_pars):
     """
     Plot MASSCLEAN masses versus the ones obtained by ASteCA.
     """
     mc_data, mc_pars = massclean_data_pars
 
-    a_l, a_m, a_g, m_l, m_m, m_g = [[], []], [[], []], [[], []], [[], []],\
-        [[], []], [[], []]
-    m_low, m_med = 5000., 20000.
-    for i, m_as in enumerate(zip(*mc_pars[0])[27]):
-        m_as = float(m_as)
-        a_as, a_ml, m_ml = map(float, [mc_pars[0][i][21], mc_data[0][i][1], mc_data[0][i][2]])
-        print m_as, m_ml, a_as, a_ml
-        avr_mass = .5 * (m_as + m_ml)
-        # Separate by average mass limit.
-        if avr_mass <= m_low:
-            a_l[0].append(a_as)
-            a_l[1].append(a_ml)
-            m_l[0].append(m_as)
-            m_l[1].append(m_ml)
-        elif m_low < avr_mass <= m_med:
-            a_m[0].append(a_as)
-            a_m[1].append(a_ml)
-            m_m[0].append(m_as)
-            m_m[1].append(m_ml)
-        elif m_med < avr_mass:
-            a_g[0].append(a_as)
-            a_g[1].append(a_ml)
-            m_g[0].append(m_as)
-            m_g[1].append(m_ml)
+    mass_l_avrg, mass_m_avrg, mass_g_avrg = [], [], []
+    m_l_delta, m_m_delta, m_g_delta = [], [], []
+    a_l_delta, a_m_delta, a_g_delta = [], [], []
+    # k=0 --> SMC ; k=1 --> LMC
+    for k in [0, 1]:
+        a_l, a_m, a_g, m_l, m_m, m_g = [[], []], [[], []], [[], []], [[], []],\
+            [[], []], [[], []]
+        m_low, m_med = 5000., 20000.
+        for i, m_as in enumerate(zip(*mc_pars[k])[27]):
+            m_as = float(m_as)
+            # age_ASteCA, age_MASSCLEAN, mass_MASSCLEAN
+            a_as, a_ml, m_ml = map(float, [mc_pars[k][i][21], mc_data[k][i][1],
+                                   mc_data[k][i][2]])
+            avr_mass = .5 * (m_as + m_ml)
+            # Separate by average mass limit.
+            if avr_mass <= m_low:
+                a_l[0].append(a_as)
+                a_l[1].append(a_ml)
+                m_l[0].append(m_as)
+                m_l[1].append(m_ml)
+            elif m_low < avr_mass <= m_med:
+                a_m[0].append(a_as)
+                a_m[1].append(a_ml)
+                m_m[0].append(m_as)
+                m_m[1].append(m_ml)
+            elif m_med < avr_mass:
+                a_g[0].append(a_as)
+                a_g[1].append(a_ml)
+                m_g[0].append(m_as)
+                m_g[1].append(m_ml)
 
-    # Mean & StandDev. ASteCA-MASSCLEAN
+        # Mean & StandDev. ASteCA-MASSCLEAN
+        # Low mass region.
+        m_l_delta.append((np.array(m_l[0]) - np.array(m_l[1])) /
+                         (np.array(m_l[0]) + np.array(m_l[1])))
+        a_l_delta.append(np.array(a_l[0]) - np.array(a_l[1]))
+        # Medium mass region.
+        m_m_delta.append((np.array(m_m[0]) - np.array(m_m[1])) /
+                         (np.array(m_m[0]) + np.array(m_m[1])))
+        a_m_delta.append(np.array(a_m[0]) - np.array(a_m[1]))
+        # Large mass region.
+        m_g_delta.append((np.array(m_g[0]) - np.array(m_g[1])) /
+                         (np.array(m_g[0]) + np.array(m_g[1])))
+        a_g_delta.append(np.array(a_g[0]) - np.array(a_g[1]))
+
+        scale = 10**4
+        mass_l_avrg.append((np.array(m_l[0]) + np.array(m_l[1])) * 0.5)
+        mass_m_avrg.append(((np.array(m_m[0]) + np.array(m_m[1])) * 0.5) /
+                           scale)
+        mass_g_avrg.append(((np.array(m_g[0]) + np.array(m_g[1])) * 0.5) /
+                           scale)
+
+    # Add random scatter
+    mass_l_avrg = [rand_jitter(_, 0.02) for _ in mass_l_avrg]
+    mass_m_avrg = [rand_jitter(_, 0.025) for _ in mass_m_avrg]
+    mass_g_avrg = [rand_jitter(_, 0.02) for _ in mass_g_avrg]
+
     # Low mass region.
-    m_l_delta = (np.array(m_l[0]) - np.array(m_l[1])) /\
-        (np.array(m_l[0]) + np.array(m_l[1]))
-    m_l_mean_std = [np.mean(m_l_delta), np.std(m_l_delta)]
-    print 'Low mass Delta M_r mean +- std:', m_l_mean_std
-    a_l_delta = np.array(a_l[0]) - np.array(a_l[1])
+    m_l_mean_std = [np.mean([item for subl in m_l_delta for item in subl]),
+                    np.std([item for subl in m_l_delta for item in subl])]
+    a_l_mean_std = [np.mean([item for subl in a_l_delta for item in subl]),
+                    np.std([item for subl in a_l_delta for item in subl])]
     # Medium mass region.
-    m_m_delta = (np.array(m_m[0]) - np.array(m_m[1])) /\
-        (np.array(m_m[0]) + np.array(m_m[1]))
-    m_m_mean_std = [np.mean(m_m_delta), np.std(m_m_delta)]
-    print 'Medium mass Delta M_r mean +- std:', m_m_mean_std
-    a_m_delta = np.array(a_m[0]) - np.array(a_m[1])
+    m_m_mean_std = [np.mean([item for subl in m_m_delta for item in subl]),
+                    np.std([item for subl in m_m_delta for item in subl])]
+    a_m_mean_std = [np.mean([item for subl in a_m_delta for item in subl]),
+                    np.std([item for subl in a_m_delta for item in subl])]
     # Large mass region.
-    m_g_delta = (np.array(m_g[0]) - np.array(m_g[1])) /\
-        (np.array(m_g[0]) + np.array(m_g[1]))
-    m_g_mean_std = [np.mean(m_g_delta), np.std(m_g_delta)]
-    print 'Large mass Delta M_r mean +- std:', m_g_mean_std
-    a_g_delta = np.array(a_g[0]) - np.array(a_g[1])
-
-    scale = 10**4
-    mass_l_avrg = ((np.array(m_l[0]) + np.array(m_l[1])) * 0.5)
-    mass_m_avrg = ((np.array(m_m[0]) + np.array(m_m[1])) * 0.5) / scale
-    mass_g_avrg = ((np.array(m_g[0]) + np.array(m_g[1])) * 0.5) / scale
+    m_g_mean_std = [np.mean([item for subl in m_g_delta for item in subl]),
+                    np.std([item for subl in m_g_delta for item in subl])]
+    a_g_mean_std = [np.mean([item for subl in a_g_delta for item in subl]),
+                    np.std([item for subl in a_g_delta for item in subl])]
+    print 'Low mass Delta M_r mean +- std:', m_l_mean_std
+    print 'Med mass Delta M_r mean +- std:', m_m_mean_std
+    print 'Lar mass Delta M_r mean +- std:', m_g_mean_std
+    full_M_ms = [np.mean([item for subl in m_l_delta for item in subl] +
+                         [item for subl in m_m_delta for item in subl] +
+                         [item for subl in m_g_delta for item in subl]),
+                 np.std([item for subl in m_l_delta for item in subl] +
+                        [item for subl in m_m_delta for item in subl] +
+                        [item for subl in m_g_delta for item in subl])]
+    print 'Full region Delta M_r mean +- std:', full_M_ms, '\n'
+    print 'Low mass Delta age mean +- std:', a_l_mean_std
+    print 'Med mass Delta age mean +- std:', a_m_mean_std
+    print 'Lar mass Delta age mean +- std:', a_g_mean_std
+    full_a_ms = [np.mean([item for subl in a_l_delta for item in subl] +
+                         [item for subl in a_m_delta for item in subl] +
+                         [item for subl in a_g_delta for item in subl]),
+                 np.std([item for subl in a_l_delta for item in subl] +
+                        [item for subl in a_m_delta for item in subl] +
+                        [item for subl in a_g_delta for item in subl])]
+    print 'Full region Delta age mean +- std:', full_a_ms
 
     # Generate plot.
     fig = plt.figure(figsize=(19.3, 6.3))
     gs = gridspec.GridSpec(1, 3)
 
-    xmin, xmax = [-50., 0.5, 2.05], [5000., 2.05, 28.]
-    ymin, ymax = [-1.09, -1.09, -1.09], [1.09, 1.09, 1.09]
+    xmin, xmax = [-50., 0.47, 1.7], [5000., 2.05, 28.5]
+    ymin, ymax = [-1.09, -1.09, -0.7], [1.09, 1.09, 0.7]
 
-    cbar_min = min(a_l_delta.min(), a_m_delta.min(), a_g_delta.min())
-    cbar_max = max(a_l_delta.max(), a_m_delta.max(), a_g_delta.max())
+    cbar_min = min(min([item for subl in a_l_delta for item in subl]),
+                   min([item for subl in a_m_delta for item in subl]),
+                   min([item for subl in a_g_delta for item in subl]))
+    cbar_max = max(max([item for subl in a_l_delta for item in subl]),
+                   max([item for subl in a_m_delta for item in subl]),
+                   max([item for subl in a_g_delta for item in subl]))
     print 'Delta age min, max:', cbar_min, cbar_max
 
     as_lit_pl_lst = [
         # Low masses.
+        # SMC
+        [gs, 0, xmin[0], xmax[0], ymin[0], ymax[0], '', '', '',
+         mass_l_avrg[0], m_l_delta[0], a_l_delta[0], cbar_min, cbar_max,
+         m_l_mean_std, ''],
+        # LMC
         [gs, 0, xmin[0], xmax[0], ymin[0], ymax[0],
-         r'$\overline{M}_{DBs}\,[M_{\odot}]$',
-         r'$\overline{\Delta M_r}\;\;(P12-H03)$', '',
-         mass_l_avrg, m_l_delta, a_l_delta, cbar_min, cbar_max,
-         m_l_mean_std, r'$\overline{M}_{DBs}\leq 5000\,[M_{\odot}]$'],
-        # Medium H03 vs P12 masses.
+         r'$\overline{M}\,[M_{\odot}]$',
+         r'$\overline{\Delta M_r}\;\;(\mathtt{ASteCA}-MASSCLEAN)$', '',
+         mass_l_avrg[1], m_l_delta[1], a_l_delta[1], cbar_min, cbar_max,
+         m_l_mean_std, r'$\overline{M}\leq 5000\,[M_{\odot}]$'],
+        # Medium masses.
+        [gs, 1, xmin[1], xmax[1], ymin[1], ymax[1], '', '', '',
+         mass_m_avrg[0], m_m_delta[0], a_m_delta[0], cbar_min, cbar_max,
+         m_m_mean_std, ''],
         [gs, 1, xmin[1], xmax[1], ymin[1], ymax[1],
-         r'$\overline{M}_{DBs}\,[10^{-4} M_{\odot}]$', '', '',
-         mass_m_avrg, m_m_delta, a_m_delta, cbar_min, cbar_max,
-         m_m_mean_std, r'$5000<\overline{M}_{DBs}\leq 20000\,[M_{\odot}]$'],
-        # Large H03 vs P12 masses.
+         r'$\overline{M}\,[10^{-4} M_{\odot}]$', '', '',
+         mass_m_avrg[1], m_m_delta[1], a_m_delta[1], cbar_min, cbar_max,
+         m_m_mean_std, r'$5000<\overline{M}\leq 20000\,[M_{\odot}]$'],
+        # Large masses.
+        [gs, 2, xmin[2], xmax[2], ymin[2], ymax[2], '', '', '',
+         mass_g_avrg[0], m_g_delta[0], a_g_delta[0], cbar_min, cbar_max,
+         m_g_mean_std, ''],
         [gs, 2, xmin[2], xmax[2], ymin[2], ymax[2],
-         r'$\overline{M}_{DBs}\,[10^{-4} M_{\odot}]$', '',
+         r'$\overline{M}\,[10^{-4} M_{\odot}]$', '',
          r'$\Delta \log(age/yr)$',
-         mass_g_avrg, m_g_delta, a_g_delta, cbar_min, cbar_max,
-         m_g_mean_std, r'$\overline{M}_{DBs}>20000\,[M_{\odot}]$']
+         mass_g_avrg[1], m_g_delta[1], a_g_delta[1], cbar_min, cbar_max,
+         m_g_mean_std, r'$\overline{M}>20000\,[M_{\odot}]$']
     ]
 
     for pl_params in as_lit_pl_lst:
-        h03_p12_mass_plots(pl_params)
+        massclean_mass_plots(pl_params)
 
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/massclean_mass.png', dpi=300, bbox_inches='tight')
+
+
+def massclean_feh_plots(pl_params):
+    '''
+    Generate ASteCA vs MASSCLEAN [Fe/H] values plot.
+    '''
+    gs, i, xylims, x_lab, y_lab, z_lab, xarr, yarr, carr, mass, mean_std =\
+        pl_params
+
+    par_mean_std = mean_std[i]
+
+    xy_font_s = 21
+    ax = plt.subplot(gs[i], aspect='auto')
+
+    plt.xticks(fontsize=xy_font_s - 6)
+    plt.yticks(fontsize=xy_font_s - 6)
+    cm = plt.cm.get_cmap('RdYlBu_r')
+    xmin, xmax, ymin, ymax = xylims
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    plt.xlabel(x_lab, fontsize=xy_font_s)
+    plt.ylabel(y_lab, fontsize=xy_font_s)
+    ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+            zorder=1)
+    ax.minorticks_on()
+    if i in [0, 1, 2, 3]:
+        ax.axes.xaxis.set_ticklabels([])
+    if i not in [0, 4]:
+        ax.axes.yaxis.set_ticklabels([])
+    # Text box.
+    ob = offsetbox.AnchoredText(mass, loc=1, prop=dict(size=xy_font_s - 4))
+    ob.patch.set(alpha=0.85)
+    ax.add_artist(ob)
+    # 0 line
+    plt.axhline(y=0, xmin=0, xmax=1, color='g', ls='--')
+    # Mean line
+    plt.axhline(y=par_mean_std[0], xmin=0, xmax=1, color='k', ls='--')
+    # Text box.
+    text1 = r'$\bar{{\Delta}}={:g}$'.format(round(par_mean_std[0], 2))
+    text2 = r'$\pm{:g}$'.format(round(par_mean_std[1], 2))
+    text = text1 + text2
+    ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s - 4))
+    ob.patch.set(alpha=0.5)
+    ax.add_artist(ob)
+    # Shaded one sigma region.
+    if par_mean_std[0] != par_mean_std[1]:
+        plt.axhspan(par_mean_std[0] - par_mean_std[1],
+                    par_mean_std[0] + par_mean_std[1], facecolor='grey',
+                    alpha=0.3, zorder=1)
+    SC = plt.scatter(xarr, yarr, marker='o', c=carr, s=130, lw=0.25,
+                     edgecolor='k', cmap=cm, zorder=3, vmin=-0.3, vmax=0.3)
+    # Position colorbar.
+    if i in [3, 7]:
+        # Position colorbar.
+        the_divider = make_axes_locatable(ax)
+        color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
+        # Colorbar.
+        cbar = plt.colorbar(SC, cax=color_axis)
+        cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=7)
+
+
+def massclean_z_plot(massclean_data_pars):
+    """
+    Plot MASSCLEAN true metallicities versus the metallicity estimates obtained
+    by ASteCA, and its relation with the masses.
+    """
+    mc_data, mc_pars = massclean_data_pars
+
+    # k=0 --> SMC ; k=1 --> LMC
+    dat_05, dat_1, dat_5, dat_10, dat_25, dat_50, dat_100, dat_250 = [],\
+        [], [], [], [], [], [], []
+    for k in [0, 1]:
+        for i, z_as in enumerate(zip(*mc_pars[k])[19]):
+            # z_ASteCA, z_MASSCLEAN, age_ASteCA
+            z_as, z_ml, a_as, a_ml = float(z_as), float(mc_data[k][i][0]),\
+                float(mc_pars[k][i][21]), float(mc_data[k][i][1])
+            # mass_MASSCLEAN
+            m_ml = mc_data[k][i][2]
+            # Convert z to [Fe/H]. For MASSCLEAN use 0.019 as solar
+            # metallicity.
+            f_as, f_ml = np.log10(z_as/0.0152), np.log10(z_ml/0.019)
+            if abs(f_as - f_ml) > 0.5:
+                print f_as - f_ml, m_ml, a_ml, z_ml
+            if m_ml == 500.:
+                dat_05.append([f_as, f_as - f_ml, a_as - a_ml])
+            elif m_ml == 1000.:
+                dat_1.append([f_as, f_as - f_ml, a_as - a_ml])
+            elif m_ml == 5000.:
+                dat_5.append([f_as, f_as - f_ml, a_as - a_ml])
+            elif m_ml == 10000.:
+                dat_10.append([f_as, f_as - f_ml, a_as - a_ml])
+            elif m_ml == 25000.:
+                dat_25.append([f_as, f_as - f_ml, a_as - a_ml])
+            elif m_ml == 50000.:
+                dat_50.append([f_as, f_as - f_ml, a_as - a_ml])
+            elif m_ml == 100000.:
+                dat_100.append([f_as, f_as - f_ml, a_as - a_ml])
+            elif m_ml == 250000.:
+                dat_250.append([f_as, f_as - f_ml, a_as - a_ml])
+
+    mean_std = []
+    for d in [dat_05, dat_1, dat_5, dat_10, dat_25, dat_50, dat_100, dat_250]:
+        m, s = np.mean(zip(*d)[1]), np.std(zip(*d)[1])
+        print 'Mass val mean +- std:', m, s
+        mean_std.append([m, s])
+
+    # Generate plot.
+    fig = plt.figure(figsize=(25.7, 12.6))
+    gs = gridspec.GridSpec(2, 4)
+
+    xylims = [[-1.4, 0.45, -0.97, 2.], [-1.4, 0.45, -0.97, 2.]]
+
+    as_lit_pl_lst = [
+        [gs, 0, xylims[0], '', r'$\Delta [Fe/H]\,(\mathtt{ASteCA}-MASSCLEAN)$',
+         '', rand_jitter(zip(*dat_05)[0], 0.02),
+         zip(*dat_05)[1], zip(*dat_05)[2], r'$M=500\,M_{\odot}$',
+         mean_std],
+        [gs, 1, xylims[0], '', '', '', rand_jitter(zip(*dat_1)[0], 0.02),
+         zip(*dat_1)[1], zip(*dat_1)[2], r'$M=1000\,M_{\odot}$',
+         mean_std],
+        [gs, 2, xylims[0], '', '', '', rand_jitter(zip(*dat_5)[0], 0.02),
+         zip(*dat_5)[1], zip(*dat_5)[2], r'$M=5000\,M_{\odot}$',
+         mean_std],
+        [gs, 3, xylims[0], '', '', r'$\Delta \log(age/yr)$',
+         rand_jitter(zip(*dat_10)[0], 0.02),
+         zip(*dat_10)[1], zip(*dat_10)[2], r'$M=10000\,M_{\odot}$',
+         mean_std],
+        [gs, 4, xylims[1], r'$[Fe/H]_{MASSCLEAN}$',
+         r'$\Delta [Fe/H]\,(\mathtt{ASteCA}-MASSCLEAN)$',
+         '', rand_jitter(zip(*dat_25)[0], 0.02),
+         zip(*dat_25)[1], zip(*dat_25)[2], r'$M=25000\,M_{\odot}$',
+         mean_std],
+        [gs, 5, xylims[1], r'$[Fe/H]_{MASSCLEAN}$', '', '',
+         rand_jitter(zip(*dat_50)[0], 0.02),
+         zip(*dat_50)[1], zip(*dat_50)[2], r'$M=50000\,M_{\odot}$',
+         mean_std],
+        [gs, 6, xylims[1], r'$[Fe/H]_{MASSCLEAN}$', '', '',
+         rand_jitter(zip(*dat_100)[0], 0.02),
+         zip(*dat_100)[1], zip(*dat_100)[2], r'$M=100000\,M_{\odot}$',
+         mean_std],
+        [gs, 7, xylims[1], r'$[Fe/H]_{MASSCLEAN}$', '',
+         r'$\Delta \log(age/yr)$', rand_jitter(zip(*dat_250)[0], 0.02),
+         zip(*dat_250)[1], zip(*dat_250)[2], r'$M=250000\,M_{\odot}$',
+         mean_std]
+    ]
+
+    for pl_params in as_lit_pl_lst:
+        massclean_feh_plots(pl_params)
+
+    # Output png file.
+    fig.tight_layout()
+    plt.savefig('figures/massclean_feh.png', dpi=300, bbox_inches='tight')
 
 
 def age_mass_corr_plot(pl_params):

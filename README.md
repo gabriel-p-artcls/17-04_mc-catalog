@@ -163,6 +163,10 @@ photometry.
 
  Prints the final parameters found in each run for a given cluster.
 
+* `marigo_parsec_isochs.py`
+
+ Creates plot of Marigo vs PARSEC (v1.1) isochrones.
+
 
 ### `extinction_MCEV/`
 
@@ -587,5 +591,10 @@ All other parameter ranges are kept from 3rd run.
 
 #### `22nd_run`
 
-Re-process NGC 419 with a larger radius: 310px in 21st run vs 460px here. The largest
-mass value found (with no field star cleaning applied) is 9e04.
+Re-process NGC 419 with a larger radius: 310px in 21st run vs 460px here. The
+largest mass value found (with no field star cleaning applied) is 9e04.
+
+#### `23rd_run`
+
+Process 768 synthetic MASSCLEAN clusters to validate ASteCA's mass estimation.
+
