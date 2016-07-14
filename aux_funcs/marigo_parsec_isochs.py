@@ -90,7 +90,7 @@ def get_data():
     """
     # Path to data files.
     mar, par = 'mar2008_ubvrijhk/', 'parsec11_ubvrijhk/'
-    age_values = [7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0]
+    age_values = [7.5, 8.0, 8.5, 9.0, 9.5]
 
     # Read data file
     mar_data, par_data = [], []
@@ -110,7 +110,7 @@ def make_plot(mar_data, par_data):
     """
     """
 
-    xmin, xmax, ymin, ymax = 3.3, 4.8, -1., 4.8
+    xmin, xmax, ymin, ymax = 3.35, 4.45, 0.2, 4.6
 
     # Generate plot.
     fig = plt.figure(figsize=(20, 25))
@@ -124,29 +124,48 @@ def make_plot(mar_data, par_data):
         plt.yticks(fontsize=xy_font_s - 6)
         plt.xlim(xmin, xmax)
         plt.ylim(ymin, ymax)
-        plt.xlabel(r'$\log(T_{eff})$', fontsize=xy_font_s)
-        plt.ylabel(r'$\log(L/L_{\odot})$', fontsize=xy_font_s)
         ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
                 zorder=1)
         ax.minorticks_on()
+        if i in [2, 3]:
+            plt.xlabel(r'$\log(T_{eff})$', fontsize=xy_font_s)
+        if i in [0, 2]:
+            plt.ylabel(r'$\log(L/L_{\odot})$', fontsize=xy_font_s)
+        if i in [0, 1]:
+            ax.axes.xaxis.set_ticklabels([])
+        if i in [1, 3]:
+            ax.axes.yaxis.set_ticklabels([])
         # Text box.
-        ob = offsetbox.AnchoredText(r'z = {}'.format(met[i]), loc=9,
-                                    prop=dict(size=xy_font_s - 4))
+        ob = offsetbox.AnchoredText(r'z = {}'.format(met[i]), loc=2,
+                                    prop=dict(size=xy_font_s - 2))
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
-        col = ['r', 'b', 'g', 'k', 'c', 'm', 'y']
-        l = ['7.0', '7.5', '8.0', '8.5', '9.0', '9.5', '10.0']
+        # Second legend
+        l1, = plt.plot([-100., -100.], [-100., -100.], label='Marigo (2008)',
+                       ls='-', c='k', lw=1.8)
+        l2, = plt.plot([-100., -100.], [-100., -100.], label='PARSEC (v1.1)',
+                       ls='--', c='k', lw=1.8)
+        hand1 = [l1, l2]
+        # Tracks
+        col = ['r', 'b', 'g', 'k', 'm']
+        l = ['7.5', '8.0', '8.5', '9.0', '9.5']
+        hand2 = []
         for j, track in enumerate(mar_data[i]):
-            plt.plot(track[0], track[1], c=col[j], label=l[j])
-        # Legend.
-        leg = plt.legend(loc='lower left', markerscale=2., scatterpoints=1,
-                         fontsize=xy_font_s - 4)
-        # Set the alpha value of the legend.
-        leg.get_frame().set_alpha(0.85)
-        ax.set_aspect('auto')
-    # Position colorbar.
+            pl, = plt.plot(track[0], track[1], c=col[j], label=l[j])
+            hand2.append(pl)
         for j, track in enumerate(par_data[i]):
             plt.plot(track[0], track[1], c=col[j], ls='--')
+        # Legend.
+        leg1 = plt.legend(handles=hand1, loc='lower right',
+                          fontsize=xy_font_s - 3)
+        leg2 = plt.legend(handles=hand2, loc='lower left',
+                          title=r'$\log(age/yr)$', fontsize=xy_font_s - 2)
+        # ax.set_aspect('auto')
+        leg2.get_title().set_fontsize(xy_font_s + 3)
+        leg1.get_frame().set_alpha(0.85)
+        leg2.get_frame().set_alpha(0.85)
+        plt.gca().add_artist(leg1)
+        # Invert x axis
         plt.gca().invert_xaxis()
 
     # Output png file.

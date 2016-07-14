@@ -5,6 +5,7 @@ import matplotlib.gridspec as gridspec
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.offsetbox as offsetbox
 from matplotlib.ticker import MultipleLocator
+from matplotlib.colors import Normalize
 from scipy import stats
 from ra_dec_map import ra_dec_plots
 from kde_map import kde_2d, kde_1d
@@ -2247,6 +2248,18 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
     plt.savefig('figures/H03_P12_mass.png', dpi=300, bbox_inches='tight')
 
 
+class MidpointNormalize(Normalize):
+    def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
+        self.midpoint = midpoint
+        Normalize.__init__(self, vmin, vmax, clip)
+
+    def __call__(self, value, clip=None):
+        # I'm ignoring masked values and all kinds of edge cases to make a
+        # simple example...
+        x, y = [self.vmin, self.midpoint, self.vmax], [0, 0.5, 1]
+        return np.ma.masked_array(np.interp(value, x, y))
+
+
 def massclean_mass_plots(pl_params):
     '''
     Generate ASteCA vs MASSCLEAN mass values plot.
@@ -2282,9 +2295,11 @@ def massclean_mass_plots(pl_params):
     # Plot all clusters in dictionary.
     m = 'o' if x_lab == '' else '>'
     l = 'SMC' if x_lab == '' else 'LMC'
+    # Fix the 0 value to the middle of the colorbar (yellow color)
+    norm = MidpointNormalize(midpoint=0)
     SC = plt.scatter(xarr, yarr, marker=m, c=carr, s=130, lw=0.25,
                      edgecolor='k', cmap=cm, vmin=v_min_mp, vmax=v_max_mp,
-                     label=l, zorder=3)
+                     label=l, zorder=3, norm=norm)
     if i == 0:
         # Legend.
         leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
@@ -2309,7 +2324,7 @@ def rand_jitter(arr, jitter):
     return arr + np.random.randn(len(arr)) * stdev
 
 
-def massclean_mass_plot(massclean_data_pars):
+def make_massclean_mass_plot(massclean_data_pars):
     """
     Plot MASSCLEAN masses versus the ones obtained by ASteCA.
     """
@@ -2509,11 +2524,12 @@ def massclean_feh_plots(pl_params):
         plt.axhspan(par_mean_std[0] - par_mean_std[1],
                     par_mean_std[0] + par_mean_std[1], facecolor='grey',
                     alpha=0.3, zorder=1)
+    # Fix the 0 value to the middle of the colorbar (yellow color)
+    norm = MidpointNormalize(midpoint=0)
     SC = plt.scatter(xarr, yarr, marker='o', c=carr, s=130, lw=0.25,
-                     edgecolor='k', cmap=cm, zorder=3, vmin=-0.3, vmax=0.3)
+                     edgecolor='k', cmap=cm, zorder=3, norm=norm)
     # Position colorbar.
     if i in [3, 7]:
-        # Position colorbar.
         the_divider = make_axes_locatable(ax)
         color_axis = the_divider.append_axes("right", size="2%", pad=0.1)
         # Colorbar.
@@ -2521,7 +2537,7 @@ def massclean_feh_plots(pl_params):
         cbar.set_label(z_lab, fontsize=xy_font_s, labelpad=7)
 
 
-def massclean_z_plot(massclean_data_pars):
+def make_massclean_z_plot(massclean_data_pars):
     """
     Plot MASSCLEAN true metallicities versus the metallicity estimates obtained
     by ASteCA, and its relation with the masses.
@@ -2531,6 +2547,7 @@ def massclean_z_plot(massclean_data_pars):
     # k=0 --> SMC ; k=1 --> LMC
     dat_05, dat_1, dat_5, dat_10, dat_25, dat_50, dat_100, dat_250 = [],\
         [], [], [], [], [], [], []
+    best_matchs = []
     for k in [0, 1]:
         for i, z_as in enumerate(zip(*mc_pars[k])[19]):
             # z_ASteCA, z_MASSCLEAN, age_ASteCA
@@ -2543,28 +2560,32 @@ def massclean_z_plot(massclean_data_pars):
             f_as, f_ml = np.log10(z_as/0.0152), np.log10(z_ml/0.019)
             if abs(f_as - f_ml) > 0.5:
                 print f_as - f_ml, m_ml, a_ml, z_ml
+            else:
+                best_matchs.append(f_as - f_ml)
             if m_ml == 500.:
-                dat_05.append([f_as, f_as - f_ml, a_as - a_ml])
+                dat_05.append([f_ml, f_as - f_ml, a_as - a_ml])
             elif m_ml == 1000.:
-                dat_1.append([f_as, f_as - f_ml, a_as - a_ml])
+                dat_1.append([f_ml, f_as - f_ml, a_as - a_ml])
             elif m_ml == 5000.:
-                dat_5.append([f_as, f_as - f_ml, a_as - a_ml])
+                dat_5.append([f_ml, f_as - f_ml, a_as - a_ml])
             elif m_ml == 10000.:
-                dat_10.append([f_as, f_as - f_ml, a_as - a_ml])
+                dat_10.append([f_ml, f_as - f_ml, a_as - a_ml])
             elif m_ml == 25000.:
-                dat_25.append([f_as, f_as - f_ml, a_as - a_ml])
+                dat_25.append([f_ml, f_as - f_ml, a_as - a_ml])
             elif m_ml == 50000.:
-                dat_50.append([f_as, f_as - f_ml, a_as - a_ml])
+                dat_50.append([f_ml, f_as - f_ml, a_as - a_ml])
             elif m_ml == 100000.:
-                dat_100.append([f_as, f_as - f_ml, a_as - a_ml])
+                dat_100.append([f_ml, f_as - f_ml, a_as - a_ml])
             elif m_ml == 250000.:
-                dat_250.append([f_as, f_as - f_ml, a_as - a_ml])
+                dat_250.append([f_ml, f_as - f_ml, a_as - a_ml])
 
     mean_std = []
     for d in [dat_05, dat_1, dat_5, dat_10, dat_25, dat_50, dat_100, dat_250]:
         m, s = np.mean(zip(*d)[1]), np.std(zip(*d)[1])
         print 'Mass val mean +- std:', m, s
         mean_std.append([m, s])
+    print '|Delta log(age)|<0.5, Delta [Fe/H] mean +- std:',\
+        np.mean(best_matchs), np.std(best_matchs), len(best_matchs)
 
     # Generate plot.
     fig = plt.figure(figsize=(25.7, 12.6))

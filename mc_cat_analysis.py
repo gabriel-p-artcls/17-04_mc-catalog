@@ -14,8 +14,8 @@ from functions.make_all_plots import make_as_vs_lit_plot,\
     make_concent_plot, make_radius_plot, make_probs_CI_plot, \
     make_cross_match_ip_age, make_cross_match_ip_mass, make_cross_match_if, \
     make_DB_ASteCA_CMDs, make_errors_plots, make_amr_plot,\
-    make_cross_match_h03_p12, make_age_mass_corr, massclean_z_plot,\
-    massclean_mass_plot
+    make_cross_match_h03_p12, make_age_mass_corr, make_massclean_z_plot,\
+    make_massclean_mass_plot
 
 
 def rpath_fig_folder():
@@ -216,10 +216,9 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match,
         print 'AMR maps.'
 
     if '13' in plots:
-        massclean_z_plot(massclean_data_pars)
+        make_massclean_z_plot(massclean_data_pars)
         print 'MASSCLEAN [Fe/H] plot.'
-        import pdb; pdb.set_trace()  # breakpoint 5f44a24f //
-        massclean_mass_plot(massclean_data_pars)
+        make_massclean_mass_plot(massclean_data_pars)
         print 'MASSCLEAN mass plot.'
 
     if '14' in plots:
