@@ -188,7 +188,7 @@ def make_as_vs_lit_plot(in_params):
             zsigma[0][1], darr[0][0], dm_min, dm_max, [], 'SMC'],
         # Asteca z vs \delta z with lit values.
         [gs, 2, -2.4, 0.45, -1.83, 1.43, '$[Fe/H]_{\mathtt{ASteCA}}$',
-            '$\Delta [Fe/H]$', '$\mu_{0; \mathtt{ASteCA}}$', z_all,
+            '$\Delta [Fe/H]$', '$\mu_{\circ; \mathtt{ASteCA}}$', z_all,
             [0.]*len(z_all), z_delta, z_delta_e, dm_all, dm_min, dm_max,
             par_mean_std[0], ''],
 
@@ -220,15 +220,15 @@ def make_as_vs_lit_plot(in_params):
             par_mean_std[2], ''],
 
         # Dits mod LMC/SMC
-        [gs, 9, dm_min, dm_max, dm_min, dm_max, '$\mu_{0;\,\mathtt{ASteCA}}$',
-            '$\mu_{0;\,lit}$', '', darr[1][0], dsigma[1][0], darr[1][1],
+        [gs, 9, dm_min, dm_max, dm_min, dm_max, '$\mu_{\circ;\,\mathtt{ASteCA}}$',
+            '$\mu_{\circ;\,lit}$', '', darr[1][0], dsigma[1][0], darr[1][1],
             dsigma[1][1], earr[1][0], ext_min, ext_max, [], 'LMC'],
-        [gs, 10, dm_min, dm_max, dm_min, dm_max, '$\mu_{0;\,\mathtt{ASteCA}}$',
+        [gs, 10, dm_min, dm_max, dm_min, dm_max, '$\mu_{\circ;\,\mathtt{ASteCA}}$',
             '', '', darr[0][0], dsigma[0][0], darr[0][1], dsigma[0][1],
             earr[0][0], ext_min, ext_max, [], 'SMC'],
         # Asteca dist_mod vs \delta dist_mod with lit values.
         [gs, 11, dm_min, dm_max, -1. * dm_span, dm_span,
-            '$\mu_{0;\,\mathtt{ASteCA}}$', '$\Delta \mu_{0}$',
+            '$\mu_{\circ;\,\mathtt{ASteCA}}$', '$\Delta \mu_{\circ}$',
             '$E(B-V)_{\mathtt{ASteCA}}$', dm_all, [0.]*len(dm_all),
             dm_delta, dm_delta_e, ext_all, ext_min, ext_max, par_mean_std[3],
             ''],
@@ -589,17 +589,17 @@ def make_kde_plots(in_params):
 
     kde_pl_lst = [
         # SMC
-        [gs, 0, gs_pos, '', r'$KDE_{\,\mu_0}$', darr[0][0],
+        [gs, 0, gs_pos, '', r'$KDE_{\,\mu_{\circ}}$', darr[0][0],
          dsigma[0][0], [], [], dist_rang[0], dist_kde_rang, []],
         # LMC
         [gs, 1, gs_pos, '', '', darr[1][0], dsigma[1][0], [], [], dist_rang[1],
          dist_kde_rang, []],
         #
-        [gs, 4, gs_pos, '$\mu_{0;\mathtt{ASteCA}}$',
+        [gs, 4, gs_pos, '$\mu_{\circ;\mathtt{ASteCA}}$',
          '$E(B-V)_{\mathtt{ASteCA}}$', darr[0][0],
          dsigma[0][0], earr[0][0], esigma[0][0], dist_rang[0], ext_rang,
          rad_pc[0]],
-        [gs, 5, gs_pos, '$\mu_{0;\mathtt{ASteCA}}$', '', darr[1][0],
+        [gs, 5, gs_pos, '$\mu_{\circ;\mathtt{ASteCA}}$', '', darr[1][0],
          dsigma[1][0], earr[1][0], esigma[1][0], dist_rang[1], ext_rang,
          rad_pc[1]],
         #
@@ -2131,8 +2131,10 @@ def h03_p12_mass_plots(pl_params):
             zorder=1)
     ax.minorticks_on()
 
+    # Fix the 0 value to the middle of the colorbar (yellow color)
+    norm = MidpointNormalize(midpoint=0)
     # Plot all clusters in dictionary.
-    SC = plt.scatter(xarr, yarr, marker='o', c=carr, s=80, lw=0.25,
+    SC = plt.scatter(xarr, yarr, marker='o', c=carr, s=80, lw=0.25, norm=norm,
                      cmap=cm, vmin=v_min_mp, vmax=v_max_mp, zorder=3)
     # # Text box.
     # text1 = r'$\overline{{\Delta M}}={:.1f}$'.format(par_mean_std[0])

@@ -260,7 +260,7 @@ def main():
     check_diffs(in_params)
 
     # Define which plots to produce.
-    plots = ['1']
+    plots = ['12']
 
     bica_coords, cross_match, cross_match_h03_p12, amr_lit, amr_asteca, \
         massclean_data_pars = [], [], [], [], [], []
