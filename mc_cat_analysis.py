@@ -217,7 +217,7 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match,
 
     if '13' in plots:
         make_massclean_z_plot(massclean_data_pars)
-        print 'MASSCLEAN [Fe/H] plot.'
+        print 'MASSCLEAN z plot.'
         make_massclean_mass_plot(massclean_data_pars)
         print 'MASSCLEAN mass plot.'
 

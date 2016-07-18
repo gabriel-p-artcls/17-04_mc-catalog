@@ -2477,7 +2477,7 @@ def make_massclean_mass_plot(massclean_data_pars):
     plt.savefig('figures/massclean_mass.png', dpi=300, bbox_inches='tight')
 
 
-def massclean_feh_plots(pl_params):
+def massclean_z_plots(pl_params):
     '''
     Generate ASteCA vs MASSCLEAN [Fe/H] values plot.
     '''
@@ -2505,7 +2505,7 @@ def massclean_feh_plots(pl_params):
     if i not in [0, 4]:
         ax.axes.yaxis.set_ticklabels([])
     # Text box.
-    ob = offsetbox.AnchoredText(mass, loc=1, prop=dict(size=xy_font_s - 4))
+    ob = offsetbox.AnchoredText(mass, loc=9, prop=dict(size=xy_font_s - 4))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
     # 0 line
@@ -2513,10 +2513,10 @@ def massclean_feh_plots(pl_params):
     # Mean line
     plt.axhline(y=par_mean_std[0], xmin=0, xmax=1, color='k', ls='--')
     # Text box.
-    text1 = r'$\bar{{\Delta}}={:g}$'.format(round(par_mean_std[0], 2))
-    text2 = r'$\pm{:g}$'.format(round(par_mean_std[1], 2))
+    text1 = r'$\overline{{\Delta z}}={:g}$'.format(round(par_mean_std[0], 4))
+    text2 = r'$\pm{:g}$'.format(round(par_mean_std[1], 4))
     text = text1 + text2
-    ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s - 4))
+    ob = offsetbox.AnchoredText(text, loc=3, prop=dict(size=xy_font_s - 4))
     ob.patch.set(alpha=0.5)
     ax.add_artist(ob)
     # Shaded one sigma region.
@@ -2527,7 +2527,8 @@ def massclean_feh_plots(pl_params):
     # Fix the 0 value to the middle of the colorbar (yellow color)
     norm = MidpointNormalize(midpoint=0)
     SC = plt.scatter(xarr, yarr, marker='o', c=carr, s=130, lw=0.25,
-                     edgecolor='k', cmap=cm, zorder=3, norm=norm)
+                     edgecolor='k', cmap=cm, zorder=3, norm=norm, vmin=-0.75,
+                     vmax=0.25)
     # Position colorbar.
     if i in [3, 7]:
         the_divider = make_axes_locatable(ax)
@@ -2547,7 +2548,8 @@ def make_massclean_z_plot(massclean_data_pars):
     # k=0 --> SMC ; k=1 --> LMC
     dat_05, dat_1, dat_5, dat_10, dat_25, dat_50, dat_100, dat_250 = [],\
         [], [], [], [], [], [], []
-    best_matchs = []
+    best_matchs, names = [], [[], []]
+    # diff_age_z = []
     for k in [0, 1]:
         for i, z_as in enumerate(zip(*mc_pars[k])[19]):
             # z_ASteCA, z_MASSCLEAN, age_ASteCA
@@ -2555,46 +2557,76 @@ def make_massclean_z_plot(massclean_data_pars):
                 float(mc_pars[k][i][21]), float(mc_data[k][i][1])
             # mass_MASSCLEAN
             m_ml = mc_data[k][i][2]
-            # Convert z to [Fe/H]. For MASSCLEAN use 0.019 as solar
-            # metallicity.
-            f_as, f_ml = np.log10(z_as/0.0152), np.log10(z_ml/0.019)
-            if abs(f_as - f_ml) > 0.5:
-                print f_as - f_ml, m_ml, a_ml, z_ml
+            delta_z = (z_as - z_ml)
+            # Separate synthetic clusters for each mass value defined.
+            allowed_error = 0.5
+            if abs(m_ml - 500.) <= allowed_error:
+                dat_05.append([z_ml, delta_z, a_as - a_ml])
+            elif abs(m_ml - 1000.) <= allowed_error:
+                dat_1.append([z_ml, delta_z, a_as - a_ml])
+            elif abs(m_ml - 5000.) <= allowed_error:
+                dat_5.append([z_ml, delta_z, a_as - a_ml])
+            elif abs(m_ml - 10000.) <= allowed_error:
+                dat_10.append([z_ml, delta_z, a_as - a_ml])
+            elif abs(m_ml - 25000.) <= allowed_error:
+                dat_25.append([z_ml, delta_z, a_as - a_ml])
+            elif abs(m_ml - 50000.) <= allowed_error:
+                dat_50.append([z_ml, delta_z, a_as - a_ml])
+            elif abs(m_ml - 100000.) <= allowed_error:
+                dat_100.append([z_ml, delta_z, a_as - a_ml])
+            elif abs(m_ml - 250000.) <= allowed_error:
+                dat_250.append([z_ml, delta_z, a_as - a_ml])
             else:
-                best_matchs.append(f_as - f_ml)
-            if m_ml == 500.:
-                dat_05.append([f_ml, f_as - f_ml, a_as - a_ml])
-            elif m_ml == 1000.:
-                dat_1.append([f_ml, f_as - f_ml, a_as - a_ml])
-            elif m_ml == 5000.:
-                dat_5.append([f_ml, f_as - f_ml, a_as - a_ml])
-            elif m_ml == 10000.:
-                dat_10.append([f_ml, f_as - f_ml, a_as - a_ml])
-            elif m_ml == 25000.:
-                dat_25.append([f_ml, f_as - f_ml, a_as - a_ml])
-            elif m_ml == 50000.:
-                dat_50.append([f_ml, f_as - f_ml, a_as - a_ml])
-            elif m_ml == 100000.:
-                dat_100.append([f_ml, f_as - f_ml, a_as - a_ml])
-            elif m_ml == 250000.:
-                dat_250.append([f_ml, f_as - f_ml, a_as - a_ml])
+                print 'Error with mass value:', m_ml
+
+            # Map floats to strings
+            look_m = {500.: '08/0005', 1000.: '07/001', 5000.: '06/005',
+                      10000.: '05/010', 25000.: '04/025', 50000.: '03/050',
+                      100000.: '02/100', 250000.: '01/250'}
+            look_z = {0.001: '001', 0.004: '004', 0.015: '015', 0.03: '030'}
+            look_a = {7.0: '0700', 7.2: '0720', 7.5: '0750', 7.7: '0770',
+                      8.0: '0800', 8.2: '0820', 8.5: '0850', 8.7: '0870',
+                      9.0: '0900', 9.2: '0920', 9.5: '0950', 9.7: '0970'}
+            # if abs(delta_z) > 0.01:
+            if abs(a_as - a_ml) >= 0.5:
+                print z_ml, z_as, a_ml, a_as, m_ml, mc_pars[k][i][27]
+                # Store full file names
+                m, a, z = look_m[m_ml], look_a[round(mc_data[k][i][1], 1)],\
+                    look_z[round(mc_data[k][i][0], 3)]
+                names[k].append(m + '/is1_p' + z + '_' + a + '_memb.dat')
+
+            if abs(a_as - a_ml) < 0.5:
+                best_matchs.append(delta_z)
+
+            # diff_age_z.append([(a_as - a_ml), delta_z, np.log(m_ml)])
+
+    # Quick plot of age vs met differences
+    # plt.xlabel('Delta log(age) (ASteCA-MASSCLEAN)')
+    # plt.ylabel('Delta Z (ASteCA-MASSCLEAN)')
+    # plt.scatter(zip(*diff_age_z)[0], zip(*diff_age_z)[1],
+    #             s=0.1*(np.array(zip(*diff_age_z)[2])**3.5), facecolor='w')
+    # plt.show()
+
+    # Used for the true_memb_count.py script in
+    # 'mc-catalog/runs/23rd_run/output/'
+    print names
 
     mean_std = []
     for d in [dat_05, dat_1, dat_5, dat_10, dat_25, dat_50, dat_100, dat_250]:
         m, s = np.mean(zip(*d)[1]), np.std(zip(*d)[1])
-        print 'Mass val mean +- std:', m, s
+        print 'Delta z mean +- std:', m, s
         mean_std.append([m, s])
-    print '|Delta log(age)|<0.5, Delta [Fe/H] mean +- std:',\
+    print '|Delta log(age)|<0.5, Delta z mean +- std:',\
         np.mean(best_matchs), np.std(best_matchs), len(best_matchs)
 
     # Generate plot.
     fig = plt.figure(figsize=(25.7, 12.6))
     gs = gridspec.GridSpec(2, 4)
 
-    xylims = [[-1.4, 0.45, -0.97, 2.], [-1.4, 0.45, -0.97, 2.]]
+    xylims = [[-0.002, 0.032, -0.029, 0.029], [-0.002, 0.032, -0.029, 0.029]]
 
     as_lit_pl_lst = [
-        [gs, 0, xylims[0], '', r'$\Delta [Fe/H]\,(\mathtt{ASteCA}-MASSCLEAN)$',
+        [gs, 0, xylims[0], '', r'$\Delta z\,(\mathtt{ASteCA}-MASSCLEAN)$',
          '', rand_jitter(zip(*dat_05)[0], 0.02),
          zip(*dat_05)[1], zip(*dat_05)[2], r'$M=500\,M_{\odot}$',
          mean_std],
@@ -2608,31 +2640,31 @@ def make_massclean_z_plot(massclean_data_pars):
          rand_jitter(zip(*dat_10)[0], 0.02),
          zip(*dat_10)[1], zip(*dat_10)[2], r'$M=10000\,M_{\odot}$',
          mean_std],
-        [gs, 4, xylims[1], r'$[Fe/H]_{MASSCLEAN}$',
-         r'$\Delta [Fe/H]\,(\mathtt{ASteCA}-MASSCLEAN)$',
+        [gs, 4, xylims[1], r'$z_{MASSCLEAN}$',
+         r'$\Delta z\,(\mathtt{ASteCA}-MASSCLEAN)$',
          '', rand_jitter(zip(*dat_25)[0], 0.02),
          zip(*dat_25)[1], zip(*dat_25)[2], r'$M=25000\,M_{\odot}$',
          mean_std],
-        [gs, 5, xylims[1], r'$[Fe/H]_{MASSCLEAN}$', '', '',
+        [gs, 5, xylims[1], r'$z_{MASSCLEAN}$', '', '',
          rand_jitter(zip(*dat_50)[0], 0.02),
          zip(*dat_50)[1], zip(*dat_50)[2], r'$M=50000\,M_{\odot}$',
          mean_std],
-        [gs, 6, xylims[1], r'$[Fe/H]_{MASSCLEAN}$', '', '',
+        [gs, 6, xylims[1], r'$z_{MASSCLEAN}$', '', '',
          rand_jitter(zip(*dat_100)[0], 0.02),
          zip(*dat_100)[1], zip(*dat_100)[2], r'$M=100000\,M_{\odot}$',
          mean_std],
-        [gs, 7, xylims[1], r'$[Fe/H]_{MASSCLEAN}$', '',
+        [gs, 7, xylims[1], r'$z_{MASSCLEAN}$', '',
          r'$\Delta \log(age/yr)$', rand_jitter(zip(*dat_250)[0], 0.02),
          zip(*dat_250)[1], zip(*dat_250)[2], r'$M=250000\,M_{\odot}$',
          mean_std]
     ]
 
     for pl_params in as_lit_pl_lst:
-        massclean_feh_plots(pl_params)
+        massclean_z_plots(pl_params)
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/massclean_feh.png', dpi=300, bbox_inches='tight')
+    plt.savefig('figures/massclean_z.png', dpi=300, bbox_inches='tight')
 
 
 def age_mass_corr_plot(pl_params):
