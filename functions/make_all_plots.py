@@ -1880,7 +1880,8 @@ def pl_errors(pl_params):
     if i != 4:
         txt = r'$\bar{{e}}={:.2f}$'.format(np.mean(y))
     else:
-        txt = r'$\bar{{e}}={:.0f}$'.format(np.mean(y))
+        e_m = np.round(np.mean(y) / 1000., 2) * 1000.
+        txt = r'$\bar{{e}}={:.0f}$'.format(e_m)
     ob = offsetbox.AnchoredText(txt, loc=1, prop=dict(size=xy_font_s-1))
     ob.patch.set(alpha=0.85)
     axHisty.add_artist(ob)
@@ -1940,17 +1941,15 @@ def make_errors_plots(in_params):
 
     errors_lst = [
         [gs, 0, -2.4, 0.11, -0.03, 2.1, ord_z, ord_zs, ord_X, ord_r,
-            '$[Fe/H]$', '$e_{[Fe/H]}$'],
-        # [gs, 0, 0., 0.016, 0., 0.01, ord_z, ord_zs, ord_X, ord_r,
-        #     '$[Fe/H]$', '$e_{[Fe/H]}$'],
+            r'$[Fe/H]$', r'$\sigma_{[Fe/H]}$'],
         [gs, 1, 6.51, 10.1, -0.03, 1.1, ord_a, ord_as, ord_X, ord_r,
-            r'$\log(aye/yr)$', '$e_{\log(age/yr)}$'],
+            r'$\log(age/yr)$', r'$\sigma_{\log(age/yr)}$'],
         [gs, 2, -0.02, 0.32, -0.01, 0.11, ord_e, ord_es, ord_X, ord_r,
-            '$E_{B-V}$', '$e_{E_{B-V}}$'],
+            r'$E_{B-V}$', r'$\sigma_{E_{B-V}}$'],
         [gs, 3, 18.28, 19.19, 0.007, 0.083, ord_d, ord_ds, ord_X, ord_r,
-            '$\mu_{0}$', '$e_{\mu_{0}}$'],
+            r'$\mu_{\circ}$', r'$\sigma_{\mu_{\circ}}$'],
         [gs, 4, -210, 30000, -210, 4450, ord_m, ord_ms, ord_X, ord_r,
-            '$M\,[M_{\odot}]$', '$e_{M}$']
+            r'$M\,[M_{\odot}]$', r'$\sigma_{M}$']
     ]
 
     for pl_params in errors_lst:
