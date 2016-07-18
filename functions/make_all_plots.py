@@ -1944,7 +1944,7 @@ def make_errors_plots(in_params):
         # [gs, 0, 0., 0.016, 0., 0.01, ord_z, ord_zs, ord_X, ord_r,
         #     '$[Fe/H]$', '$e_{[Fe/H]}$'],
         [gs, 1, 6.51, 10.1, -0.03, 1.1, ord_a, ord_as, ord_X, ord_r,
-            r'$\log(aye/yr)$', '$e_{\log(aye/yr)}$'],
+            r'$\log(aye/yr)$', '$e_{\log(age/yr)}$'],
         [gs, 2, -0.02, 0.32, -0.01, 0.11, ord_e, ord_es, ord_X, ord_r,
             '$E_{B-V}$', '$e_{E_{B-V}}$'],
         [gs, 3, 18.28, 19.19, 0.007, 0.083, ord_d, ord_ds, ord_X, ord_r,
