@@ -1,5 +1,6 @@
 
-from os.path import join
+from os.path import join, realpath, dirname
+from os import getcwd
 from os import walk
 import shutil
 
@@ -19,7 +20,7 @@ def get_clusts_names(part):
     '''
 
     # Path to data file.
-    out_file = 'asteca_output_part_' + part + '.dat'
+    out_file = 'asteca_used_' + part + '.dat'
 
     # Read data file
     with open(out_file) as f:
@@ -69,31 +70,26 @@ def done_move(dst_dir, files_names):
 def main():
 
     # Get path where the code is running
-    # mypath = realpath(join(getcwd(), dirname(__file__)))
-    # mypath = '/home/gabriel/github/mc-catalog/runs/3rd_run/output/'
-    # mypath = '/home/gabriel/github/mc-catalog/runs/4th_run/output/'
-    # mypath = '/home/gabriel/github/mc-catalog/runs/5th_run/output/'
-    # mypath = '/home/gabriel/github/mc-catalog/runs/6th_run/output/'
-    # mypath = '/home/gabriel/github/mc-catalog/runs/7th_run/output/'
-    # mypath = '/home/gabriel/github/mc-catalog/runs/8th_run/output/'
-    # mypath = '/home/gabriel/github/mc-catalog/runs/9th_run/output/'
-    # mypath = '/home/gabriel/github/mc-catalog/runs/10th_run/output/'
-    mypath = '/home/gabriel/github/mc-catalog/runs/11th_run/output/'
+    mypath = realpath(join(getcwd(), dirname(__file__)))
+    print mypath
 
     # Partial output file.
-    part = mypath.split('/')[-3][:-4]
+    num = '3rd'
+    part = mypath[:-9]
     print part
 
     # Read clusters file names.
-    clusts_names = get_clusts_names(part)
+    clusts_names = get_clusts_names(num)
+    print clusts_names
+
+    # Read files names.
+    path = part + '/runs/' + num + '_run/output/'
+    print path
+    files_names = get_files_names(clusts_names, path)
+    print files_names
 
     # Number of folders to create.
     dst_dir = '/home/gabriel/Descargas/mc_asteca_out/'
-
-    # Read files names.
-    files_names = get_files_names(clusts_names, mypath)
-    # print files_names
-    # raw_input()
 
     # Copy files into destination folder.
     done_move(dst_dir, files_names)

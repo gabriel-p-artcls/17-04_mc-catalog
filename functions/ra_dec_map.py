@@ -109,5 +109,5 @@ def ra_dec_plots(pl_params):
     c_LMC = [80.2375, -69.47805556]
     # Get transformed data.
     clouds_cent = tr.transform([c_SMC, c_LMC])
-    plt.scatter(clouds_cent[:, 0], clouds_cent[:, 1], marker='v', s=50,
-                c='g', edgecolor='w', lw=0.5, zorder=10)
+    plt.scatter(clouds_cent[:, 0], clouds_cent[:, 1], marker='v', s=65,
+                c='b', edgecolor='w', lw=0.8, zorder=10)
