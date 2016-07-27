@@ -1892,7 +1892,7 @@ def pl_errors(pl_params):
         axColor = plt.axes([0.1, 0.85, 0.3, 0.005])
         cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
         cbar.set_label(r'$CI$', fontsize=xy_font_s - 2, labelpad=-37)
-        cbar.set_ticks([0.2, 0.4, 0.6, 0.8, 1., 1.2])
+        # cbar.set_ticks([0.2, 0.4, 0.6, 0.8, 1., 1.2])
         cbar.ax.tick_params(labelsize=xy_font_s - 8)
 
 
@@ -1900,11 +1900,10 @@ def make_errors_plots(in_params):
     '''
     '''
     zarr, zsigma, aarr, asigma, earr, esigma, darr, dsigma, marr, msigma,\
-        rarr, cont_ind = [
+        rarr, cont_ind, n_memb = [
             in_params[_] for _ in ['zarr', 'zsigma', 'aarr', 'asigma', 'earr',
                                    'esigma', 'darr', 'dsigma', 'marr',
-                                   'msigma', 'rarr', 'cont_ind']]
-                                   # , 'kde_prob', 'phot_disp']]
+                                   'msigma', 'rarr', 'cont_ind', 'n_memb']]
 
     ci = cont_ind[0] + cont_ind[1]
     r_arr = rarr[0][0] + rarr[1][0]
@@ -1996,7 +1995,7 @@ def pl_amr(pl_params):
             rs_y = feh[k] + np.random.uniform(-ax_y, ax_y, len(feh[k]))
             siz = np.array(rad_pc[k]) * 5.
             plt.scatter(rs_x, rs_y, marker='*', s=siz, edgecolors=col[k],
-                        facecolor='none', lw=0.4, label=leg[k] + ' OCs',
+                        facecolor='none', lw=0.4, label=leg[k],
                         zorder=4)
             # 1 sigma error regions.
             y_err_min = np.array(met_weighted[k][0]) -\
@@ -2007,7 +2006,7 @@ def pl_amr(pl_params):
                              color=col[k], zorder=5)
             # ASteCA/Literature AMR.
             plt.plot(age_vals[k], met_weighted[k][0], c=col[k], lw=1.7,
-                     label=leg[k] + '(' + l + ')', zorder=8)
+                     label=leg[k] + ' (' + l + ')', zorder=8)
         # Legend.
         leg0 = plt.legend(loc='upper right',  # bbox_to_anchor=(1., 0.12),
                           handlelength=2.5, scatterpoints=1,
