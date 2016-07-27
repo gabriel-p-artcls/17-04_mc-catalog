@@ -204,10 +204,10 @@ def get_amr_asteca(in_params):
         #     feh_err_f = feh_err_f + [0.1]*len(old_lmc_OCs[0])
         # #####################################################################
 
-        # Age in Gyrs.
-        age_gyr[j] = [10 ** (np.asarray(age_f) - 9),
-                      np.asarray(age_err_f) * np.asarray(age_f) *
-                      np.log(10) / 5.]
+        # Age expressed in Gyr units.
+        a_gyr = 10 ** (np.asarray(age_f) - 9)
+        e_a_gyr = np.log(10) * a_gyr * np.asarray(age_err_f)
+        age_gyr[j] = [a_gyr, e_a_gyr]
 
         # Grid step.
         grid_step = 0.01
