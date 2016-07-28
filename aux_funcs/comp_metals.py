@@ -5,15 +5,6 @@ import matplotlib.gridspec as gridspec
 import numpy as np
 
 
-def skip_comments(f):
-    '''
-    Read lines that DO NOT start with a # symbol.
-    '''
-    for line in f:
-        if not line.strip().startswith('#'):
-            yield line
-
-
 def read_final_data():
     '''
     Read data from 'asteca_output_final.dat'.
