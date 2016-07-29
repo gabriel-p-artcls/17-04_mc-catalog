@@ -216,8 +216,8 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match,
         print 'AMR maps.'
 
     if '13' in plots:
-        make_massclean_z_plot(massclean_data_pars)
-        print 'MASSCLEAN z plot.'
+        # make_massclean_z_plot(massclean_data_pars)
+        # print 'MASSCLEAN z plot.'
         make_massclean_mass_plot(massclean_data_pars)
         print 'MASSCLEAN mass plot.'
 
@@ -260,7 +260,7 @@ def main():
     check_diffs(in_params)
 
     # Define which plots to produce.
-    plots = ['12']
+    plots = ['13']
 
     bica_coords, cross_match, cross_match_h03_p12, amr_lit, amr_asteca, \
         massclean_data_pars = [], [], [], [], [], []

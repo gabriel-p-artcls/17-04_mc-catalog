@@ -2320,7 +2320,7 @@ def rand_jitter(arr, jitter):
     """
     Add random scatter to array.
     """
-    stdev = jitter*(max(arr)-min(arr))
+    stdev = jitter*(max(arr) - min(arr))
     return arr + np.random.randn(len(arr)) * stdev
 
 
@@ -2333,6 +2333,8 @@ def make_massclean_mass_plot(massclean_data_pars):
     mass_l_avrg, mass_m_avrg, mass_g_avrg = [], [], []
     m_l_delta, m_m_delta, m_g_delta = [], [], []
     a_l_delta, a_m_delta, a_g_delta = [], [], []
+    delta_met, delta_age, delta_dist, delta_ext, delta_mass = [], [], [], [],\
+        []
     # k=0 --> SMC ; k=1 --> LMC
     for k in [0, 1]:
         a_l, a_m, a_g, m_l, m_m, m_g = [[], []], [[], []], [[], []], [[], []],\
@@ -2343,6 +2345,16 @@ def make_massclean_mass_plot(massclean_data_pars):
             # age_ASteCA, age_MASSCLEAN, mass_MASSCLEAN
             a_as, a_ml, m_ml = map(float, [mc_pars[k][i][21], mc_data[k][i][1],
                                    mc_data[k][i][2]])
+            # Store deltas for checking the correlation.
+            delta_met.append(float(mc_pars[k][i][19]) -
+                             float(mc_data[k][i][0]))
+            delta_age.append(a_as - a_ml)
+            mod_d = 18.9 if k == 0 else 18.5
+            delta_dist.append(float(mc_pars[k][i][25]) - mod_d)
+            delta_ext.append(float(mc_pars[k][i][23]) - 0.1)
+            delta_mass.append(m_as - m_ml)
+
+            # Separate into mass regions.
             avr_mass = .5 * (m_as + m_ml)
             # Separate by average mass limit.
             if avr_mass <= m_low:
@@ -2360,6 +2372,21 @@ def make_massclean_mass_plot(massclean_data_pars):
                 a_g[1].append(a_ml)
                 m_g[0].append(m_as)
                 m_g[1].append(m_ml)
+
+        # plt.scatter(m_l[0], np.array(m_l[0]) - np.array(m_l[1]))
+        # print np.mean(np.array(m_l[0]) - np.array(m_l[1])),\
+        #     np.std(np.array(m_l[0]) - np.array(m_l[1]))
+        # plt.show()
+
+        # Check for correlations.
+        # http://mathworld.wolfram.com/StatisticalCorrelation.html
+        # https://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient
+        # http://surveymethodsaddicts.blogspot.com.ar/2008/09/what-is-difference-
+        # between-correlation.html
+        print '\n Correlations:'
+        deltas = np.array([delta_met, delta_age, delta_dist, delta_ext,
+                          delta_mass])
+        print np.corrcoef(deltas)
 
         # Mean & StandDev. ASteCA-MASSCLEAN
         # Low mass region.
