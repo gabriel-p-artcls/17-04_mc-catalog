@@ -2373,20 +2373,8 @@ def make_massclean_mass_plot(massclean_data_pars):
                 m_g[0].append(m_as)
                 m_g[1].append(m_ml)
 
-        # plt.scatter(m_l[0], np.array(m_l[0]) - np.array(m_l[1]))
         # print np.mean(np.array(m_l[0]) - np.array(m_l[1])),\
         #     np.std(np.array(m_l[0]) - np.array(m_l[1]))
-        # plt.show()
-
-        # Check for correlations.
-        # http://mathworld.wolfram.com/StatisticalCorrelation.html
-        # https://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient
-        # http://surveymethodsaddicts.blogspot.com.ar/2008/09/what-is-difference-
-        # between-correlation.html
-        print '\n Correlations:'
-        deltas = np.array([delta_met, delta_age, delta_dist, delta_ext,
-                          delta_mass])
-        print np.corrcoef(deltas)
 
         # Mean & StandDev. ASteCA-MASSCLEAN
         # Low mass region.
@@ -2408,6 +2396,16 @@ def make_massclean_mass_plot(massclean_data_pars):
                            scale)
         mass_g_avrg.append(((np.array(m_g[0]) + np.array(m_g[1])) * 0.5) /
                            scale)
+
+    # Check for correlations.
+    # http://mathworld.wolfram.com/StatisticalCorrelation.html
+    # https://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient
+    # http://surveymethodsaddicts.blogspot.com.ar/2008/09/what-is-difference-
+    # between-correlation.html
+    print('\n Correlations for {} clusters:'.format(len(delta_met)))
+    deltas = np.array([delta_met, delta_age, delta_dist, delta_ext,
+                      delta_mass])
+    print np.corrcoef(deltas)
 
     # Add random scatter
     mass_l_avrg = [rand_jitter(_, 0.02) for _ in mass_l_avrg]
