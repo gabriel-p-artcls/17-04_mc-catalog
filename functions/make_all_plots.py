@@ -11,6 +11,18 @@ from ra_dec_map import ra_dec_plots
 from kde_map import kde_2d, kde_1d
 
 
+class MidpointNormalize(Normalize):
+    def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
+        self.midpoint = midpoint
+        Normalize.__init__(self, vmin, vmax, clip)
+
+    def __call__(self, value, clip=None):
+        # I'm ignoring masked values and all kinds of edge cases to make a
+        # simple example...
+        x, y = [self.vmin, self.midpoint, self.vmax], [0, 0.5, 1]
+        return np.ma.masked_array(np.interp(value, x, y))
+
+
 def ccc(l1, l2):
     '''
     Concordance correlation coefficient.
@@ -338,15 +350,14 @@ def make_as_vs_lit_mass_plot(in_params):
             'phot_disp']]
 
     # SMC/LMC
-    age_all, ci_all, ma_all, ma_delta, ma_delta_err = [], [], [], [], []
+    ci_all, ma_all, ma_delta, ma_delta_err = [], [], [], []
     for k in [0, 1]:
         for i, a in enumerate(aarr[k][0]):
             # Filter out -9999999999.9 values added in get_params to replace
             # missing values in .ods file.
             if abs(msigma[k][1][i]) < 30000.:
-                age_all.append(a)
                 ci_all.append(cont_ind[k][i])
-                # \delta mass as ASteCA - literature values.
+                # \delta ASteCA - literature values.
                 ma_all.append(marr[k][0][i])
                 ma_delta.append(marr[k][0][i] - marr[k][1][i])
                 ma_delta_err.append(np.sqrt(msigma[k][0][i]**2 +
@@ -373,7 +384,7 @@ def make_as_vs_lit_mass_plot(in_params):
          cont_ind[0], cbar_min, cbar_max, [], 'SMC (M13)'],
         [gs, 3, 10., 3998., -3500., 1900.,
          '$M_{\mathtt{ASteCA}}\,[M_{\odot}]$',
-         '$\Delta M\,[M_{\odot}]$', '$CI$', ma_all, [0.]*len(ma_all),
+         '$\Delta M\,[M_{\odot}]$', '$CI$', ma_all, [0.] * len(ma_all),
          ma_delta, ma_delta_err, ci_all, cbar_min, cbar_max, par_mean_std, '']
     ]
 
@@ -1209,10 +1220,12 @@ def cross_match_ip_plot_mass(pl_params):
         plt.axhspan(comb_delta[0] - comb_delta[1], comb_delta[0] +
                     comb_delta[1], facecolor='grey', alpha=0.2, zorder=1)
 
-        siz = np.array(DB[s_i])*15.
+        siz = np.array(DB[s_i]) * 15.
+        # Fix the 0 value to the middle of the colorbar (yellow color)
+        norm = MidpointNormalize(midpoint=0)
         SC = plt.scatter(xarr, yarr, marker=mark[j], c=DB[ba_i],
                          s=siz, cmap=cm, vmin=-1., vmax=1.5, lw=0.3,
-                         edgecolor='k', zorder=3)
+                         edgecolor='k', norm=norm, zorder=3)
         # Plot error bars.
         # x axis error
         for k, xy in enumerate(zip(*[xarr, yarr])):
@@ -1230,10 +1243,17 @@ def cross_match_ip_plot_mass(pl_params):
                                     prop=dict(size=xy_font_s - 5))
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
+    # Text box.
+    text = r'$\overline{{\Delta M_{{\log}}}}={:.1f}\pm{:.1f}$'.format(
+        comb_delta[0], comb_delta[1])
+    ob = offsetbox.AnchoredText(text, loc=3, prop=dict(size=xy_font_s - 4))
+    ob.patch.set(alpha=0.5)
+    ax.add_artist(ob)
+    # Position colorbar.
     if i == 2:
         # Text box.
-        t = r'$\;\;NGC\;419 \,\to\,$' + '\n' + r'$\sim(39, {-}0.87)$'
-        ob = offsetbox.AnchoredText(t, loc=4, prop=dict(size=xy_font_s - 7))
+        t = r'$\;\;\mathrm{S-NGC419} \,\to\,$' + '\n' + r'$\sim(39, {-}1.14)$'
+        ob = offsetbox.AnchoredText(t, loc=7, prop=dict(size=xy_font_s - 7))
         ob.patch.set(alpha=0.85)
         ax.add_artist(ob)
         # Position colorbar.
@@ -1264,27 +1284,27 @@ def make_cross_match_ip_mass(cross_match):
     print 'Correlation H03+P12 vs Delta mass: {:0.2f}'.format(corr_h03_p12[0])
 
     # Separate clusters with mass < m_limit
-    m_low, m_med = 5000., 20000.
+    m_low, m_med = 3., 4.
     h03_l_mass, p12_l_mass, h03_m_mass, p12_m_mass, h03_h_mass, p12_h_mass =\
         [], [], [], [], [], []
     for cl in zip(*h03):
         # Filter small masses in DBs.
-        if cl[8] <= m_low:
+        if np.log10(cl[8]) <= m_low:
             h03_l_mass.append(cl)
-        elif m_low < cl[8] <= m_med:
+        elif m_low < np.log10(cl[8]) <= m_med:
             h03_m_mass.append(cl)
-        elif m_med < cl[8]:
+        elif m_med < np.log10(cl[8]):
             h03_h_mass.append(cl)
             print 'Large mass H03 OC:', cl
     h03_l_mass = zip(*h03_l_mass)
     h03_m_mass = zip(*h03_m_mass)
     h03_h_mass = zip(*h03_h_mass)
     for cl in zip(*p12):
-        if cl[8] <= m_low:
+        if np.log10(cl[8]) <= m_low:
             p12_l_mass.append(cl)
-        elif m_low < cl[8] <= m_med:
+        elif m_low < np.log10(cl[8]) <= m_med:
             p12_m_mass.append(cl)
-        elif m_med < cl[8]:
+        elif m_med < np.log10(cl[8]):
             p12_h_mass.append(cl)
             print 'Large mass P12 OC:', cl
     p12_l_mass = zip(*p12_l_mass)
@@ -1292,118 +1312,94 @@ def make_cross_match_ip_mass(cross_match):
     p12_h_mass = zip(*p12_h_mass)
 
     # Low ASteCA - DB masses
-    print '\nDelta (ASteCA - DB) for mass_DB<5000: mean +- std'
-    db_name = ['H03', 'P12']
-    for i, low_m_db in enumerate([h03_l_mass, p12_l_mass]):
-        diff_mean = np.mean(np.array(low_m_db[10]) - np.array(low_m_db[8]))
-        diff_std = np.std(np.array(low_m_db[10]) - np.array(low_m_db[8]))
-        print '{} Delta diffs small mass: {:.0f} +- {:.0f}'.format(
-            db_name[i], diff_mean, diff_std)
-    comb_delta_l = (np.array(h03_l_mass[10] + p12_l_mass[10]) -
-                    np.array(h03_l_mass[8] + p12_l_mass[8]))
-    print ("Combined Delta(ASteCA-DB) mean +- std; mass_DB<5000:"
-           " {:.2f} +- {:.2f}".format(np.mean(comb_delta_l),
-                                      np.std(comb_delta_l)))
-    # Relative difference for combined H03-P12 sample.
-    comb_l_mass = (np.array(h03_l_mass[10] + p12_l_mass[10]) -
-                   np.array(h03_l_mass[8] + p12_l_mass[8])) /\
-        (np.array(h03_l_mass[10] + p12_l_mass[10]) +
-         np.array(h03_l_mass[8] + p12_l_mass[8]))
+    print '\nASteCA - DBs for mass_DB<1000'
+    delta_diff = np.array(h03_l_mass[10] + p12_l_mass[10]) -\
+        np.array(h03_l_mass[8] + p12_l_mass[8])
+    diff_mean, diff_std = np.mean(delta_diff), np.std(delta_diff)
+    print 'Combined Delta mean +- std: {:.0f} +- {:.0f}'.format(
+        diff_mean, diff_std)
+    # Log10 difference for combined AsteCA minus H03-P12 sample.
+    comb_l_mass = np.log10(np.array(h03_l_mass[10] + p12_l_mass[10])) -\
+        np.log10(np.array(h03_l_mass[8] + p12_l_mass[8]))
     comb_mean, comb_std = np.mean(comb_l_mass), np.std(comb_l_mass)
     comb_rel_delta_l = [comb_mean, comb_std]
-    print ("Combined relative Delta mean +- std; mass_DB<5000:"
-           " {:.2f} +- {:.2f}".format(comb_mean, comb_std))
+    print ("Combined log10 Delta mean +- std:"
+           " {:.3f} +- {:.3f}".format(comb_mean, comb_std))
 
     # Medium ASteCA - DB masses
-    print '\nDelta (ASteCA - DB) for 5000<mass_DB<20000: mean +- std'
-    for i, med_m_db in enumerate([h03_m_mass, p12_m_mass]):
-        diff_mean = np.mean(np.array(med_m_db[10]) - np.array(med_m_db[8]))
-        diff_std = np.std(np.array(med_m_db[10]) - np.array(med_m_db[8]))
-        print '{} Delta diffs medium mass: {:.0f} +- {:.0f}'.format(
-            db_name[i], diff_mean, diff_std)
-    comb_delta_m = (np.array(h03_m_mass[10] + p12_m_mass[10]) -
-                    np.array(h03_m_mass[8] + p12_m_mass[8]))
-    print ("Combined Delta(ASteCA-DB) mean +- std; 5000<mass_DB<20000:"
-           " {:.2f} +- {:.2f}".format(np.mean(comb_delta_m),
-                                      np.std(comb_delta_m)))
-    # Relative difference for combined H03-P12 sample.
-    comb_m_mass = (np.array(h03_m_mass[10] + p12_m_mass[10]) -
-                   np.array(h03_m_mass[8] + p12_m_mass[8])) /\
-        (np.array(h03_m_mass[10] + p12_m_mass[10]) +
-         np.array(h03_m_mass[8] + p12_m_mass[8]))
+    print '\nASteCA - DBs for 1000<mass_DB<10000'
+    delta_diff = np.array(h03_m_mass[10] + p12_m_mass[10]) -\
+        np.array(h03_m_mass[8] + p12_m_mass[8])
+    diff_mean, diff_std = np.mean(delta_diff), np.std(delta_diff)
+    print 'Combined Delta  mean +- std: {:.0f} +- {:.0f}'.format(
+        diff_mean, diff_std)
+    # Log10 difference for combined H03-P12 sample.
+    comb_m_mass = np.log10(np.array(h03_m_mass[10] + p12_m_mass[10])) -\
+        np.log10(np.array(h03_m_mass[8] + p12_m_mass[8]))
     comb_mean, comb_std = np.mean(comb_m_mass), np.std(comb_m_mass)
     comb_rel_delta_m = [comb_mean, comb_std]
-    print ("Combined relative Delta mean +- std; 5000<mass_DB<20000:"
-           " {:.2f} +- {:.2f}".format(comb_mean, comb_std))
+    print ("Combined log10 Delta mean +- std:"
+           " {:.3f} +- {:.3f}".format(comb_mean, comb_std))
 
     # Large ASteCA - DB masses
-    print '\nDelta (ASteCA - DB) for mass_DB>20000: mean +- std'
+    print '\nASteCA - DBs for mass_DB>10000'
     print 'H03 OCs:', len(h03_h_mass[0]), 'P12 OCs:', len(p12_h_mass[0])
-    for i, h_m_db in enumerate([h03_h_mass, p12_h_mass]):
-        diff_mean = np.mean(np.array(h_m_db[10]) - np.array(h_m_db[8]))
-        diff_std = np.std(np.array(h_m_db[10]) - np.array(h_m_db[8]))
-        print '{} Delta diffs large mass: {:.0f} +- {:.0f}'.format(
-            db_name[i], diff_mean, diff_std)
-    comb_delta_h = (np.array(h03_h_mass[10] + p12_h_mass[10]) -
-                    np.array(h03_h_mass[8] + p12_h_mass[8]))
-    print ("Combined Delta(ASteCA-DB) mean +- std; mass_DB>20000:"
-           " {:.2f} +- {:.2f}".format(np.mean(comb_delta_h),
-                                      np.std(comb_delta_h)))
-    # Relative difference for combined H03-P12 sample.
-    comb_h_mass = (np.array(h03_h_mass[10] + p12_h_mass[10]) -
-                   np.array(h03_h_mass[8] + p12_h_mass[8])) /\
-        (np.array(h03_h_mass[10] + p12_h_mass[10]) +
-         np.array(h03_h_mass[8] + p12_h_mass[8]))
+    delta_diff = np.array(h03_h_mass[10] + p12_h_mass[10]) -\
+        np.array(h03_h_mass[8] + p12_h_mass[8])
+    diff_mean, diff_std = np.mean(delta_diff), np.std(delta_diff)
+    print 'Combined Delta  mean +- std: {:.0f} +- {:.0f}'.format(
+        diff_mean, diff_std)
+    # Log10 difference for combined H03-P12 sample.
+    comb_h_mass = np.log10(np.array(h03_h_mass[10] + p12_h_mass[10])) -\
+        np.log10(np.array(h03_h_mass[8] + p12_h_mass[8]))
     comb_mean, comb_std = np.mean(comb_h_mass), np.std(comb_h_mass)
     comb_rel_delta_h = [comb_mean, comb_std]
-    print ("Combined mean +- std for Delta(ASteCA-DB) mass_DB>20000:"
+    print ("Combined log10 Delta mean +- std:"
            " {:.2f} +- {:.2f}".format(comb_mean, comb_std))
 
-    # Low masses relative differences ASteCA  - DBs
-    h03_mass_diff_l = (np.array(h03_l_mass[10]) - np.array(h03_l_mass[8])) /\
-        (np.array(h03_l_mass[10]) + np.array(h03_l_mass[8]))
-    p12_mass_diff_l = (np.array(p12_l_mass[10]) - np.array(p12_l_mass[8])) /\
-        (np.array(p12_l_mass[10]) + np.array(p12_l_mass[8]))
+    # Low masses log10 differences ASteCA  - DBs
+    h03_mass_diff_l = np.log10(np.array(h03_l_mass[10])) -\
+        np.log10(np.array(h03_l_mass[8]))
+    p12_mass_diff_l = np.log10(np.array(p12_l_mass[10])) -\
+        np.log10(np.array(p12_l_mass[8]))
     # Errors.
-    A, s_A, B, s_B = np.array(h03_l_mass[10]), np.array(h03_l_mass[11]),\
-        np.array(h03_l_mass[8]), np.array(h03_l_mass[9])
-    h03_delta_err_l = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
-    A, s_A, B, s_B = np.array(p12_l_mass[10]), np.array(p12_l_mass[11]),\
-        np.array(p12_l_mass[8]), np.array(p12_l_mass[9])
-    p12_delta_err_l = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
-    # Medium masses relative differences ASteCA  - DBs
-    h03_mass_diff_m = (np.array(h03_m_mass[10]) - np.array(h03_m_mass[8])) /\
-        (np.array(h03_m_mass[10]) + np.array(h03_m_mass[8]))
-    p12_mass_diff_m = (np.array(p12_m_mass[10]) - np.array(p12_m_mass[8])) /\
-        (np.array(p12_m_mass[10]) + np.array(p12_m_mass[8]))
+    A, s_A = np.array(h03_l_mass[10]), np.array(h03_l_mass[11])
+    B, s_B = np.array(h03_l_mass[8]), np.array(h03_l_mass[9])
+    h03_delta_err_l = list((1. / np.log(10.)) * (s_A / A + s_B / B))
+    A, s_A = np.array(p12_l_mass[10]), np.array(p12_l_mass[11])
+    B, s_B = np.array(p12_l_mass[8]), np.array(p12_l_mass[9])
+    p12_delta_err_l = list((1. / np.log(10.)) * (s_A / A + s_B / B))
+
+    # Medium masses log10 differences ASteCA  - DBs
+    h03_mass_diff_m = np.log10(np.array(h03_m_mass[10])) -\
+        np.log10(np.array(h03_m_mass[8]))
+    p12_mass_diff_m = np.log10(np.array(p12_m_mass[10])) -\
+        np.log10(np.array(p12_m_mass[8]))
     # Errors.
-    A, s_A, B, s_B = np.array(h03_m_mass[10]), np.array(h03_m_mass[11]),\
-        np.array(h03_m_mass[8]), np.array(h03_m_mass[9])
-    h03_delta_err_m = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
-    A, s_A, B, s_B = np.array(p12_m_mass[10]), np.array(p12_m_mass[11]),\
-        np.array(p12_m_mass[8]), np.array(p12_m_mass[9])
-    p12_delta_err_m = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
-    # Large masses relative differences ASteCA  - DBs
-    h03_mass_diff_h = (np.array(h03_h_mass[10]) - np.array(h03_h_mass[8])) /\
-        (np.array(h03_h_mass[10]) + np.array(h03_h_mass[8]))
-    p12_mass_diff_h = (np.array(p12_h_mass[10]) - np.array(p12_h_mass[8])) /\
-        (np.array(p12_h_mass[10]) + np.array(p12_h_mass[8]))
+    A, s_A = np.array(h03_m_mass[10]), np.array(h03_m_mass[11])
+    B, s_B = np.array(h03_m_mass[8]), np.array(h03_m_mass[9])
+    h03_delta_err_m = list((1. / np.log(10.)) * (s_A / A + s_B / B))
+    A, s_A = np.array(p12_m_mass[10]), np.array(p12_m_mass[11])
+    B, s_B = np.array(p12_m_mass[8]), np.array(p12_m_mass[9])
+    p12_delta_err_m = list((1. / np.log(10.)) * (s_A / A + s_B / B))
+
+    # Large masses log10 differences ASteCA  - DBs
+    h03_mass_diff_h = np.log10(np.array(h03_h_mass[10])) -\
+        np.log10(np.array(h03_h_mass[8]))
+    p12_mass_diff_h = np.log10(np.array(p12_h_mass[10])) -\
+        np.log10(np.array(p12_h_mass[8]))
     # Errors
-    A, s_A, B, s_B = np.array(h03_h_mass[10]), np.array(h03_h_mass[11]),\
-        np.array(h03_h_mass[8]), np.array(h03_h_mass[9])
-    h03_delta_err_h = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
-    A, s_A, B, s_B = np.array(p12_h_mass[10]), np.array(p12_h_mass[11]),\
-        np.array(p12_h_mass[8]), np.array(p12_h_mass[9])
-    p12_delta_err_h = list((2./(A+B)**2) * np.sqrt((B*s_A)**2 + (A*s_B)**2))
+    A, s_A = np.array(h03_h_mass[10]), np.array(h03_h_mass[11])
+    B, s_B = np.array(h03_h_mass[8]), np.array(h03_h_mass[9])
+    h03_delta_err_h = list((1. / np.log(10.)) * (s_A / A + s_B / B))
+    A, s_A = np.array(p12_h_mass[10]), np.array(p12_h_mass[11])
+    B, s_B = np.array(p12_h_mass[8]), np.array(p12_h_mass[9])
+    p12_delta_err_h = list((1. / np.log(10.)) * (s_A / A + s_B / B))
 
     # Low mass ASteCA-DBs. Use age deltas for Colors.
     colors_h03_l, colors_p12_l = np.array(h03_l_mass[4]) -\
         np.array(h03_l_mass[2]), np.array(p12_l_mass[4]) -\
         np.array(p12_l_mass[2])
-    # Use this for averaged values in the x axis. Replace these lists in the 0th
-    # positions of both sub-lists, in the delta_DBs_X lists.
-    h03_avr_l_mass = (np.array(h03_l_mass[10]) + np.array(h03_l_mass[8])) / 2.
-    p12_avr_l_mass = (np.array(p12_l_mass[10]) + np.array(p12_l_mass[8])) / 2.
     delta_DBs_l = [[h03_l_mass[8], h03_l_mass[9], h03_mass_diff_l,
                     h03_delta_err_l, h03_l_mass[19], colors_h03_l],
                    [p12_l_mass[8], p12_l_mass[9], p12_mass_diff_l,
@@ -1413,9 +1409,6 @@ def make_cross_match_ip_mass(cross_match):
         np.array(h03_m_mass[2]), np.array(p12_m_mass[4]) -\
         np.array(p12_m_mass[2])
     scale = 10.**4
-    # Averaged masses in x axis.
-    # h03_avr_m_mass = (np.array(h03_m_mass[10]) + np.array(h03_m_mass[8])) / 2.
-    # p12_avr_m_mass = (np.array(p12_m_mass[10]) + np.array(p12_m_mass[8])) / 2.
     delta_DBs_m = [[np.array(h03_m_mass[8]) / scale,
                     np.array(h03_m_mass[9]) / scale, h03_mass_diff_m,
                     h03_delta_err_m, h03_m_mass[19], colors_h03_m],
@@ -1426,9 +1419,6 @@ def make_cross_match_ip_mass(cross_match):
     colors_h03_h, colors_p12_h = np.array(h03_h_mass[4]) -\
         np.array(h03_h_mass[2]), np.array(p12_h_mass[4]) -\
         np.array(p12_h_mass[2])
-    # Averaged masses in x axis.
-    # h03_avr_h_mass = (np.array(h03_h_mass[10]) + np.array(h03_h_mass[8])) / 2.
-    # p12_avr_h_mass = (np.array(p12_h_mass[10]) + np.array(p12_h_mass[8])) / 2.
     delta_DBs_h = [[np.array(h03_h_mass[8]) / scale,
                     np.array(h03_h_mass[9]) / scale, h03_mass_diff_h,
                     h03_delta_err_h, h03_h_mass[19], colors_h03_h],
@@ -1445,15 +1435,11 @@ def make_cross_match_ip_mass(cross_match):
 
     # Define names of arrays being plotted.
     x_lab = ['$M_{DBs}\,[M_{\odot}]$', '$M_{DBs}\,[10^{-4}M_{\odot}]$']
-    y_lab = [r'$\overline{\Delta M_r}\;\;(\mathtt{ASteCA}-DBs)$', '']
+    y_lab = [r'$\Delta M_{\log}\;\;(\mathtt{ASteCA}-DBs)$', '']
     # Limits when using DBs masses in x axis.
-    l_mass_lims = [-50., 4990., -1.19, 1.19]
-    m_mass_lims = [0.5, 2.05, -1.19, 0.45]
-    h_mass_lims = [2.05, 10.6, -1.02, -0.51]
-    # Limits when using averaged masses in x axis.
-    # l_mass_lims = [-50., 5990., -1.19, 1.19]
-    # m_mass_lims = [0.3, 3.05, -1.19, 0.45]
-    # h_mass_lims = [1.05, 10.6, -1.02, -0.51]
+    l_mass_lims = [-5., 999., -1.9, 1.9]
+    m_mass_lims = [0.1, 0.99, -1.9, 1.9]
+    h_mass_lims = [1., 10.5, -1.9, 1.9]
 
     # Arbitrary size so plots are actually squared.
     fig = plt.figure(figsize=(19.3, 6.3))
@@ -1463,16 +1449,16 @@ def make_cross_match_ip_mass(cross_match):
         # Mass cross_match (low mass)
         [gs, 0, l_mass_lims[0], l_mass_lims[1], l_mass_lims[2], l_mass_lims[3],
          x_lab[0], y_lab[0], mark_mass, cols_mass,
-         '$M_{DBs}\leq 5000\,[M_{\odot}]$', databases[0], comb_rel_delta_l],
+         '$M_{DBs}\leq 1000\,[M_{\odot}]$', databases[0], comb_rel_delta_l],
         # Mass cross_match (medium masses)
         [gs, 1, m_mass_lims[0], m_mass_lims[1], m_mass_lims[2], m_mass_lims[3],
          x_lab[1], y_lab[1], mark_mass, cols_mass,
-         '$5000<M_{DBs}\leq 20000\,[M_{\odot}]$', databases[1],
+         '$1000<M_{DBs}\leq 10000\,[M_{\odot}]$', databases[1],
          comb_rel_delta_m],
         # Mass cross_match (large masses)
         [gs, 2, h_mass_lims[0], h_mass_lims[1], h_mass_lims[2], h_mass_lims[3],
          x_lab[1], y_lab[1], mark_mass, cols_mass,
-         '$M_{DBs}>20000\,[M_{\odot}]$', databases[2], comb_rel_delta_h]
+         '$M_{DBs}>10000\,[M_{\odot}]$', databases[2], comb_rel_delta_h]
     ]
 
     for pl_params in cross_match_lst:
@@ -2108,7 +2094,7 @@ def h03_p12_mass_plots(pl_params):
     xy_font_s = 21
     ax = plt.subplot(gs[i], aspect='auto')
     # Text box.
-    ob = offsetbox.AnchoredText(m_limit, loc=1, prop=dict(size=xy_font_s - 4))
+    ob = offsetbox.AnchoredText(m_limit, loc=1, prop=dict(size=xy_font_s - 5))
     ob.patch.set(alpha=0.85)
     ax.add_artist(ob)
     # 0 line
@@ -2135,20 +2121,17 @@ def h03_p12_mass_plots(pl_params):
     # Plot all clusters in dictionary.
     SC = plt.scatter(xarr, yarr, marker='o', c=carr, s=80, lw=0.25, norm=norm,
                      cmap=cm, vmin=v_min_mp, vmax=v_max_mp, zorder=3)
-    # # Text box.
-    # text1 = r'$\overline{{\Delta M}}={:.1f}$'.format(par_mean_std[0])
-    # r = 2 if i == 0 else 0
-    # text2 = r'$\pm{:g}\,[M_{{\odot}}]$'.format(
-    #     round(par_mean_std[1], r))
-    # text = text1 + text2
-    # ob = offsetbox.AnchoredText(text, loc=2, prop=dict(size=xy_font_s - 4))
-    # ob.patch.set(alpha=0.5)
-    # ax.add_artist(ob)
+    # Text box.
+    text = r'$\overline{{\Delta M_{{\log}}}}={:.1f}\pm{:.1f}$'.format(
+        par_mean_std[0], par_mean_std[1])
+    ob = offsetbox.AnchoredText(text, loc=3, prop=dict(size=xy_font_s - 4))
+    ob.patch.set(alpha=0.5)
+    ax.add_artist(ob)
     # Position colorbar.
     if i == 2:
-        axColor = plt.axes([0.885, 0.2, 0.1, 0.023])
+        axColor = plt.axes([0.885, 0.75, 0.1, 0.023])
         cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
-        cbar.set_label(z_lab, fontsize=xy_font_s - 3, labelpad=-45)
+        cbar.set_label(z_lab, fontsize=xy_font_s - 3, labelpad=-55)
         cbar.set_ticks([-2., -1., 0., 1.])
         cbar.ax.tick_params(labelsize=xy_font_s - 10)
 
@@ -2161,7 +2144,7 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
 
     a_l, a_m, a_g, m_l, m_m, m_g = [[], []], [[], []], [[], []], [[], []],\
         [[], []], [[], []]
-    m_low, m_med = 5000., 20000.
+    m_low, m_med = 1000., 10000.
     for i, a_h in enumerate(a_h03):
         a_p, m_h, m_p = a_p12[i], m_h03[i], m_p12[i]
         avr_mass = .5 * (m_h + m_p)
@@ -2186,22 +2169,22 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
 
     # Mean & StandDev. P12-H03
     # Low mass region.
-    m_l_delta = (np.array(m_l[0]) - np.array(m_l[1])) /\
-        (np.array(m_l[0]) + np.array(m_l[1]))
+    m_l_delta = np.log10(np.array(m_l[0])) - np.log10(np.array(m_l[1]))
     m_l_mean_std = [np.mean(m_l_delta), np.std(m_l_delta)]
     print 'Low mass Delta M_r mean +- std:', m_l_mean_std
+    print min(m_l_delta), max(m_l_delta)
     a_l_delta = np.array(a_l[0]) - np.array(a_l[1])
     # Medium mass region.
-    m_m_delta = (np.array(m_m[0]) - np.array(m_m[1])) /\
-        (np.array(m_m[0]) + np.array(m_m[1]))
+    m_m_delta = np.log10(np.array(m_m[0])) - np.log10(np.array(m_m[1]))
     m_m_mean_std = [np.mean(m_m_delta), np.std(m_m_delta)]
     print 'Medium mass Delta M_r mean +- std:', m_m_mean_std
+    print min(m_m_delta), max(m_m_delta)
     a_m_delta = np.array(a_m[0]) - np.array(a_m[1])
     # Large mass region.
-    m_g_delta = (np.array(m_g[0]) - np.array(m_g[1])) /\
-        (np.array(m_g[0]) + np.array(m_g[1]))
+    m_g_delta = np.log10(np.array(m_g[0])) - np.log10(np.array(m_g[1]))
     m_g_mean_std = [np.mean(m_g_delta), np.std(m_g_delta)]
     print 'Large mass Delta M_r mean +- std:', m_g_mean_std
+    print min(m_g_delta), max(m_g_delta)
     a_g_delta = np.array(a_g[0]) - np.array(a_g[1])
 
     scale = 10**4
@@ -2213,8 +2196,8 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
     fig = plt.figure(figsize=(19.3, 6.3))
     gs = gridspec.GridSpec(1, 3)
 
-    xmin, xmax = [-50., 0.5, 2.05], [5000., 2.05, 10.5]
-    ymin, ymax = [-1.19, -1.19, -1.29], [1.3, 1.19, 0.7]
+    xmin, xmax = [-5., 0.1, 1.05], [999., 1.05, 10.5]
+    ymin, ymax = [-3., -3., -3.], [2.4, 2.4, 2.4]
 
     cbar_min = min(a_l_delta.min(), a_m_delta.min(), a_g_delta.min())
     cbar_max = max(a_l_delta.max(), a_m_delta.max(), a_g_delta.max())
@@ -2224,20 +2207,20 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
         # Low H03 vs P12 masses.
         [gs, 0, xmin[0], xmax[0], ymin[0], ymax[0],
          r'$\overline{M}_{DBs}\,[M_{\odot}]$',
-         r'$\overline{\Delta M_r}\;\;(P12-H03)$', '',
+         r'$\Delta M_{\log}\;\;(P12-H03)$', '',
          mass_l_avrg, m_l_delta, a_l_delta, cbar_min, cbar_max,
-         m_l_mean_std, r'$\overline{M}_{DBs}\leq 5000\,[M_{\odot}]$'],
+         m_l_mean_std, r'$\overline{M}_{DBs}\leq 1000\,[M_{\odot}]$'],
         # Medium H03 vs P12 masses.
         [gs, 1, xmin[1], xmax[1], ymin[1], ymax[1],
          r'$\overline{M}_{DBs}\,[10^{-4} M_{\odot}]$', '', '',
          mass_m_avrg, m_m_delta, a_m_delta, cbar_min, cbar_max,
-         m_m_mean_std, r'$5000<\overline{M}_{DBs}\leq 20000\,[M_{\odot}]$'],
+         m_m_mean_std, r'$1000<\overline{M}_{DBs}\leq 10000\,[M_{\odot}]$'],
         # Large H03 vs P12 masses.
         [gs, 2, xmin[2], xmax[2], ymin[2], ymax[2],
          r'$\overline{M}_{DBs}\,[10^{-4} M_{\odot}]$', '',
          r'$\Delta \log(age/yr)$',
          mass_g_avrg, m_g_delta, a_g_delta, cbar_min, cbar_max,
-         m_g_mean_std, r'$\overline{M}_{DBs}>20000\,[M_{\odot}]$']
+         m_g_mean_std, r'$\overline{M}_{DBs}>10000\,[M_{\odot}]$']
     ]
 
     for pl_params in as_lit_pl_lst:
@@ -2246,18 +2229,6 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/H03_P12_mass.png', dpi=300, bbox_inches='tight')
-
-
-class MidpointNormalize(Normalize):
-    def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
-        self.midpoint = midpoint
-        Normalize.__init__(self, vmin, vmax, clip)
-
-    def __call__(self, value, clip=None):
-        # I'm ignoring masked values and all kinds of edge cases to make a
-        # simple example...
-        x, y = [self.vmin, self.midpoint, self.vmax], [0, 0.5, 1]
-        return np.ma.masked_array(np.interp(value, x, y))
 
 
 def massclean_mass_plots(pl_params):
@@ -2307,11 +2278,17 @@ def massclean_mass_plots(pl_params):
         # Set the alpha value of the legend.
         leg.get_frame().set_alpha(0.85)
         ax.set_aspect('auto')
+    # Text box.
+    text = r'$\overline{{\Delta M_{{\log}}}}={:.2f}\pm{:.2f}$'.format(
+        par_mean_std[0], par_mean_std[1])
+    ob = offsetbox.AnchoredText(text, loc=3, prop=dict(size=xy_font_s - 4))
+    ob.patch.set(alpha=0.5)
+    ax.add_artist(ob)
     # Position colorbar.
     if i == 2:
-        axColor = plt.axes([0.885, 0.2, 0.1, 0.023])
+        axColor = plt.axes([0.885, 0.75, 0.1, 0.023])
         cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
-        cbar.set_label(z_lab, fontsize=xy_font_s - 3, labelpad=-45)
+        cbar.set_label(z_lab, fontsize=xy_font_s - 3, labelpad=-55)
         cbar.set_ticks([-2., -1., 0., 1.])
         cbar.ax.tick_params(labelsize=xy_font_s - 10)
 
@@ -2320,7 +2297,7 @@ def rand_jitter(arr, jitter):
     """
     Add random scatter to array.
     """
-    stdev = jitter*(max(arr) - min(arr))
+    stdev = jitter * (max(arr) - min(arr))
     return arr + np.random.randn(len(arr)) * stdev
 
 
@@ -2330,7 +2307,7 @@ def make_massclean_mass_plot(massclean_data_pars):
     """
     mc_data, mc_pars = massclean_data_pars
 
-    mass_l_avrg, mass_m_avrg, mass_g_avrg = [], [], []
+    mass_l_mcl, mass_m_mcl, mass_g_mcl = [], [], []
     m_l_delta, m_m_delta, m_g_delta = [], [], []
     a_l_delta, a_m_delta, a_g_delta = [], [], []
     delta_met, delta_age, delta_dist, delta_ext, delta_mass = [], [], [], [],\
@@ -2339,7 +2316,7 @@ def make_massclean_mass_plot(massclean_data_pars):
     for k in [0, 1]:
         a_l, a_m, a_g, m_l, m_m, m_g = [[], []], [[], []], [[], []], [[], []],\
             [[], []], [[], []]
-        m_low, m_med = 5000., 20000.
+        m_low, m_med = 1000., 10000.
         for i, m_as in enumerate(zip(*mc_pars[k])[27]):
             m_as = float(m_as)
             # age_ASteCA, age_MASSCLEAN, mass_MASSCLEAN
@@ -2355,7 +2332,7 @@ def make_massclean_mass_plot(massclean_data_pars):
             delta_mass.append(m_as - m_ml)
 
             # Separate into mass regions.
-            avr_mass = .5 * (m_as + m_ml)
+            avr_mass = m_ml
             # Separate by average mass limit.
             if avr_mass <= m_low:
                 a_l[0].append(a_as)
@@ -2378,24 +2355,22 @@ def make_massclean_mass_plot(massclean_data_pars):
 
         # Mean & StandDev. ASteCA-MASSCLEAN
         # Low mass region.
-        m_l_delta.append((np.array(m_l[0]) - np.array(m_l[1])) /
-                         (np.array(m_l[0]) + np.array(m_l[1])))
+        m_l_delta.append(np.log10(np.array(m_l[0])) -
+                         np.log10(np.array(m_l[1])))
         a_l_delta.append(np.array(a_l[0]) - np.array(a_l[1]))
         # Medium mass region.
-        m_m_delta.append((np.array(m_m[0]) - np.array(m_m[1])) /
-                         (np.array(m_m[0]) + np.array(m_m[1])))
+        m_m_delta.append(np.log10(np.array(m_m[0])) -
+                         np.log10(np.array(m_m[1])))
         a_m_delta.append(np.array(a_m[0]) - np.array(a_m[1]))
         # Large mass region.
-        m_g_delta.append((np.array(m_g[0]) - np.array(m_g[1])) /
-                         (np.array(m_g[0]) + np.array(m_g[1])))
+        m_g_delta.append(np.log10(np.array(m_g[0])) -
+                         np.log10(np.array(m_g[1])))
         a_g_delta.append(np.array(a_g[0]) - np.array(a_g[1]))
 
         scale = 10**4
-        mass_l_avrg.append((np.array(m_l[0]) + np.array(m_l[1])) * 0.5)
-        mass_m_avrg.append(((np.array(m_m[0]) + np.array(m_m[1])) * 0.5) /
-                           scale)
-        mass_g_avrg.append(((np.array(m_g[0]) + np.array(m_g[1])) * 0.5) /
-                           scale)
+        mass_l_mcl.append(np.array(m_l[1]))
+        mass_m_mcl.append(np.array(m_m[1]) / scale)
+        mass_g_mcl.append(np.array(m_g[1]) / scale)
 
     # Check for correlations.
     # http://mathworld.wolfram.com/StatisticalCorrelation.html
@@ -2408,9 +2383,9 @@ def make_massclean_mass_plot(massclean_data_pars):
     print np.corrcoef(deltas)
 
     # Add random scatter
-    mass_l_avrg = [rand_jitter(_, 0.02) for _ in mass_l_avrg]
-    mass_m_avrg = [rand_jitter(_, 0.025) for _ in mass_m_avrg]
-    mass_g_avrg = [rand_jitter(_, 0.02) for _ in mass_g_avrg]
+    mass_l_scatt = [rand_jitter(_, 0.05) for _ in mass_l_mcl]
+    mass_m_scatt = [rand_jitter(_, 0.025) for _ in mass_m_mcl]
+    mass_g_scatt = [rand_jitter(_, 0.02) for _ in mass_g_mcl]
 
     # Low mass region.
     m_l_mean_std = [np.mean([item for subl in m_l_delta for item in subl]),
@@ -2427,16 +2402,16 @@ def make_massclean_mass_plot(massclean_data_pars):
                     np.std([item for subl in m_g_delta for item in subl])]
     a_g_mean_std = [np.mean([item for subl in a_g_delta for item in subl]),
                     np.std([item for subl in a_g_delta for item in subl])]
-    print 'Low mass Delta M_r mean +- std:', m_l_mean_std
-    print 'Med mass Delta M_r mean +- std:', m_m_mean_std
-    print 'Lar mass Delta M_r mean +- std:', m_g_mean_std
+    print 'Low mass log10 Delta M mean +- std:', m_l_mean_std
+    print 'Med mass log10 Delta M mean +- std:', m_m_mean_std
+    print 'Lar mass log10 Delta M mean +- std:', m_g_mean_std
     full_M_ms = [np.mean([item for subl in m_l_delta for item in subl] +
                          [item for subl in m_m_delta for item in subl] +
                          [item for subl in m_g_delta for item in subl]),
                  np.std([item for subl in m_l_delta for item in subl] +
                         [item for subl in m_m_delta for item in subl] +
                         [item for subl in m_g_delta for item in subl])]
-    print 'Full region Delta M_r mean +- std:', full_M_ms, '\n'
+    print 'Full region log10 Delta M mean +- std:', full_M_ms, '\n'
     print 'Low mass Delta age mean +- std:', a_l_mean_std
     print 'Med mass Delta age mean +- std:', a_m_mean_std
     print 'Lar mass Delta age mean +- std:', a_g_mean_std
@@ -2452,8 +2427,8 @@ def make_massclean_mass_plot(massclean_data_pars):
     fig = plt.figure(figsize=(19.3, 6.3))
     gs = gridspec.GridSpec(1, 3)
 
-    xmin, xmax = [-50., 0.47, 1.7], [5000., 2.05, 28.5]
-    ymin, ymax = [-1.09, -1.09, -0.7], [1.09, 1.09, 0.7]
+    xmin, xmax = [-5., 0.35, 1.], [1150., 1.05, 27.5]
+    ymin, ymax = [-1.09, -1.09, -1.09], [1.09, 1.09, 1.09]
 
     cbar_min = min(min([item for subl in a_l_delta for item in subl]),
                    min([item for subl in a_m_delta for item in subl]),
@@ -2467,31 +2442,31 @@ def make_massclean_mass_plot(massclean_data_pars):
         # Low masses.
         # SMC
         [gs, 0, xmin[0], xmax[0], ymin[0], ymax[0], '', '', '',
-         mass_l_avrg[0], m_l_delta[0], a_l_delta[0], cbar_min, cbar_max,
+         mass_l_scatt[0], m_l_delta[0], a_l_delta[0], cbar_min, cbar_max,
          m_l_mean_std, ''],
         # LMC
         [gs, 0, xmin[0], xmax[0], ymin[0], ymax[0],
-         r'$\overline{M}\,[M_{\odot}]$',
-         r'$\overline{\Delta M_r}\;\;(\mathtt{ASteCA}-MASSCLEAN)$', '',
-         mass_l_avrg[1], m_l_delta[1], a_l_delta[1], cbar_min, cbar_max,
-         m_l_mean_std, r'$\overline{M}\leq 5000\,[M_{\odot}]$'],
+         r'$M_{MASSCLEAN}\,[M_{\odot}]$',
+         r'$\Delta M_{\log}\;\;(\mathtt{ASteCA}-MASSCLEAN)$', '',
+         mass_l_scatt[1], m_l_delta[1], a_l_delta[1], cbar_min, cbar_max,
+         m_l_mean_std, r'$M\leq 1000\,[M_{\odot}]$'],
         # Medium masses.
         [gs, 1, xmin[1], xmax[1], ymin[1], ymax[1], '', '', '',
-         mass_m_avrg[0], m_m_delta[0], a_m_delta[0], cbar_min, cbar_max,
+         mass_m_scatt[0], m_m_delta[0], a_m_delta[0], cbar_min, cbar_max,
          m_m_mean_std, ''],
         [gs, 1, xmin[1], xmax[1], ymin[1], ymax[1],
-         r'$\overline{M}\,[10^{-4} M_{\odot}]$', '', '',
-         mass_m_avrg[1], m_m_delta[1], a_m_delta[1], cbar_min, cbar_max,
-         m_m_mean_std, r'$5000<\overline{M}\leq 20000\,[M_{\odot}]$'],
+         r'$M_{MASSCLEAN}\,[10^{-4} M_{\odot}]$', '', '',
+         mass_m_scatt[1], m_m_delta[1], a_m_delta[1], cbar_min, cbar_max,
+         m_m_mean_std, r'$1000<M\leq 10000\,[M_{\odot}]$'],
         # Large masses.
         [gs, 2, xmin[2], xmax[2], ymin[2], ymax[2], '', '', '',
-         mass_g_avrg[0], m_g_delta[0], a_g_delta[0], cbar_min, cbar_max,
+         mass_g_scatt[0], m_g_delta[0], a_g_delta[0], cbar_min, cbar_max,
          m_g_mean_std, ''],
         [gs, 2, xmin[2], xmax[2], ymin[2], ymax[2],
-         r'$\overline{M}\,[10^{-4} M_{\odot}]$', '',
+         r'$M_{MASSCLEAN}\,[10^{-4} M_{\odot}]$', '',
          r'$\Delta \log(age/yr)$',
-         mass_g_avrg[1], m_g_delta[1], a_g_delta[1], cbar_min, cbar_max,
-         m_g_mean_std, r'$\overline{M}>20000\,[M_{\odot}]$']
+         mass_g_scatt[1], m_g_delta[1], a_g_delta[1], cbar_min, cbar_max,
+         m_g_mean_std, r'$M>10000\,[M_{\odot}]$']
     ]
 
     for pl_params in as_lit_pl_lst:
