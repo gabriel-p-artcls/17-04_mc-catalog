@@ -272,7 +272,7 @@ Below we present a description of every file/folder found in this repository.
 
  Folder that contains the results for all the runs.
 
- `large_diff_age_clusts.ods`: analysis of the obtained values in different runs
+* `large_diff_age_clusts.ods`: analysis of the obtained values in different runs
  for those clusters that display a large age difference with the literature
  values.
 
