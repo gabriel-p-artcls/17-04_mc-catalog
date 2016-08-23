@@ -26,6 +26,11 @@ Below we present a description of every file/folder found in this repository.
 
  This file.
 
+* `asteca_output_final.dat`
+
+ Combined final fundamental parameters for the entire sample, from the analysis
+ performed with **ASteCA**.
+
 * `lit_OCs_data.ods`
 
  Literature data on each cluster.
@@ -34,11 +39,6 @@ Below we present a description of every file/folder found in this repository.
 
  Script that Produces the main figures used in the article. Functions are stored
  in the `functions/` folder.
-
-* `asteca_output_final.dat`
-
- Combined final fundamental parameters for the entire sample, from the analysis
- performed with **ASteCA**.
 
 * `requirements.txt`
 
@@ -87,12 +87,11 @@ Below we present a description of every file/folder found in this repository.
 
 ### `databases/`
 
-* `bb_cat.dat`
+* `age-mass_relations.ods`
 
- RA & DEC positions for the 3740 clusters in the
- [Bica et al. (2008)](http://cdsads.u-strasbg.fr/abs/2008MNRAS.389..678B)
- catalog ([Table 3](http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=J/
- MNRAS/389/678/table3)).
+ Ages and masses from the articles [Piskunov et al. (2008)]
+ (http://adsabs.harvard.edu/abs/2008A%26A...477..165P) and [Baumgardt
+ et al. (2012)](http://arxiv.org/abs/1207.5576)
 
 * `BB_10.dat`
 
@@ -100,39 +99,12 @@ Below we present a description of every file/folder found in this repository.
  [Bonato & Bica (2010)](http://cdsads.u-strasbg.fr/abs/2010MNRAS.403..996B).
  Only 285 out of the 690 clusters have an age value assigned.
 
-* `McL_vdM05.dat`
+* `bb_cat.dat`
 
- Masses from [McLaughlin & van der Marel (2005)](http://adsabs.harvard.edu/
- abs/2005ApJS..161..304M). Only three OCs could be cross matched: LMC-NGC1860,
- LMC-SL663, and SMC-NGC339.
-
-* `Maia_13_mass.out`
-
- [Maia et al. (2013)](http://adsabs.harvard.edu/abs/2013arXiv1310.5934M) mass
- distribution and structural parameters of 29 Small Magellanic Cloud star
- clusters.
-
-* `pietrz_99_SMC.dat`
-
- Ages for 93 SMC clusters obtained in [Pietrzynski & Udalski (1999)](http://
- adsabs.harvard.edu/abs/1999AcA....49..157P).
-
-* `pietrz_00_LMC.dat`
-
-  Ages for 600 LMC clusters obtained in [Pietrzynski & Udalski (2000)](http://
-  adsabs.harvard.edu/abs/2000AcA....50..337P).
-
-* `hunter_03.dat`
-
-  Clusters in the S/LMC from [Hunter et al. (2003)](http://adsabs.harvard.edu/
-  abs/2003AJ....126.1836H), 748 belong to the LMC and 191 to the SMC for a
-  total of 939 clusters.
-
-* `rafelski_05_SMC.dat`
-
-  Ages for 195 SMC clusters from [Rafelski & Zaritsky (2005)](http://
-  adsabs.harvard.edu/abs/2005AJ....129.2701R), obtained via
-  integrated photometry.
+ RA & DEC positions for the 3740 clusters in the
+ [Bica et al. (2008)](http://cdsads.u-strasbg.fr/abs/2008MNRAS.389..678B)
+ catalog ([Table 3](http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=J/
+ MNRAS/389/678/table3)).
 
 * `chiosi_06.dat`
 
@@ -141,10 +113,65 @@ Below we present a description of every file/folder found in this repository.
  abs/2006A%26A...452..179C). Also lists several other structures/objects, ie:
  association, supernovas, H II regions and entities in between.
 
+* `cross_h03_p12.py`
+
+ Matches the data in the H03 and P12 databases.
+
+* `cross_match.py`
+
+ Matches the data in the above databases to those clusters processed by
+ ASteCA.
+
 * `glatt_10.dat`
 
  CMD ages taken from the [Glatt et al. (2010)](http://www.aanda.org/10.1051/
  0004-6361/201014187) catalog for 1194 LMC clusters and 322 SMC clusters.
+
+* `H03_P12_masses.ods`
+
+ Masses given in the H03 and P12 articles.
+
+* `hunter_03.dat`
+
+  Clusters in the S/LMC from [Hunter et al. (2003)](http://adsabs.harvard.edu/
+  abs/2003AJ....126.1836H), 748 belong to the LMC and 191 to the SMC for a
+  total of 939 clusters.
+
+* `Maia_13_mass.out`
+
+ [Maia et al. (2013)](http://adsabs.harvard.edu/abs/2013arXiv1310.5934M) mass
+ distribution and structural parameters of 29 Small Magellanic Cloud star
+ clusters.
+
+* `matched_clusters.dat`
+
+ Output of the `cross_match.py` script.  Final data file with all matched
+ clusters between **ASteCA** and the databases in the literature.
+
+* `matched_clusters_G10.dat`
+
+ Same as `matched_clusters.dat`, but using the G10 database instead of the
+ **ASteCA** database as the reference to match.
+
+* `matched_H03_P12.dat`
+
+ Output of the `cross_h03_p12.py` script. Crossed-matched OCs from H03 and P12.
+
+* `McL_vdM05.dat`
+
+ Masses from [McLaughlin & van der Marel (2005)](http://adsabs.harvard.edu/
+ abs/2005ApJS..161..304M). Only three OCs could be cross matched: LMC-NGC1860,
+ LMC-SL663, and SMC-NGC339.
+
+* `pietrz_00_LMC.dat`
+
+  Ages for 600 LMC clusters obtained in [Pietrzynski & Udalski (2000)](http://
+  adsabs.harvard.edu/abs/2000AcA....50..337P).
+
+* `pietrz_99_SMC.dat`
+
+ Ages for 93 SMC clusters obtained in [Pietrzynski & Udalski (1999)](http://
+ adsabs.harvard.edu/abs/1999AcA....49..157P).
 
 * `popescu_12_LMC.dat`
 
@@ -157,31 +184,31 @@ Below we present a description of every file/folder found in this repository.
  Idem above, but also adds ages taken from the *Glatt et al.* catalog, for
  288 clusters in the *Hunter et al.* catalog.
 
-* `cross_match.py`
+* `rafelski_05_SMC.dat`
 
- Matches the data in the above databases to those clusters processed by
- ASteCA.
-
-* `matched_clusters.dat`
-
- Final data file with all matched clusters between **ASteCA** and the
- databases in the literature.
-
-* `matched_clusters_G10.dat`
-
- Idem above but using the G10 data as input to match with the P99, P00, and
- C06 databases, and compare their ages.
-
-* `cross_h03_p12.py`
-
- Matches the data in the H03 and P12 databases.
-
-* `matched_H03_P12.dat`
-
- Crossed-matched OCs from H03 and P12.
+  Ages for 195 SMC clusters from [Rafelski & Zaritsky (2005)](http://
+  adsabs.harvard.edu/abs/2005AJ....129.2701R), obtained via
+  integrated photometry.
 
 
 ### `extinction_MCEV/`
+
+* `cls_exts_match.dat`
+
+ Output of the `extin_analysis.py` script.
+
+* `extin_analysis.py`
+
+ Gets the extinction data from the table obtained via the MCEV service
+ (`ra_dec_exts_mult_matches.dat`) and produces for each of the clusters a
+ value of the closest, average and maximum E(B-V) extinction values.
+ The transformation equation used is:
+
+ `E(V-I) = 1.38 * E(B-V)`
+
+ according to [Tammann et al. (2003)]
+ (http://adsabs.harvard.edu/abs/2003A%26A...404..423T). The results are stored
+ in  the `cls_exts_match.dat` file.
 
 * `IRSA_MC_ext.tbl`
 
@@ -193,17 +220,6 @@ Below we present a description of every file/folder found in this repository.
 * `IRSA_BB_ext.tbl`
 
   Idem above for the 3740 clusters in the Bica et al. catalog.
-
-* `TOPCAT_instruct.dat`
-
- Instructions to perform a
- [MCEV](http://dc.zah.uni-heidelberg.de/mcextinct/q/cone/form) query using
- TOPCAT.
-
-* `topcat-lite.jnlp`
-
- File that downloads and runs the lite version of TOPCAT (see instructions to
- run).
 
 * `ra_dec.dat`
 
@@ -218,35 +234,38 @@ Below we present a description of every file/folder found in this repository.
  needed a 6.0 deg search radius to find areas with extinction in the maps,
  making it the one furthest away from the areas studied in the MCEV maps.
 
-* `extin_analysis.py`
+* `TOPCAT_instruct.dat`
 
-  Gets the extinction data from the table obtained via the MCEV service
-  (`ra_dec_exts_mult_matches.dat`) and produces for each of the clusters a
-  value of the closest, average and maximum E(B-V) extinction values.
-  The transformation equation used is:
+ Instructions to perform a
+ [MCEV](http://dc.zah.uni-heidelberg.de/mcextinct/q/cone/form) query using
+ TOPCAT.
 
-  `E(V-I) = 1.38 * E(B-V)`
+* `topcat-lite.jnlp`
 
-  according to Tammann et al. 2003, A&A, 404, 423.
-
-  The results are stored in the `cls_exts_match.dat` file.
-
-* `cls_exts_match.dat`
-
-   Output of the above script.
+ File that downloads and runs the lite version of TOPCAT (see instructions to
+ run).
 
 
 ### `figures/`
 
-   Output figures from main script.
+ Output figures from main script.
 
 
 ### `functions/`
 
-   `*.py`: functions called by the main script.
+ `*.py`: functions called by the main script.
 
-   `0.004.dat` & `0.008.dat`: Marigo isochrones used by the
-   `CMD_obs_vs_asteca.py` script to plot the G10 fitted isochrones.
+ `0.004.dat` & `0.008.dat`: Marigo isochrones used by the
+ `CMD_obs_vs_asteca.py` script to plot the G10 fitted isochrones.
+
+ `mar2008_ubvrijhk/` & `parsec11_ubvrijhk/`: folders that contain the Marigo
+ and PARSEC isochrones compared by the `marigo_parsec_isochs.py` script.
+
+
+### `OCs_data/`
+
+ This folder contains data necessary for the scripts to produce the analysis and
+ the plots.
 
 
 ### `runs/`
