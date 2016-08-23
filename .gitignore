@@ -61,11 +61,9 @@ target/
 *.sublime-workspace
 
 *.png
-*.out
-*_synth.dat
-*_top_tiers.dat
 !AMRs/*.png
 .~*
+runs/1st_run/output/*
 runs/2nd_run/output/*
 runs/3rd_run/output/*
 runs/4th_run/output/*
