@@ -1,3 +1,0 @@
-/usr/lib/python2.7/dist-packages/pip/baseparser.py:5: UserWarning: Module dap was already imported from None, but /usr/lib/python2.7/dist-packages is being added to sys.path
-  import pkg_resources
-=>> PBS: job killed: walltime 604805 exceeded limit 604800

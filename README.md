@@ -137,7 +137,7 @@ Below we present a description of every file/folder found in this repository.
   abs/2003AJ....126.1836H), 748 belong to the LMC and 191 to the SMC for a
   total of 939 clusters.
 
-* `Maia_13_mass.out`
+* `Maia_13_mass.dat`
 
  [Maia et al. (2013)](http://adsabs.harvard.edu/abs/2013arXiv1310.5934M) mass
  distribution and structural parameters of 29 Small Magellanic Cloud star

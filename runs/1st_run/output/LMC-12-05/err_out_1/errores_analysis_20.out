@@ -1,7 +1,0 @@
-/usr/lib/python2.7/dist-packages/pip/baseparser.py:5: UserWarning: Module dap was already imported from None, but /usr/lib/python2.7/dist-packages is being added to sys.path
-  import pkg_resources
-/usr/lib/pymodules/python2.7/matplotlib/__init__.py:751: UserWarning: Could not find matplotlibrc; using defaults
-  warnings.warn('Could not find matplotlibrc; using defaults')
-/usr/lib/pymodules/python2.7/matplotlib/__init__.py:867: UserWarning: could not find rc file; returning defaults
-  warnings.warn(message)
-=>> PBS: job killed: walltime 604823 exceeded limit 604800
