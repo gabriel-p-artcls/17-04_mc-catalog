@@ -1,5 +1,5 @@
 
-from pyexcel_ods import ODSBook
+import pyexcel_ods as pe
 import re
 
 
@@ -258,11 +258,11 @@ def get_liter_data():
     '''
 
     # Read .ods file with literature data.
-    cl_file = ODSBook('lit_OCs_data.ods')
-    # Store as dictionary and then as list.
-    cl_dict = cl_file.sheets()["S-LMC"]
+    cl_file = pe.get_data('lit_OCs_data.ods')
+    # Store as list.
+    cl_list = cl_file["S-LMC"]
 
-    return cl_dict
+    return cl_list
 
 
 def get_cross_match_asteca(r_path):

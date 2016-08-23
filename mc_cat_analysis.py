@@ -56,15 +56,15 @@ def get_in_params(r_path):
     print 'ASteCA data read from .dat output file.'
 
     # Read literature data.
-    cl_dict = get_liter_data()
+    cl_list = get_liter_data()
     print 'Literature data read from .ods file.'
 
     # Match clusters.
-    names_idx = match_clusters(as_names, cl_dict)
+    names_idx = match_clusters(as_names, cl_list)
     print 'Cluster parameters matched.'
 
     # Get data parameters arrays.
-    in_params = params(r_path, as_names, as_pars, cl_dict, names_idx)
+    in_params = params(r_path, as_names, as_pars, cl_list, names_idx)
     print 'Dictionary of parameters obtained.'
 
     return in_params

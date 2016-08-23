@@ -90,8 +90,9 @@ def mar_par_data():
     # Read data file
     mar_data, par_data = [], []
     for tr, tracks in enumerate([mar, par]):
-        for m_f in os.listdir(tracks):
-            met_f = tracks + m_f
+        path = os.path.join(os.path.dirname(__file__), tracks)
+        for m_f in os.listdir(path):
+            met_f = path + m_f
             metal_isoch = read_met_file(met_f, age_values, tr)
             if tr == 0:
                 mar_data.append(metal_isoch)
@@ -99,3 +100,7 @@ def mar_par_data():
                 par_data.append(metal_isoch)
 
     return mar_data, par_data
+
+
+if __name__ == "__main__":
+    mar_par_data()
