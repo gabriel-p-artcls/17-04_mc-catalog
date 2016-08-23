@@ -255,7 +255,7 @@ def main():
         mar_data, par_data = mar_par_data()
 
     # Make final plots.
-    print 'Plotting...\n'
+    print '\n\nPlotting...\n'
     make_plots(r_path, plots, in_params, bica_coords, cross_match,
                cross_match_h03_p12, amr_lit, amr_asteca, massclean_data_pars,
                mar_data, par_data)
