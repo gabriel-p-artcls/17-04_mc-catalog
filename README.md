@@ -1,21 +1,21 @@
 
 
-- [mc-catalog](#mc-catalog)
-  - [Top level](#top-level)
-    - [`databases/`](#databases)
-    - [`AMRs/`](#AMRs)
-    - [`aux_funcs/`](#aux_funcs)
-    - [`extinction_MCEV/`](#extinction_mcev)
-    - [`figures/`](#figures)
-    - [`functions/`](#functions)
-    - [`runs/`](#runs)
-
-
 # mc-catalog
 
-Set of scripts to analyze and plot the results of the **ASteCA** processing of
-the 210 MC clusters in our database, observed with `C, T1` Washington
-photometry.
+This repository contains the set of scripts built to analyze and plot the
+results of the **ASteCA** processing of the 239 Magellanic Cloud clusters in our
+database, observed with `C, T1` Washington photometry.
+
+Below there is a description of every file found here.
+
+- [Top level](#top-level)
+  - [`AMRs/`](#AMRs)
+  - [`aux_funcs/`](#aux_funcs)
+  - [`databases/`](#databases)
+  - [`extinction_MCEV/`](#extinction_mcev)
+  - [`figures/`](#figures)
+  - [`functions/`](#functions)
+  - [`runs/`](#runs)
 
 ## Top level
 
@@ -29,15 +29,51 @@ photometry.
 
 * `mc_cat_analysis.py`
 
- Script that Produces the main figures by comparing parameters with each other
- (KDE maps), with literature values (1:1 plots) and distributed in space
- (RA vs DEC plots.)
-
- Functions are stored in the `functions/` folder.
+ Script that Produces the main figures used in the article. Functions are stored
+ in the `functions/` folder.
 
 * `asteca_output_final.dat`
 
- Combined final results for the entire sample.
+ Combined final fundamental parameters for the entire sample, from the analysis
+ performed with **ASteCA**.
+
+
+### `AMRs/`
+
+  Data files with literature AMR values.
+
+
+### `aux_funcs/`
+
+* `add_p_vals/`
+
+  Contains the script and input/output files used to add KDE p_values
+  to the `asteca_output.dat` file from the 1st run, since the function was
+  turned off.
+
+* `mar_vs_par_isochs/`
+
+ Contains the script (`marigo_parsec_isochs.py`) to produce the Marigo vs PARSEC
+ isochrones plot.
+
+* `move_files_names.py`
+
+ Script to move .png files from their `input_XX/` folders for each run, into
+ a single folder containing all the analyzed clusters.
+ This script uses the `asteca_output_part_XX.dat` files.
+
+* `move_files_sizes.py`
+
+ Script to move files into `input_XX/` folders distributed so that each
+ folder has approximately the same total size.
+
+* `print_runs_clust_values.py`
+
+ Prints the final parameters found in each run for a given cluster.
+
+* `marigo_parsec_isochs.py`
+
+ Creates plot of Marigo vs PARSEC (v1.1) isochrones.
 
 
 ### `databases/`
@@ -134,38 +170,6 @@ photometry.
 * `matched_H03_P12.dat`
 
  Crossed-matched OCs from H03 and P12.
-
-
-### `AMRs/`
-
-  Data files with literature AMR values.
-
-### `aux_funcs/`
-
-* `add_p_vals/`
-
-  Contains the script and input / output files used to add KDE p_values
-  to the `asteca_output.dat` file from the 1st run, since the function was
-  turned off.
-
-* `move_files_names.py`
-
- Script to move .png files from their `input_XX/` folders for each run, into
- a single folder containing all the analyzed clusters.
- This script uses the `asteca_output_part_XX.dat` files.
-
-* `move_files_sizes.py`
-
- Script to move files into `input_XX/` folders distributed so that each
- folder has approximately the same total size.
-
-* `print_runs_clust_values.py`
-
- Prints the final parameters found in each run for a given cluster.
-
-* `marigo_parsec_isochs.py`
-
- Creates plot of Marigo vs PARSEC (v1.1) isochrones.
 
 
 ### `extinction_MCEV/`
