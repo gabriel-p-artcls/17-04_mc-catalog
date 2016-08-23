@@ -6,7 +6,10 @@ This repository contains the set of scripts built to analyze and plot the
 results of the **ASteCA** processing of the 239 Magellanic Cloud clusters in our
 database, observed with `C, T1` Washington photometry.
 
-Below there is a description of every file found here.
+The main script is `mc_cat_analysis.py`. It produces all the figures and data
+used in the article.
+
+Below we present a description of every file/folder found in this repository.
 
 - [Top level](#top-level)
   - [`AMRs/`](#AMRs)
@@ -37,6 +40,11 @@ Below there is a description of every file found here.
  Combined final fundamental parameters for the entire sample, from the analysis
  performed with **ASteCA**.
 
+* `requirements.txt`
+
+ Requirements to run the scripts in this repository. Install with:
+ `pip install -r requirements.txt`.
+
 
 ### `AMRs/`
 
@@ -51,29 +59,30 @@ Below there is a description of every file found here.
   to the `asteca_output.dat` file from the 1st run, since the function was
   turned off.
 
-* `mar_vs_par_isochs/`
+* `comp_metals.py`
 
- Contains the script (`marigo_parsec_isochs.py`) to produce the Marigo vs PARSEC
- isochrones plot.
+ Compares real versus rounded metallicity values, to asses the impact of an
+ issue with the rounding function of **ASteCA**.
 
 * `move_files_names.py`
 
  Script to move .png files from their `input_XX/` folders for each run, into
  a single folder containing all the analyzed clusters.
- This script uses the `asteca_output_part_XX.dat` files.
+ This script uses the `asteca_output_XX.dat` files.
 
 * `move_files_sizes.py`
 
  Script to move files into `input_XX/` folders distributed so that each
  folder has approximately the same total size.
 
+* `photom_error_TO.py`
+
+ Reads all cluster data files, and plots their T1 and (C-T1) photometric errors
+ around the turn-off region.
+
 * `print_runs_clust_values.py`
 
  Prints the final parameters found in each run for a given cluster.
-
-* `marigo_parsec_isochs.py`
-
- Creates plot of Marigo vs PARSEC (v1.1) isochrones.
 
 
 ### `databases/`
