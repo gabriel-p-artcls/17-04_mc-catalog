@@ -63,7 +63,9 @@ target/
 *.png
 !AMRs/*.png
 .~*
-runs/1st_run/output/*
+runs/1st_run/output/*.out
+runs/1st_run/output/*.png
+runs/1st_run/output/*_synth.dat
 runs/2nd_run/output/*
 runs/3rd_run/output/*
 runs/4th_run/output/*

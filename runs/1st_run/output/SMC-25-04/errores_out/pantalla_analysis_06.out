@@ -1,0 +1,298 @@
+
+
+-------------------------------------------
+            ASteCA v0.1.9-beta
+-------------------------------------------
+
+PARSEC v1.1 theoretical isochrones read,
+interpolated and stored:
+  23 metallicity values (z),
+  83 age values (per z),
+  21 reddening values,
+  9 distance values,
+  51 mass values,
+  1 binary fraction values.
+  = 1.8e+07 approx total models.
+Full check done.
+
+(Force matplotlib to not use any Xwindows backend)
+
+Analizing cluster HW63 (semi).
+ Set max extinction value: 0.2
+Data obtained from input file (N_stars: 80401).
+Frame's 2D histogram obtained
+Semi center found: (2600.49, 3800.9) px.
+Radial density profile (RDP) calculated.
+Field density calculated (6.6E-03 stars/px^2).
+Auto radius found: 171.213 px.
+Tidal radius obtained: 474.073 px.
+Stars accepted/rejected based on their errors.
+Stars separated in/out of cluster's boundaries.
+Area of cluster obtained.
+Approximate number of members in cluster obtained (152).
+Contamination index obtained (0.80).
+Using defined number of field regions (10).
+LF and completeness magnitude levels obtained.
+Integrated color magnitude distribution obtained (3.62).
+Skipping KDE p-value test for cluster.
+Applying decontamination algorithm.
+  25% done
+  50% done
+  MPs converged. Breaking out (673).
+Reduced membership function applied.
+Membership probabilities saved to file.
+Searching for optimal parameters.
+Optimization terminated successfully.
+         Current function value: -190.870942
+         Iterations: 17
+         Function evaluations: 47
+Optimization terminated successfully.
+         Current function value: -156.122146
+         Iterations: 15
+         Function evaluations: 43
+Using Genetic Algorithm (dolphin/knuth).
+   10% done       (0.001914, 9.65, 0.04, 19.05, 5610, 0.5)
+   20% done       (0.001914, 9.65, 0.04, 19.05, 5610, 0.5)
+   30% done       (0.001914, 9.65, 0.04, 19.05, 5610, 0.5)
+   40% done       (0.001914, 9.65, 0.04, 19.05, 5610, 0.5)
+   50% done       (0.001914, 9.65, 0.04, 19.05, 5610, 0.5)
+Best fit params obtained.
+Begin bootstrap process (10).
+Optimization terminated successfully.
+         Current function value: -179.744071
+         Iterations: 17
+         Function evaluations: 48
+Optimization terminated successfully.
+         Current function value: -153.689110
+         Iterations: 15
+         Function evaluations: 43
+  10% done
+Optimization terminated successfully.
+         Current function value: -204.338158
+         Iterations: 17
+         Function evaluations: 47
+Optimization terminated successfully.
+         Current function value: -142.332777
+         Iterations: 16
+         Function evaluations: 45
+  20% done
+Optimization terminated successfully.
+         Current function value: -203.202937
+         Iterations: 16
+         Function evaluations: 46
+Optimization terminated successfully.
+         Current function value: -176.218091
+         Iterations: 15
+         Function evaluations: 43
+  30% done
+Optimization terminated successfully.
+         Current function value: -186.119764
+         Iterations: 16
+         Function evaluations: 45
+Optimization terminated successfully.
+         Current function value: -147.063486
+         Iterations: 16
+         Function evaluations: 45
+  40% done
+Optimization terminated successfully.
+         Current function value: -218.520065
+         Iterations: 17
+         Function evaluations: 48
+Optimization terminated successfully.
+         Current function value: -164.254292
+         Iterations: 15
+         Function evaluations: 43
+  50% done
+Optimization terminated successfully.
+         Current function value: -224.943691
+         Iterations: 16
+         Function evaluations: 46
+Optimization terminated successfully.
+         Current function value: -84.965395
+         Iterations: 14
+         Function evaluations: 41
+  60% done
+Optimization terminated successfully.
+         Current function value: -191.302534
+         Iterations: 17
+         Function evaluations: 48
+Optimization terminated successfully.
+         Current function value: -165.148758
+         Iterations: 16
+         Function evaluations: 44
+  70% done
+Optimization terminated successfully.
+         Current function value: -176.494558
+         Iterations: 17
+         Function evaluations: 47
+Optimization terminated successfully.
+         Current function value: -159.567766
+         Iterations: 16
+         Function evaluations: 44
+  80% done
+Optimization terminated successfully.
+         Current function value: -202.364781
+         Iterations: 16
+         Function evaluations: 45
+Optimization terminated successfully.
+         Current function value: -165.472066
+         Iterations: 16
+         Function evaluations: 45
+  90% done
+Optimization terminated successfully.
+         Current function value: -214.018621
+         Iterations: 18
+         Function evaluations: 50
+Optimization terminated successfully.
+         Current function value: -151.090198
+         Iterations: 16
+         Function evaluations: 45
+  100% done
+Best fit synthetic cluster saved to file.
+Cluster's parameters and flags added to output file.
+Top tier models saved to file and plotted.
+Plots created.
+Photometric data file moved.
+End of analysis for HW63 in 1727m 5s.
+
+Analizing cluster L3 (semi).
+ Set max extinction value: 0.12
+Data obtained from input file (N_stars: 7500).
+  WARNING: 46% of stars in file were rejected.
+Frame's 2D histogram obtained
+Semi center found: (979.511, 1133.19) px.
+Radial density profile (RDP) calculated.
+Field density calculated (1.7E-03 stars/px^2).
+Auto radius found: 118.387 px.
+Tidal radius obtained: 258.082 px.
+Stars accepted/rejected based on their errors.
+Stars separated in/out of cluster's boundaries.
+Area of cluster obtained.
+Approximate number of members in cluster obtained (139).
+Contamination index obtained (0.34).
+Using defined number of field regions (10).
+LF and completeness magnitude levels obtained.
+Integrated color magnitude distribution obtained (1.34).
+Skipping KDE p-value test for cluster.
+Applying decontamination algorithm.
+  MPs converged. Breaking out (184).
+Reduced membership function applied.
+Membership probabilities saved to file.
+Searching for optimal parameters.
+Optimization terminated successfully.
+         Current function value: -63.326783
+         Iterations: 14
+         Function evaluations: 41
+Optimization terminated successfully.
+         Current function value: -54.020970
+         Iterations: 16
+         Function evaluations: 45
+Using Genetic Algorithm (dolphin/knuth).
+   10% done       (0.004807, 9.1, 0.04, 19, 2410, 0.5)
+   20% done       (0.003818, 9.1, 0.06, 18.9, 1810, 0.5)
+   30% done       (0.003818, 9.1, 0.06, 19, 2410, 0.5)
+   40% done       (0.003033, 8.95, 0.08, 19.2, 2010, 0.5)
+   50% done       (0.003033, 8.95, 0.08, 19.2, 2010, 0.5)
+   60% done       (0.003033, 8.95, 0.08, 19.2, 2010, 0.5)
+   70% done       (0.003033, 8.95, 0.08, 19.2, 2010, 0.5)
+   80% done       (0.003033, 8.95, 0.08, 19.2, 2010, 0.5)
+   90% done       (0.003033, 8.95, 0.08, 19.2, 2010, 0.5)
+Best fit params obtained.
+Begin bootstrap process (10).
+Optimization terminated successfully.
+         Current function value: -47.283768
+         Iterations: 14
+         Function evaluations: 41
+Optimization terminated successfully.
+         Current function value: -40.696519
+         Iterations: 14
+         Function evaluations: 41
+  10% done
+Optimization terminated successfully.
+         Current function value: -34.547352
+         Iterations: 14
+         Function evaluations: 39
+Optimization terminated successfully.
+         Current function value: -53.548673
+         Iterations: 14
+         Function evaluations: 41
+  20% done
+Optimization terminated successfully.
+         Current function value: -86.395974
+         Iterations: 15
+         Function evaluations: 42
+Optimization terminated successfully.
+         Current function value: -62.317639
+         Iterations: 15
+         Function evaluations: 41
+  30% done
+Optimization terminated successfully.
+         Current function value: -62.375474
+         Iterations: 14
+         Function evaluations: 41
+Optimization terminated successfully.
+         Current function value: -32.894735
+         Iterations: 15
+         Function evaluations: 42
+  40% done
+Optimization terminated successfully.
+         Current function value: -65.605023
+         Iterations: 14
+         Function evaluations: 39
+Optimization terminated successfully.
+         Current function value: -47.174839
+         Iterations: 15
+         Function evaluations: 42
+  50% done
+Optimization terminated successfully.
+         Current function value: -76.775354
+         Iterations: 15
+         Function evaluations: 42
+Optimization terminated successfully.
+         Current function value: -28.042345
+         Iterations: 15
+         Function evaluations: 42
+  60% done
+Optimization terminated successfully.
+         Current function value: -77.490859
+         Iterations: 14
+         Function evaluations: 41
+Optimization terminated successfully.
+         Current function value: -59.799725
+         Iterations: 14
+         Function evaluations: 41
+  70% done
+Optimization terminated successfully.
+         Current function value: -38.638401
+         Iterations: 14
+         Function evaluations: 39
+Optimization terminated successfully.
+         Current function value: -47.420379
+         Iterations: 17
+         Function evaluations: 47
+  80% done
+Optimization terminated successfully.
+         Current function value: -39.045392
+         Iterations: 14
+         Function evaluations: 41
+Optimization terminated successfully.
+         Current function value: -59.541055
+         Iterations: 14
+         Function evaluations: 41
+  90% done
+Optimization terminated successfully.
+         Current function value: -62.926130
+         Iterations: 14
+         Function evaluations: 41
+Optimization terminated successfully.
+         Current function value: -46.971712
+         Iterations: 15
+         Function evaluations: 42
+  100% done
+Best fit synthetic cluster saved to file.
+Cluster's parameters and flags added to output file.
+Plots created.
+Photometric data file moved.
+End of analysis for L3 in 1978m 46s.
+
+Full iteration completed in 3705m 58s.

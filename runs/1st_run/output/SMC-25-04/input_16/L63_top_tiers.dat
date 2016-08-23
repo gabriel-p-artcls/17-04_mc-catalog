@@ -1,0 +1,27 @@
+#
+# [ASteCA v0.1.9-beta]
+#
+# Created: 2015-04-22 06:03:14
+#
+# The 'Top tiers' models present a difference of <5% with the best likelihood
+# value found for the 'Best model' and one or more parameters differing
+# >10% with the best value assigned for said parameter(s).
+#
+
+# Best model
+#
+# Lkl               z   log(age)    d (kpc)     E(B-V)     M (Mo)       b_fr
+153.598      0.009591       6.05       0.16       18.8      810.0        0.5
+
+# Top tiers
+#
+# Lkl               z   log(age)    d (kpc)     E(B-V)     M (Mo)       b_fr
+156.973     0.012074*        6.1      0.12*       18.8      810.0        0.5
+157.081      0.009591       6.05      0.14*       18.8      810.0        0.5
+157.081      0.009591       6.05      0.14*       18.8      810.0        0.5
+157.081      0.009591       6.05      0.14*       18.8      810.0        0.5
+157.081      0.009591       6.05      0.14*       18.8      810.0        0.5
+157.081      0.009591       6.05      0.14*       18.8      810.0        0.5
+157.081      0.009591       6.05      0.14*       18.8      810.0        0.5
+157.081      0.009591       6.05      0.14*       18.8      810.0        0.5
+157.081      0.009591       6.05      0.14*       18.8      810.0        0.5
