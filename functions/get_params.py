@@ -163,7 +163,6 @@ def params(r_path, as_names, as_pars, cl_dict, names_idx):
 
         # Get photometric dispersion parameter.
         phot_disp[j].append(get_disp(r_path, as_names[i]))
-        # phot_disp[j].append(0.)
 
         # Organize param values, ASteCA first, lit second.
         met = [as_p[a_zi], cl_dict[names_idx[i]][l_zi]]

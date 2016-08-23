@@ -152,14 +152,15 @@ def get_input_folder(r_path, cl, run):
     Find which 'input_XX' folder for this cluster in this "run" contains
     its membership file.
     '''
-    name = cl + '.png'
+    name = cl + '_memb.dat'
     path = r_path + 'mc-catalog/runs/' + run + '_run/'
+    inpt = 'None'
     for root, dirs, files in os.walk(path):
         if name in files:
             full_path = os.path.join(root, name)
-
-    # Extract name of input folder.
-    inpt = full_path.split('/')[-2]
+            # Extract name of input folder.
+            inpt = full_path.split('/')[-2]
+            break
 
     return inpt
 

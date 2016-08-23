@@ -78,7 +78,8 @@ def CMD_DBs_vs_asteca(r_path):
     print 'Generating CMDs of DBs for matched clusters with ASteCA.'
     for db in ['P99', 'P00', 'C06', 'G10']:
         db_cls = get_DBs_ASteCA_CMD_data(r_path, db, [])
-        make_DB_ASteCA_CMDs(db, db_cls)
+        if db_cls:
+            make_DB_ASteCA_CMDs(db, db_cls)
 
 
 def CMD_outliers(r_path, in_params):
@@ -88,7 +89,8 @@ def CMD_outliers(r_path, in_params):
     """
     print 'Generating CMDs of outliers.'
     db_cls = get_DBs_ASteCA_CMD_data(r_path, 'outliers', in_params)
-    make_DB_ASteCA_CMDs('outliers', db_cls)
+    if db_cls:
+        make_DB_ASteCA_CMDs('outliers', db_cls)
 
 
 def CMD_large_mass(r_path, in_params):
@@ -97,7 +99,8 @@ def CMD_large_mass(r_path, in_params):
     """
     print 'Generating CMDs of large-mass OCs.'
     db_cls = get_DBs_ASteCA_CMD_data(r_path, 'largemass', in_params)
-    make_DB_ASteCA_CMDs('largemass', db_cls)
+    if db_cls:
+        make_DB_ASteCA_CMDs('largemass', db_cls)
 
 
 def CMD_LMC_large_met(r_path, in_params):
@@ -106,7 +109,8 @@ def CMD_LMC_large_met(r_path, in_params):
     """
     print 'Generating CMDs of large [Fe/H] and age for the LMC.'
     db_cls = get_DBs_ASteCA_CMD_data(r_path, 'largemet', in_params)
-    make_DB_ASteCA_CMDs('largemet', db_cls)
+    if db_cls:
+        make_DB_ASteCA_CMDs('largemet', db_cls)
 
 
 def make_plots(r_path, plots, in_params, bica_coords, cross_match,

@@ -1,4 +1,5 @@
 
+import os
 import functions.CMD_obs_vs_asteca as cmd
 
 
@@ -132,9 +133,14 @@ def get_DBs_ASteCA_CMD_data(r_path, db, in_params):
     """
     Gather information to plot CMDs of several OCs in databases.
     """
-    # Read OCs names and set of isochrones used.
-    mc_cls, isochs = get_cross_match_OCs(db)
-    # Obtain data for each OC.
-    db_cls = get_CMD_data(r_path, db, in_params, mc_cls, isochs)
+    path_all_cls = r_path + 'mc-catalog/OCs_data/MC_all/'
+    if os.path.isdir(path_all_cls):
+        # Read OCs names and set of isochrones used.
+        mc_cls, isochs = get_cross_match_OCs(db)
+        # Obtain data for each OC.
+        db_cls = get_CMD_data(r_path, db, in_params, mc_cls, isochs)
+    else:
+        print("Photometric cluster data is not available. Skipping this plot.")
+        db_cls = []
 
     return db_cls
