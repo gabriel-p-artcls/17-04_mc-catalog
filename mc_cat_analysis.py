@@ -121,92 +121,92 @@ def make_plots(r_path, plots, in_params, bica_coords, cross_match,
     '''
 
     if '0' in plots:
-        make_ra_dec_plots(in_params, bica_coords)
         print 'RA vs DEC plots.'
+        make_ra_dec_plots(in_params, bica_coords)
 
     if '1' in plots:
+        print '\nErrors plots.'
         make_errors_plots(in_params)
-        print 'Errors plots.'
 
     if '2' in plots:
+        print '\nASteCA vs literature plots.'
         make_as_vs_lit_plot(in_params)
-        print 'ASteCA vs literature plots.'
 
     if '3' in plots:
+        print '\nASteCA vs literature mass plot.'
         make_as_vs_lit_mass_plot(in_params)
-        print 'ASteCA vs literature mass plot.'
 
     if '4' in plots:
+        print "\nCMDs for outlier clusters."
         CMD_outliers(r_path, in_params)
-        print "CMDs for outlier clusters."
 
     if '5' in plots:
+        print "\nCMDs for matched clusters between DBs and ASteCA clusters."
         CMD_DBs_vs_asteca(r_path)
-        print "CMDs for matched clusters between DBs and ASteCA clusters."
 
     if '6' in plots:
+        print '\nCross-matched isochrone fitting clusters.'
         make_cross_match_if(cross_match, in_params)
-        print 'Cross-matched isochrone fitting clusters.'
 
     if '7' in plots:
+        print '\nCross-matched integrated photometry clusters, ages.'
         make_cross_match_ip_age(cross_match)
-        print 'Cross-matched integrated photometry clusters, ages.'
+        print '\nCross-matched integrated photometry clusters, masses.'
         make_cross_match_ip_mass(cross_match)
-        print 'Cross-matched integrated photometry clusters, masses.'
 
     if '8' in plots:
+        print "\nCross match BA plot for H03 vs P12."
         make_cross_match_h03_p12(cross_match_h03_p12)
-        print "Cross match BA plot for H03 vs P12."
 
     if '9' in plots:
+        print "\nAge vs mass delta plots for ASteCA, P12, H03."
         make_age_mass_corr(cross_match, cross_match_h03_p12)
-        print "Age vs mass delta plots for ASteCA, P12, H03."
 
     if '10' in plots:
+        print "\nCMDs for large mass clusters."
         CMD_large_mass(r_path, in_params)
-        print "CMDs for large mass clusters."
 
     if '11' in plots:
+        print '\nKDE maps.'
         make_kde_plots(in_params)
-        print 'KDE maps.'
 
     if '12' in plots:
+        print '\nAMR maps.'
         make_amr_plot(in_params, amr_lit, amr_asteca)
-        print 'AMR maps.'
 
     if '13' in plots:
+        print '\nMASSCLEAN z plot.'
         make_massclean_z_plot(massclean_data_pars)
-        print 'MASSCLEAN z plot.'
+        print '\nMASSCLEAN mass plot.'
         make_massclean_mass_plot(massclean_data_pars)
-        print 'MASSCLEAN mass plot.'
 
     if '14' in plots:
+        print '\nMarigo vs PARSEC plot.'
         mar_par_plot(mar_data, par_data)
-        print 'MArigo vs PARSEC plot.'
 
     if '15' in plots:
+        print '\nASteCA radius (pc) vs parameters plot.'
         make_radius_plot(in_params)
-        print 'ASteCA radius (pc) vs parameters plot.'
 
     if '16' in plots:
+        print '\nASteCA vs MCEV vs SandF extinction plot.'
         make_lit_ext_plot(in_params)
-        print 'ASteCA vs MCEV vs SandF extinction plot.'
 
     if '17' in plots:
+        print '\nIntegrated colors plot.'
         make_int_cols_plot(in_params)
-        print 'Integrated colors plot.'
 
     if '18' in plots:
+        print '\nConcentration parameter plot.'
         make_concent_plot(in_params)
-        print 'Concentration parameter plot.'
 
     if '19' in plots:
+        print '\nASteCA probabilities versus CI.'
         make_probs_CI_plot(in_params)
-        print 'ASteCA probabilities versus CI.'
 
     if '20' in plots:
+        print "\nCMDs for large [Fe/H] LMC clusters."
         CMD_LMC_large_met(r_path, in_params)
-        print "CMDs for large [Fe/H] LMC clusters."
 
 
 def main():

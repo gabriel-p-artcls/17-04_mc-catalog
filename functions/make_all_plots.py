@@ -252,6 +252,9 @@ def make_as_vs_lit_plot(in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/as_vs_lit_S-LMC.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def as_vs_lit_mass_plots(pl_params):
@@ -394,6 +397,9 @@ def make_as_vs_lit_mass_plot(in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/as_vs_lit_mass.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 # import matplotlib.colors as mcolors
@@ -625,6 +631,9 @@ def make_kde_plots(in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/as_kde_maps1.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def make_ra_dec_plots(in_params, bica_coords):
@@ -689,6 +698,9 @@ def make_ra_dec_plots(in_params, bica_coords):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/as_RA_DEC.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def lit_ext_plots(pl_params):
@@ -808,6 +820,9 @@ def make_lit_ext_plot(in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/as_vs_lit_extin.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def wide_plots(pl_params):
@@ -890,6 +905,9 @@ def make_int_cols_plot(in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/as_integ_colors.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def make_concent_plot(in_params):
@@ -937,6 +955,9 @@ def make_concent_plot(in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/concent_param.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def make_radius_plot(in_params):
@@ -987,6 +1008,9 @@ def make_radius_plot(in_params):
         fig.tight_layout()
         plt.savefig('figures/as_rad_vs_params_' + gal_name + '.png', dpi=300,
                     bbox_inches='tight')
+        # Close to release memory.
+        plt.clf()
+        plt.close()
 
 
 def prob_vs_CI_plot(pl_params):
@@ -1089,6 +1113,9 @@ def make_probs_CI_plot(in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/as_prob_vs_CI.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def cross_match_ip_plot_age(pl_params):
@@ -1184,6 +1211,9 @@ def make_cross_match_ip_age(cross_match):
     fig.tight_layout()
     plt.savefig('figures/cross_match_ip_ages.png', dpi=300,
                 bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def cross_match_ip_plot_mass(pl_params):
@@ -1295,7 +1325,7 @@ def make_cross_match_ip_mass(cross_match):
             h03_m_mass.append(cl)
         elif m_med < np.log10(cl[8]):
             h03_h_mass.append(cl)
-            print 'Large mass H03 OC:', cl
+            print 'Large mass H03 OC:', cl[0], cl[1]
     h03_l_mass = zip(*h03_l_mass)
     h03_m_mass = zip(*h03_m_mass)
     h03_h_mass = zip(*h03_h_mass)
@@ -1306,7 +1336,7 @@ def make_cross_match_ip_mass(cross_match):
             p12_m_mass.append(cl)
         elif m_med < np.log10(cl[8]):
             p12_h_mass.append(cl)
-            print 'Large mass P12 OC:', cl
+            print 'Large mass P12 OC:', cl[0], cl[1]
     p12_l_mass = zip(*p12_l_mass)
     p12_m_mass = zip(*p12_m_mass)
     p12_h_mass = zip(*p12_h_mass)
@@ -1468,6 +1498,9 @@ def make_cross_match_ip_mass(cross_match):
     fig.tight_layout()
     plt.savefig('figures/cross_match_ip_mass.png', dpi=300,
                 bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def cross_match_if_plot(pl_params):
@@ -1653,6 +1686,9 @@ def make_cross_match_if(cross_match, in_params):
     fig.tight_layout()
     plt.savefig('figures/cross_match_if.png', dpi=300,
                 bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def pl_DBs_ASteCA_CMDs(pl_params):
@@ -1818,6 +1854,9 @@ def make_DB_ASteCA_CMDs(db, db_cls):
             r_path = 'figures/DB_fit/'
         fig_name = r_path + db + '_VS_asteca_' + str(k) + '.png'
         plt.savefig(fig_name, dpi=150, bbox_inches='tight')
+        # Close to release memory.
+        plt.clf()
+        plt.close()
 
 
 def pl_errors(pl_params):
@@ -1943,6 +1982,9 @@ def make_errors_plots(in_params):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/errors_asteca.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def pl_amr(pl_params):
@@ -2082,6 +2124,9 @@ def make_amr_plot(in_params, amr_lit, amr_asteca):
     fig.tight_layout()
     s = 'asteca' if ast_lit == 0 else 'literature'
     plt.savefig('figures/AMR_' + s + '.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def h03_p12_mass_plots(pl_params):
@@ -2172,19 +2217,19 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
     m_l_delta = np.log10(np.array(m_l[0])) - np.log10(np.array(m_l[1]))
     m_l_mean_std = [np.mean(m_l_delta), np.std(m_l_delta)]
     print 'Low mass Delta M_r mean +- std:', m_l_mean_std
-    print min(m_l_delta), max(m_l_delta)
+    print 'Mass delta min, max:', min(m_l_delta), max(m_l_delta)
     a_l_delta = np.array(a_l[0]) - np.array(a_l[1])
     # Medium mass region.
     m_m_delta = np.log10(np.array(m_m[0])) - np.log10(np.array(m_m[1]))
     m_m_mean_std = [np.mean(m_m_delta), np.std(m_m_delta)]
     print 'Medium mass Delta M_r mean +- std:', m_m_mean_std
-    print min(m_m_delta), max(m_m_delta)
+    print 'Mass delta min, max:', min(m_m_delta), max(m_m_delta)
     a_m_delta = np.array(a_m[0]) - np.array(a_m[1])
     # Large mass region.
     m_g_delta = np.log10(np.array(m_g[0])) - np.log10(np.array(m_g[1]))
     m_g_mean_std = [np.mean(m_g_delta), np.std(m_g_delta)]
     print 'Large mass Delta M_r mean +- std:', m_g_mean_std
-    print min(m_g_delta), max(m_g_delta)
+    print 'Mass delta min, max:', min(m_g_delta), max(m_g_delta)
     a_g_delta = np.array(a_g[0]) - np.array(a_g[1])
 
     scale = 10**4
@@ -2229,6 +2274,9 @@ def make_cross_match_h03_p12(cross_match_h03_p12):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/H03_P12_mass.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def massclean_mass_plots(pl_params):
@@ -2475,6 +2523,9 @@ def make_massclean_mass_plot(massclean_data_pars):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/massclean_mass.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def massclean_z_plots(pl_params):
@@ -2548,7 +2599,8 @@ def make_massclean_z_plot(massclean_data_pars):
     # k=0 --> SMC ; k=1 --> LMC
     dat_05, dat_1, dat_5, dat_10, dat_25, dat_50, dat_100, dat_250 = [],\
         [], [], [], [], [], [], []
-    best_matchs, names = [], [[], []]
+    # names = [[], []]
+    best_matchs = []
     # diff_age_z = []
     for k in [0, 1]:
         for i, z_as in enumerate(zip(*mc_pars[k])[19]):
@@ -2579,21 +2631,21 @@ def make_massclean_z_plot(massclean_data_pars):
             else:
                 print 'Error with mass value:', m_ml
 
-            # Map floats to strings
-            look_m = {500.: '08/0005', 1000.: '07/001', 5000.: '06/005',
-                      10000.: '05/010', 25000.: '04/025', 50000.: '03/050',
-                      100000.: '02/100', 250000.: '01/250'}
-            look_z = {0.001: '001', 0.004: '004', 0.015: '015', 0.03: '030'}
-            look_a = {7.0: '0700', 7.2: '0720', 7.5: '0750', 7.7: '0770',
-                      8.0: '0800', 8.2: '0820', 8.5: '0850', 8.7: '0870',
-                      9.0: '0900', 9.2: '0920', 9.5: '0950', 9.7: '0970'}
-            # if abs(delta_z) > 0.01:
-            if abs(a_as - a_ml) >= 0.5:
-                print z_ml, z_as, a_ml, a_as, m_ml, mc_pars[k][i][27]
-                # Store full file names
-                m, a, z = look_m[m_ml], look_a[round(mc_data[k][i][1], 1)],\
-                    look_z[round(mc_data[k][i][0], 3)]
-                names[k].append(m + '/is1_p' + z + '_' + a + '_memb.dat')
+            # # Map floats to strings
+            # look_m = {500.: '08/0005', 1000.: '07/001', 5000.: '06/005',
+            #           10000.: '05/010', 25000.: '04/025', 50000.: '03/050',
+            #           100000.: '02/100', 250000.: '01/250'}
+            # look_z = {0.001: '001', 0.004: '004', 0.015: '015', 0.03: '030'}
+            # look_a = {7.0: '0700', 7.2: '0720', 7.5: '0750', 7.7: '0770',
+            #           8.0: '0800', 8.2: '0820', 8.5: '0850', 8.7: '0870',
+            #           9.0: '0900', 9.2: '0920', 9.5: '0950', 9.7: '0970'}
+            # # if abs(delta_z) > 0.01:
+            # if abs(a_as - a_ml) >= 0.5:
+            #     print z_ml, z_as, a_ml, a_as, m_ml, mc_pars[k][i][27]
+            #     # Store full file names
+            #     m, a, z = look_m[m_ml], look_a[round(mc_data[k][i][1], 1)],\
+            #         look_z[round(mc_data[k][i][0], 3)]
+            #     names[k].append(m + '/is1_p' + z + '_' + a + '_memb.dat')
 
             if abs(a_as - a_ml) < 0.5:
                 best_matchs.append(delta_z)
@@ -2607,9 +2659,9 @@ def make_massclean_z_plot(massclean_data_pars):
     #             s=0.1*(np.array(zip(*diff_age_z)[2])**3.5), facecolor='w')
     # plt.show()
 
-    # Used for the true_memb_count.py script in
-    # 'mc-catalog/runs/23rd_run/output/'
-    print names
+    # # Used for the true_memb_count.py script in
+    # # 'mc-catalog/runs/23rd_run/output/'
+    # print names
 
     mean_std = []
     for d in [dat_05, dat_1, dat_5, dat_10, dat_25, dat_50, dat_100, dat_250]:
@@ -2665,6 +2717,9 @@ def make_massclean_z_plot(massclean_data_pars):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/massclean_z.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def age_mass_corr_plot(pl_params):
@@ -2784,6 +2839,9 @@ def make_age_mass_corr(cross_match, cross_match_h03_p12):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/age_mass_corr.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
 
 
 def mar_par_plot(mar_data, par_data):
@@ -2851,3 +2909,6 @@ def mar_par_plot(mar_data, par_data):
     # Output png file.
     fig.tight_layout()
     plt.savefig('figures/mar_vs_par_isochs.png', dpi=300, bbox_inches='tight')
+    # Close to release memory.
+    plt.clf()
+    plt.close()
