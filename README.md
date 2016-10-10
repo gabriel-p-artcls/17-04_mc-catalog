@@ -617,7 +617,7 @@ We use:
 
 * no DA + no local removal of field stars
 * no bootstrap
-* max mass limit of 400000 with a step of 5000 (Mo)
+* max mass limit of 500000 with a step of 5000 (Mo)
 
 All other parameter ranges are kept from 3rd run.
 
