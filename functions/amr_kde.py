@@ -167,9 +167,9 @@ def get_amr_asteca(in_params):
             if k == 0:
                 # To filter out HW85 and NGC294 (lowest metallicities)
                 # if v[2] > -1.5:
-                # To filter out the 4 LMC OCs with large ages and
+                # To filter out the 3 LMC OCs with large ages and
                 # metallicities.
-                # if not (9.48 < v[0] < 9.6 and v[2] > -0.3):
+                # if not (9.51 < v[0] < 9.6 and v[2] > -0.3):
                 # To include all OCs.
                 if True:
                     include = True

@@ -256,7 +256,6 @@ def get_liter_data():
     Read the data file with the literature values for each cluster as a
     dictionary.
     '''
-
     # Read .ods file with literature data.
     cl_file = pe.get_data('lit_OCs_data.ods')
     # Store as list.

@@ -1870,9 +1870,9 @@ def pl_errors(pl_params):
     ax = plt.subplot(gs[i, 0:4])
     plt.xlim(xmin, xmax)
     plt.ylim(ymin, ymax)
-    plt.tick_params(axis='both', which='major', labelsize=10)
-    plt.xlabel(x_lab, fontsize=xy_font_s)
-    plt.ylabel(y_lab, fontsize=xy_font_s)
+    plt.tick_params(axis='both', which='major', labelsize=13)
+    plt.xlabel(x_lab, fontsize=xy_font_s + 6)
+    plt.ylabel(y_lab, fontsize=xy_font_s + 6)
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
             zorder=1)
     ax.minorticks_on()
@@ -1914,11 +1914,11 @@ def pl_errors(pl_params):
 
     if i == 0:
         # Position colorbar.
-        axColor = plt.axes([0.1, 0.85, 0.3, 0.005])
+        axColor = plt.axes([0.15, 0.85, 0.3, 0.005])
         cbar = plt.colorbar(SC, cax=axColor, orientation="horizontal")
-        cbar.set_label(r'$CI$', fontsize=xy_font_s - 2, labelpad=-37)
-        # cbar.set_ticks([0.2, 0.4, 0.6, 0.8, 1., 1.2])
-        cbar.ax.tick_params(labelsize=xy_font_s - 8)
+        cbar.set_label(r'$CI$', fontsize=xy_font_s, labelpad=-45)
+        cbar.set_ticks([0.2, 0.4, 0.6, 0.8, 1., 1.2])
+        cbar.ax.tick_params(labelsize=xy_font_s - 3)
 
 
 def make_errors_plots(in_params):
@@ -1966,6 +1966,8 @@ def make_errors_plots(in_params):
     errors_lst = [
         [gs, 0, -2.4, 0.11, -0.03, 2.1, ord_z, ord_zs, ord_X, ord_r,
             r'$[Fe/H]$', r'$\sigma_{[Fe/H]}$'],
+        # [gs, 0, 0.0001, 0.017, 0.0002, 0.007, ord_z, ord_zs, ord_X, ord_r,
+        #     r'$z$', r'$\sigma_{z}$'],
         [gs, 1, 6.51, 10.1, -0.03, 1.1, ord_a, ord_as, ord_X, ord_r,
             r'$\log(age/yr)$', r'$\sigma_{\log(age/yr)}$'],
         [gs, 2, -0.02, 0.32, -0.01, 0.11, ord_e, ord_es, ord_X, ord_r,
