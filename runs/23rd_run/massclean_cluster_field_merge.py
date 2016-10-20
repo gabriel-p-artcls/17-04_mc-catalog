@@ -218,6 +218,19 @@ def write_out_file(out_path_sub, clust_name, region_compl):
                             mass_cl_fl[idx]))
 
 
+def reject_outliers(data, m=2.):
+    '''
+    Sometimes MASSCLEAN will generate a star that is VERY far from the
+    remaining starts in the isochrone.
+
+    http://stackoverflow.com/a/16562028/1391441
+    '''
+    d = np.abs(data - np.median(data))
+    mdev = np.median(d)
+    s = d/mdev if mdev else 0.
+    return data[s<m]
+
+
 def make_plots(plot_params):
     """
     Plot synthetic clusters.
@@ -262,7 +275,8 @@ def make_plots(plot_params):
     ax0 = plt.subplot(gs[0:2, 2:4])
     # Set plot limits
     col1_min, col1_max = min(col1_cl_fl) - 0.2, max(col1_cl_fl) + 0.2
-    mag_min, mag_max = max(max_mag_lim + 0.5, max(mag_raw) + 0.2), \
+    mag_min, mag_max = max(
+        max_mag_lim + 0.5, max(reject_outliers(mag_raw) + 0.2)), \
         min(mag_raw) - 0.2
     plt.xlim(col1_min, col1_max)
     plt.ylim(mag_min, mag_max)
