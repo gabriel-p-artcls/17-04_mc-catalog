@@ -1,23 +1,25 @@
 #!/bin/bash
 
 
-##  MASSCLEAN V2.0123 ##
+##  MASSCLEAN V2.014 ##
 
-# This script generates the synthetic clusters for the specified initial mass, distance,
-# age and metallicity ranges and stores the files in the corresponding folders.
-
-# A field plot is also created for wach 
+# This script generates the synthetic clusters for the specified initial mass,
+# distance, age and metallicity ranges and stores the files in the
+# corresponding folders.
+# A field plot is also created.
 
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # 1- The 'massclean2.013' folder should be a sub-folder of the one where this
 #    script is located.
-# 2- The convention for the names of the created folders is xx_yyyy where 'xx' is the initial mass
-#    of the clusters (2 chars) and 'yyyy' is the distance in parsecs (3 or 4 chars)
-# 3- A field plot is generated for each distance although this could probably be improved
-#    by moving the ./gofield2 command outside of the for loops.
-# 4- The file 'field.ini' should use the J band as reference in (1) since apparently the V band
-#    causes troubles. The max_J mag can be set as: max_J = max_V- 3 in (4). 
+# 2- The convention for the names of the created folders is xx_yyyy where 'xx'
+#    is the initial mass of the clusters (2 chars) and 'yyyy' is the distance in
+#    parsecs (3 or 4 chars)
+# 3- A field plot is generated for each distance although this could probably be
+#    improved by moving the ./gofield2 command outside of the for loops.
+# 4- The file 'field.ini' should use the J band as reference in (1) since
+#    apparently the V band causes troubles. The max_J mag can be set as:
+#    max_J = max_V- 3 in (4). 
 
 
 
