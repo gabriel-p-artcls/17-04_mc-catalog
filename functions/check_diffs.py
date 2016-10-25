@@ -112,7 +112,8 @@ def check_diffs(in_params):
             if ez <= err_thresh:
                 err_c += 1
         perc = float(err_c)/len(zsigma[j][0])
-        print 'Perc of OC with z errors below {}: {}'.format(err_thresh, perc)
+        print 'Perc of OC with [Fe/H] errors below {}: {}'.format(
+            err_thresh, perc)
 
         err_c, err_min, err_max = 0, 0.0029, 0.0031
         for i, e in enumerate(zsigma[j][0]):
