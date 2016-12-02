@@ -60,6 +60,7 @@ target/
 *.sublime-project
 *.sublime-workspace
 
+.python-version
 *.png
 !AMRs/*.png
 .~*
