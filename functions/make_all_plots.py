@@ -2743,12 +2743,13 @@ def age_mass_corr_plot(pl_params):
     plt.xlim(xmin, xmax)
     plt.ylim(ymin, ymax)
     plt.xlabel(x_lab, fontsize=xy_font_s)
-    plt.ylabel(y_lab, fontsize=xy_font_s)
+    if i in [0, 4]:
+        plt.ylabel(y_lab, fontsize=xy_font_s)
     ax.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
             zorder=1)
     ax.minorticks_on()
     ax.tick_params(labelsize=13)
-    if i == 1:
+    if i not in [0, 4]:
         ax.set_yticklabels([])
 
     # Origin lines.
@@ -2760,11 +2761,21 @@ def age_mass_corr_plot(pl_params):
                 lw=0.25, edgecolor='w', label=labels, zorder=0)
     # Plot KDE.
     x, y, kde = kde_cont
-    plt.contour(x, y, kde, 5, colors='k', linewidths=1.5, zorder=5)
+    plt.contour(x, y, kde, 5, colors='k', linewidths=1.2, zorder=5)
+    # Plot best fit line.
+    slp, intcpt, r_val, p_val, std = stats.linregress(xarr, yarr)
+    xi = np.array([-10., 10.])
+    line = slp * xi + intcpt
+    plt.plot(xi, line, 'k--', lw=1.)
+    txt = r'$N={}$'.format(len(xarr)) + '\n' +\
+        r'$R^2\approx{:.2f}$'.format(r_val ** 2)
+    ob = offsetbox.AnchoredText(txt, loc=4, prop=dict(size=xy_font_s - 5))
+    ob.patch.set(alpha=0.75)
+    ax.add_artist(ob)
 
     # Legend.
     leg = plt.legend(loc='upper left', markerscale=1., scatterpoints=1,
-                     fontsize=xy_font_s - 7)
+                     fontsize=xy_font_s - 5)
     # Set the alpha value of the legend.
     leg.get_frame().set_alpha(0.5)
     ax.set_aspect('auto')
@@ -2772,45 +2783,99 @@ def age_mass_corr_plot(pl_params):
 
 def make_age_mass_corr(cross_match, cross_match_h03_p12):
     '''
-    Plot the differences between extinction and age for ASteCA values versus
-    Washington values (ie: Piatti et al. values) and ASteCA values versus
-    the databases where the isochrone fitting method was used.
+    Plot the differences between mass and age for ASteCA values versus
+    the H03 and P12 databases.
     '''
-    # unpack databases.
     h03, p12 = cross_match[2], cross_match[6]
     a_h03, a_p12, m_h03, m_p12 = cross_match_h03_p12
 
-    # Define lists of difference between ages and extinctions.
+    # Define lists of difference between ages and masses.
     # Age indexes (DB, ASteCA) -> 2, 4
     # Mass indexes (DB, ASteCA) -> 8, 10
+
+    # P12-H03 ages and masses for the entire range.
+    p12_h03_ages = np.array(a_p12) - np.array(a_h03)
+    p12_h03_mass = np.log10(np.array(m_p12)) - np.log10(np.array(m_h03))
+    p12_h03_all = [p12_h03_ages, p12_h03_mass]
+    p12_h03_m1e3, p12_h03_m1e4, p12_h03_m1e5 = [[], []], [[], []], [[], []]
+    # Range M_P12 < 1000. Mo
+    for i, mp12 in enumerate(m_p12):
+        if mp12 <= 1000.:
+            p12_h03_m1e3[0].append(a_p12[i] - a_h03[i])
+            p12_h03_m1e3[1].append(np.log10(mp12) - np.log10(m_h03[i]))
+        elif 1000. < mp12 <= 10000.:
+            p12_h03_m1e4[0].append(a_p12[i] - a_h03[i])
+            p12_h03_m1e4[1].append(np.log10(mp12) - np.log10(m_h03[i]))
+        elif mp12 > 10000.:
+            p12_h03_m1e5[0].append(a_p12[i] - a_h03[i])
+            p12_h03_m1e5[1].append(np.log10(mp12) - np.log10(m_h03[i]))
 
     # ASteCA minus database log(age) diffs.
     diffs_ages_h03 = np.array(h03[4]) - np.array(h03[2])
     diffs_ages_p12 = np.array(p12[4]) - np.array(p12[2])
-    # Combine into single list
-    as_h03_p12_ages = list(diffs_ages_h03) + list(diffs_ages_p12)
-
     # ASteCA minus database log(mass) diffs.
-    diffs_mass_h03 = np.log(np.array(h03[10])) - np.log(np.array(h03[8]))
-    diffs_mass_p12 = np.log(np.array(p12[10])) - np.log(np.array(p12[8]))
-    # Combine into single list
-    as_h03_p12_mass = list(diffs_mass_h03) + list(diffs_mass_p12)
+    diffs_mass_h03 = np.log10(np.array(h03[10])) - np.log10(np.array(h03[8]))
+    diffs_mass_p12 = np.log10(np.array(p12[10])) - np.log10(np.array(p12[8]))
+    as_dbs_all = [list(diffs_ages_h03) + list(diffs_ages_p12),
+                  list(diffs_mass_h03) + list(diffs_mass_p12)]
 
-    # P12-H03 ages and masses.
-    p12_h03_ages = np.array(a_p12) - np.array(a_h03)
-    p12_h03_mass = np.log(np.array(m_p12)) - np.log(np.array(m_h03))
+    # Separate in mass ranges for H03
+    as_h03_m1e3, as_h03_m1e4, as_h03_m1e5 = [[], []], [[], []], [[], []]
+    # Range DB < 1000. Mo
+    for i, mh03 in enumerate(h03[8]):
+        if mh03 <= 1000.:
+            as_h03_m1e3[0].append(h03[4][i] - h03[2][i])
+            as_h03_m1e3[1].append(np.log10(h03[10][i]) - np.log10(mh03))
+        elif 1000. < mh03 <= 10000.:
+            as_h03_m1e4[0].append(h03[4][i] - h03[2][i])
+            as_h03_m1e4[1].append(np.log10(h03[10][i]) - np.log10(mh03))
+        elif mh03 > 10000.:
+            as_h03_m1e5[0].append(h03[4][i] - h03[2][i])
+            as_h03_m1e5[1].append(np.log10(h03[10][i]) - np.log10(mh03))
+    # Separate in mass ranges for P12
+    as_p12_m1e3, as_p12_m1e4, as_p12_m1e5 = [[], []], [[], []], [[], []]
+    # Range DB < 1000. Mo
+    for i, mp12 in enumerate(p12[8]):
+        if mp12 <= 1000.:
+            as_p12_m1e3[0].append(p12[4][i] - p12[2][i])
+            as_p12_m1e3[1].append(np.log10(p12[10][i]) - np.log10(mp12))
+        elif 1000. < mp12 <= 10000.:
+            as_p12_m1e4[0].append(p12[4][i] - p12[2][i])
+            as_p12_m1e4[1].append(np.log10(p12[10][i]) - np.log10(mp12))
+        elif mp12 > 10000.:
+            as_p12_m1e5[0].append(p12[4][i] - p12[2][i])
+            as_p12_m1e5[1].append(np.log10(p12[10][i]) - np.log10(mp12))
+
+    as_dbs_m1e3 = [
+        as_h03_m1e3[0] + as_p12_m1e3[0], as_h03_m1e3[1] + as_p12_m1e3[1]]
+    as_dbs_m1e4 = [
+        as_h03_m1e4[0] + as_p12_m1e4[0], as_h03_m1e4[1] + as_p12_m1e4[1]]
+    as_dbs_m1e5 = [
+        as_h03_m1e5[0] + as_p12_m1e5[0], as_h03_m1e5[1] + as_p12_m1e5[1]]
 
     # Order data to plot.
-    age_mass_data = [[as_h03_p12_ages, as_h03_p12_mass],
-                     [p12_h03_ages, p12_h03_mass]]
+    p12_h03_data = [p12_h03_all, p12_h03_m1e3, p12_h03_m1e4, p12_h03_m1e5]
+    as_dbs_data = [as_dbs_all, as_dbs_m1e3, as_dbs_m1e4, as_dbs_m1e5]
 
     xmm = [-1.95, 1.95]
-    ymm = [-3.95, 3.95]
+    ymm = [-1.95, 1.95]
     # Obtain a Gaussian KDE for each plot.
     # Define x,y grid.
     gd_c = complex(0, 100)
     kde_cont = []
-    for xarr, yarr in age_mass_data:
+    # For H03 vs P12
+    for xarr, yarr in p12_h03_data:
+        values = np.vstack([xarr, yarr])
+        kernel = stats.gaussian_kde(values)
+        xmin, xmax, ymin, ymax = xmm[0], xmm[1], ymm[0], ymm[1]
+        x, y = np.mgrid[xmin:xmax:gd_c, ymin:ymax:gd_c]
+        positions = np.vstack([x.ravel(), y.ravel()])
+        # Evaluate kernel in grid positions.
+        k_pos = kernel(positions)
+        kde = np.reshape(k_pos.T, x.shape)
+        kde_cont.append([x, y, kde])
+    # For ASteCA vs DBs
+    for xarr, yarr in as_dbs_data:
         values = np.vstack([xarr, yarr])
         kernel = stats.gaussian_kde(values)
         xmin, xmax, ymin, ymax = xmm[0], xmm[1], ymm[0], ymm[1]
@@ -2824,22 +2889,35 @@ def make_age_mass_corr(cross_match, cross_match_h03_p12):
     # Define names of arrays being plotted.
     x_lab = ['$\Delta \log(age/yr)_{\mathtt{ASteCA}-DBs}$',
              '$\Delta \log(age/yr)_{P12-H03}$']
-    y_lab = ['$\Delta \log(M/M_{\odot})$', '']
+    y_lab = ['$\Delta \log(M/M_{\odot})_{P12-H03}$',
+             '$\Delta \log(M/M_{\odot})_{\mathtt{ASteCA}-DBs}$']
     labels = ['$\mathtt{ASteCA}-DBs$', 'P12-H03']
     mark = ['>', '^']
     cols = ['c', 'm']
 
     # Arbitrary size so plots are actually squared.
-    fig = plt.figure(figsize=(17, 6))
-    gs = gridspec.GridSpec(1, 3)
+    fig = plt.figure(figsize=(22, 12))
+    gs = gridspec.GridSpec(2, 4)
 
     cross_match_lst = [
-        # Age vs mass delta plots for ASteCA-DBs
-        [gs, 0, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[0], y_lab[0],
-            age_mass_data[0], labels[0], mark[0], cols[0], kde_cont[0]],
         # Age vs mass delta plots for P12-H03
-        [gs, 1, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[1], y_lab[1],
-            age_mass_data[1], labels[1], mark[1], cols[1], kde_cont[1]]
+        [gs, 0, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[1], y_lab[0],
+            p12_h03_data[0], labels[1], mark[1], cols[1], kde_cont[0]],
+        [gs, 1, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[1], y_lab[0],
+            p12_h03_data[1], labels[1], mark[1], cols[1], kde_cont[1]],
+        [gs, 2, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[1], y_lab[0],
+            p12_h03_data[2], labels[1], mark[1], cols[1], kde_cont[2]],
+        [gs, 3, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[1], y_lab[0],
+            p12_h03_data[3], labels[1], mark[1], cols[1], kde_cont[3]],
+        # Age vs mass delta plots for ASteCA-DBs
+        [gs, 4, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[0], y_lab[1],
+            as_dbs_data[0], labels[0], mark[0], cols[0], kde_cont[4]],
+        [gs, 5, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[0], y_lab[1],
+            as_dbs_data[1], labels[0], mark[0], cols[0], kde_cont[5]],
+        [gs, 6, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[0], y_lab[1],
+            as_dbs_data[2], labels[0], mark[0], cols[0], kde_cont[6]],
+        [gs, 7, xmm[0], xmm[1], ymm[0], ymm[1], x_lab[0], y_lab[1],
+            as_dbs_data[3], labels[0], mark[0], cols[0], kde_cont[7]]
     ]
 
     for pl_params in cross_match_lst:
@@ -2847,7 +2925,7 @@ def make_age_mass_corr(cross_match, cross_match_h03_p12):
 
     # Output png file.
     fig.tight_layout()
-    plt.savefig('figures/age_mass_corr.png', dpi=300, bbox_inches='tight')
+    plt.savefig('figures/age_mass_corr.png', dpi=150, bbox_inches='tight')
     # Close to release memory.
     plt.clf()
     plt.close()
