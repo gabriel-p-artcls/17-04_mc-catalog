@@ -2766,7 +2766,7 @@ def age_mass_corr_plot(pl_params):
     slp, intcpt, r_val, p_val, std = stats.linregress(xarr, yarr)
     xi = np.array([-10., 10.])
     line = slp * xi + intcpt
-    plt.plot(xi, line, 'k--', lw=1.)
+    plt.plot(xi, line, 'k--', lw=1.7)
     txt = r'$N={}$'.format(len(xarr)) + '\n' +\
         r'$R^2\approx{:.2f}$'.format(r_val ** 2)
     ob = offsetbox.AnchoredText(txt, loc=4, prop=dict(size=xy_font_s - 5))
