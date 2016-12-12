@@ -1934,9 +1934,16 @@ def make_errors_plots(in_params):
     r_arr = rarr[0][0] + rarr[1][0]
     z_arr = zarr[0][0] + zarr[1][0]
     z_sigma = zsigma[0][0] + zsigma[1][0]
+
     # # Transform [Fe/H] values to z
-    # z_arr = list((10**np.array(z_arr)) * 0.0152)
-    # z_sigma = list(np.array(z_sigma) * np.array(z_arr) * np.log(10.))
+    # z_arr = (10**np.array(z_arr)) * 0.0152
+    # z_sigma = np.array(z_sigma) * np.array(z_arr) * np.log(10.)
+    # # Normalize z values through the solar metallicity.
+    # z_arr = list(np.array(z_arr) / 0.0152)
+    # z_sigma = list(np.array(z_sigma) / 0.0152)
+    # print(min(z_arr), max(z_arr))
+    # print(min(z_sigma), max(z_sigma))
+
     #
     a_arr = aarr[0][0] + aarr[1][0]
     a_sigma = asigma[0][0] + asigma[1][0]
@@ -1966,8 +1973,8 @@ def make_errors_plots(in_params):
     errors_lst = [
         [gs, 0, -2.4, 0.11, -0.03, 2.1, ord_z, ord_zs, ord_X, ord_r,
             r'$[Fe/H]$', r'$\sigma_{[Fe/H]}$'],
-        # [gs, 0, 0.0001, 0.017, 0.0002, 0.007, ord_z, ord_zs, ord_X, ord_r,
-        #     r'$z$', r'$\sigma_{z}$'],
+        # [gs, 0, 0.0001, 1., 0.0002, 0.4, ord_z, ord_zs, ord_X, ord_r,
+        #     r'$z/z_{\odot}$', r'$\sigma_{z}$'],
         [gs, 1, 6.51, 10.1, -0.03, 1.1, ord_a, ord_as, ord_X, ord_r,
             r'$\log(age/yr)$', r'$\sigma_{\log(age/yr)}$'],
         [gs, 2, -0.02, 0.32, -0.01, 0.11, ord_e, ord_es, ord_X, ord_r,

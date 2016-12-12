@@ -225,6 +225,7 @@ def main():
     # Define which plots to produce.
     plots = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11',
              '12', '13', '14', '15', '16', '17', '18', '19', '20']
+    plots = ['9']
 
     bica_coords, cross_match, cross_match_h03_p12, amr_lit, amr_asteca, \
         massclean_data_pars, mar_data, par_data = [], [], [], [], [], [], [],\
