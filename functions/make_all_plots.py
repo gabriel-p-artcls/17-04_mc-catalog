@@ -2761,13 +2761,21 @@ def age_mass_corr_plot(pl_params):
                 lw=0.25, edgecolor='w', label=labels, zorder=0)
     # Plot KDE.
     x, y, kde = kde_cont
-    plt.contour(x, y, kde, 5, colors='k', linewidths=1.2, zorder=5)
+    plt.contour(x, y, kde, 4, colors='k', linewidths=1., zorder=5)
     # Plot best fit line.
     slp, intcpt, r_val, p_val, std = stats.linregress(xarr, yarr)
     xi = np.array([-10., 10.])
     line = slp * xi + intcpt
     plt.plot(xi, line, 'k--', lw=1.7)
-    txt = r'$N={}$'.format(len(xarr)) + '\n' +\
+    if i in [1, 5]:
+        txtm = r'$M\leq1e3\,M_{\odot}$' + '\n'
+    elif i in [2, 6]:
+        txtm = r'$1e3<M\leq1e4\,M_{\odot}$' + '\n'
+    elif i in [3, 7]:
+        txtm = r'$M>1e4\,M_{\odot}$' + '\n'
+    else:
+        txtm = ''
+    txt = txtm + r'$N={}$'.format(len(xarr)) + '\n' +\
         r'$R^2\approx{:.2f}$'.format(r_val ** 2)
     ob = offsetbox.AnchoredText(txt, loc=4, prop=dict(size=xy_font_s - 5))
     ob.patch.set(alpha=0.75)
