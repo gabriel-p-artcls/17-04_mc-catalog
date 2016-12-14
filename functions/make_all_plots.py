@@ -2768,11 +2768,11 @@ def age_mass_corr_plot(pl_params):
     line = slp * xi + intcpt
     plt.plot(xi, line, 'k--', lw=1.7)
     if i in [1, 5]:
-        txtm = r'$M\leq1e3\,M_{\odot}$' + '\n'
+        txtm = r'$M\leq 10^3\,M_{\odot}$' + '\n'
     elif i in [2, 6]:
-        txtm = r'$1e3<M\leq1e4\,M_{\odot}$' + '\n'
+        txtm = r'$10^3<M\leq 10^4\,M_{\odot}$' + '\n'
     elif i in [3, 7]:
-        txtm = r'$M>1e4\,M_{\odot}$' + '\n'
+        txtm = r'$M> 10^4\,M_{\odot}$' + '\n'
     else:
         txtm = ''
     txt = txtm + r'$N={}$'.format(len(xarr)) + '\n' +\
