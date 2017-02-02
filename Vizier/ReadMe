@@ -1,0 +1,84 @@
+J/A+A/VOL/1PA     Star clusters in the Magellanic Clouds     (Perren+,  2016)
+================================================================================
+Astrophysical properties of star clusters in the Magellanic Clouds
+homogeneously estimated by ASteCA
+       Perren G.I., Piatti A.E., Vazquez R.A.
+       <Astron. Astrophys. VOL, 1PA (2016)>
+
+================================================================================
+ADC_Keywords: Magellanic Clouds ; Photometry, CCD; Clusters, open;
+              Clusters, globular
+Keywords: catalogs - galaxies: fundamental parameters - galaxies: star
+          clusters: general - Magellanic Clouds - methods: statistical -
+          techniques: photometric
+
+Abstract:
+    Aims. To produce an homogeneous catalog of astrophysical parameters of 239
+    resolved star clusters located in the Small and Large Magellanic Clouds,
+    observed in the Washington photometric system.
+    Methods. The cluster sample was processed with the recently introduced
+    Automated Stellar Cluster Analysis (ASteCA) package, which ensures
+    both an automatized and a fully reproducible treatment, together with a
+    statistically based analysis of their fundamental parameters and associated
+    uncertainties. The fundamental parameters determined with this tool for each
+    cluster, via a color-magnitude diagram (CMD) analysis, are: metallicity,
+    age, reddening, distance modulus, and total mass.
+    Results. We generated an homogeneous catalog of structural and fundamental
+    parameters for the studied cluster sample, and performed a detailed internal
+    error analysis along with a thorough comparison with values taken from
+    twenty-six published articles. We studied the distribution of cluster
+    fundamental parameters in both Clouds, and obtained their age-metallicity
+    relationships.
+    Conclusions. The ASteCA package can be applied to an unsupervised
+    determination of fundamental cluster parameters; a task of increasing
+    relevance as more data becomes available through upcoming surveys.
+
+Description:
+    Fundamental parameters for 150 Large Magellanic Cloud and 89 Small
+    Magellanic Cloud clusters. All clusters were analyzed via C,T1
+    Washington photometry by the ASteCA package.
+
+
+File Summary:
+--------------------------------------------------------------------------------
+ FileName      Lrecl    Records    Explanations
+--------------------------------------------------------------------------------
+ReadMe            80          .    This file
+clusters.dat      117       239    Fundamental parameters for 239 Magellanic
+                                   Clouds star clusters
+--------------------------------------------------------------------------------
+
+See also:
+      J/A+A/576/A6 : ASteCA: Automated Stellar Cluster Analysis (Perren+, 2015)
+
+Byte-by-byte Description of file: clusters.dat
+--------------------------------------------------------------------------------
+ Bytes     Format Units    Label      Explanations
+--------------------------------------------------------------------------------
+   1-  8   A8     ---      Name       Star cluster name
+  11- 14   A4     ---      Galaxy     Magellanic Cloud identification
+  17- 30   F14.9  deg      RA         Right Ascension J2000 (decimal degrees)
+      32   A1     ---      DE-        Declination J2000 (sign)
+  33- 45   F13.9  deg      DE         Declination J2000 (decimal degrees)
+  48- 52   F5.1   pc       Radius     Adopted radius in parsecs
+      54   A1     ---      [Fe/H]-    Metallicity (sign)
+  55- 59   F5.2   ---      [Fe/H]     Metallicity (1)
+  61- 65   F5.2   ---      e[Fe/H]    Metallicity error
+  67- 71   F5.2   [yr]     log(age)   Logarithm of age
+  73- 77   F5.2   [yr]     elog(age)  Logarithmic age error
+  79- 84   F6.3   mag      E(BV)      E(B-V) extinction
+  86- 91   F6.3   mag      eE(BV)     E(B-V) extinction error
+  93- 98   F6.2   mag      mu0        Distance modulus
+ 100- 104  F5.2   mag      emu0       Distance modulus error
+ 106- 111  I6     solMass  Mass       Mass (solar mass units)
+ 113- 117  I5     solMass  eMass      Mass error (solar mass units)
+--------------------------------------------------------------------------------
+Note (1): Solar metallicity adopted is z=0.0152 following Bressan et
+     al. (2012MNRAS.427..127B)
+--------------------------------------------------------------------------------
+
+Author's address:
+    Gabriel I. Perren    <gabrielperren@gmail.com>
+
+================================================================================
+(End)                    Gabriel I. Perren [IALP, Argentina]          2017-02-02

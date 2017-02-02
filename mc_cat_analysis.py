@@ -67,6 +67,19 @@ def get_in_params(r_path):
     in_params = params(r_path, as_names, as_pars, cl_list, names_idx)
     print 'Dictionary of parameters obtained.'
 
+    # # Added to print Vizier table data.
+    # # j = 0 for SMC clusters and 1 for LMC.
+    # for j, gal in enumerate(in_params['gal_names']):
+    #     # ASteCA values (k=0) and literature values (k=1)
+    #     for k, cl in enumerate(gal):
+    #         print(cl,
+    #               in_params['rad_pc'][j][k], in_params['erad_pc'][j][k],
+    #               in_params['zarr'][j][0][k], in_params['zsigma'][j][0][k],
+    #               in_params['aarr'][j][0][k], in_params['asigma'][j][0][k],
+    #               in_params['earr'][j][0][k], in_params['esigma'][j][0][k],
+    #               in_params['darr'][j][0][k], in_params['dsigma'][j][0][k],
+    #               in_params['marr'][j][0][k], in_params['msigma'][j][0][k])
+
     return in_params
 
 
