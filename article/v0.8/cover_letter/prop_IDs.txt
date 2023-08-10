@@ -1,0 +1,144 @@
+
+
+
+
+
+
+
+This work is based on observations made at Cerro Tololo Inter-American
+Observatory (CTIO), which is operated by the Association of Universities for
+Research in Astronomy (AURA), Inc., under cooperative agreement with the
+National Science Foundation (NSF).
+%
+This work is based on observations made at La Silla European Southern
+Observatory (ESO).
+%
+This research draws upon data as distributed by the NOAO Science Archive.
+NOAO is operated by AURA, under a cooperative agreement with the NSF.
+
+
+
+
+
+
+
+
+
+
+
+
+
+A- Geisler et al. (2003), http://adsabs.harvard.edu/abs/2003MNRAS.341..771G
+
+This work is based on observations made at Cerro Tololo Inter-American
+Observatory, which is operated by AURA, Inc., under cooperative agreement with
+the NSF.
+DG gratefully acknowledges support from the Chilean Centro de Astrofisica
+FONDAP No. 15010003.
+
+
+B- Piatti et al. (2003), http://adsabs.harvard.edu/abs/2003MNRAS.344..965P
+
+This work is based on observations made at CTIO, which is operated by AURA,
+Inc., under cooperative agreement with the NSF.
+DG gratefully acknowledges support from the Chilean Centro de Astrofisica FONDAP
+No 15010003.
+
+
+C- Piatti et al. (2003), http://adsabs.harvard.edu/abs/2003MNRAS.343..851P
+
+Idem A.
+
+
+D- Piatti et al. (2005), http://adsabs.harvard.edu/abs/2005MNRAS.358.1215P
+
+Idem B.
+
+
+E- Piatti et al. (2007), http://adsabs.harvard.edu/abs/2007MNRAS.377..300P
+
+Idem B.
+
+
+F- Piatti et al. (2007), http://adsabs.harvard.edu/abs/2007MNRAS.382.1203P
+
+This work is based on observations made at the ESO.
+DG gratefully acknowledges support from the Chilean Centro de Astrofisica FONDAP
+No. 15010003.
+
+
+G- Piatti et al. (2007), http://adsabs.harvard.edu/abs/2007MNRAS.381L..84P
+
+This work is based on observations made at La Silla European Southern
+Observatory.
+DG gratefully acknowledges support from the Chilean Centro de Astrofisica FONDAP
+No. 15010003.
+
+
+H- Piatti et al. (2008), http://adsabs.harvard.edu/abs/2008MNRAS.389..429P
+
+Idem F.
+
+
+I- Piatti et al. (2009), http://adsabs.harvard.edu/abs/2009A%26A...501..585P
+
+This work is based on observations made at the European Southern Observatory and
+at Cerro Tololo Inter-American Observatory (CTIO), which is operated by AURA,
+Inc., under cooperative agreement with the National Science Foundation.
+DG gratefully acknowledges support from the Chilean Centro de Astrofisica FONDAP
+No. 15010003.
+
+
+J- Piatti et al. (2011), http://adsabs.harvard.edu/abs/2011MNRAS.417.1559P
+
+???
+
+
+K- Piatti et al. (2011), http://adsabs.harvard.edu/abs/2011PASP..123..519P
+
+???
+
+
+L- Piatti (2011), http://adsabs.harvard.edu/abs/2011MNRAS.416L..89P
+
+This research draws upon data as distributed by the NOAO Science Archive.
+NOAO is operated by the Association of Universities for Research in Astronomy 
+(AURA), Inc., under a cooperative agreement with the National Science
+Foundation.
+
+
+M- Piatti (2011), http://adsabs.harvard.edu/abs/2011MNRAS.418L..40P
+
+Idem L.
+
+
+N- Piatti (2011), http://adsabs.harvard.edu/abs/2011MNRAS.418L..69P
+
+Idem L.
+
+
+O- Piatti (2012), http://adsabs.harvard.edu/abs/2012A%26A...540A..58P
+
+Idem L.
+
+
+P- Piatti & Bica (2012), http://adsabs.harvard.edu/abs/2012MNRAS.425.3085P
+
+Idem L.
+
+
+Q- Palma et al. (2013), http://adsabs.harvard.edu/abs/2013A%26A...555A.131P
+
+This work is based on observations made at Cerro Tololo Inter-American
+Observatory, which is operated by AURA, Inc., under cooperative agreement with
+the National Science Foundation.
+
+
+R- Choudhury et al. (2014), http://adsabs.harvard.edu/abs/2014arXiv1410.7198C
+
+???
+
+
+S- Maia et al. (2013), http://adsabs.harvard.edu/abs/2013arXiv1310.5934M
+
+We also acknowledge the PI of the archival data used.

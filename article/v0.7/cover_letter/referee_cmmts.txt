@@ -1,0 +1,210 @@
+Referee Report
+
+Generally, this first revision of the manuscript is greatly improved
+relative to the original submission. However, in my opinion, a few of my
+'major' original comments have not yet been properly addressed.
+Below I mention the (residual) comments and questions that I would like to
+see adequately addressed before I can accept this manuscript for publication
+in A&A. The original comments (incl. their enumeration) are inherited from
+my first report to prevent confusion. After stating the original question
+or comment, I enter my follow-up comments to the authors' reply.
+
+
+9. Sect. 3.4, paragraph 2:
+- Do I understand correctly that there is only one synthetic CMD produced for a
+  given cluster? If so, how are stochastic fluctuations being accounted for in
+  deriving the goodness of fit (i.e., the PLR and LPLR)? Please explain.
+
+REFEREE'S RESPONSE TO REVISION #1:
+  I thank the authors for their explanation of how the best synthetic
+  cluster match is obtained; this addresses part of my original
+  comment. However, at low cluster masses, one can get quite different
+  CMD morphologies for any given combination of age, metallicity, and mass,
+  especially in the (sparsely populated) post-MS parts of the CMD. This is
+  because of the strong stochastic fluctuations at low cluster masses (<< 10e4
+  Msun). So I would think a "best fit" to a given synthetic cluster (if the
+  cluster has a low mass) doesn't necessarily mean a really good fit to the
+  actual physical parameters of that synthetic cluster, especially if the
+  bright post-MS regions of the CMD are given a relatively strong weight in the
+  fit. Could the authors please address this?
+
+
+
+13. Sect. 4, paragraph 5:
+- "The apparent dependence of the metallicity error with decreasing [Fe/H]
+  values arises from the fact that ASteCA uses Z values ..."
+
+  Why is ASteCA using Z instead of [Fe/H] (or [M/H] or Z/Z_sun)? Sounds like an
+  unfortunate choice to me, for the reason brought up here (and others as
+  well). Please explain why this choice was made.
+  This same issue also comes up in Appendix A.1, paragraph 2.
+
+RESPONSE TO REVISION #1:
+  OK, I understand your reasoning as to why you are (currently) using Z rather
+  than [Fe/H]. But why not use Z/Z_sun? That would also keep the parameters
+  positive, and one would still retain a relative scale similar to [Fe/H].
+
+
+
+18. Sect. 5.2, paragraph 9 (near bottom of page 9):
+- "In contrast, ASteCA assigns cluster masses taking their values directly from
+  the best match synthetic CMD. Field star contamination will thus have a much
+  lower influence on the code’s mass estimate, limited just to how effective the
+  DA is in cleaning the cluster region." (etc etc)
+
+  One issue that I don't understand from the explanations in this paper is how
+  exactly ASteCA determines cluster masses. Specifically, as I mentioned in my
+  point #8 above, it looks like ASteCA only takes stars above a certain
+  brightness threshold into account. How then does ASteCA account for the mass
+  associated with the fainter stars? Does it extrapolate based on a Chabrier
+  IMF?
+  Apart from that, how does ASteCA account for the fraction of the cluster's
+  mass that is located outside the "cluster radius" that it assigns (which
+  apparently is the radius where the star number density equals that of the
+  "background" if I understood correctly). That fraction of mass will depend on
+  the intrinsic mass profile of the cluster (say its King core radius and
+  concentration parameter) and the cluster radius assigned by ASteCA.
+  I don't see anything here, or in Sect. 5.2.1, or in Appendix A that clarifies
+  these issues.
+  Actually, I'm wondering whether the big discrepancies in mass estimates
+  discussed in Sect. 5.2.1 could be explained in part by issues like this (see
+  my next point). A more thorough explanation of this would be appreciated.
+
+RESPONSE TO REVISION #1:
+  I thank the authors for explaining the first part of my original comment very
+  well, that is very clear.
+  As to the second part of my comment regarding the correction of the fraction
+  of the cluster's mass that is located outside the "cluster radius": I was not
+  referring to cluster mass loss. I was simply referring to the issue that the
+  tidal radius of the cluster is typically significantly larger than the
+  radius at which the surface number density of the cluster equals that of the
+  field, so that the real cluster mass is larger than what one would derive
+  from the stars within the latter radius. The fraction of mass "missed" this
+  way depends on the mass profile of the cluster. For the King model, that
+  missed mass fraction can be described by the King core radius (or the
+  effective radius) and the King concentration parameter. As such, this
+  "correction factor" to the cluster mass will in principle be different for
+  each cluster. It will be larger for clusters with larger (tidal) radii, or for
+  clusters that are in regions with a relatively large number density of field
+  stars. As I mentioned before, this issue has not been taken into account in
+  this paper and it should.
+
+
+
+19. Sect. 5.2.1:
+- In this very long section on the cluster mass discrepancies, it is only at the
+  end that the authors describe a correlation between the logarithmic
+  differences in mass and those in age when comparing results of two studies
+  (see Figs. 10 and 11). I was thinking about this possibility all along while
+  reading this Section - after all, M/L correlates strongly with age.
+  I would like the authors to take the differences in age between two studies
+  into account when comparing their respective cluster masses. I.e., please plot
+  and compare the logarithmic mass differences AFTER having corrected for the
+  different M/L ratios associated with the differences in assigned log(age) by
+  the two studies. The RESIDUAL differences in mass are the ones that should be
+  discussed here.
+  By the way, I looked in the literature for other mass determinations for the
+  three clusters NGC 419, NGC 1917, and NGC 1751, i.e., the ones for which
+  ASteCA estimated masses much smaller than for the DBs. See below:
+  - For NGC 1917 I don't find direct mass determinations other than the two
+    referred to in this paper, but I see that van den Bergh (1981, A&AS, 46, 79)
+    lists V = 10.25 within an aperture of 62 arcsec. For log(age) = 9.15 and m-M
+    = 18.48 as found by ASteCA, z = 0.008, and the Bruzual & Charlot (2003) SSP
+    models, V = 10.25 corresponds to a mass of ~8e4 Msun for a Chabrier IMF,
+    very similar to the masses reported by H03 and P12.
+  - for NGC 419 and NGC 1751 I see that Goudfrooij et al. (2014, ApJ, 797, 35)
+    determined masses of ~2.4e5 Msun and ~6.5e4, respectively. They did account
+    for the fraction of cluster mass outside a given measurement aperture. The
+    ages and metallicities they determined are very similar to the average of
+    the ages and metallicities estimated by the studies referred to in this
+    paper. They used a Salpeter IMF; for a Chabrier IMF their masses translate
+    to 1.9e5 and 6e4 for NGC 419 and NGC 1751, respectively. Again, MUCH closer
+    to the mass estimates by H03 and P12 than to the ASteCA one. And the
+    differences in age assignments by ASteCA versus the other studies are minor
+    in these cases, and certainly cannot explain the big differences in mass
+    determinations. As such I get the impression that there may be problems with
+    the mass determinations by ASteCA, at least for these massive clusters. I
+    would like the authors to address and/or study this concern for the next
+    version.
+
+RESPONSE TO REVISION #1:
+  I thank the authors for their long response to this comment of mine. There
+  are, however, still some important issues that haven't been addressed yet (or
+  not properly in my opinion), described below.
+
+  (1) Unfortunately, the authors misinterpreted my comment regarding the
+  different M/L values used by the H03 and P12 papers. What I meant was that
+  the relation shown by the authors in their Figure 11 can be expected (even if
+  the relative mass uncertainties of the H03 and P12 studies were identical).
+  Specifically, it looks like the mass discrepancies between two studies
+  are simply consistent with their differences in age determination. Since M/L
+  increases with age roughly as log(M/L_V) ~ 0.7 log(age) + constant (according
+  to the Bruzual & Charlot 2003 SSP models for Z = 0.008 and log(age) > 7 in
+  this case - see also Fig. 6 in the authors' reply document), a difference in
+  age assignment of a factor 2 simply corresponds to a mass difference of a
+  factor 1.4. That seems to pretty much fully explain your Figure 11, and I
+  expect it may also explain the trends seen in your Figure 10. Could you
+  please check that and adjust your text if I am correct?
+
+  (2) Issues related to crowding in the central regions of massive clusters.
+  Looking for example at NGC 419, the authors state in their reply that the
+  synthetic CMD for the mass estimated by H03 and Goudfrooij et al. has too
+  many stars to be compatible with the observations used by ASteCA. While I
+  agree with that statement, I also note that this synthetic CMD does look very
+  similar to that for NGC 419 shown in the Goudfrooij et al. paper (after
+  taking into account that the filter passbands are not the same). This is
+  relevant in that the Goudfrooij et al. CMD was created from HST data with
+  much higher spatial resolution than the observations used by ASteCA in this
+  paper. For massive clusters like NGC 419, the completeness of HST photometry
+  should be much higher in their central (crowded) regions than that of
+  "regular" ground-based images; as such, it is quite likely that CMDs of
+  massive clusters based on ground-based images will show significantly fewer
+  stars than those based on HST images (within a given cluster-centric
+  radius). There is clear evidence of this effect in the literature. Take for
+  instance the case of the LMC cluster NGC 2209. Keller et al. (2012, ApJ, 761,
+  L5) observed this cluster with GMOS on Gemini-S, and state the following:
+  "Through artificial star addition we are able to investigate the effects of
+  crowding on the photometry. Crowding becomes sufficiently problematic in the
+  cluster inner regions, therefore we limit our attention to stars in NGC 2209
+  in excess of 40 arcsec from the cluster center." Note that 40 arcsec is about
+  twice the core radius of NGC 2209, so that a LOT of cluster stars are missed
+  in their CMD. And this is for a seeing of only ~0.5 arcsec!!! In contrast,
+  Correnti et al. (2014, ApJ, 793, 121) are able to reach all the way into the
+  core of NGC 2209 using high-resolution HST images, illustrating this
+  issue. But even for well-exposed HST images, the completeness in the central
+  regions of massive LMC clusters decreases to about 50% for stars with
+  brightnesses ~3 mag below the MSTO (see, e.g., Milone et al. 2009, A&A, 497,
+  755), so that even HST photometry of individual stars will miss some
+  significant part of the total mass (or light) of the cluster.
+  All of these problems are in principle overcome by using integrated-light
+  photometry. Now I acknowledge that integrated-light photometry can introduce
+  other problems, as also mentioned by the authors, namely that it can be
+  sensitive to stochastic fluctuations of bright post-MS stars. But this is
+  mainly the case when using filter passbands in which the light of such stars
+  dominates the cluster light output. For clusters with ages of 1-2 Gyr such as
+  the three clusters NGC 1917, NGC 419, and NGC 1751, this is mainly the case
+  for the near-IR filters where the TP-AGB stars dominate. However, this
+  problem is NOT significant for the V-band: according to Lancon & Mouhcine
+  (2000, http://adsabs.harvard.edu/abs/2000ASPC..211...34L), the effect of
+  stochastic fluctuations to integrated-light photometry in the V band is
+  limited to < 10% for cluster masses > 6e3 Msun for 1-Gyr-old clusters. Since
+  these clusters are clearly more massive than that and since their masses in
+  the literature were determined from integrated-light photometry in the V
+  band, I have to reject the authors' claim that the mass values given in those
+  papers that use integrated magnitudes are systematically overestimated, at
+  least for these (massive) clusters. As such, I ask the authors to either
+  revise their Section 5.2.1 accordingly, or to come up with convincing reasons
+  that show my arguments above to be incorrect.
+
+
+
+22. Sect. 6.2, paragraph 5:
+- "In both Clouds there is a tendency for the mass and the size of the cluster,
+   to grow with the estimated age, as expected."
+
+   Please explain why this is as expected.
+
+RESPONSE TO REVISION #1:
+  I thank the authors for a good explanation of this. Just to be a bit clearer
+  to the reader, I would suggest to change the wording "the fading limit
+  effect" to something like "the fact that M/L increases with age" in the paper.

@@ -1,0 +1,702 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{natbib,twoopt}
+\usepackage{microtype}
+\usepackage{afterpage}
+
+\usepackage{xcolor}
+\newcommand{\finish}{\textcolor{red}{\textbf{$\;\;$|-- FINISH --|$\;\;$}}}
+
+\begin{document}
+
+\title{Referee's comments and suggestions}
+\author{GI Perren, AE Piatti, RA V\'azquez}
+
+\maketitle
+
+\renewcommand\thesubsection{\Alph{subsection}}
+\begin{abstract}
+We thank the referee for their detailed revision of our article.
+
+Below are the responses to the referee's comments and suggestions, following
+their numbering.
+\end{abstract}
+
+\section*{General concerns}
+
+\subsection{}
+\label{gen_a}
+
+As the editor points out, this was done by their office to shrink the size
+of the PDF.\@ All the images used in the manuscript are of high quality.
+
+For the referee and the editor's convenience, we make all images available in
+the following link at their full size:
+\url{https://www.dropbox.com/sh/jlrwttw2220adfp/AABwqBNNt7GzcID0CKi6si8Va?dl=0}
+
+This url will be accessible until the reviewing process finishes.
+
+\subsection{}
+The new version of the manuscript was shortened as shown in the following
+table:
+
+\begin{tabular}{ l c r }
+& Original & New version \\
+Words in text & 16503 & 13793 \\\\ % 13203~ 20%
+\end{tabular}
+
+The 2713 words difference represents a ${\sim16}$\% reduction, and is the
+most text we believe we can remove without affecting the content substantially.
+
+
+\clearpage
+\renewcommand\thesubsection{\arabic{subsection}}
+\section*{Comments and questions}
+\setcounter{subsection}{0}
+
+% 1
+\subsection{}
+The sentence was changed to improve its readability.
+
+% 2
+\subsection{}
+The referee is correct, there are many articles where the analysis of star
+clusters is not done by-eye. In Sect 2.9 of Paper I~\citep{Perren_2015} we
+mention approximately thirty of these articles. It was certainly not our
+intention to convey that all studies but this one are done by-eye.
+
+A few sentences were added to make this more clear.
+
+% 3
+\subsection{}
+We added a sentence to explain why these clusters were used.
+
+% 4
+\subsection{}
+We corrected that all along the manuscript.
+
+% 5
+\subsection{}
+Corrected.
+
+% 6
+\subsection{}
+The maximum mass was selected after a first rough estimate of the masses of the
+clusters in our dataset (a first pass with ASteCA), using
+$1\times10^4\;M_{\odot}$ as the limit. In all but a handful of cases, the masses
+where estimated below $5\times10^3\;M_{\odot}$; making the
+$1\times10^4\;M_{\odot}$ Mo max limit a reasonable value. For the 15 clusters
+which showed total masses close to $1\times10^4\;M_{\odot}$, we extended this
+limit to $3\times10^4\;M_{\odot}$.
+
+These details were added to the second to last paragraph of Sect 3.1.
+
+\subsubsection{Add}
+
+1.
+The $3\times10^4\;M_{\odot}$ maximum value proved to be a very
+reasonable limit for the most massive clusters, as shown later in Sect 5.2.1.
+There, we demonstrate that even if no field star cleaning is performed (i.e., we
+use all stars in the cluster region when searching for the best synthetic
+cluster match), and using a max mass limit of $5\times10^5\;M_{\odot}$, the
+largest cluster (NGC419) is assigned a total mass of $5.5\times10^4\;M_{\odot}$.
+We know that this is an overestimated value, since we fitted not only the
+cluster stars but all contaminating field stars too, which shows that
+$3\times10^4\;M_{\odot}$ is a reasonable limit.\\
+
+\noindent 2.
+The step defines the density of the selected parameter range, and it is fixed
+throughout the best match process. The value of the step
+is defined by the user along with the min and max values of the parameter's
+range (in the \texttt{params\_input.dat} file). This is true not only for the
+mass but for all the fitted parameters (age, metallicity, etc.)
+Picking a larger step would only decrease the accuracy of the parameter
+estimate, and it would have very little (if not no) impact on the final
+selected mass value (or any other parameter).
+
+% 7
+\subsection{}
+First: we added a portion of the observed cluster region above the image, as
+requested. The caption was modified to reflect this change, and to make the
+description of the overall plot clearer.\\
+
+\noindent Second: that must be related to the compression performed by the
+editorial office. Please see the corresponding image shared in the url presented
+in Sect.~\ref{gen_a}.
+
+% 8
+\subsection{}
+\label{sec:8}
+The limiting magnitude is taken individually for each observed/processed
+cluster. It is the limiting magnitude of the observed cluster itself, i.e., it
+varies with each observed cluster.
+This is explained in Paper I, Sect 2.9.1. At the beginning of Sect 3.4 
+(footnote 17) we sate that the details of the code's built-in functions are
+explained in Paper I. We did not repeat them here to avoid redundancy.
+
+We added a sentence in the caption of Fig. 2 explaining this.
+
+The name of this section was modified to \emph{Synthetic CMD matching}, to
+better reflect its content.
+
+% 9
+\subsection{}
+As explained in Paper I Sect 2.9.2, we employ a genetic algorithm (GA) to
+find the best synthetic cluster match for each observed cluster. The GA explores
+the entire parameters space, which is composed -- in this case -- of
+approximately $2.3\times10^7$ possible models/solutions (i.e: synthetic CMDs),
+as shown in Table 3.
+In this work, each observed cluster was compared by the GA to roughly
+$1.5\times10^6$ models (including those explored during the bootstrap
+runs). For each of these models, a unique random IMF sampling is
+used to populate its isochrone. 
+
+We added a sentence in this paragraph, and at the end of the section explaining
+this.
+
+% 10
+\subsection{}
+Changed ``usually'' to ``often'' as suggested.
+
+% 11
+\subsection{}
+Changed ``versus'' to ``of'' as suggested.
+
+% 12
+\subsection{}
+The fonts of labels and values In fig. 3 have been increased, as requested.
+
+% 13
+\subsection{}
+We use $z$ instead of [Fe/H] for two reasons.
+The first reason is that this is the default form in which the evolutionary
+tracks are downloaded from by Girardi's CMD service 
+(\url{http://stev.oapd.inaf.it/cgi-bin/cmd}).
+In the near future, we would like to add other sets of tracks (Darmouth,
+Geneva, BaSTI, MIST-MESA, etc).
+The second reason is that it is easier to develop the code when all
+fundamental parameters are strictly positive.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=5in]{figs/errors_z.png}
+    \caption{Error in $z$.}
+    \label{fig:errors_z}
+\end{figure}
+
+The errors are displayed using [Fe/H] to make the reader aware of the issue
+that [Fe/H] errors will increase for low metallicities, for a mathematical
+reason.
+If we had plotted the errors using $z$ instead, we'd get a diagram that is not
+much informative, as the errors in $z$ are (as stated in the article) very
+clustered around the $\sigma_{z}{=}0.003$ value. This can be seen in
+Fig.~\ref{fig:errors_z}.
+
+A footnote was added in paragraph 3 of Section 4, to address this concern.
+
+% Furthermore, if the code used [Fe/H] values we would still have to obtain them
+% from the Z values with which the evolutionary tracks are created. This forces
+% the choice of a solar Z, and since this value was updated from the canonical
+% $Z_o=0.019$ to $Z_o=0.152$ for the latest Bressan isochrones, we'd still encounter
+% the issue of 
+
+% 14
+\subsection{}
+
+We meant ``low'' compared to solar; perhaps this wasn't the best choice of
+words. The ``confirmation bias'' effect explains that researchers will tend
+to select values that have already been used, which explains the clustering of 
+[Fe/H] around the -0.4 dex and -0.7 dex values in the literature.
+
+We've re-written that paragraph adding a more detailed explanation of the
+effect.
+
+% 15
+\subsection{}
+The referee is correct, we did not mean to imply that there was not a good
+reason for doing this.
+
+We've added this information to the paragraph.
+
+% 16
+\subsection{}
+We are not saying that the distance moduli is fixed in all studies. We
+are referring to the ``literature'' articles (the 19 shown in Table 1), were the
+distance moduli were indeed always assumed to be fixed.
+That's what we meant by saying ``in the latter'', referring to the previous
+sentence which mentioned these literature articles.
+
+We have changed the wording to explicitly mention the ``literature articles''.
+
+
+% 17
+\subsection{}
+Corrected here, and also in the second to last paragraph of Sect 5.2 where the
+same name for the plot was used.
+
+% 18
+\subsection{}
+\label{sec:18}
+\textbf{On the determination of cluster masses}\\
+
+The mass estimation done by \texttt{ASteCA} via the GA relies on the same exact
+method used to estimate the other fundamental parameters (metallicity, age,
+etc.) This is explained in Paper I, Sect. 2.9.1 and 2.9.2. The only thing that
+changes from Paper I to this one, is the likelihood function.
+The~\cite{Dolphin_2002} likelihood is used here, because it allows the
+estimation of mass through the comparison of the number of stars in cells (2D
+bins) of the CMD's histogram. Basically, this amounts to a comparison between
+the ``Hess diagrams'' of an observed cluster versus that of the generated
+synthetic cluster.
+
+When a synthetic CMD of a given metallicity and age is created via a theoretical
+isochrone (in our case, we used the~\cite{Bressan_2012} set), the entire
+theoretical isochrone is taken into account, down to the faintest magnitude.
+%
+Given a total mass value, this isochrone is populated through sampling of the
+selected IMF (in the case of this work, we used the~\cite{Chabrier_2001}
+log-normal IMF, as mentioned in Sect. 3.4) until that fixed total initial mass
+value is achieved. This is: the synthetic CMD is generated accounting for all
+stars in the theoretical isochrone.
+
+After this, the synthetic CMD is perturbed by the same processes that
+affect the observed cluster, i.e., limiting observed magnitude, incompleteness
+of observed stars, and photometric errors. This is done to
+make the synthetic CMD comparable to the observed one.
+%
+The two first processes will effectively remove stars from the synthetic CMD,
+particularly the limiting magnitude effect. These stars are removed because
+there is nothing to compare them to, since the observed cluster does not
+contain stars beyond its observed magnitude limit.
+%
+% Even though these stars are removed prior to the fitting of a synthetic CMD 
+% (with the observed CMD), the mass associated with this cluster remains the
+% total mass used to create it.
+
+For example: a synthetic CMD of $10000\,M_{\odot}$ is generated, and after the
+removal of faint stars beyond the magnitude limit its mass is ``reduced'' to
+$2000\,M_{\odot}$. I.e., the mass of the stars that are visible in the synthetic
+CMD, after the magnitude limit removal, is $2000\,M_{\odot}$.
+If this synthetic CMD results the one with the best match to the observed
+cluster (i.e., its likelihood value is the maximum found for all the synthetic
+CMDs processed), the estimated mass assigned to the observed cluster will be
+$10000\,M_{\odot}$, not $2000\,M_{\odot}$, because that is the actual
+mass that was used to generate the synthetic CMD.\@
+
+To be clear, at no point during our analysis do we make use of either
+integrated magnitudes or M/L relations to estimate masses. The mass estimation
+depends exclusively on the maximization of the PLR.\@
+There is no extrapolation performed since none is needed: all stars are
+taken into account at the moment of the synthetic CMD's generation.
+Fig. 8 in Paper I shows the full process of generating a synthetic CMD.\\\\
+
+\noindent \textbf{On the mass fraction outside the radius}\\
+
+We are not entirely sure what the referee is referring to when they mention the
+``fraction of the cluster's mass that is located outside the cluster radius''.
+Are they talking about the dynamical effect of mass loss due to evaporation or
+two-body relaxation?
+If this is the case, given that mass loss tends to affect low-mass
+stars preferentially~\citep{Vesperini_2010}, this issue will have a minor impact
+on our mass determination. This is because we asses the total cluster mass by
+directly comparing the visible portion of the cluster's CMD with a large number
+of synthetic CMDs (after affecting these synthetic CMDs with similar processes
+to  that which affect the observed cluster, like the limiting magnitude for
+example). Since the portion of lowest mass stars is not observed (due to the
+limiting magnitude), it will not affect the matching process.
+
+This shouldn't be confused with the assumption that low-mass stars (down to
+0.01 $M_{\odot}$) are not considered at all in the mass estimation process. They
+are indeed taken into account at the moment of the synthetic CMD's generation,
+when the fixed total mass of the synthetic cluster is distributed along its
+theoretical isochrone via IMF sampling.\\
+
+If the referee is concerned about luminosity being lost outside a certain
+measurement aperture, and thus affecting the mass estimation, this is not an
+issue for \texttt{ASteCA}. The observed cluster's mass is obtained (as stated
+in the subsection above) without making use of integrated magnitudes or M/L
+relationships. The code relies entirely on the comparison of the distribution
+and number of stars in the observed CMD, with that of many synthetic CMDs.\\
+
+If the question was aimed at the more simple issue of some stars being left
+out of the selected cluster region, we do not believe this affects the estimated
+total mass.
+Because we employ the radius of the cluster as the limit where the star density
+falls to that of the field, we do not expect to be missing any significant
+portion of the observed cluster.\\
+
+We added a couple of sentences to the first, second, and third paragraphs of
+Sect.~3.4 in the new version of the article, which should address the doubts
+regarding total mass estimation.
+
+
+% 19
+\subsection{}
+\label{sec:19}
+\textbf{On the M/L relation of the H03 and P12 articles}\\
+
+If we understood correctly, the referee is asking us to calculate a
+normalized mass via a relation of the form
+
+\begin{equation}
+M_{P12,norm} = M_{P12} \frac{(M/L)_{H03}}{(M/L)_{P12}} =
+\frac{M_{H03} L_{P12}}{L_{H03}}
+\label{eq:mass_norm}
+\end{equation}
+
+\noindent where $M_{H03}$, $(M/L)_{H03}$, $M_{P12}$, $(M/L)_{P12}$ are the
+masses and mass-luminosity relations of~\citet[][H03]{Hunter_2003}
+and~\citet[][P12]{Popescu_2012} respectively, and
+$M_{P12,norm}$ is the mass of P12 normalized to the $(M/L)_{H03}$ relation.
+
+If this is the request, we must point out that P12 used the same database of
+integrated magnitudes as H03, which means that the luminosities used for each
+cluster are equal ($L_{P12}=L_{H03}$). This would reduce Eq.~\ref{eq:mass_norm}
+to
+
+\begin{equation}
+M_{P12,norm} = M_{H03}
+\end{equation}
+
+\noindent meaning the mass differences would be zero for all clusters. If this
+is not what the referee pointed out, we ask them to please expand a bit
+on their request.\\
+
+It is also important to point out that P12 did not employ a standard
+mass-luminosity relationship to estimate masses. Rather, the authors used
+their MASSCLEAN$age$ package~\citep[which in turn depends on their
+MASSCLEAN$colors$
+package,][]{Popescu_2010b,Popescu_2010a}. This tool allows the simultaneous
+determination of the most probable age-mass values, from the observed integrated
+magnitudes matched in a hyper-space of synthetic integrated magnitudes.
+%
+These articles by Popescu et al.~also highlight the enormous degenerations in
+the solutions that arise, when simple integrated magnitude methods are used for
+mass and age estimations.\\\\
+
+\noindent \textbf{On the mass discrepancy of NGC 419, 1917, 1751}\\
+
+We thank the referee for taking the time to track down and calculate
+the mass values presented in this section, for these three clusters.
+
+Obtaining mass and age estimates from integrated magnitudes is known to be a
+process affected by large stochasticity (see for example the Popescu \& Hanson
+articles). Below we show diagrams for each of these three clusters, where we
+explain in detail how different mass values affect the generated synthetic CMD..
+This should help the referee understand why we believe our mass estimates are
+well-estimated, and the large mass values given in the integrated magnitude
+articles are overestimated.\\
+
+\noindent \emph{* \textbf{NGC 1917}}, Fig.~\ref{fig:ngc1917}\\
+
+\noindent - Panel \textbf{(a)}: CMD of the observed cluster region. In our
+original analysis we used a radius of 27.4 arcsec which resulted in the 4000
+$M_{\odot}$ total mass estimation. Here, we use instead a larger radius of 62
+arcsec, equal to the aperture size used by~\cite{vandenBergh_1981}.
+%
+$N_{accpt}$ is the number of stars that were not rejected due to
+large photometric errors, and $n_{memb}$ is the number of approximated cluster
+members. This last value is obtained by averaging the number of stars in
+the surrounding field (next panel) and subtracting that value from the total
+number of stars within the cluster region. The final result is ${\sim}169$
+expected cluster members.
+
+\noindent - Panel \textbf{(b)}: CMD of ten combined surrounding field
+regions, each with an area equal to that of the cluster.
+
+\noindent - Panel \textbf{(c)}: CMD of the cluster region after the
+decontamination algorithm (DA) was applied. Stars are colored according to the
+membership probabilities (MPS) assigned, semi-transparent stars are those
+removed by the cell-by-cell density based decontamination process.
+$N_{fit}$ is the number of stars that are left after this removal.
+Ideally, $n_{memb}$ and $N_{fit}$ should be similar, since they are both rough
+(independent) estimates of the (visible) number of cluster members.
+
+\noindent - Panel \textbf{(d)}: best match synthetic cluster found using the
+larger radius of 62 arcsec.
+Its fundamental parameter values are fixed to $z{=}0.008$,
+$\log(age){=}9.15$, $(m-M){=}18.48$, and $E_{(B-V)}{=}0.08$, as obtained
+originally by \texttt{ASteCA}. The mass is allowed to vary in a range between 
+[500, $1{\times}10^5$] $M_{\odot}$.
+%
+$N_{synth}$ is the number of visible stars in this best match synthetic CMD 
+(notice that this value is rather close to $N_{fit}$, the approximated number of
+cluster members), and $M{=}1.1{\times}10^4\,M_{\odot}$ is the total mass
+used to generate this synthetic CMD (not to be confused with the
+portion of mass visible in the CMD, which is much smaller).
+We see that this mass is larger than the 4000 $M_{\odot}$ originally estimated.
+This is because the used radius is now more than twice as large, and because for
+relatively low mass clusters the stochasticity in their mass assignment is
+non-negligible.
+
+\noindent - Panel \textbf{(e)}: best match synthetic CMD using the same
+fundamental parameter values and mass range shown in \textbf{(d)}, where the
+full cluster region with no decontamination procedure applied was used.
+I.e., we fit here the $\sim1700$ stars in the observed cluster region, which
+will obviously include a majority of field stars.
+The best match estimated mass increases to $4.9{\times}10^4\,M_{\odot}$.
+This shows that even if no field star cleaning is performed, the estimated mass
+would still not be close to the mass given in articles where integrated
+magnitudes were used.
+
+\noindent - Panel \textbf{(f)}: synthetic CMD generated using the same
+fundamental parameters mentioned in \textbf{d}, and a fixed mass of
+$8{\times}10^4\,M_{\odot}$ (average mass value estimated by H03, P12, and the
+referee's own calculations).
+The number of stars in this CMD is more than two times larger than the stars
+present in the CMD of the observed cluster region, even if all
+contaminating field stars are taken into account.
+It is visible at plain sight, with no statistical estimator needed, that the
+large mass value given in other articles produces a number of stars in the best
+match synthetic CMD, that is not compatible with the observed
+cluster.\\
+
+% NGC1917 (0.274 arcsec/px)
+%
+% ASteCA:
+% 100 px -> 27.4 arcsec; log(age)=9.15, dm=18.48, E_BV=0.08, z=0.002 --> M=4e3
+% Mo
+% van den Bergh (1981, A&AS, 46, 79):
+% 62 arcsec --> r_cl = 226 px; log(age)=9.15, dm=18.48, z=0.008 --> M=8e4 Mo
+% H03: M=5.9e4 Mo  ; P12: M=1e5 Mo ; average: 7.95e4 Mo
+%
+
+\afterpage{%
+\thispagestyle{empty}
+\begin{figure}[p]
+    \vspace*{-3.7cm}
+    \makebox[\linewidth]{
+        \includegraphics[width=1.3\linewidth]{figs/NGC1917_mass.png}
+    }
+    \caption{Analysis of NGC1917.}
+\label{fig:ngc1917}
+\end{figure}
+\clearpage
+}
+
+\noindent \emph{* \textbf{NGC 419}}, Fig.~\ref{fig:ngc419}\\
+
+\noindent - Panels \textbf{(a)}, \textbf{(b)}, and \textbf{(c)} are equivalent
+to those from Fig.~\ref{fig:ngc1917}.
+The radius used in~\cite{Goudfrooij_2014} to derive their mass estimate of
+${\sim}2.2{\times}10^5\,M_{\odot}$, is 50 arcsec. In our original analysis of
+this cluster we employed a larger radius of 85 arcsec, which is also
+used here.
+
+\noindent - Panel \textbf{(d)}: original mass estimate, where we see
+that the number of stars in the synthetic CMD is rather close to the estimated
+number of cluster members.
+
+\noindent - Panel \textbf{(e)}: best match estimated mass using
+the full cluster region, with no field star cleaning performed. The fundamental
+parameters were fixed to $z{=}0.012$, $\log(age){=}8.95$, $(m-M){=}18.92$, and
+$E_{(B-V)}{=}0.02$, as obtained originally by \texttt{ASteCA}. The mass is
+allowed to vary in a range between [500, $1{\times}10^5$] $M_{\odot}$. The best
+match mass is twice as large as the mass value obtained using the decontaminated
+cluster region.
+
+\noindent - Panel \textbf{(f)}: how the CMD should look if
+this cluster had a mass of ${\sim}2.7{\times}10^5\,M_{\odot}$, as estimated on
+average by H03, and Goudfrooij et al.
+Again, we see that the number of stars in this large mass synthetic CMD, is
+not compatible with the observed cluster.\\
+
+% NGC419 (0.274 arcsec/px)
+%
+% AsteCA:
+% 310 px -> 85 arcsec; log(age)=8.95, dm=18.92, E_BV=0.02, z=0.012 --> M=2.8e4
+% Goudfrooij et al. (2014, ApJ, 797, 35):
+% 50 arcsec -> 182 px; log(age)=9.16, dm=18.85, E_BV=0.05, z=0.004 -->
+% M=2.4e5 (Salpeter), 1.9e5 (Chabrier)
+% H03: M=3.9e5 Mo; average (Goudfrooij, H03): 2.7e5 Mo
+%
+
+\afterpage{%
+\thispagestyle{empty}
+\begin{figure}[p]
+    \vspace*{-3.7cm}
+    \makebox[\linewidth]{
+        \includegraphics[width=1.3\linewidth]{figs/NGC419_mass.png}
+    }
+    \caption{Analysis of NGC419.}
+\label{fig:ngc419}
+\end{figure}
+\clearpage
+}
+
+\noindent \emph{* \textbf{NGC 1751}}, Fig.~\ref{fig:ngc1751}\\
+
+\noindent - Panels \textbf{(a)}, \textbf{(b)}, and \textbf{(c)} are equivalent
+to those from Fig.~\ref{fig:ngc1917}.
+The radius used in~\cite{Goudfrooij_2014} is 50 arcsec. We use here a radius of
+60 arcsec, the same employed in our original analysis of this cluster.
+
+\noindent - Panel \textbf{(d)}: original mass estimate.
+
+\noindent - Panel \textbf{(e)}: best match estimated mass using the full cluster
+region, with no field star cleaning performed. The fundamental
+parameters were fixed to $z{=}0.012$, $\log(age){=}9.1$, $(m-M){=}18.6$,
+and $E_{(B-V)}{=}0.04$, as obtained originally by \texttt{ASteCA}. The mass is
+allowed to vary in a range between [500, $1{\times}10^5$] $M_{\odot}$. The best
+match mass is four times the mass value obtained using the decontaminated
+cluster region.
+
+\noindent - Panel \textbf{(f)}: how the CMD should look if
+this cluster had a mass of ${\sim}7.2{\times}10^4\,M_{\odot}$, as estimated on
+average by P12, H03, and Goudfrooij et al.
+Once more, the number of stars in this large mass synthetic CMD, is
+not compatible with the observed cluster.\\
+
+% NGC1751 (0.274 arcsec/px)
+%
+% ASteca:
+% 220 px -> 60 arcsec; log(age)=9.1, dm=18.6, E_BV=0.04, z=0.012 --> M=9e3
+% Goudfrooij et al. (2014, ApJ, 797, 35):
+% 50 arcsec -> 182 px; log(age)=9.15, dm=18.5, E_BV=0.12, z=0.008 -->
+% M=6.5e4 (Salpeter), 6e4 (Chabrier)
+% H03: M=9.7e4; P12: 6.5e4; average (Goudfrooij, H03, P12): 7.2e4 Mo
+%
+
+\afterpage{%
+\thispagestyle{empty}
+\begin{figure}[p]
+    \vspace*{-3.7cm}
+    \makebox[\linewidth]{
+        \includegraphics[width=1.3\linewidth]{figs/NGC1751_mass.png}
+    }
+    \caption{Analysis of NGC1751.}
+\label{fig:ngc1751}
+\end{figure}
+\clearpage
+}
+
+\clearpage
+\noindent \emph{* \textbf{MASSCLEAN synthetic CMDs}}\\
+
+The referee could of course question the ability of \texttt{ASteCA} in producing
+these synthetic CMDs, of given metallicities, ages, and masses.
+%
+To further strengthen our analysis, we present in
+Fig.~\ref{fig:massclean_mass} three synthetic CMDs generated with the
+MASSCLEAN tool~\citep[][]{Popescu_2009}.
+
+These CMDs were created using the same fundamental parameters assigned to NGC
+1917, 419, and 1751 by \texttt{ASteCA}, but using an averaged total mass
+obtained from the values given to each of them by H03, P12, and the articles
+mentioned by the referee.
+This means that these CMDs are the equivalent of those in panels
+\textbf{(f)} of Figs.~\ref{fig:ngc1917},~\ref{fig:ngc419},
+and~\ref{fig:ngc1751}, but produced with a completely independent tool.
+
+MASSCLEAN does not support the Washington photometric system, hence the $V$
+versus $(B-V)$ diagrams. These synthetic CMDs are affected by a comparable
+limiting magnitude (basically $V_{lim}=T1_{lim} + 0.5$ mag) and incompleteness,
+as those affecting the observed CMDS for each of the three clusters. The
+differences with the synthetic CMDs produced by \texttt{ASteCA} are due to the
+stochastic nature of IMF sampling (MASSCLEAN uses a Kroupa-Salpeter IMF, we
+used the~\citealp{Chabrier_2001} log-normal IMF), the theoretical isochrones
+set (MASSCLEAN uses the old~\citealp{Marigo_2008} set, while our code employs
+the newer~\citealp{Bressan_2012} set), and binarity (MASSCLEAN does not support
+the addition of binaries).
+
+Again, we can clearly see that these synthetic CMDs do not represent
+the CMDs of the observed clusters. If these observed clusters had the large
+masses estimated by other works, the number of stars that should be
+present in their CMDs would need to be much larger than the number we
+actually observe.
+On average, we should observe between 120\%-570\% more stars if
+we compared with the entire cluster region (no decontamination process applied),
+and between 1200\%-1900\% if we compare with the cluster region after
+removing the contaminating field stars.\\
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{figs/massclean_mass.png}
+    \caption{Synthetic CMDs for NGC 1917, 419, and 1751 produced by the
+    MASSCLEAN package, using their large mass estimates.}
+\label{fig:massclean_mass}
+\end{figure}
+
+
+\noindent \emph{* \textbf{Concluding remarks}}\\
+
+The conclusion that can be drawn from this analysis is thus equivalent to that
+presented in the article: these Magellanic clusters have had their masses
+overestimated by a substantial amount in the H03 and P12
+works~\citep[and others too, i.e. the][article mentioned by the referee]
+{Goudfrooij_2014}.
+The link between these studies is the use of integrated magnitudes to derive
+masses.
+
+Finally, to reinforce this notion we refer the referee to Appendix A of the
+original article.
+The validation there performed shows that \texttt{ASteCA} recovers
+masses with very reasonable accuracy. Furthermore, the masses are recovered with
+increased accuracy, as the clusters grow larger. Having used an external
+package (MASSCLEAN) to generate the almost 800 synthetic clusters used in this
+validation, there is no possibility for internal biases in the mass
+determination.
+Again, this leads to the same conclusion: \texttt{AsteCA} is performing a proper
+estimation of masses within its uncertainties, and the cause of the discrepancy
+between the masses must be located in those articles where the classical method
+of mass estimation via integrated magnitudes is employed.
+
+
+% 20
+\subsection{}
+Corrected, as suggested by the referee.
+
+% 21
+\subsection{}
+Corrected, as suggested by the referee.
+
+% 22
+\subsection{}
+As the luminosity of a star cluster decreases with age, the oldest clusters that
+can be detected are those with the largest masses (and hence larger radii)
+This is discussed for example in~\citet[][Sect. 4]{Popescu_2012}.
+Fig.~\ref{fig:popescu_2012} shows Fig. 16 from that article, where a fading
+limit is shown (black line) and the LMC clusters can be seen to increase in mass
+as their ages increase.
+We've added a reference to this effect and the above mentioned article.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=5in]{figs/popescu_2012.png}
+    \caption{Figure taken from Popescu et al. (2012, Sect. 4)}
+\label{fig:popescu_2012}
+\end{figure}
+
+% 23
+\subsection{}
+The referee is right to point this out (this discussion was actually in the
+first draft of our article, but we cut it to save space).
+If this group of three ``high'' metallicity and ``old'' age ($\log(age)\ge9.5$)
+LMC clusters is removed, the peak disappears and hence, so
+does the drop. In Fig.~\ref{fig:amr_no_high_met} we show how the LMC's AMR
+would look without these three clusters present.
+We've added a couple of sentences in the corresponding paragraph of the article,
+addressing this effect.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=4in]{figs/AMR_asteca_no_lmc_high_met.png}
+    \caption{\texttt{ASteCA} AMR without the three old LMC clusters with
+    high metallicities values.}
+\label{fig:amr_no_high_met}
+\end{figure}
+
+% 24
+\subsection{}
+We believe we have addressed the issues brought up by the referee in this cover
+letter, particularly in Sects.~\ref{sec:18} and~\ref{sec:19}, regarding the mass
+assignment performed by the code.
+As such, seeing no reason to alter them, we stand by our original conclusions
+which we soften changing ``are shown'' to ``appear'', and ``moderate'' to
+``better''.
+
+%-------------------------------------------------------------------
+\bibliographystyle{aa}
+\bibliography{biblio} % your references Yourfile.bib
+
+\end{document}

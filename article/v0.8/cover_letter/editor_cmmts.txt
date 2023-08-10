@@ -1,0 +1,15 @@
+
+From an editorial point of view - I do notice that you have used a lot of
+footnotes. I think that many of these actually belong in the text itself,
+because the information is actually necessary, not additional. You make people
+do a lot of extra work to find so many footnotes.
+
+1- put information only in main text (not as footnote): 12 ,13, 14, 16, 18, 19,
+20, 21, 22, 23, 24, 25, 26, 27, 28, 39
+and for footnotes 1, 17 - just put the web address in the footnote (ie. put the
+description in the main text) otherwise the main text is not quite clear.
+
+2- Please also check that you reference proposal IDs correctly. I know ESO asks
+for this (either as a footnote to the paper title or in the acknowledgements).
+It might be that other observatories also would like you to do this, or in some
+way acknowledge use of their facilities.

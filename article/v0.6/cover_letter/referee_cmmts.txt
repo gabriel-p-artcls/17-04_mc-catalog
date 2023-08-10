@@ -1,0 +1,281 @@
+First a few general concerns:
+
+A. All figures show up at low resolution in my PDF copy. They are quite hard to
+   read (especially the labels), sometimes not at all. Can that be improved in
+   the revised version?
+[from editor: this might be what the office had to do to make the manuscript a
+reasonable size to distribute]
+B. The paper is rather long and I believe the text can be shortened by some
+   20-30% without loss of relevant information. I would advise the authors to
+   try to "compress" the paper to make it more accessible.
+
+Below I mention my comments and questions regarding the paper in the order they
+occur in the manuscript. Each comment or question is given a label "ADVISORY" or
+"MANDATORY". These labels indicate whether I think the comment is just a
+suggestion or something that needs to be addressed, respectively.
+
+1. Sect. 1, near end of paragraph 3 (end of page 1):
+- "Therefore, the study of star clusters affected by a significant amount of field
+  star contamination, observed with fewer filters, and without information about
+  its dynamics, should result significantly more complicated."
+
+  This sentence is not in correct English and rather confusing. Please attempt
+  to improve this sentence.
+ADVISORY
+
+
+2. Sect. 1, paragraph 4 (top left of page 2):
+- I appreciate that "by eye" isochrone fitting studies can suffer from the
+  shortcomings listed here, but not every photometric study of physical
+  parameters of star clusters does this "by eye". There are certainly published
+  studies that have done such fitting in a more rigorous way! Here are a few
+  examples:
+  Mackey & Broby Nielsen, 2007, MNRAS, 379, 151
+  Goudfrooij et al. 2011, ApJ, 737, 3
+  Dias et al. 2014, A&A, 561, A106
+  The way this paragraph reads, it sounds like pretty much every study so far
+  was done by eye. If that is not what the authors wanted to convey, please try
+  to change the wording.
+ADVISORY
+
+
+3. Sect. 2:
+- Please (briefly) explain why the authors chose these particular datasets for
+  this study.
+MANDATORY
+
+
+4. Sect. 3.1, paragraph 1:
+- Here (and in other sections of the paper as well) you mention "parameters
+  values" a few times. The correct statement is "parameter values".
+ADVISORY
+
+
+5. Sect. 3.1, paragraph 1:
+- "Especial care" -> "Special care"
+ADVISORY
+
+
+6. Table 3:
+- Why choose such a small value for the max. cluster mass? There are MC clusters
+  with larger masses (as the paper discusses in Sect. 5.2.1 later). One could
+  imagine that for masses > 1e4, the system could pick a larger step (say 2000)
+  and then choose a larger max. mass like (say) 2e5 Msun.
+MANDATORY
+
+
+7. Figure 2:
+- First, place add a panel showing a 2-D greyscale (or color) image of the
+  cluster region for comparison.
+- Second, the "green crosses" in the top right panel show up as light blue in my
+  PDF copy.
+ADVISORY
+
+
+8. Sect. 3.4, paragraph 1:
+- Looking at Figure 2, it seems to me that the synthetic CMDs only contain stars
+  down to a given limiting magnitude (T1 = 22 in Figure 2, apparently?). I don't
+  see this mentioned in this Section. Please do so.
+MANDATORY
+
+
+9. Sect. 3.4, paragraph 2:
+- Do I understand correctly that there is only one synthetic CMD produced for a
+  given cluster? If so, how are stochastic fluctuations being accounted for in
+  deriving the goodness of fit (i.e., the PLR and LPLR)? Please explain.
+MANDATORY
+
+
+10. Sect. 4, paragraph 1:
+- "... a detailed error treatment is usually ignored in articles ..."
+
+  I judge this as an overgeneralization. I would suggest to change "usually" to
+  something like "often".
+ADVISORY
+
+
+11. Sect. 4, paragraph 2:
+- "In Fig. 3 we show the distribution of the standard deviations versus the five
+  fundamental parameters ..."
+
+  "versus" should be "of" if I understand this sentence correctly.
+ADVISORY
+
+
+12. Figure 3: The labels and values along the axes are not readable in my PDF
+    copy. Please enlarge.
+MANDATORY
+
+
+13. Sect. 4, paragraph 5:
+- "The apparent dependence of the metallicity error with decreasing [Fe/H]
+  values arises from the fact that ASteCA uses Z values ..."
+
+  Why is ASteCA using Z instead of [Fe/H] (or [M/H] or Z/Z_sun)? Sounds like an
+  unfortunate choice to me, for the reason brought up here (and others as
+  well). Please explain why this choice was made.
+  This same issue also comes up in Appendix A.1, paragraph 2.
+MANDATORY
+
+
+14. Sect. 5.1, paragraph 2:
+- "First, the MC's star clusters are generally considered to have low
+  metallicities."
+
+  I don't think that is true. [Fe/H] values of -0.7 to -0.4 dex are hardly "low
+  metallicity" for star clusters.... relative to what?
+  And even if so, why would researchers prefer to choose a value on the low side
+  rather than the high side??? Please explain.
+MANDATORY
+
+
+15. Sect. 5.1, paragraph 2:
+- "Researchers also tend to fit isochrones adjusting it to the lower envelope of
+  a cluster’s sequence; which also contributes to the selection of isochrones of
+  smaller metallicity."
+
+  It is not that simple. There is a good reason for that choice by researchers,
+  namely that isochrones should be fit to the SINGLE stars in star clusters. The
+  binary stars are "above and to the right" of the single stars (when the
+  sequence in question is not vertical on the CMD), and hence one should in fact
+  fit isochrones to the "lower envelope" of those sequences. Please address this
+  in your text.
+MANDATORY
+
+
+16. Sect. 5, paragraph 6 (top of page 9):
+- "... the distance to clusters in the latter is always assumed to be a fixed
+  constant equivalent to the distance to the center of the corresponding
+  galaxy."
+
+  That is again an overstatement. Several studies (such as those mentioned in my
+  point 2 above) do properly fit the distance modulus to the CMD data. Please
+  rephase (e.g., mention "often" rather than "always").
+MANDATORY
+
+
+17. Sect. 5, paragraph 7 (2nd paragraph on page 9):
+- "The identity plot (top) shows a trend ..."
+
+  That's an unusual name for such a plot. I'd suggest to just mention something
+  like "The top panel shows a trend ..."
+ADVISORY
+
+
+18. Sect. 5.2, paragraph 9 (near bottom of page 9):
+- "In contrast, ASteCA assigns cluster masses taking their values directly from
+  the best match synthetic CMD. Field star contamination will thus have a much
+  lower influence on the code’s mass estimate, limited just to how effective the
+  DA is in cleaning the cluster region." (etc etc)
+
+  One issue that I don't understand from the explanations in this paper is how
+  exactly ASteCA determines cluster masses. Specifically, as I mentioned in my
+  point #8 above, it looks like ASteCA only takes stars above a certain
+  brightness threshold into account. How then does ASteCA account for the mass
+  associated with the fainter stars? Does it extrapolate based on a Chabrier
+  IMF?
+  Apart from that, how does ASteCA account for the fraction of the cluster's
+  mass that is located outside the "cluster radius" that it assigns (which
+  apparently is the radius where the star number density equals that of the
+  "background" if I understood correctly). That fraction of mass will depend on
+  the intrinsic mass profile of the cluster (say its King core radius and
+  concentration parameter) and the cluster radius assigned by ASteCA.
+  I don't see anything here, or in Sect. 5.2.1, or in Appendix A that clarifies
+  these issues.
+  Actually, I'm wondering whether the big discrepancies in mass estimates
+  discussed in Sect. 5.2.1 could be explained in part by issues like this (see
+  my next point). A more thorough explanation of this would be appreciated.
+MANDATORY
+
+
+19. Sect. 5.2.1:
+- In this very long section on the cluster mass discrepancies, it is only at the
+  end that the authors describe a correlation between the logarithmic
+  differences in mass and those in age when comparing results of two studies
+  (see Figs. 10 and 11). I was thinking about this possibility all along while
+  reading this Section - after all, M/L correlates strongly with age.
+  I would like the authors to take the differences in age between two studies
+  into account when comparing their respective cluster masses. I.e., please plot
+  and compare the logarithmic mass differences AFTER having corrected for the
+  different M/L ratios associated with the differences in assigned log(age) by
+  the two studies. The RESIDUAL differences in mass are the ones that should be
+  discussed here.
+  By the way, I looked in the literature for other mass determinations for the
+  three clusters NGC 419, NGC 1917, and NGC 1751, i.e., the ones for which
+  ASteCA estimated masses much smaller than for the DBs. See below:
+  - For NGC 1917 I don't find direct mass determinations other than the two
+    referred to in this paper, but I see that van den Bergh (1981, A&AS, 46, 79)
+    lists V = 10.25 within an aperture of 62 arcsec. For log(age) = 9.15 and m-M
+    = 18.48 as found by ASteCA, z = 0.008, and the Bruzual & Charlot (2003) SSP
+    models, V = 10.25 corresponds to a mass of ~8e4 Msun for a Chabrier IMF,
+    very similar to the masses reported by H03 and P12.
+  - for NGC 419 and NGC 1751 I see that Goudfrooij et al. (2014, ApJ, 797, 35)
+    determined masses of ~2.4e5 Msun and ~6.5e4, respectively. They did account
+    for the fraction of cluster mass outside a given measurement aperture. The
+    ages and metallicities they determined are very similar to the average of
+    the ages and metallicities estimated by the studies referred to in this
+    paper. They used a Salpeter IMF; for a Chabrier IMF their masses translate
+    to 1.9e5 and 6e4 for NGC 419 and NGC 1751, respectively. Again, MUCH closer
+    to the mass estimates by H03 and P12 than to the ASteCA one. And the
+    differences in age assignments by ASteCA versus the other studies are minor
+    in these cases, and certainly cannot explain the big differences in mass
+    determinations. As such I get the impression that there may be problems with
+    the mass determinations by ASteCA, at least for these massive clusters. I
+    would like the authors to address and/or study this concern for the next
+    version.
+MANDATORY
+
+
+20. Sect. 6.2, paragraph 2 (near top right on page 15):
+- "A distinct period of cluster formation is visible in the LMC starting around
+   the ~5 Gyr mark, which lasted up to ~1.3 Gyr ago."
+
+   Given the strong rise seen in the age distribution for the LMC between ~5 and
+   ~1.3 Gyr ago, I would strongly suggest stating "... which culminated ~1.3 Gyr
+   ago."
+ADVISORY
+
+
+21. Sect. 6.2, a bit later in paragraph 2:
+- "The height difference between the SMC and LMC KDEs is related to the decline
+   in cluster formation."
+
+   I would advise stating "... the relative decline in cluster formation."
+ADVISORY
+
+
+22. Sect. 6.2, paragraph 5:
+- "In both Clouds there is a tendency for the mass and the size of the cluster,
+   to grow with the estimated age, as expected."
+
+   Please explain why this is as expected.
+MANDATORY
+
+
+23. Sect. 6.3, paragraph 7 (right side on page 17):
+- "For the LMC galaxy, Fig. 14 center plot, we see a marked drop in metallicity
+  from ~-0.45 dex beginning around 3.8 Gyr, and ending 3 Gyrs ago at ~ -0.6
+  dex."
+
+  Looking at the top panel of Fig. 14, it seems tht this apparent drop is caused
+  by 3 (small) clusters at the "old" end of the age range covered by the data
+  that happen to have relatively high values of [Fe/H]. Do the authors really
+  believe this drop is statistically significant?
+ADVISORY
+
+
+24. Sect. 7, paragraph 2:
+- "Internal errors show no biases present in our determination of fundamental
+   parameters, as seen in Sect. 4."
+
+- "We performed in Sect. 5.2.1 a detailed comparative study of masses obtained
+  through integrated photometry studies, with our own estimates from CMD
+  analysis. The total mass values from the latter studies are shown to be
+  systematically overestimated. This result is opposite to the expectation that
+  larger clusters can have their masses recovered with moderate accuracy, via
+  integrated photometry."
+
+   I would advise the authors to reconsider these two statements after looking
+   into the apparent issue with cluster mass determinations brought up above in
+   my points 18 and 19.
+ADVISORY

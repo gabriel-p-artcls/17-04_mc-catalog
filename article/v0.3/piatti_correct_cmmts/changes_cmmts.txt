@@ -1,0 +1,284 @@
+
+
+# Comentarios sobre los cambios propuestos por Piatti (2016-07-25)
+
+
+## Título
+
+* Aceptado nuevo título propuesto.
+
+
+
+## Abstract
+
+* Aims: modif aceptada pero usando "catalog" en lugar de "database".
+
+* Methods: 2da orac, mantengo "color" ya que el artículo está escrito en inglés
+Americano (de la misma manera que escribí el anterior). Lo mismo vale para
+"catalog" vs "catalogue".
+
+* Results: mantego oración "A detailed internal error analysis..", con algunas
+modificaciones. El cambio propuesto "We studied the spatial distribution.." no
+es correcto ya que no realizamos ningún estudio sobre la distribución espacial
+de los cúmulos. Quito la palabra "spatial" y mantengo el resto.
+
+
+
+## 1. Introduction
+
+* 5: mantengo "coeval"
+
+* 5,6: mantengo "share a chemical composition"
+
+* 9: no entiendo donde iría "to study"
+
+* 32-37: publicar los resultados (y/o los datos crudos) permite hacer una
+comparación con otros, pero si no se publica el método utilizado no es posible
+determinar con certeza cual es la naturaleza de las diferencias encontradas
+entre diferentes grupos de resultados.
+Lo que decís en el segundo párrafo está mencionado más abajo en el artículo.
+
+* 44: "depending on the isocrones used." --> "depending on the isocrones
+and the filters used." Ya que no sólo dependen de las isócronas, sino de las
+combinaciones de filtros utilizadas.
+
+* 59-63: los puntos b) a d) no están incluidos en a). Un investigador podría
+ajustar a mano (ojo) miles (o millones si fuera posible) de isócronas sobre un
+CMD y aún así: no estaría tomando en cuenta las correlaciones (para esto hay que
+ajustar todos los parámetros al mismo tiempo, no fijar de a uno e ir ajustando
+los restantes), ni podría evaluar los errores (esto se hace mediante la técnica
+de bootstrap o alguna similar, imposible de hacer a mano), ni podría dar valores
+finales que no sean subjetivos (al contrario, siempre van a ser subjetivos si
+el ajuste es a ojo)
+
+* 71: añado "mostly", mantengo "positional" (ya que el código hace uso de las
+coordenadas en su análisis)"
+
+* 78: mantengo "astrophysical"
+
+* 117: quito "spatial" del texto sugerido, la distribución analizada es de los
+"fundamental parameters" en sí, no espacialmente.
+
+
+
+## 2. Clusters sample
+
+* 131-134: mantengo "These nineteen (...) in the current study". La diferencia
+entre los artículos agrupados com "literature" y aquellos agrupados como
+"databases" es necesaria más adelante.
+
+
+
+### 3.1. Ranges for fitted fundamental parameters
+
+* 186: dejo "model" ya que es una manera alternativa (y estadísticamente
+correcta) de referirnos a los CMDs sintéticos, usada más adelante.
+
+* 189-198: el tiempo que toma se vuelve una variable importante cuando la
+cantidad de modelos permitidos (puede llegar fácilmente a 1x10^9) hace que
+crezca a semanas, meses o más.
+Un rango siempre es necesario en todo código numérico, lo importante es que no
+direccione las soluciones a valores no razonables. ASteCA siempre va a dar como
+resultado una solución óptima (o muy cercana, dependiendo de cuanto tiempo se
+deje correr el algoritmo genético) dentro del rango utilizado. Un código
+numérico que no dependa de estos valores no existe, la única manera sería
+resolviendo una ecuación matemática con solución única.
+Los rangos dados sirven mayormente para evitar que el código pierda tiempo
+evaluando soluciones físicamente imposibles (como que el cúmulo pertenezca a la
+MW).
+En el artículo no decimos que el código funcione "sin ayuda", sino que funciona
+mayormente sin asistencia ("mostly unassisted", "almost entirely unassisted").
+
+* 204-206: no es verdad que el rango [Fe/H]=[-2.2, 0.] cubra por completo las
+metalicidades usualmente estimadas en las MCs?
+
+* 217-224: añadí comentario sobre los valores dados por el mapa de Schlafly.
+Siendo estos últimos menores que los del mapa MCEV, y dado que los valores de
+MCEV se usan como máximos, no hay sesgo inducido.
+
+* 230: el factor de 1.38 de Tammann es el dado por el servicio MCEV:
+http://dc.zah.uni-heidelberg.de/mcextinct/q/cone/info
+
+* 234: el rango +-0.1 mag para los módulos de distancia cubre mitad de las
+average "lines of sight depths" dadas en Subramanian & Subramanian (2009).
+Dado que los estudios hechos a ojo fijan estos valores (ni siquiera les permiten
+variar) y aún así reportan parámetros estimados, no veo como dejarlos variar 0.2
+mag alrededor de sus valores centrales pueda ser perjudicial.
+
+* 242: no me queda claro de que manera no es un rango similar al observado? Para
+la gran mayoría de los cúmulos observados, el límite superior de 10000 Mo es más
+que suficiente. El ~83% de los cúmulos tiene masas <= 5000 Mo.
+
+
+
+### 3.2. Center and radius assignment
+
+* 257: esta parte se refiere a la obtención de centros y radios. En "modo
+automático" estos parámetros son obtenidos sin necesidad de dar ningún input 
+(si se quiere, las restricciones a estos parámetros vienen impuestas por el
+tamaño del frame observado; por eso los rangos pueden obviarse en este modo)
+
+
+
+### 3.3. Field-star decontamination
+
+* 332-333: no comprendo las correcciones hechas. La oración quedaría:
+"..., a skipping Bayesian MP assignation with a density based cell-by-cell
+statistical field star removal."
+
+
+
+### 3.4. Isochrone fitting
+
+* 364-367: esa oración la puse para explicar por qué no utiliza el método de
+bineado Bayesiano utilizado por el algoritmo de decontaminación. Dado que no
+queda claro (y realmente no es tan importante), quité esa oración.
+
+* 380-386: "to check the performance" no es correcto. Modificado.
+
+* 399-403: es importante explicar por qué se corrió 10 veces solamente el
+bootstrap. En un escenario ideal, este algoritmo debe correrse cientos o miles
+de veces si es posible.
+
+
+
+## 4. Errors in fitted parameters
+
+* 405-409 y 416-427: este punto es de suma importancia, no puede quitarse. La
+posibilidad de relizar un análisis estadístico de los errores es una de las
+principales características que separa al código de un ajuste a ojo.
+* Eq 2, 437-442: la ecuación propuesta es la misma ya que:
+log(e)=1/ln(10)=0.4343
+
+* 446: lo que se resalta es que no hay sesgos visibles. Si los hubiera, como se
+explica abajo, implicaría que el código (en particular el likelihood de Dolhpin
+2002) no podría aplicarse de la misma manera a diferentes rangos de un dado
+parámetro. Por ejemplo, si el error en la edad creciera con la edad (de manera
+lineal, o exponencial, etc), esto sería un sesgo. Claro que habrá cúmulos con
+morfologías más complicadas para los cuales el error será más grande. Esto
+es esperable y no tiene nada que ver con un sesgo interno.
+
+* 464-475: la manera de estimar errores no depende de varios factores, ya que
+es un método estadístico único (bootstrap) el que se utiliza. Lo importante es
+señalar que los errores aquí presentados son una cota máxima, y que en
+condiciones ideales (particularmente si tuvieramos mayor poder de procesamiento)
+podrían disminuir.
+
+
+
+### 5.1. Literature values
+
+* 492: el BA plot original lleva el promedio de ambas variables en el eje x. La
+variación de Krouwer reemplaza esto por una de las dos variables, que actúa como
+"referencia". en nuestro caso, el eje x sigue los valores de ASteCA.
+
+* 504-506: AsteCA no introduce sesgos, esto lo vimos ya en el Paper I, en el
+diagrama de errores mostrado arriba, y en el caso de la metalicidad, en el
+apéndice A donde se analizan los CMDs sintéticos de MASSCLEAN.
+
+* 507-513: no estoy diciendo que esos valores para las MCs no sean razonables,
+todo lo contrario. Son lo suficientemente razonables para que funcionen bien en
+una gran cantidad de casos. Para cúmulos más metálicos, estos valores bajos
+de [Fe/H] no son apropiados y generalmente se utilizan igual por el efecto
+mencionado. Es lo mismo que sucede con cúmulos en la MW, a los cuales se les
+asume por defecto metalicidad solar.
+
+* 515-516: claro, por eso digo que se "tiende" a ajustar de esa manera y no que
+haya sido la manera exacta de ajustar siempre.
+
+* 520-525: esto es un "bug" que se me pasó a mí en una versión anterior del
+código y que voy a corregir para la próxima. Para estar seguro de cuanto afecta
+esto a los valores obtenidos de metalicidad, comparé los valores "reales" dados
+por ASteCA (o sea: sin redondeo) con aquellos "rounded" para toda la muestra.
+Los resultados se muestran en la figura "mets_round_comp.png" que adjunto. Se ve
+claramente que este efecto es mínimo; la diferencia en [Fe/H] encontrada es de
+~0.005. En vista de estos resultados, quito este párrafo del artículo.
+
+* 528-531: como menciono en ese párrafo, esta diferencia en la metalicidad solar
+utilizada solamente da cuenta de 0.1 dex. Siendo que la diferencia promedio en
+metalicidades encontradas es de ~0.2 dex, la otra mitad la asigno al efecto de
+"confirmation bias" por el cual se asumen por defecto los valores (bajos) de
+metalicidad asociados a las MCs, para la mayoría de los cúmulos observados.
+
+* 534-536: me parece importante remarcar esto, ya que los efectos son externos.
+
+* Fig. 4: no me queda claro la pregunta: "está grafica en ordenadas la
+diferencia?" el eje de las ordenadas muestra las diferencias ASteCA menos
+literature, como se menciona en el caption.
+
+* Fig. 4, caption: "decir qué es BA" -> está dicho al pcipio de la sección 5.1
+
+* 552-557: la fracción de binarias no "resuelve el problema" porque no parece
+haber ningún problema a resolver. Justamente se muestra que variando este
+parámetro, las metalicidades obtenidas siguen siendo muy bajas para ambos
+cúmulos. Esto combinado con el valor bajo de metalicidad asignado a NGC294 en el
+trabajo de espectroscopía integrada de Dias, indicaría que estas bajas
+metalicidades son reales.
+No digo que "observamos" una fracción de binarias, sino que se probaron varios
+valores (en los CMD sintéticos generados) para ver como variaba la metalicidad
+con este parámetro.
+Me parece necesario hacer alguna mención sobre estos dos cúmulos ya que sus
+valores muy bajos destacan en los diagramas.
+
+* 568-576: modificada la última oración para dejar en claro que, dadas las
+dispersiones altas, los valores son razonablemente similares.
+
+* 578-584: teniendo en cuenta el comentario sobre la sección "Outliers", agregué
+aquí una linea explicando brevemente las razones por el ajuste discrepante en
+edad. La sección "Outliers" es movida entonces al apéndice.
+
+* 585-588: de acuerdo. Teniendo en cuenta tu comentario y el hecho de que la
+diferencia en edad sea tan pequeña (0.02,0.05 dex para la S/LMC) para los
+valores de ASteCA versus literatura, quito este párrafo.
+
+* 611-620: de acuerdo. Cambié lo de "small distribution", y relativicé la
+diferencia con Hunter. No conozco mapas de 2015-2016 de las nubes, si querés
+reemplazar el valor de Hunter pasame por favor un artículo que te parezca más
+actual, y lo cambio.
+
+* 622-635: no me queda claro esto: "El error 0.1 es más chico que el error
+fotométrico a la altura del turnoff". Hice un cálculo rápido sobre el conjunto
+de 239 cúmulos, para caracterizar el error fotométrico en T1 y (C-T1). En el
+rango T1=[17, 21], (C-T1)=[-0.5, 0.5] (o sea: abarcando el posible turn-off de
+todos los cúmulos) el error promedio es: para T1 menor a 0.03 mag (sólo ~2% de
+las estrellas tienen errores en T1 mayores a 0.1 mag), y menor a 0.06 mag
+para (C-T1) (~15% de las estrellas con errores en (C-T1) mayor a 0.1 mag).
+Va adjunta la imágenes 'T1_photom_errors.png' y '(C-T1)_photom_errors.png' donde
+puede verse esta cálculo. Los puntos verdes son el promedio de error en
+intervalos de 0.5 magnitudes en T1 y 0.1 magnitudes en (C-T1).
+Te referías a esto o a otra cosa?
+
+* Fig. 6: el ajuste de la izquierda no se ve razonable porque el DA quita
+prácticamente todas las estrellas debajo de T1=19 mag (esto mismo pasa en Maia
+et al. (2013)). Como al cúmulo, después de esto, no le quedan estrellas débiles,
+el código ajusta con un cúmulo sintético muy joven y de baja masa, que es
+numéricamente el mejor ajuste.
+Cuando en el DA se evita el "cell-by-cell removal" de estrellas, quedan todas
+esas estrellas débiles en el CMD, y ahora sí el ajuste parece más razonable.
+Lo que hay que tener en cuenta es que este ajuste depende ahora de todas estas
+estrellas débiles que no se están quitando, y que seguramente pertenecen al
+campo. Cabe la pósibilidad de que B48 no sea un cúmulo sino una asociación de
+estrellas OB.
+No estoy diciendo que los CMD limpios de M13 estén más sucios que los de ASteCA.
+Lo que digo es que M13 utiliza los CMDs observados para inferir masas de sus
+LFs (extrapoladas a masas estelares menores), mientras que ASteCA toma las masas
+de los cúmulos directamente de los CMD sintéticos que produce.
+Idealmente en M13 debería haberse hecho un análisis aplicando su método de
+estimación de masas sobre un grupo importante de cúmulos sintéticos.
+Esto es justamente lo que hice en el Apéndice sobre las masas. Chequeando en
+detalle encuentro que ASteCA puede subestimar las masas de cúmulos de baja masa 
+(en particular <1000 Mo), alrededor de 250 Mo. Esto explicaría la mitad de esa
+diferencia de ~500 Mo.
+
+## Appendix A / Appendix B
+
+* Pags 23-42: "no sigue evolución de upper MS". Este efecto también lo vimos en
+el Paper I. Cuando ASteCA ajusta estas isócronas (en general más jovenes), es
+porque el likelihood de Dolphin no encuentra beneficio (estadístico) en ajustar
+una más vieja. La diferencia es que el observador ajusta a ojo asumiendo 
+(prácticamente siempre) que la parte superior de la secuencia es un punto
+de turn-off, mientras que el código no asume esto por defecto (no asume nada
+por defecto). Solamente ajustará de esa manera si resulta en un beneficio 
+(minimización) de la ecuación de likelihood.
+Esto está explicado en la sección 'Outliers', movida al 'Appendix B'.
+

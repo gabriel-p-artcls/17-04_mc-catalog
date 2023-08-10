@@ -1,0 +1,3037 @@
+%                                                                 aa.dem
+% AA vers. 8.3, LaTeX class for Astronomy & Astrophysics
+% demonstration file
+%                                                       (c) EDP Sciences
+%-----------------------------------------------------------------------
+%
+% \documentclass[referee]{aa} % for a referee version
+%\documentclass[onecolumn]{aa} % for a paper on 1 column  
+%\documentclass[longauth]{aa} % for the long lists of affiliations 
+% \documentclass[rnote]{aa} % for the research notes
+%\documentclass[letter]{aa} % for the letters 
+%\documentclass[bibyear]{aa} % if the references are not structured 
+%                              according to the author-year natbib style
+
+%
+% \documentclass[draft]{aa}
+\documentclass{aa}
+
+%
+\usepackage{graphicx}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{txfonts}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{natbib,twoopt}
+\usepackage[breaklinks=true]{hyperref} %% to avoid \citeads line fills
+% To add links in your PDF file, use the package "hyperref"
+% with options according to your LaTeX or PDFLaTeX drivers.
+%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% New commands that marks parts that need work.
+\usepackage{xcolor}
+\newcommand{\finish}{\textcolor{red}{\textbf{$\;\;$<-- FINISH -->$\;\;$}}}
+\newcommand{\cmmt}[1]{\textcolor{red}{\textbf{$\;\;$<-- \MakeUppercase{#1}
+-->$\;\;$}}}
+\usepackage[switch]{lineno}
+\linenumbers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document} 
+
+\title{Homogeneous analysis of 239 Magellanic star clusters with \texttt
+{ASteCA}}
+\subtitle{}
+
+   \author{G.I. Perren
+          \inst{1,3}\thanks{\email{gabrielperren@gmail.com}}
+          \and
+          A.E. Piatti
+          \inst{2,3}
+          \and
+          R.A. V\'azquez\inst{1,3}
+          }
+
+   \institute{Facultad de Ciencias Astron\'omicas y Geof\'{\i}sicas (UNLP),
+              IALP-CONICET, La Plata, Argentina
+        \and
+        Observatorio Astron\'omico, Universidad Nacional de C\'ordoba,
+        C\'ordoba, Argentina
+        \and
+        Consejo Nacional de Investigaciones Cient\'{\i}ficas y T\'ecnicas
+        (CONICET), Buenos Aires, Argentina\\
+    }
+
+   \date{Received September 15, 1996; accepted March 16, 1997}
+
+% \abstract{}{}{}{}{} 
+% 5 {} token are mandatory
+ 
+\abstract
+% context heading (optional)
+% {To investigate the physical nature of the `nuc\-leated instability' of
+% proto giant planets, the stability of layers
+% in static, radiative gas spheres is analyzed on the basis of Baker's
+% standard one-zone model.}
+{}
+% aims heading (mandatory)
+{To present a catalog of 239 resolved star clusters located in the Small and
+Large Magellanic Clouds, with their fundamental parameters fully estimated. All
+the clusters were observed in the Washington photometric system.}
+% methods heading (mandatory)
+{Our entire cluster sample was processed with the recently introduced Automated
+Stellar Cluster Analysis (\texttt{ASteCA}) package, which ensures both an
+automatized and fully reproducible treatment, together with a statistically
+based obtention of their fundamental parameters and associated uncertainties.
+%
+The main parameters determined with this tool for each cluster, via a
+color-magnitude diagram (CMD) analysis, are: metallicity, age, extinction, true
+distance modulus, and total mass.}
+% results heading (mandatory)
+{We generate a truly objective and homogeneous catalog composed of structural
+properties for each cluster, along with a complete determination of their
+fundamental parameters.
+%
+A detailed internal error analysis and a thorough comparison with values taken
+from twenty-six published articles is also performed.
+%
+We present a study of the distribution of all fundamental parameters in
+both Clouds, along with the obtention of a new age-metallicity relation derived
+from our homogeneous set of star cluster's ages and metallicities.}
+% conclusions heading (optional), leave it empty if necessary 
+{The \texttt{ASteCA} package is shown to be capable of being applied to the
+unsupervised determination of fundamental cluster parameters; a task of
+increasing importance as more data becomes available through upcoming surveys.}
+
+\keywords{catalogs -- galaxies: fundamental parameters -- galaxies: star
+clusters: general -- Magellanic Clouds -- methods: statistical -- techniques:
+photometric}
+
+\maketitle
+%
+%________________________________________________________________
+
+\section{Introduction}
+\label{sec:intro}
+
+The study of a galaxy's structure, dynamics, star formation history, chemical
+enrichment history, etc., depends heavily on the analysis of its star clusters.
+These galactic building blocks are made up of a varying number of coeval stars
+which share a chemical composition, are located at the same distance, and
+affected by roughly the same amount of reddening. All these factors greatly
+facilitate the obtention of their fundamental parameters, and thus the
+properties of the host galaxy.
+%
+New developments in astrophysical software allow the homogeneous
+processing of different types of star clusters' databases. The article series
+by Kharchenko et al. 
+\citep[see][and references therein]{Kharchenko_2005,Schmeja_2014}
+and the integrated photometry based derivation of age and mass for 920 clusters
+presented
+in~\cite{Popescu_2012}\footnote{Based on their MASSsive CLuster Evolution and
+ANalysis (MASSCLEAN) package: \url{http://www.massclean.org/}}, are examples of
+semi-automated and automated packages applied on a large number of clusters.
+
+Such tools notwithstanding, there is no guarantee that employing a homogeneous
+method will result in similar -- much less unique -- parameter values
+across different studies. This is particularly true when the methods require
+user intervention, which inevitably makes the results subjective to some degree.
+%
+In~\cite{Netopil_2015} the parameters age, extinction, and distance are
+contrasted throughout seven published databases, for open clusters matched
+across them (metallicity is not inspected as this quantity is usually assumed
+rather than adjusted).
+The authors find that all articles show non-negligible offsets among each
+other, in the reported parameter values for the studied star clusters.
+%
+This result underscores an important issue.
+Most of the times CMD isochrone fits are done by-eye, adjusting correlated
+parameters independently, and often omitting any kind of proper error treatment
+\citep[see][for a more detailed description of this problem]{vonHippel_2014}.
+When statistical methods are employed, the used code is seldom publicly
+shared to allow scrutiny by the community. There is then no objective way to
+asses the underlying reliability of each set of results.
+Lacking this basic audit, the decision of which database values to use
+becomes a matter of preference.
+
+% Furthermore,
+As demonstrated by~\cite{Hills_2015}, assigning precise fundamental
+parameters for an observed cluster (OC) is not a straightforward task. Using
+multiple combinations of up to eight filters ($UBVRIJHK_s$) and three stellar
+evolution models, they process an open cluster with their Bayesian isochrone
+fitting technique\footnote{BASE-9: 
+\url{http://webfac.db.erau.edu/~vonhippt/base9/}}, and arrive at statistically
+different results for its final parameter values.
+%
+The above study was performed on NGC188, a ${\sim}4$ Gyr Milky Way OC with a
+well defined sequence that is rather unaffected by field star contamination, and
+with proper motions and radial velocities data available.
+One can therefore expect that analyzing clusters with a complex or non-standard
+morphology, affected by a significant amount of field star contamination,
+observed with fewer filters, and without information about its dynamics (i.e.:
+a rather standard situation), will be significantly more complicated.
+%
+A mismatch between several theoretical evolutionary models among themselves,
+along with an inability to reproduce OCs in the unevolved main sequence
+range, had already been reported in~\cite{Grocholski_2003}.
+
+The aforementioned difficulties in the analysis of an OC will only increase if
+the study is done by-eye, since: a) the number of possible solutions manually
+fitted is several orders of magnitude smaller than what a code can
+handle, b) correlations between parameters are almost entirely disregarded, c)
+uncertainties can not be assigned through valid mathematical
+means -- and are often not assigned at \mbox{all --}, and d) the final values
+are necessarily highly subjective.
+%
+The need is clear for an automated general method with a fully open and
+extensible code base, that takes as much information into account as possible,
+and is capable of generating reproducible results.\\
+
+In~\cite{Perren_2015} (hereafter Paper I) we presented the Automated STEllar
+Cluster Analysis
+(\texttt{ASteCA}\footnote{\texttt{ASteCA} is released under a general public
+license (GPL v3; \url{https://www.gnu.org/copyleft/gpl.html}) and
+can be downloaded from its official site: \url{http://asteca.github.io}})
+package, aimed towards allowing a more accurate and comprehensive study of star
+clusters.
+Through an unassisted process the code analyses an OC's positional and
+photometric data to derive its fundamental parameters, along with their
+uncertainties.
+\texttt{ASteCA} was applied on a group of 20 observed Milky Way open clusters
+in Paper I. As shown in that article, the code is able to assign precise
+parameter values for OCs with low to medium field star contamination, and gives
+reasonable estimations for heavily contaminated OCs.
+Every part of this astrophysical package is open and publicly available, and its
+development is ongoing.
+
+In the present work we apply \texttt{ASteCA} on 239 OCs from the Small and Large
+Magellanic Clouds (S/LMC), distributed up to ${\sim}5^{\circ}$ and ${\sim}8^
+{\circ}$ in angular distance from their centers, respectively.
+%
+The Magellanic Clouds (MCs) are located close enough to us to allow the study of
+their resolved star clusters. The large number of cataloged
+OCs -- $\sim4000$ are listed in the~\cite{Bica_2008} catalog -- makes them an
+invaluable resource for investigating the properties of the two most massive
+galaxies that orbit the Milky Way.
+%
+The reddening that affects the MCs is relatively small,
+except for a few regions like 30 Doradus in the LMC, where $E_{B-V}$
+extinction can reach values above $0.4$ mag~\citep{Piatti_2015b}.
+The overall low levels of extinction further simplifies the research of these
+two galaxies, through the obtention of their clusters' parameters.
+%
+We make use of the $CT_1$ filters of the Washington photometric
+system~\citep{Canterna_1976,Geisler_1996}, which are known to produce a color
+that is highly sensitive to metal abundance \citep{Geisler_1999}.
+The results obtained here regarding the metal content of the clusters in our
+sample, are thus of clear relevance for the analysis of the MCs chemical
+enrichment history.
+
+This is the first study where such a large sample of resolved star clusters is
+homogeneously analyzed in an automatic way, with all of their fundamental
+parameters statistically estimated rather than fitted by eye or fixed a priori.
+%
+Having metal content assigned for 100\% of our sample is particularly
+important, especially considering the state of other catalogs. The latest
+version of the well known DAML02 database\footnote{Latest version: v3.5, 2016
+Jan 28; \url{http://www.wilton.unifei.edu.br/ocdb/}}
+\citep{Dias_2002} for example, reports abundances for only 13\% out of the 2167
+clusters it contains. Estimations for the total cluster mass are almost never
+given, except for a few works were integrated photometry is employed.
+
+This article is structured as follows.
+In Sect.~\ref{sec:clust-sample} we present the OC sample used in
+this work along with the twenty-six studies used to compare and validate our
+results.
+Sections~\ref{sec:fund-params} and~\ref{sec:errors-fit} describe the obtention
+of the fundamental parameters found with \texttt{ASteCA}, and analyze their
+uncertainties respectively.
+In Sect.~\ref{sec:comp-pub-data} a detailed comparison of our results with
+published values from the aforementioned articles is performed.
+Sect.~\ref{sec:param-dist} shows how the fundamental parameters obtained with
+\texttt{ASteCA} for both Clouds are distributed, along with the galaxies'
+age-metallicity relations.
+We give in Sect.~\ref{sec:summ-concl} a summary of our results and concluding
+remarks.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Observed clusters sample}
+\label{sec:clust-sample}
+
+The data used in this work consists of $CT_1$ Washington photometric system
+magnitudes and their errors, for the 239 OCs that comprise our sample.
+The majority of the OCs, 150 out of the 239, belong to the LMC while the
+remaining 89 belong to the SMC.
+%
+In Fig.~\ref{fig:ra-dec} we show the distribution of all OCs in both MCs,
+along with the entire set of star clusters from the~\cite{Bica_2008} database
+for reference.
+
+\begin{figure}
+\centering
+\includegraphics[width=\hsize]{figures/RA_DEC.png}
+\caption{Distribution of our set of analyzed OCs, shown in red, over the~\cite
+{Bica_2008} database of 3740 star clusters (black dots), for both MCs. The
+assumed centers for the Clouds are marked with a green triangle.}
+\label{fig:ra-dec}
+\end{figure}
+
+All OCs in our sample have been previously analyzed and the results published in
+the articles shown in Table~\ref{tab:literature}.
+These nineteen articles can be merged into a single group, whose results
+arise from the analysis of the same $CT_1$ photometry used by \texttt{ASteCA} in the
+current study. From here on we will refer to this group as the ``literature'',
+and the values presented in each of the articles in Table~\ref{tab:literature}
+as ``literature values''.
+Details on the data handling and reduction process can be found in the
+literature, and will not be repeated here.
+%
+Metallicity, age, reddening, and true distance modulus ($\mu_{\circ}$) values
+are assigned for all OCs by the literature articles, except for the 36 clusters
+presented in~\cite{Piatti_2011b} which had only their ages estimated via the
+$\delta T_1$ index \citep{Phelps_1994,Geisler_1997}.
+In most works the metallicity is fixed to $z{=}0.004$ and $z{=}0.008$
+($[Fe/H]{=}-0.7$ dex, $[Fe/H]{=}-0.4$ dex), while the distance modulus values
+are always fixed to $\mu_{\circ}{=}18.5$ mag and $\mu_{\circ}{=}18.9$ mag, for
+the S/LMC respectively.
+Ages and extinctions reported in the literature were in all cases obtained by
+eye, either through the standard isochrone technique or applying the
+$\delta T_1$ index method (for the age parameter).
+%
+\cite{Maia_2013} is the only article that presents total mass estimations for
+their 29 OCs sample.
+
+Our sample of 239 OCs was also cross-matched with a large set of clusters taken
+from seven published articles, shown in Table~\ref{tab:databases}.
+These seven databases can be combined into a single group of works, were
+different photometry was used to obtain the fundamental parameter values for
+each OC.\@
+This group will be referred from here on as the ``databases'' (DBs), as a way to
+distinguish them from the ``literature'' articles mentioned above.
+%
+In Sect.~\ref{sec:comp-pub-data} we show how the parameter values obtained
+by \texttt{ASteCA} for our sample of OCs, compares to those given in both the
+literature and the databases.
+
+\begin{table} 
+\centering
+ \caption{Set of articles where the same $CT_1$ Washington photometric data was
+ used, as that employed by \texttt{ASteCA} in this work.
+ $N$ is the number of clusters present in this ``literature'' database, which
+ are also present in our sample. The CTIO 0.9m, 1.5m, and Blanco 4m
+ telescopes are  located at Cerro Tololo (Chile); the Danish 1.54m telescope is
+ located at La Silla Observatory (Chile).}
+\label{tab:literature}
+ \begin{tabular}{l c c c}
+\hline\hline
+Article & $N$ & Galaxy & Telescope \\
+\hline
+%~\cite{Geisler_2003}, G03 & 8 & LMC & CTIO 0.9m \\ 
+%~\cite{Piatti_2003_0}, P03 & 6 & LMC & CTIO 0.9m \\ 
+%~\cite{Piatti_2003a}, P03a & 5 & LMC & CTIO 0.9m \\ 
+%~\cite{Piatti_2005}, P05 & 8 & SMC & CTIO 0.9m \\ 
+%~\cite{Piatti_2007_0}, P07 & 4 & SMC & CTIO 0.9m \\ 
+%~\cite{Piatti_2007a}, P07a & 2 & SMC & Danish 1.54m \\ 
+%~\cite{Piatti_2007b}, P07b & 2 & SMC & Danish 1.54m \\ 
+%~\cite{Piatti_2008}, P08 & 6 & SMC & Danish 1.54m \\ 
+%~\cite{Piatti_2009}, P09 & 5 & LMC & CTIO 0.9m / Danish 1.54m\\ 
+%~\cite{Piatti_2011_0}, P11 & 14 & SMC & CTIO 1.5m \\ 
+%~\cite{Piatti_2011a}, P11a & 3 & LMC & CTIO 0.9m \\ 
+%~\cite{Piatti_2011b}, P11b & 9 & SMC & Blanco 4m \\ 
+%~\cite{Piatti_2011c}, P11c & 36 & LMC & Blanco 4m \\ 
+%~\cite{Piatti_2011d}, P11d & 11 & SMC & Blanco 4m \\ 
+%~\cite{Piatti_2012a}, P12a & 26 & LMC & Blanco 4m \\ 
+%~\cite{Piatti_2012b}, P12b & 4 & SMC & Blanco 4m \\ 
+%~\cite{Palma_2013}, P13 & 23 & LMC & Blanco 4m \\ 
+%~\cite{Maia_2013}, M13 & 29 & SMC & Blanco 4m \\ 
+%~\cite{Choudhury_2015}, C15 & 38 & LMC & Blanco 4m \\ 
+\cite{Geisler_2003} & 8 & LMC & CTIO 0.9m \\ 
+\cite{Piatti_2003a} & 5 & LMC & CTIO 0.9m \\ 
+\cite{Piatti_2003b} & 6 & LMC & CTIO 0.9m \\ 
+\cite{Piatti_2005} & 8 & SMC & CTIO 0.9m \\ 
+\cite{Piatti_2007a} & 4 & SMC & CTIO 0.9m \\ 
+\cite{Piatti_2007b} & 2 & SMC & Danish 1.54m \\ 
+\cite{Piatti_2007c} & 2 & SMC & Danish 1.54m \\ 
+\cite{Piatti_2008} & 6 & SMC & Danish 1.54m \\ 
+\cite{Piatti_2009} & 5 & LMC & \vtop{\hbox{\strut CTIO 0.9m /}
+                                     \hbox{\strut Danish 1.54m}} \\ 
+\cite{Piatti_etal_2011a} & 3 & LMC & CTIO 0.9m \\ 
+\cite{Piatti_etal_2011b} & 14 & SMC & CTIO 1.5m \\ 
+%
+\cite{Piatti_2011a} & 9 & SMC & Blanco 4m \\ 
+\cite{Piatti_2011b} & 36 & LMC & Blanco 4m \\ 
+\cite{Piatti_2011c} & 11 & SMC & Blanco 4m \\ 
+%
+\cite{Piatti_2012a} & 26 & LMC & Blanco 4m \\ 
+\cite{Piatti_2012b} & 4 & SMC & Blanco 4m \\ 
+\cite{Palma_2013} & 23 & LMC & Blanco 4m \\ 
+\cite{Maia_2013} & 29 & SMC & Blanco 4m \\ 
+\cite{Choudhury_2015} & 38 & LMC & Blanco 4m \\ 
+\hline
+ \end{tabular} 
+\end{table}
+
+\begin{table}
+\centering
+  \caption{Set of articles where different photometric data was used to analyze
+  the OCs sample.
+  $N$ is the number of clusters in each database that could be cross-matched
+  with our set of 239 clusters. The photometry used in each article is shown in
+  the ``Phot'' column.}
+\label{tab:databases}
+ \begin{tabular}{l c c c}
+\hline\hline
+Article & $N$ & Galaxy & Phot\\
+\hline
+\cite{Pietrzynski1999}, P99 & 7 & SMC & $BVI$ \\ 
+\cite{Pietrzynski2000}, P00 & 25 & LMC & $BVI$ \\ 
+\cite{Hunter_2003}, H03 & 62 & S/LMC & $UBVR$ \\ 
+\cite{Rafelski_2005}, R05 & 24 & SMC & $UBVI$ \\ 
+\cite{Chiosi_2006}, C06 & 16 & SMC & $VI$ \\ 
+\cite{Glatt_2010}, G10 & 61 & S/LMC & $UBVI$ \\ 
+\cite{Popescu_2012}, P12 & 48 & LMC & $UBVR$ \\ 
+\hline
+ \end{tabular} 
+\end{table}
+  
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Obtention of observed clusters parameters}
+\label{sec:fund-params}
+
+All the fundamental -- metallicity, age, true distance modulus,
+extinction, mass -- and structural parameters -- center coordinates, radius,
+contamination index, approximate number of members, membership probabilities,
+true cluster probability -- associated with the OCs in our database, were
+obtained either automatically or semi-automatically by the \texttt{ASteCA}
+package.
+%
+A detailed description of the functions built within this tool can be found in
+Paper I, and in the code's online documentation\footnote{\texttt{ASteCA}
+documentation: \url{http://asteca.rtfd.org}}.
+  
+The final catalog, composed of the fundamental and structural parameters for
+the 239 resolved Magellanic star clusters in our sample, can be
+accessed via VizieR\footnote{\url{http://vizier.XXXX}}.
+We've made available online the entire Python codebase developed to analyze
+the data obtained with \texttt{ASteCA} and generate the figures in this
+article.\footnote{\url{https://github.com/Gabriel-p/mc-catalog}}
+%
+In addition, the full output image generated by \texttt{ASteCA} for each
+processed cluster together with its corresponding membership probability file,
+can be accessed separately through a public code
+repository.\footnote{\url{https://github.com/Gabriel-p/mc-catalog-figs}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Ranges for fitted fundamental parameters}
+\label{ssec:param-ranges}
+
+Before \texttt{ASteCA} is able to process an OC, the user is required to provide
+a suitable range for each free (fitted) fundamental parameter. This is
+accomplished by setting a minimum, a maximum, and a step value in the
+appropriate input data file.
+%
+As explained in Sect.~\ref{ssec:isoch-fit}, each single value combination
+for each of the five fundamental parameters fitted represents a unique synthetic
+cluster, or model.
+%
+Hence an interval too broad between the minimum and maximum
+values for a given parameter, or a very small step -- or a combination of
+both -- will result in a large number of possible values.
+The larger the number of values a parameter can access, the larger the number of
+models the code will have to process to find the one with the best match to the
+OC\@.
+%
+For this reason, the allowed ranges and steps were selected to provide
+a balance between a reasonably large interval, and a computationally manageable
+number of total models.
+Especial care must be taken, to avoid defining a range that could bias the
+results towards a particular region of any fitted parameter.
+All ranges can be seen in Table~\ref{tab:ga-range}, with the rationale behind
+each one explained below.\\
+
+% Metallicity
+Unlike most previous works where the metallicity is a pre-defined fixed
+value (usually $z=0.008$ for the LMC and z=$0.004$ for the SMC), we do not make
+any assumptions on the cluster's metal content. The minimum and maximum [Fe/H]
+values selected are [$\sim$-2.2, 0] dex; with a step of $\sim$0.1 dex. This
+interval covers completely the usual metallicities reported for OCs in the MCs.
+% Age
+The age range is set to 1 Myr--12.6 Gyr with a step of
+$\log\mathrm{(age/yr)}=0.05$ dex, encompassing almost the entire allowed range
+of the CMD service\footnote{CMD\@: \url{http://stev.oapd.inaf.it/cgi-bin/cmd}}
+where the theoretical isochrones were obtained from (see
+Sect.~\ref{ssec:isoch-fit}).
+
+% Extinction
+The maximum allowed value for the extinction of each cluster was determined
+through the MCEV\footnote{Magellanic Clouds Extinction Values (MCEV):
+\url{http://dc.zah.uni-heidelberg.de/mcextinct/q/cone/form}} reddening maps
+\citep{Haschke_2011}, while the minimum value is always zero.
+%
+These maps contain a large number of observed areas with assigned $E_{V-I}$
+extinction values.
+The TOPCAT\footnote{TOPCAT\@: \url{http://www.star.bris.ac.uk/~mbt/topcat/}}
+tool was used to query a region as small as possible around the positions of
+each our OCs, for MCEV reddening values.
+For approximately 85\% of our sample we found several
+regions with an associated reddening value, within a box of 0.5 deg centered on
+the OC's position.
+For the remaining OCs, larger boxes had to be used to find regions with assigned
+$E_{V-I}$ values. The two most extreme cases are NGC1997
+($\alpha{=}5^h30^m34^s$, $\delta{=}-63^\circ12'12''$ [J2000.0]) and OHSC28
+($\alpha{=}5^h55^m35^s$, $\delta{=}-62^\circ20'43''$ [J2000.0]) in the outers
+of the LMC, where boxes of 4 deg and 6 deg respectively where needed to find a
+region with an assigned reddening value.
+%
+Once all close-by MCEV regions for an OC are found, the maximum value
+MCEV$_{\max}$ among all regions is selected as the extinction range's upper
+limit. Three steps are used to ensure that the reddening range is partitioned
+similarly for all MCEV$_{\max}$ values: 0.01 for MCEV$_{\max}{>}0.1$, 0.02 if
+$0.05{\leq}\mathrm{MCEV}_{\max}{\leq}0.1$, and 0.005 for MCEV$_{\max}{<}0.05$.
+%
+The $E_{V-I}$ extinction is converted to $E_{B-V}$
+following~\cite{Tammann_2003}: $E_{V-I}{=}1.38\,E_{B-V}$, with an extinction
+law of $R_v{=}3.1$ applied throughout the analysis.
+
+% Distance modulus
+% de Grijs et al. (2015): SMC (m-M)0 = 18.96 +/- 0.02 mag
+% de Grijs et al. (2014): LMC (m-M)o = 18.49 +/- 0.09 mag
+The true distance modulus ranges for the S/LMC Clouds were assumed to be
+$18.96\pm0.1$ mag and $18.46\pm0.1$ mag respectively; where the mean values
+are taken from~\cite{de_Grijs_2015} and~\cite{de_Grijs_2014}.
+%
+% 18.96 +- 0.1 --> 18.86-19.06 --> depth = 5.7 kpc (SMC)
+% 18.49 +- 0.1 --> 18.4-18.6   --> depth = 4.6 kpc (LMC)
+The 0.1 mag deviations allowed give depths of $\sim5.7$ kpc and
+$\sim4.6$ kpc for the S/LMC\@. This covers entirely the line of sight
+depths found in~\cite{Subramanian_2009} for both MCs.\footnote{Line of sight
+depth, SMC:\ $4.9\pm1.2$ kpc (bar), $4.23\pm1.48$ kpc (disk); LMC:\
+$4.0\pm1.4$ kpc (bar), $3.44\pm1.16$ kpc (disk).}
+
+%%Mass and binarity
+For the total cluster mass, the range was set to a minimum of
+$10\,M_ {\odot}$ and a maximum of $10000\,M_{\odot}$. This is true for almost
+all the OCs in our sample, except for 15 visibly massive clusters for
+which the maximum mass limit was increased to $30000\,M_{\odot}$.
+The step used to divide the mass range was $200\,M_{\odot}$, which also sets the
+minimum possible uncertainty for a cluster's mass estimate.
+
+% Rubele et al. (2011); The SFH of the LMC star cluster NGC1751
+% The binary fraction is set to a value of 0.3 for binaries with mass ratios in
+% the range between 0.7 and 1.0, which is consistent
+% with the prescriptions for binaries commonly used in works devoted
+% to recover the field SFH in the Magellanic Clouds (e.g. Holtzman
+% et al. 1999; Harris & Zaritsky 2001; Javiel, Santiago & Kerber 2005;
+% Noel et al. 2009). Notice that this assumption is also in agreement ¨
+% with the few determinations of binary fraction for stellar clusters in
+% the LMC (Elson et al. 1998; Hu et al. 2010, both for NGC 1818, a
+% stellar cluster younger than ∼100 Myr).
+Finally, the binary fraction was fixed to a value of 0.5 -- considered a
+reasonable estimate for OCs~\citep{von_Hippel_2005,Sollima_2010} -- to avoid
+introducing an extra degree of complexity into the fitting process. Secondary
+masses are randomly drawn from a uniform mass ratio distribution of the form
+$0.7{\le}q{\le}1$, where $q{=}M_2/M_1$, and $M_1$, $M_2$ are the primary and
+secondary masses. This range for the secondary masses was found for example for
+the LMC cluster NGC1818 in~\cite{Elson_1998}, and represents a value commonly
+used in analysis regarding the
+MCs~\citep[see][and references therein]{Rubele_2011}.
+
+\begin{table}
+\centering
+\caption{Fundamental parameters' ranges used by \texttt{ASteCA} on our set
+of 239 OCs. The approximate number of values used for each parameter is N.
+This gives a combined total of ${\sim}2.3 {\times}10^7$ possible models, that
+could be theoretically matched to each studied OC in our sample.}
+\label{tab:ga-range}
+\begin{tabular}{lcccc}
+\hline\hline
+ Parameter & Min & Max & Step & N\\
+\hline
+[Fe/H] & $\sim$-2.2 & 0 & $\sim$0.1 & 23\\
+$\log\mathrm{(age/yr)}$ & 6. & 10.1 & 0.05 & 82\\
+$E_{B-V}$ & 0.0 & MCEV$_{\max}$ & ${\sim}$0.01 & $\sim$12\\
+$\mu_{SMC}$ & 18.86 & 19.06 & 0.02 & 10\\
+$\mu_{LMC}$ & 18.4 & 18.6 & 0.02 & 10\\
+Mass ($M_{\odot}$) & 10 & [1, 3]${\times}10^{4}$ & 200 & [50, 150]\\
+\hline
+\end{tabular}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Center and radius assignment}
+\label{ssec:centre-radius}
+
+In fully automatic mode, \texttt{ASteCA} uses a Gaussian kernel density
+estimator (KDE) function to determine the center of the OC as the point of
+maximum star density.
+A radial density profile (RDP) is used in this same mode to estimate
+the OC's radius, as the point where the RDP reaches the star density of the
+surrounding field.
+
+The first function requires that the density of cluster members make the
+OC stand out over the combination of foreground and background field stars, and
+that no other over-density is present in the observed frame.\footnote{The single
+over-density limitation is planned to be lifted in upcoming versions of
+\texttt{ASteCA}.}
+The second function will give good results when the RDP generated is reasonably
+smooth, and only if the OC does not occupy the entire observed frame; i.e.:\
+some portion of the surrounding field must be visible.
+%
+When these conditions are not met for either function, the user needs to run
+the code on semi-automatic mode. In this mode the center coordinates can be
+either manually fixed, or found by the code based on an initial set of
+approximate values. Similarly, in semi-automatic mode the radius must be fixed
+by the user.
+
+% Clusters with manual center values: 82, 34%
+% Clusters with manual radii values: 97, 40%
+For over ${\sim}66\%$ of our OCs sample the center coordinates were obtained
+via a KDE analysis, based on initial approximate values passed to
+the code. Radii values were calculated by \texttt{ASteCA} for ${\sim}60\%$ of
+the OCs, through an RDP analysis of the observed surrounding field.
+%
+The remaining OCs are those that are highly contaminated, contain very
+few members, and/or occupy most of the observed frame. This means that an
+automatic obtention of their centers and/or radii is not possible, and the
+semi-automatic mode must be used.
+
+The contamination index ($CI$) calculated by the code, is a parameter related to
+the number of foreground/background stars present in the defined cluster region.
+A value of $CI{=}0$ means that the OC is not contaminated by field stars,
+$CI{=}0.5$ means the overdensity is indistinguishable from the surrounding
+field (i.e.:\ the average number of field stars expected within the cluster
+region equals the total number of stars in it), and $CI{>}0.5$ means more field
+stars are expected within the cluster region than true cluster
+members.\footnote{See Paper I, Sect. 2.3.2 for a complete mathematical
+definition of the index.}
+%
+For reference, the average $CI$ of the set of OCs with manual radii assignment
+is $CI{\simeq}0.9{\pm}0.2$, while the same average is $CI{\simeq}0.6\pm0.2$ for
+those OCs where the radius was automatically estimated. Naturally, more
+contaminated OCs are the ones that require more often that the radius be set
+manually, to prevent the code from employing a wrong value in its analysis.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Field-star decontamination}
+\label{ssec:dencontamination}
+
+A decontamination algorithm (DA) was employed on the $CT_1$
+color-magnitude diagram (CMD) of each processed OC.\@
+The DA allows cleaning the CMD of field-star contamination, before the isochrone
+fitting function is used (see Sect.~\ref{ssec:isoch-fit}). The DA must therefore
+process all stars within the defined cluster region, i.e: the circular region of
+center and radius either automatically determined by the code or manually fixed
+by the user.
+
+The Bayesian DA presented in Paper I was improved for this article; the new DA
+works in two steps. First, the original Bayesian membership probability (MP)
+assignation is applied to the CMD of all stars within the cluster region (see
+Paper I for more details).\@
+%
+After that, a cleaning algorithm is used to remove stars of low MPs from the
+CMD, as shown in Fig.~\ref{fig:DA_BF}.
+%
+\begin{figure}
+\centering
+\includegraphics[width=\hsize]{figures/L62_DA_BF.png}
+\caption{CMDs for the SMC-L62 cluster. \emph{Top}: CMD of cluster region to the
+left, where $n_{memb}$ is the approximate number of true members based on the
+star density of the OC compared to the star density of the field. The CMD of the
+surrounding field region is shown to the right. In both cases $N_{accpt}$ is
+the number of stars that were not rejected due to their large photometric
+errors. Rejected stars with large errors are shown as green crosses.
+\emph{Bottom}: cluster region after the DA is applied is shown to the left;
+MPs vary according to the colorbar at the top right.
+Dotted horizontal and vertical lines show the binning used to reject low MP
+stars cell-by-cell, as obtained via the Bayesian blocks
+method. Stars that are drawn semi-transparent in each cell are those that were
+rejected, i.e.: not used in the isochrone fitting process that follows.
+$N_{fit}$ is the number of stars left after the cell-by-cell rejection.
+The best fit isochrone is shown in green and red in this CMD, and in the CMD of
+the best match synthetic cluster to the right (generated from that isochrone),
+respectively. $N_{synth}$ is the number of stars in the synthetic cluster, and
+the dotted lines represent the binning obtained using Knuth's rule, applied to
+the synthetic cluster match process.}
+\label{fig:DA_BF}
+\end{figure}
+%
+To do this, the full CMD is divided into smaller cells, according to a
+given binning method. By default \texttt{ASteCA} uses the Bayesian blocks
+method\footnote{\url{http://www.astroml.org/examples/algorithms/plot_bayesian_blocks.html}}
+introduced in~\cite{Scargle_2013}, via the implementation of the astroML
+package~\citep{Vanderplas_2012}.\footnote{While Bayesian blocks binning is the
+default setting in \texttt{ASteCA}, several others techniques for CMD star
+removal are available, as well as five more binning methods.}
+This second step is similar to the field-star density based cell-by-cell removal
+algorithm applied in~\citet[][B07]{Bonatto_2007}, which uses a simpler
+rectangular grid.
+%
+The main difference, aside from the binning method employed, is that
+\texttt{ASteCA} can remove stars cell-by-cell based on their previously assigned
+MPs, not randomly as done in B07.
+
+For over ${\sim}$70\% of our sample the default settings in \texttt{ASteCA} were
+used in the decontamination process, this is: a Bayesian DA followed by the
+removal of low MP stars, based on a Bayesian block binning method of the cluster
+region's CMD.\@
+%
+The remaining OCs were processed with modified settings to allow a proper
+field-star decontamination. This ${\sim}$30\% of OCs are mainly those with a
+low number of members or a heavily contaminated evolutionary sequence.
+Changes in the settings can go from selecting a different binning
+method~\citep[often a rectangular grid using Scott's rule,][]{Scott_1979}, to
+skipping the Bayesian MP assignation and only performing a density based
+cell-by-cell statistical field star removal. In this latter case, the DA works
+very similarly to the B07 algorithm.
+
+A correct field-star decontamination is of the utmost importance, as the
+resulting -- hopefully -- clean cluster sequence will determine the OCs'
+fundamental parameters via the isochrone fitting process that follows. Care was
+thus exercised in this regard, to ensure that non-member stars were properly
+removed -- to the extent possible -- from the cluster region of each OC.\@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Isochrone fitting}
+\label{ssec:isoch-fit}
+
+The last part of the automatic analysis performed by \texttt{ASteCA} is the isochrone
+fitting of the OC, to estimate its fundamental parameters.
+In rigor, the process does not employ isochrones but rather synthetic clusters
+(SC) generated from theoretical isochrones.\footnote{For a detailed description
+on the \texttt{ASteCA} technique for the generation of synthetic clusters from
+theoretical isochrones, see: Paper I, Sect. 2.9.1}
+In this work we use a PARSEC v1.1 set of isochrones \citep[][B12]{Bressan_2012}.
+%
+An isochrone of given metallicity and age is combined with a total mass value
+and the log-normal form of the initial mass function (IMF) defined
+by~\cite{Chabrier_2001}, to generate a SC with a correct mass distribution.
+The IMF is stochastically sampled until the desired total cluster
+mass is reached.
+%
+The position of this SC in the CMD is then affected by reddening and moved a
+certain distance modulus value, to obtain the final SC -- or model -- that will
+be compared to the OC.\@
+
+The Poisson likelihood rate (PLR) developed in~\cite{Dolphin_2002} is employed
+to asses the goodness of match between the OC and a SC.\@ As the PLR is a
+binned statistic, it requires binning the CMDs of the OC and all the SCs that
+can be generated according to the fundamental parameter ranges defined in Sect.
+\ref{ssec:param-ranges}. This part of the analysis uses Knuth's
+rule~\citep[][also implemented via the astroML package]{Knuth_2006} as the
+default binning method, see bottom right plot in Fig.~\ref{fig:DA_BF}.
+The aforementioned Bayesian blocks method results in noticeably larger cells,
+which means that if applied here some defining features of the evolutionary
+sequence could be lost.
+%
+The inverted logarithmic form of the PLR can be written as
+
+\begin{equation}
+LPLR  = -\ln PLR = \sum_i m_i - n_i + n_i \ln \frac{n_i}{m_i},
+\label{eq:likelihood}
+\end{equation}
+
+\noindent where $m_i$ and $n_i$ are the number of stars in the $i$th CMD cell of
+the SC and the OC, respectively.\footnote{If for any given cell we have
+$n_i\neq0$ and $m_i=0$, a very small number is used instead ($m_i=1{\times}10^
+{-10}$) to avoid a mathematical inconsistency with the factor $\ln m_i$.}
+%
+In Paper I the total cluster mass parameter could not be estimated, due to the
+likelihood statistic used (see Paper I, Eq. 11). The LPR defined in
+Eq.~\ref{eq:likelihood} allows us to also consider the mass as a free parameter
+in the search for the best SC match. Following the validation performed in Paper
+I for the metallicity, age, extinction and distance parameters, we present in
+Appendix~\ref{apdx:mass_valid} a validation study for the total mass. We
+demonstrate that the masses recovered by \texttt{ASteCA} for almost 800
+MASSCLEAN synthetic clusters, are in excellent agreement with the true masses
+used to generate them.
+
+The best match for an OC is given by the SC that minimizes the LPLR.\@
+Since we have five free fundamental parameters, a 5-dimensional surface of
+solutions is determined by all the possible SCs that can be matched to each
+OC.\@
+%
+\texttt{ASteCA} applies a genetic algorithm (GA) on this surface to find the SC
+that best matches the OC.\@ This SC thus determines the fundamental parameter
+values that will be assigned to the OC under analysis.\@
+
+The GA uses a set of reasonable default options which indicate how it performs
+the search for the best OC-SC match.
+As with the DA, these options had to be modified -- mainly extending the depth
+of the GA search for the best match -- for $\sim$30\% of the OCs in the
+sample. This sub-sample is composed of clusters
+with particularly complicated morphologies, i.e.:\ very low number of members,
+high field star contamination, little to no MS present above the
+maximum magnitude value observed, etc. 
+
+Once the GA returns the optimal fundamental parameter values found for an OC,
+uncertainties are estimated via a standard bootstrap technique. This process
+takes a significant amount of time to complete, since it involves running the GA
+several more times on a randomly generated OC with replacement.\footnote
+{Generating a new OC ``with replacement'', means randomly picking stars one by
+one from the original OC, where any star can be selected more than once. The
+process stops when the same number of stars as those present in the original OC
+have been picked.} Ideally, the bootstrap process would be run hundreds and even
+thousands of times. This is not possible in practice, as it would be
+prohibitively costly timewise, so we must settle with running it ten times for
+each OC in our set.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Errors in fitted parameters}
+\label{sec:errors-fit}
+
+% Dolphin (2002)
+%  merely quoting the ‘best-fitting star formation history’ is useless unless
+% one also provides a measurement of the uncertainties.
+% \cite{Andrae_2010}
+% Any parameter estimate that is given without an error estimate is meaningless
+It is well known that a parameter given with no error estimation is
+meaningless from a physical standpoint~\citep{Dolphin_2002,Andrae_2010}.
+%
+% \cite{Paunzen_2006}
+% If we look at recent statistical papers dealing with open-cluster
+% parameters (e.g. Chen, Hou & Wang 2003; Dias & Lepine 2005),
+% none of them have any detailed error treatment included. Although
+% apparent ‘mean values’ for the age, distance and metallicity are used,
+% the level of accuracy is completely ignored in the final conclusions.
+This fact notwithstanding, a detailed error treatment is usually ignored in
+articles that deal with star clusters analysis~\citep{Paunzen_2006}.
+As explained in Sect.~\ref{ssec:isoch-fit}, \texttt{ASteCA} employs a bootstrap
+method to assign standard deviations for each fitted parameter in our OCs
+sample.
+
+Since the code must simultaneously fit a large number of free parameters --
+five in this case -- within a wide range of allowed values, and using only a
+2-dimensional space of observed data (i.e.:\ the $CT_1$
+magnitudes)\footnote{We plan to upgrade the code to eventually allow
+more than just two observed magnitudes, therefore extending the 2-dimensional
+CMD analysis to an N-dimensional one.}, the uncertainties involved will
+expectedly be somewhat large.
+%
+It is worth noting that unlike manually set errors, these are
+statistically valid uncertainty estimates obtained via a bootstrap process.
+This is an important point to make given that the usual by-eye isochrone fitting
+method not only disregards known correlations among all OCs parameters,
+it is also fundamentally incapable of producing a valid error
+analysis~\citep{Naylor_2006}. Any uncertainty estimate produced by-eye serves
+only as a mere approximation, which will often be biased towards smaller
+figures. The average logarithmic age error given in the literature, for example,
+is 0.16 dex, in contrast with the almost twice as large average value estimated
+by \texttt{ASteCA} (see below).
+%
+In Fig.~\ref{fig:errors} we show the distribution of the standard deviations
+versus the five fundamental parameters fitted by the code, for the entire sample
+(SMC and LMC OCs). Colors follow the $CI$ obtained for each cluster.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\hsize]{figures/errors_asteca.png}
+\caption{\emph{Left}: Distribution of errors versus the five parameters fitted
+by \texttt{ASteCA}.\@ Colors are associated to the $CI$ (see bar in top plot),
+sizes are proportional to the actual cluster sizes. A small random scatter in
+the x axis is added for clarity.
+\emph{Right}: Error histogram. The mean error value for each parameter is shown
+in the top right corner, and drawn in the plot with a dashed red line.}
+\label{fig:errors}
+\end{figure}
+
+The apparent dependence of the metallicity error with decreasing [Fe/H] values
+arises from the fact that \texttt{ASteCA} uses $z$ values -- the linear
+metallicity measure -- to find the best OC-SC match. The error in $z$ is found
+to be on average $e_z{\approx}0.003$ for all analyzed clusters\footnote
+{Approximately 70\% and over 80\% of the OCs in the S/LMC have assigned $e_z
+{=}0.003$ errors.}. This means that, when converting to $e_{[Fe/H]}$ using the
+relation
+
+\begin{equation}
+\sigma_{[Fe/H]} = \sigma_z/[z\times\ln(10)],
+\end{equation}
+
+\noindent the $z$ in the denominator makes $\sigma_{[Fe/H]}$ grow as it
+decreases, while $\sigma_z$ remains more or less constant.
+For very small $z$ values (e.g.: $z{=}0.0001$), the
+logarithmic errors can easily surpass $\sigma_{[Fe/H]}{=}2$ dex. In those cases,
+as seen in Fig.~\ref{fig:errors}, the error is trimmed to 2 dex which is
+enough to cover the entire metallicity range.
+
+Other than the mathematical dependence of the logarithmic metallicity explained
+above, there are no visible trends in the arrangement of errors for any of the
+fitted parameters. This is a desirable feature for any statistical method.
+If the uncertainties of a parameter varied (increase/decrease) with it, it would
+indicate that \texttt{ASteCA} was introducing biases in the solutions.
+
+Histograms plotted to the right in Fig.~\ref{fig:errors} show the distribution
+of errors, and their arithmetic means as a dashed red line.
+The average metallicity and age errors for the full sample are 0.3 dex and 0.27
+dex respectively. For the SMC $\sigma_{[Fe/H]}{<}0.2$ dex for $\sim$34\% of the
+calculated uncertainties. The same relation is true for ${\sim}69\%$ of the LMC
+OCs, which means that OCs in the SMC have a larger dispersion in their assigned
+metallicity errors. This is due to the lower overall metal content of the SMC
+OCs, combined with the effect described above by which the logarithmic
+metallicity error increases for smaller [Fe/H] values.
+Approximately 53\% of the combined S/LMC sample show
+$\sigma_{\log(age/yr)}{<}0.1$ dex, a very reasonable uncertainty estimate.
+Error estimates for the remaining parameters are all within acceptable ranges.\\
+
+Numerically, errors could be lowered applying several different techniques:
+increase the number of bootstrap runs, increase the number of models evaluated
+in the GA (``generations''), or reduce the value of the steps in the parameters
+grid.
+%
+All of these methods will necessarily extend the time needed to process each
+cluster, in particular increasing the number of bootstrap runs. Limited
+computational time available requires a balance between the maximum processing
+power allocated to the calculations, and the precision one is aiming at. The
+error values presented here should then be considered a conservative upper limit
+of the accuracy with which the fundamental parameters of our sample can be
+obtained by \texttt{ASteCA}.\@
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Comparision with published data}
+\label{sec:comp-pub-data}
+
+We compare in Sect.~\ref{ssec:lit-values} the resulting parameter values
+obtained after running \texttt{ASteCA} on our set of Magellanic OCs, with those
+taken from the original reference articles (those that used the same Washington
+photometry used in this work, see Table~\ref{tab:literature}) referred as the
+``literature''.
+%
+The parameters age, extinction, and mass are also analyzed in
+Sect~\ref{ssec:db-values} for a subset of 142 OCs that could be cross-matched
+with seven articles (where $UBVRI$ photometry was used, see
+Table~\ref{tab:databases}), referred as the ``databases''.
+
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Literature values}
+\label{ssec:lit-values}
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/as_vs_lit_S-LMC.png}
+\caption{\emph{Left column}: parameters comparison for the LMC.\@
+\emph{Center column}: idem for the SMC.\@
+\emph{Right column}: BA plot with differences in the sense \texttt{ASteCA} minus
+literature, for the combined S/LMC sample. For clarity, a small random scatter
+is added to both axes for the metallicity and distance modulus plots. Mean and
+standard deviation are shown as a dashed line and a gray band, respectively; its
+values are displayed in the top left of the plot.
+Colors following the coding shown in the bar at the right of the figure, for
+each row.~\cite{Piatti_2011b} OCs which contain only age information are plotted
+with $E_{B-V}{=}0$ color coding.}
+\label{fig:as_vs_lit}
+\end{figure*}
+
+The comparison of \texttt{ASteCA} versus literature values for the parameters
+metallicity, age, extinction and true distance modulus, is presented in
+Fig.~\ref{fig:as_vs_lit}, one parameter per row. The first two plots show the
+1:1 identity line for the LMC and the SMC respectively.
+%
+The rightmost diagram shows a Bland-Altman (BA) plot for our combined set of
+OCs in the MCs, with the variation in the
+x axis proposed by Krouwer~\citep{Bland_1986,Krouwer_2008}.\footnote{The BA is
+also called a ``difference'' plot or more commonly a ``Tukey Mean-Difference''
+plot. In the original BA plot the default x axis displays the mean values
+between the two methods being compared. The Krouwer variation changes the means
+for the values of one of those methods, called the ``reference''. In our case,
+the reference method is \texttt{ASteCA} so we use its reported values in the x
+axis.}
+%
+The BA plot shows differences in the y axis in the sense $\Delta$=(\texttt
+{ASteCA} minus literature), versus values found by the code in the x axis. Errors
+in $\Delta$ values are calculated combining the errors for both estimates. The
+mean of the differences, $\overline{\Delta}$, is shown as a dashed line and its
+standard deviation as a gray band.\\
+
+An offset is noticeable for the abundance estimates (first row of
+Fig.~\ref{fig:as_vs_lit}), where \texttt{ASteCA} tends to assign values
+$\sim$0.22 dex larger than those found in the literature.
+On average, the offset is of $\sim$0.27 dex for the SMC and $\sim$0.18 dex for
+the LMC.\@
+%
+This effect can be explained by three different processes, in light of our
+knowledge that the \texttt{ASteCA}'s OC-SC best fit matching introduces no
+biases into the solutions.
+%
+First, the MC's star clusters are generally considered to have low
+metallicities. For example, the [Fe/H] values assumed in the 19
+literature articles, are exactly -0.7 dex and -0.4 dex for $\sim$60\% and
+$\sim$75\% of the S/LMC clusters. The by-eye fit is thus very likely biased
+towards the assignment of lower abundances. This type of ``confirmation
+bias'' in published values has been studied recently by~\cite{de_Grijs_2014}, in
+relation to distance measurements reported for the LMC.\@
+Researchers also tend to fit isochrones adjusting it to the lower envelope of an
+OC's sequence; which also contributes to the selection of isochrones of
+smaller metallicity.\footnote{The reason is that increasing an isochrone's metal
+content moves it towards redder (greater color) values in a CMD, see for
+example~\cite{Bressan_2012}, Fig 15.}
+%
+Second, the code writes an obtained parameter value to file, using as many
+significant figures as those given by the rounded standard deviation.
+The standard deviation in turn, is rounded following the convention of keeping
+only its first significant figure. This means for example that a value of
+z=0.0005$\pm$0.00312 will be rounded to z=0.001$\pm$0.003. Although this effect
+is an issue only for cases where the uncertainty is larger -- or close to -- the
+parameter value, it will nonetheless affect smaller metallicities shifting
+them towards larger estimates.\footnote{This behavior will be changed in the
+next release of \texttt{ASteCA}. The parameter estimates will be written to
+file keeping more significant figures, to avoid this issue.}
+%
+Third, \texttt{ASteCA}'s $z$ values are converted to the logarithmic form [Fe/H]
+using a solar metallicity of $z_{\odot}{=}0.0152$~\citep{Bressan_2012}.
+Values found in the literature, on the other hand, are converted using a solar
+metal content of $z_{\odot}{=}0.019$~\citep{Marigo_2008}. This means that
+\texttt{ASteCA} will always give [Fe/H] values larger by ${\sim}0.1$ dex, for
+any fitted isochrone of equivalent $z$ being compared, following
+
+\begin{equation}
+\begin{split}
+\Delta\mathrm{[Fe/H]} & = \mathrm{[Fe/H]}_{\mathtt{ASteCA}} -
+\mathrm{[Fe/H]}_{literature} \\
+& = \log(z/0.0152) - \log(z/0.019) = \log(0.019/0.0152) \\
+& \approx 0.0969 \mathrm{dex}
+\end{split}
+\label{eq:delta_feh}
+\end{equation}
+
+\noindent These three effects combined can therefore explain the offset found
+for the abundances assigned to OCs in the literature versus those estimated by
+\texttt{ASteCA}. It is important to notice that neither effect is intrinsic to
+the best likelihood matching method used by the code.
+
+%
+There are two SMC OCs which present an extremely low metallicity: NGC294
+($\alpha{=}0^h53^m06^s$, $\delta{=}-73^\circ22'49''$ [J2000.0]) and
+HW85 ($\alpha{=}1^h42^m28^s$, $\delta{=}-71^\circ16'45''$ [J2000.0]). These
+OCs are positioned close to the SMC's center and towards its periphery,
+respectively.
+Both are found to have metallicities of [Fe/H]$\simeq$-2.2 dex -- with large
+errors given by \texttt{ASteCA} -- versus their smaller literature values of
+-0.7 dex.
+The code assigns $\log(age/yr)$ values of $8.8{\pm}0.06$ dex for NGC294, and
+$9.3{\pm}0.7$ dex for HW85; while the respective values in the literature are
+$8.51{\pm}0.47$ dex and $9.26{\pm}0.28$ dex.
+%
+NGC294 has been assigned abundances as low as -1.2 dex~\citep[see the
+integrated spectroscopy study by][]{Dias_2010}, although the value obtained by
+\texttt{ASteCA} is substantially lower. HW85 is a little studied cluster with
+very few members -- approximately 20 in our photometric data set -- and thus
+prone to present variations in its estimated parameters. No other
+published estimation of this cluster's metallicity could be found.
+%
+The sequence of an OC is broadened towards redder colors by the
+presence of unresolved binaries. We thus investigate the possibility that our
+selected fraction of unresolved binaries ($b_f$=0.5, see
+Sect.~\ref{ssec:param-ranges}) could be influencing the selection of these low
+metallicities. Both OCs are processed five more times setting the $b_f$
+factor to [0., 0.25, 0.5, 0.75, 1.], leaving the metallicity to vary as a free
+variable, and fixing the remaining parameters to the values found by
+\texttt{ASteCA}'s original run.
+% NGC294
+% bf = [0., 0.25, 0.5, 0.75, 1.] --> z = [5, 8, 6, 8, 8]x10^(-4) -->
+% [Fe/H] = [-1.5, -1.3, -1.4, -1.3, -1.3] --> mean = -1.36+-0.08
+% HW85
+% bf = [0., 0.25, 0.5, 0.75, 1.] --> z = [5, 8, 5, 6, 2]x10^(-4) -->
+% [Fe/H] = [-1.5, -1.3, -1.5, -1.4, -1.9] --> mean = -1.5+-0.2
+If we average these results we find mean metallicities of  $-1.36{\pm}0.08$ dex
+and $-1.5{\pm}0.2$ dex for NGC294 and HW85, respectively.
+Although these are larger than the original [Fe/H] values, they are still
+very low metallicity estimates. We can thus rule out the binary fraction used as
+the responsible factor of these low abundances, and conclude that these are
+indeed OCs with low metallicities.
+% Spectroscopy studies would be needed to 
+
+The general dispersion between literature and \texttt{ASteCA} values can be
+quantized by the standard deviation of the $\Delta$ differences in the BA plot.
+This value is $\sim$0.32 dex (top left of BA plot), in close agreement with the
+mean internal uncertainty found in Sect.~\ref{sec:errors-fit} for this
+parameter. Mean metallicity estimates for the MCs using \texttt{ASteCA} values
+are $\mathrm{[Fe/H]}_{SMC}{\simeq-}0.52{\pm}0.44$ dex, and
+$\mathrm{[Fe/H]}_{LMC}{\simeq-}0.26{\pm}0.24$ dex. These averages are more
+metal rich and disperse, than the ones obtained using literature values:
+$\mathrm{[Fe/H]}_{SMC}{\simeq-}0.78{\pm}0.23$ dex, and
+$\mathrm{[Fe/H]}_{LMC}{\simeq-}0.42{\pm}0.16$ dex\\
+
+The second row in Fig.~\ref{fig:as_vs_lit} shows the age distribution for both
+Clouds. The overall agreement is very good, with larger deviations from the
+identity line appearing only for younger ages. There are ten OCs for which
+\texttt{ASteCA} assigned $\log(age/yr)$ values that differ more than 0.5 dex
+from their literature values. These are referred to as ``outliers'', and are
+treated separately in Sect.~\ref{ssec:outliers}.
+
+In~\cite{Palma_2015b} an offset is found between star clusters in the LMC
+fitted with the~\citet[][G02]{Girardi_2002} and~\citet[][B12]{Bressan_2012} set
+of isochrones, where OCs fitted with the latter presented consistently larger
+values.
+%
+Here we confirm this trend, for ages assigned to our set of OCs for both the
+SMC and the LMC.\@ While \texttt{ASteCA} uses the B12 set of theoretical
+isochrones, eleven out of the nineteen articles the literature set 
+(see Table~\ref{tab:literature}) used G02 isochrones.
+The~\citet[][L01]{Lejeune_2001} and~\cite{Marigo_2008} isochrone sets were used
+by four and two literature articles, respectively; with the remaining two
+articles applying the $\delta T_1$ index to derive ages.
+In~\cite{Piatti_2003b,Piatti_2003a,Piatti_2007a} no significant
+differences were found between the L01 and the G02 sets, so we assume the same
+age offset should be present in the former set.
+%
+Excluding the outlier OCs described above, the $\Delta \log(age/yr)$ offset for
+S/LMC clusters between \texttt{ASteCA} and literature values are $\sim$0.02 dex
+and $\sim$0.05 dex, respectively. The B12 isochrones 
+
+The mean value for the $\Delta \log(age/yr)$ parameter in the BA plot, including
+all S/LMC OCs, is $\sim$-0.01 dex. This points to an excellent agreement among
+literature and \texttt{ASteCA} values for the $\log(age/yr)$.
+If we exclude the outliers, the mean of the differences increases by a small
+amount to $\sim$0.04 dex. Similarly to what was found for the metallicity,
+the dispersion between literature and \texttt{ASteCA} values is almost exactly
+the internal uncertainty found for errors assigned by the code, i.e.: $\sim$0.3
+dex.\\
+
+The reddening distribution is relatively small for OCs in both MCs. Maximum
+$E_{B-V}$ values are $\sim$0.15 mag and $\sim$0.3 mag for the S/LMC
+respectively, as shown in the \texttt{ASteCA} versus literature identity plots.
+The $\Delta$ differences are well balanced with a mean of -0.02 and a
+standard deviation of 0.05 mag, slightly larger than the 0.02 mag average
+uncertainty found for the errors assigned by the code. We obtain average
+$E_{B-V}$ extinctions for the S/LMC of 0.03$\pm$0.03 and 0.05$\pm$0.05,
+noticeably lower estimates -- approximately a third -- than those used for
+example in the~\cite{Hunter_2003} study of the MCs.\\
+
+The true distance moduli ($\mu_{\circ}$) found by \texttt{ASteCA} in both MCs
+show a clear displacement from literature values. This is expected, as the
+distance to OCs in the latter is always assumed to be a fixed constant
+equivalent to the
+distance to the center of the corresponding galaxy.
+The distribution of $\mu_{\circ}$ values found by the code covers the entire
+range allowed in Sect.~\ref{ssec:param-ranges}. Distances obtained by \texttt
+{ASteCA} thus vary up to ${\pm}0.1$ mag from the default fixed $\mu_{\circ}$
+values used in the literature.
+%
+It is worth noting that this variation appears to have no substantial effect on
+any of the remaining parameters, something that could in principle be expected
+due to the known correlations between all fundamental parameters (see Paper I,
+Sect. 3.1.4).
+This reinforces the idea that using a fixed value for the distance modulus, as
+done in the literature, is a valid way of reducing the number of free variables
+at no apparent extra cost.\\
+
+\begin{figure}
+\centering
+\includegraphics[width=\hsize]{figures/as_vs_lit_mass.png}
+\caption{\emph{Top}: Mass comparison for \texttt{ASteCA} versus literature
+values.
+\emph{Bottom}: BA plot with mean and standard deviation of the differences
+shown as a dashed horizontal line, and a gray band respectively. The mean and
+standard deviation values are displayed in the top left corner.}
+\label{fig:as_vs_lit_mass}
+\end{figure}
+
+Since masses are only assigned in~\citet[][M13]{Maia_2013} for its sample of 29
+SMC OCs, the comparison with \texttt{ASteCA} is presented separately in
+Fig.~\ref{fig:as_vs_lit_mass}.
+%
+The identity plot (top) shows a trend for \texttt{ASteCA} masses to be smaller
+than those from M13. This is particularly true for two of the OCs with
+the largest mass estimates -- and the largest assigned errors -- in M13:
+H86-97 (3300$\pm$1300$M_{\odot}$), and H86-87
+(3100$\pm$1700$M_{\odot}$). The BA plot (bottom) shows that, on average, M13
+masses are ${\sim}500{\pm}700\,M_{\odot}$ larger.
+%
+To explain these differences, we need to compare the way total cluster masses
+are obtained by M13 and by \texttt{ASteCA} in this work.
+
+In M13 masses were determined using two methods, both based on estimating
+a mass function via the $T_1$ luminosity function (LF) of an OC.\@
+In both cases a field star cleaning process was applied. The first one employs
+a CMD decontamination procedure \citep[described in][]{Maia_2010}, and the
+second one cleans the cluster region's LF by subtracting it a field star LF.\@
+The results obtained with these two methods are averaged to generate the final
+mass values.
+%
+Although any reasonable field star cleaning algorithm should remove many or most
+-- depending on the complexity of the OC's CMD -- of the foreground/background
+stars in a cluster region, some field stars are bound to remain.
+For heavily contaminated OCs this effect will be determinant in shaping the
+``cleaned'' CMD sequence, as true cluster members will be very difficult to
+disentangle from contaminating field stars.
+%
+The set of 29 OCs in the M13 sample are indeed heavily affected by field star
+contamination. This can be seen in Fig.~\ref{fig:as_vs_lit_mass}, where the
+color assigned to each OC corresponds to its $CI$. The minimum value is
+$CI{\simeq}0.55$, which means all OCs in the set are expected to contain on 
+average more field stars within the analyzed cluster region, than true members.
+%
+The presence of a large number of contaminating field stars not only makes the
+job much harder for the DA, it also necessarily implies that the overall LF will
+be overestimated, therefore leading -- in the case of M13 --  to an
+overestimation of the total mass.
+In contrast, \texttt{ASteCA} assigns OC masses taking their values directly from
+the best match synthetic clusters (SCs). Field star contamination will thus have
+a much lower influence on the code's mass estimate, limited just to how
+effective the DA is in cleaning the cluster region.
+
+The case of B48 is worth mentioning, as it is the OC with the largest total mass
+given in M13 (3400$\pm$1600$M_{\odot}$).
+After being cleaned of possible field stars by the DA -- see
+Sect.~\ref{ssec:dencontamination} -- low mass stars are entirely removed and B48
+is left only with its upper sequence ($T_1<18.4$ mag).
+This happens both in the literature and in the analysis done by \texttt{ASteCA},
+see left CMD in Fig.~\ref{fig:B48_DA}, and Fig. C8 in M13.
+%
+The likelihood defined in Eq.\ref{eq:likelihood} sees then no statistical
+benefit in matching the OC with a SC of a similar age and mass,
+which will contain a large number of low mass stars.
+This leads the GA to select as good matches SCs of considerably
+younger ages ($\log(age/yr){<}7.0$ dex) than that assigned in M13
+($\log(age/yr){=}7.9\pm0.05$ dex), and with much lower mass estimates (see
+caption of Fig.~\ref{fig:B48_DA}).
+%
+% Any other configuration of the DA where the density based removal of stars was
+% employed, lead to considerably smaller masses paired with younger age estimates 
+% ($\log(age/yr)<7.0$) than those assigned either in M13 ($7.9\pm0.05$) or by the
+% code ($7.5\pm0.3$).
+%
+A good match both in age and in mass could be found by the code, only if the DA
+was applied with no cell-by-cell removal of low MP stars as shown in the right
+CMD of Fig.~\ref{fig:B48_DA}. This means that all stars within the cluster
+region -- including field stars -- are used in the SC matching process, which
+inevitably questions the reliability of the total mass estimate.
+%
+Dealing with this statistical effect is not straightforward and will probably
+require an extra layer of modelling added to the SC generation algorithm.
+As discussed in Sect.~\ref{ssec:outliers} this effect also plays an important
+role in the significant age differences found between \texttt{ASteCA} and the
+literature, for a handful of OCs.
+
+\begin{figure}
+\centering
+\includegraphics[width=\hsize]{figures/B48_DA.png}
+\caption{\emph{Left}: Best fit isochrone for B48 found by \texttt{ASteCA} when
+a cell-by-cell removal is applied on its sequence, following the Bayesian MP
+assignation (removed stars are drawn semi-transparent). The estimated age and
+total mass are $\log(age/yr){=}6.2{\pm}0.6$, and $M{=}400{\pm}200\,M_{\odot}$.
+\emph{Right}: Best fit isochrone found when no removal of stars is performed,
+and the full cluster region is used in the search for the best synthetic
+cluster match. The estimated age and total mass are now
+$\log(age/yr){=}7.5{\pm}0.3$, and $M{=}3000{\pm}900\,M_{\odot}$.}
+\label{fig:B48_DA}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Outliers}
+\label{ssec:outliers}
+
+Ten of the analyzed OCs in this work -- approximately $4\%$ of the total
+239 clusters present in the set -- show a difference in age with literature
+values of $\Delta\log(age/yr){>}0.5$.
+Such a large age difference translates into two very dissimilar isochrones
+fitted to the same observed coeval star sequence, which makes this sub-sample of
+OCs stand out from the rest.
+%
+For these ``outliers'' no configuration of the DA plus the employed binning
+methods could be found, that resulted in SC matches with age values
+more similar to those found in the literature.
+In Appendix~\ref{apdx:outliers}, literature and \texttt{ASteCA} isochrone
+matches are shown for these ten outliers.
+
+Five of these OCs belong to the LMC and the remaining five to the SMC,
+as shown in Table~~\ref{tab:outliers}.
+All the OCs in the outliers sample had smaller ages assigned by the code,
+compared to their literature values. These differences go from 0.55
+dex up to 1.6 dex in the most extreme case of the LMC cluster KMHK975.
+%
+Fig.~\ref{fig:outliers0} (see CMD diagrams \emph{a}) shows the best matches for
+this OC, where the reason for the different isochrones selected can be clearly
+seen. While the by-eye isochrone fit done in the literature aligned the brighter
+part of the OC's sequence with the turn off point of a $\sim$200 Myr
+isochrone, \texttt{ASteCA} decided instead that this was the top portion of a
+much younger cluster ($\sim$5 Myr) with no discernible turn off.
+%
+For almost all of the outliers, the same process can be identified as the main
+cause responsible for the observed age differences.
+The statistical mismatch due to the removal of low mass stars by the DA
+-- discussed in Sect.~\ref{ssec:lit-values} -- can also be seen to affect some
+of the fits here. In particular the SMC OCs SL579 and H86-188 show signs of this
+effect in the best match SCs selected by \texttt{ASteCA}
+(see isochrone fits in Fig.~\ref{fig:outliers0}, CMD diagrams \emph{b} and
+\emph{h}).
+
+\begin{table}
+\centering
+\caption{OCs with large differences in their assigned literature ages versus
+the values found by the code (``outliers'').
+Equatorial coordinates are expressed in degrees for the $J2000.0$ epoch.
+Ages are given as $\log(age/yr)$ for literature (L) and \texttt{ASteCA} (A).
+The difference between both estimates (L-A) is given in the last column as
+$\Delta$.}
+\label{tab:outliers}
+\begin{tabular}{lccccc}
+\hline\hline
+Cluster & $\alpha(^\circ)$ & $\delta(^\circ)$ & L & A & $\Delta$\\
+\hline
+L-KMHK975 & 82.49583 & -67.87889 & 8.30 & 6.70 & 1.60\\
+L-SL579 & 83.55417 & -67.85639 & 8.15 & 7.00 & 1.15\\
+L-BSDL631 & 76.64167 & -68.42722 & 8.35 & 7.50 & 0.85\\
+L-KMHK979 & 82.41250 & -70.98389 & 7.90 & 7.30 & 0.60\\
+L-H88-316 & 85.41250 & -69.22944 & 8.25 & 7.70 & 0.55\\
+\\[-1.85ex]
+S-L35 & 12.00417 & -73.48611 & 8.34 & 6.90 & 1.44\\
+S-H86-188 & 15.05833 & -72.45833 & 8.10 & 6.70 & 1.40\\
+S-L39 & 12.32500 & -73.37167 & 8.05 & 7.00 & 1.05\\
+S-B134 & 17.25417 & -73.20667 & 8.15 & 7.20 & 0.95\\
+S-K47 & 15.79583 & -72.27361 & 7.90 & 7.00 & 0.90\\
+\hline
+\end{tabular}
+\end{table}
+
+
+These age estimates could be improved -- in the sense that they could
+be brought closer to literature values -- if a more restrictive age range was
+used (e.g.: a minimum value of $\log(age/yr){=}7.5$ dex instead of 6 dex as used
+in this work, see Table~\ref{tab:ga-range}).
+Lacking external evidence to substantiate this a priori restriction, we choose
+to keep the values obtained by \texttt{ASteCA}, with this section acting as a
+cautionary note.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+
+\subsection{Databases values}
+\label{ssec:db-values}
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/cross_match_if.png}
+\caption{\emph{Left}: age comparison for DBs that used the isochrone fit
+method, versus \texttt{ASteCA}, where $N$ is the number of OCs cross-matched in
+each DB.\@
+\emph{Center}: ``delta'' plot, showing the differences between extinction
+and age, in the sense \texttt{ASteCA} minus DB.\@ Curves represent regions of
+iso-densities after fitting a 2-dimensional Gaussian Kernel.
+\emph{Right}: same as previous plot, now showing \texttt{ASteCA} minus
+literature values for both Clouds.}
+\label{fig:cross_match_if}
+\end{figure*}
+
+In addition to the analysis performed in Sect.~\ref{ssec:lit-values}, we compare
+our results with those taken from seven articles -- the ``databases'' or DBs --
+where a different photometric system was used; see Table~\ref{tab:databases}.
+%
+We can further separate these seven DBs into two groups: those where the
+standard by-eye isochrone fitting method was applied -- P99, P00, C06, and G10
+-- and those where integrated photometry was employed to derive the OCs
+fundamental parameters -- H03, R05, and P12.
+%
+A total of 142 individual OCs from our sample could be cross-matched. Where
+names where not available to perform the cross-match -- databases P00, P99, and
+R05 -- we employed a 20 arcsec radius to find matches, based on the equatorial
+coordinates of the OCs in each DB.
+
+%
+% Delta (ASteCA - DB) for ages: mean +- std
+% P99 Delta diffs ages: -0.13 +- 0.63
+% P00 Delta diffs ages: 0.37 +- 0.45
+% C06 Delta diffs ages: 0.02 +- 0.58
+% G10 Delta diffs ages: 0.23 +- 0.46
+%
+The comparison of \texttt{ASteCA} ages with those from the four isochrone
+fit DBs is shown in Fig.~\ref{fig:cross_match_if}, left and center plot.
+%
+P99 and P00 analyze SMC and LMC clusters respectively,
+using~\cite{Bertelli_1994} isochrones and fixed metallicities for the S/LMC of
+$z{=}0.004, 0.008$. While P99 derives individual reddening estimates based on
+red clump stars, P00 use extinction values determined for 84 lines-of-sight
+in the~\cite{Udalski_1999} LMC Cepheids study. The mean S/LMC extinction in P99
+and P00 are $E_{B-V}{\simeq}0.08{\pm}0.02$ mag and $E_{B-V}{\simeq}0.14
+{\pm}0.02$ mag, both larger estimates than those found in this work
+($E_{B-V}{\simeq}0.03{\pm}0.03$ mag and $E_{B-V}{\simeq}0.05{\pm}0.05$ mag for
+the S/LMC, see Sect.~\ref{ssec:lit-values}).
+%
+Both studies attempt to eliminate field star contamination following the
+statistical procedure presented in~\cite{Mateo_1986}.
+The distance moduli for the S/LMC of 18.65 mag and 18.24 mag employed in
+these DBs, are approximately ${\sim}0.25$ mag smaller than the canonical
+distances assumed for each Cloud. This has a direct impact on their obtained
+ages.
+% de Grijs & Anders (2006):
+% If they (P00) had assumed a nominal (m-M)=18.50 mag, their resulting age
+% estimates would have been younger by log(Age/yr) ~0.2–0.4
+% Baumgardt et al. (2012):
+% As noted by de Grijs & Anders, this can be explained by the smaller LMC distance
+% modulus of (m-M)=18.23 adopted by Pietrzynski & Udalski, compared to the
+% value of (m-M)=18.50 used by most other authors. Placing the LMC at a smaller
+% distance decreases the absolute luminosities of the stars and the turn-over
+% region in the CMD, and therefore makes the clusters appear older.
+%
+In~\cite{de_Grijs_2006} the authors estimate that had P00 used a value
+of $\mu_0{=}18.5$ mag instead for the LMC, their ages would be ${\sim}0.2{-}0.4$
+dex younger; a similar conclusion is reached
+by~\cite{Baumgardt_2013}.\footnote{Notice that in~\cite{Baumgardt_2013} the
+authors correct the age bias that arises in P00 due to the small distance
+modulus used, increasing P00 age estimates by 0.2 dex. This is incorrect, ages
+should have been decreased by that amount.} The same reasoning can be applied to
+the P99 age estimates.\@
+%
+P99 and P00 ages are displaced on average from \texttt{ASteCA} values (in the
+sense \texttt{ASteCA} minus DB) by $-0.13{\pm}0.6$ dex and $0.37{\pm}0.5$ dex
+respectively, as seen in Fig.~\ref{fig:cross_match_if} left plot.
+In the case of P99, the distance modulus correction mentioned above would
+bring the age values to an overall agreement with those obtained by
+\texttt{ASteCA}, although with a large scatter around the identity line.
+%
+P00 age values on the other hand, would end up ${\sim}0.7$ dex below the code's
+age estimates after such a correction. Such a large deviation is most likely due
+to the overestimated extinction values used by P00, as will be shown below.
+
+%
+C06 studied 311 SMC clusters via isochrone fitting applying two methods: visual
+inspection and a Monte Carlo based $\chi^2$ minimization. The authors also
+employ a decontamination algorithm to remove contaminating field stars, making
+this the article that more closely resembles this present work.
+Distance modulus is assumed to be $\mu_0{=}18.9$ mag. Reddening and
+metallicity values of $E_{B-V}{=}0.08$ mag and $z{=}0.008$ are used, adjusted
+when necessary to improve the fit.
+It is worth noting that the [Fe/H]${=}-0.4$ dex abundance employed in
+C06 is closer to the average [Fe/H]${=}-0.52{\pm}0.44$ dex value found for the
+SMC by \texttt{ASteCA}, than the canonical value of [Fe/H]${=}-0.7$ dex used by
+default in most works.
+This is the DB -- out of the four isochrone-fit and the three integrated
+photometry DBs -- that best matches \texttt{ASteCA}'s $\log(age/yr)$ values,
+with a mean deviation from the identity line of $0.02\pm0.58$ dex.
+
+%
+% \cite{Piatti_2012b}: "The cluster ages derived from isochrone fittings on to
+% the cleaned CMDs for 136 clusters, also included in the study of G10, were
+% found to be ∼0.2–0.3 in log(age) younger than those derived by G10 [σ ( log
+% (age)) = 0.13, age 9.0]. The main reason for this systematic shift is probably
+% the different metallicities of the isochrones involved. While C06
+% used the isochrone set of Girardi et al. (2002, Z = 0.008), G10 fitted
+% the cluster CMDs with isochrones computed by Girardi et al. (1995,
+% Z = 0.004).""
+
+% Choudhury et al. (2015); see Fig 5
+% Piatti et al. (2015a) - The VMC survey - XV. The Small Magellanic Cloud-Bridge
+% connection history as traced by their star cluster populations:
+% "a direct comparison of the age estimates derived by Glatt, Grebel & Koch 
+% (2010) and our values shows that our ages are \Delta log(t/yr)=0.5 $\pm$ 0.5
+% older" ; "Glatt, Grebel & Koch (2010)’s ages are much younger, possibly
+% because of the lack of cleaned CMDs and the shallower photometry used by
+% these authors."
+% Piatti et al. (2015b) - The VMC survey - XVI. Spatial variation of the
+% cluster-formation activity  in the innermost regions of the Large Magellanic
+% Cloud:
+% "Offset is not mentioned in article but it's visible in Fig. 4 middle panel."
+G10 analyzed over 1500 OCs with ages ${<}1$ Gyr in both Clouds via by-eye isochrone
+fitting. They assumed distance moduli of (18.9, 18.5) mag, and metallicities of
+(0.004, 0.008), for the S/LMC respectively. Extinction was adjusted also by-eye
+on a case-by-case basis.
+The G10 database presents a systematic bias where smaller logarithmic ages are
+assigned compared to our values, with an approximate deviation of $\Delta
+\log(age/yr){\simeq}0.23\pm0.46$ (\texttt{ASteCA} minus G10). This is consistent
+with the results found in~\cite{Choudhury_2015} (see Fig. 5), and later
+confirmed in~\cite{Piatti_2015a,Piatti_2015b}.
+%
+G10 does not apply any decontamination method, by which probable field stars are
+removed from the cluster's CMD prior to its analysis. Instead, they plot over
+the cluster region a sample of surrounding field stars 0.1 arcmin away from the
+cluster's radius, taken from a 0.5 arcmin concentric annulus. The lack of a
+proper statistical removal of contaminating foreground/background stars can
+cause the isochrone fit to be skewed by their presence.
+
+%
+As seen in the center plot of Fig.~\ref{fig:cross_match_if}, these four DBs
+taken as a single group present a clear age-extinction bias, when compared
+to \texttt{ASteCA} values. This known degeneracy was found in Paper I to be
+the one with the largest correlation value (see Paper I, Table 3), meaning it is
+the process most likely to affect isochrone fit studies.
+The maximum density in this ``delta'' plot is located around
+$\Delta E_{B-V}{\simeq-}0.07$ mag and $\Delta \log(age/yr){\simeq}0.3$ dex.
+This trend is most obvious for P00 where a rather large average extinction
+value was employed, compared to the mean value found by \texttt{ASteCA} as
+stated above.
+%
+For comparison purposes we show in the right plot of
+Fig.~\ref{fig:cross_match_if} the same delta plot, this time generated
+subtracting literature values from \texttt{ASteCA} age estimations. It can 
+be clearly seen that afore mentioned bias is basically non-existent here,
+pointing to a consistent overall assignation of extinction and ages by
+the code.
+
+In Appendix~\ref{apdx:databases} we show the CMDs of each cross-matched OC for
+this four DBs (153 in total). The isochrone plotted is the best fit proposed by
+the corresponding DB, and is compared to the best match found by
+\texttt{ASteCA}.
+Those OCs that present the largest age discrepancies between \texttt{ASteCA} and
+DBs values, are those where the same effect mentioned in
+Sect.~\ref{ssec:outliers} takes place. A good example of this is SMC-L39, as
+seen in Figs.~\ref{fig:DBs_C06_3} and~\ref{fig:DBs_G10_8} for C06 and G10
+respectively.\\
+
+
+% INTEGRATED PHOTOMETRY
+%
+% Delta (ASteCA - DB) for ages: mean +- std
+% H03 Delta diffs ages: 0.44 +- 0.56
+% R05 Delta diffs ages: -0.25 +- 0.63
+% P12 Delta diffs ages: 0.35 +- 0.44
+
+\begin{figure}
+\centering
+\includegraphics[width=\hsize]{figures/cross_match_ip_ages.png}
+\caption{Age comparison for DBs that used the integrated photometry
+method, versus \texttt{ASteCA}, where $N$ is the number of OCs cross-matched in
+each DB.\@}
+\label{fig:cross_match_ip_age}
+\end{figure}
+
+Our age and mass estimates are also compared with three DBs -- H03, R05, and P12
+-- which used integrated photometry to obtain these parameters (see
+Table~\ref{tab:databases}). Only H03 and P12 obtained total mass values for the
+OCs in their sample, these are analyzed in
+Sect.~\ref{sssec:integ_photom_masses}.
+
+H03 studied approximately 1000 OCs in both MCs -- 748 in the LMC and 196 in the
+SMC\footnote{To these numbers, 140 and 76 ``questionable'' (according to
+H03) S/LMC clusters respectively, can be added to their sample.} --
+via $UBVR$ integrated photometry. Ages were assigned based on the Starburst99
+model~\citep{Leitherer_1999}, assuming metallicities, distance moduli, and
+average $E_{B-V}$ extinction values of (0.004, 0.008), (18.94, 18.48) mag, and 
+(0.09, 0.13) mag, for the S/LMC, respectively.
+The masses for each OC were derived through their absolute
+magnitudes $M_V$ and the mass-luminosity relation, assuming -14.55 mag to be the
+$M_V$ of a 10 Myr old $10^6\,M_{\odot}$ cluster with $z=0.008$.
+This article represents, as far as we are aware, the largest
+published database of MCs cluster masses to date.
+
+R05 used two models -- GALEV~\citep{Anders_2003} and Starburst99 -- combined
+with three metallicities values -- (0.004, 0.008) and (0.001, 0.004, 0.008),
+used in each model respectively -- to obtain ages for 195 SMC clusters.
+This results in five age estimates for each cluster. Individual reddening
+values are obtained in the same manner as done in the~\cite{Harris_2004} study,
+assigning extinctions according to fixed age ranges.
+%
+We averaged all extinction-corrected age values for each matched cluster,
+and assigned an error equal to the midpoint between the lowest and
+highest error bound among all reported ages in the article.
+
+P12 uses the same dataset from H03 to analyze 920 LMC clusters through their
+MASSCLEAN$_{colors}$ and MASSCLEAN$_{age}$
+packages~\citep{Popescu_2010a,Popescu_2010b}. Ages and masses from duplicated
+entries in the P12 sample are averaged in our analysis.
+
+% % Baumgardt et al. (2013):
+% % We average the ages for clusters which appear multiple times in the
+% % Popescu et al. sample and are left with a list of 746 unique clusters
+% % which are almost identical to those analyzed by de Grijs & Anders.
+% dG06 finds a systematic difference between the age determinations of H03 with
+% their own ages, as well as the ages presented in P00.
+% Following \citet[][B13]{Baumgardt_2013}, the dG06 sample is not used given the
+% large deviations it presents compared to the G10 and P12 samples.
+
+As seen in the identity plot of Fig.~\ref{fig:cross_match_ip_age}, H03
+visibly underestimates ages for younger clusters.
+In~\citet[][see Fig. 1]{de_Grijs_2006} this effect was also registered, which
+the authors assigned to the photometry conversion done in H03. The average
+dispersion between H03 and \texttt{ASteCA} logarithmic age values is
+$0.44{\pm}0.56$ dex.
+%
+The same happens for P12 ages, albeit with a smaller mean dispersion in
+$\log(age/yr)$ of approximately $0.35{\pm}0.44$ dex.
+In P12, their own age estimates are compared with those taken from H03.
+They find a clear systematic difference with H03 (see P12, Fig. 8),
+where MASSCLEAN ages are larger than H03 estimates, for OCs with
+$\log(age/yr){<}8$ dex. In our case, most of the OCs cross-matched with P12 are
+older than 8 dex. Nevertheless the same trend is confirmed, with P12 age values
+located below the identity line in Fig~\ref{fig:cross_match_ip_age} -- i.e.:
+younger ages compared to \texttt{ASteCA} -- but still closer than those from
+H03. This bias towards smaller age estimates by P12 is consistent with what was
+found in~\cite{Choudhury_2015}.
+%
+Contrary to the results found for H03 and P12, the R05 study slightly
+underestimates ages compared to our values, with a mean $\log(age/yr)$
+dispersion of $-0.25{\pm}0.63$ dex around the identity line. The standard
+deviation is the largest for the three integrated photometry DBs. In R05 the
+authors mention the lack of precision in their age measurements, due to the use
+of integrated colors, and the lack of constrains for the metallicity.
+
+% Baumgardt et al. (2012):
+% For clusters of a few thousand stars, a single giant star can have a luminosity
+% exceeding that of the rest of the cluster, leading to large fluctuations in the
+% clusters' M/L ratio (Piskunov et al. 2011). This makes mass estimates based on
+% cluster luminosity highly uncertain. We therefore also restrict our analysis to
+% clusters more massive than 5000 Mo.
+Expectedly, the four isochrone fit studies analyzed previously show a more
+balanced distribution of ages around the 1:1 relation, in contrast with the DBs
+that employ integrated photometry.
+%
+Ages taken from integrated photometry studies are known to be less
+accurate, and should be taken as a rather coarse approximation to the true
+values.
+As can be seen in P12, integrated colors present large scatters for
+all age values, leading inevitably to degeneracies in the final solutions.
+The added noise by contaminating field stars is also a key issue, as it is
+very difficult to remove properly from integrated photometry data. A
+single overly bright field star can also substantially modify the observed
+cluster's luminosity, leading to incorrect estimates of its
+parameters~\citep{Baumgardt_2013,Piatti_2014_B88}.
+A detailed analysis of some of the issues encountered by integrated photometry
+studies, and the accuracy of their results, is presented
+in~\cite{Anders_2013}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+\subsubsection{Integrated photometry masses}
+\label{sssec:integ_photom_masses}
+%
+%
+% Delta (ASteCA - DB) for mass_DB<5000: mean +- std
+% H03 Delta diffs small mass: 36 +- 1661
+% P12 Delta diffs small mass: 59 +- 1877
+%
+% Delta (ASteCA - DB) for mass_DB>5000: mean +- std
+% H03 OCs: 18 P12 OCs: 13
+% H03 Delta diffs large mass: -37504 +- 83723
+% P12 Delta diffs large mass: -19323 +- 26285
+%
+Masses are obtained in H03 and P12 via integrated photometry analysis.
+\cite{Baumgardt_2013} also derives masses, but as stated in that article, their
+results are in good agreement with those from P12, so we do not add this
+database to our work.
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/cross_match_ip_mass.png}
+\caption{\emph{Left}: BA mass plot, showing the differences between estimated
+masses in the H03 and P12 DBs and the code, in the sense \texttt{ASteCA} minus
+DB;\@ symbols as in Fig.~\ref{fig:cross_match_ip_age}.
+Only DB masses ${\le}5000\,M_{\odot}$ are shown here.
+Colors are assigned according to the difference in $\log(age/yr)$ estimation of
+each OC (colorbar is shown in the right plot), while sizes are proportional to
+the actual sizes in parsecs. The gray band is the mean $\pm 1\sigma$ for the
+$\Delta M$ values (notice that the axis is scaled by $10^{-4}\,M_{\odot}$).
+\emph{Center}: same as previous plot, now showing DB mass values in the range
+$5000-20000\,M_{\odot}$.
+\emph{Right}: same as previous plot, for DB mass values ${>}20000\,M_{\odot}$.
+}
+\label{fig:cross_match_ip_mass}
+\end{figure*}
+
+There are 127 OCs in the combined H03 and P12 cross-matched samples.
+In Fig.~\ref{fig:cross_match_ip_mass} we show DBs masses for all cross-matched
+OCs, versus their relative differences\footnote{For clarity we employ relative
+differences here instead of differences as in previous BA plots, since the
+masses span a large range of values. A 5000 $M_{\odot}$ discrepancy will not
+carry the same weight if it happens for an OC with estimated masses below 10000
+$M_{\odot}$, than if it happens for an OC with estimated masses above
+$1{\times}10^5M_{\odot}$.} defined as:
+
+\begin{equation}
+\begin{split}
+\overline{\Delta M_r} & = (M_{\mathtt{ASteCA}}-M_{DB})/(M_{\mathtt{ASteCA}}
++M_{DB}) \\
+& = \Delta M/(M_{\mathtt{ASteCA}}+M_{DB}),
+\end{split}
+\label{eq:rel_diffs}
+\end{equation}
+
+\noindent where $DB$ represents either H03 or P12. Crossed-matched OCs are
+divided into three regions, according to the masses given in either database.
+%
+Sizes are scaled with each OC's radius in parsecs, and colors follow the
+difference in assigned ages $\Delta \log(age/yr)$, in the sense \texttt{ASteCA}
+minus DB values, as given in the colorbar (see rightmost plot).
+The minimum CI value for OCs in this set is ${\sim}0.6$, meaning that they
+comprise a highly contaminated sample of clusters.
+The horizontal dashed line in each plot is the combined mean of the relative
+differences for the assigned masses, $\overline{\Delta M_r}$, for both DBs.
+The gray band shows the one standard deviation region around the mean.
+
+The average relative differences in the $M_{DBs}{\le}5000\,M_{\odot}$
+low-mass region -- left plot in Fig.~\ref{fig:cross_match_ip_mass} -- is very
+close to zero, with a standard deviation of almost ${\sim}0.5$, equivalent to a
+multiplicative factor of 3 between \texttt{ASteca} and DBs masses.
+%
+The mean value of $\Delta M$ (${=}M_{\mathtt{ASteCA}}-M_{DBs}$), is
+${\sim}40\,M_{\odot}$ which points to a very reasonable scatter around the
+identity line. The standard deviation of $\Delta M$ is ${\sim}1700\,M_{\odot}$,
+a somewhat large number considering the maximum $5000\,M_{\odot}$ limit for the
+OCs analyzed. This is nevertheless expected for a set composed of clusters with
+such small masses.
+As stated for example in P12 and~\cite{Baumgardt_2013}, low mass OCs -- i.e.,
+those with $M{\lesssim}$ 5000 or 10000 $M_{\odot}$ -- will tend to have their
+estimated integrated photometry masses largely dominated by stochastic
+processes.
+
+A surprising systematic trend arises when we take a closer look at the mass
+values assigned by the DBs. It can be evidently noticed that the larger the
+mass estimated by either DB, the larger the relative difference with 
+\texttt{ASteCA}'s derived value. The left plot in
+Fig.~\ref{fig:cross_match_ip_mass} already shows this trend, albeit disguised by
+some OCs with positive $\overline{\Delta M_r}$ differences --
+i.e., with larger masses given by the code -- beyond 2000 $M_{\odot}$.
+%
+If we look at the center and right plots in Fig.~\ref{fig:cross_match_ip_mass},
+where DBs mass estimates ${>}5000\,M_{\odot}$ are shown, the trend becomes
+unmistakable.
+In these plots we see OCs with DB mass estimates up to $1{\times}10^5\,M_{\odot}$
+with $\Delta M$ differences of almost $9{\times}10^4\,M_{\odot}$.
+The most discrepant case of SMC cluster NGC419 had to be left out of the right
+plot in Fig.~\ref{fig:cross_match_ip_mass} for clarity, as it is given a mass of
+$3.9{\times}10^5\,M_{\odot}$ by H03 and only $2.8{\times}10^4\,M_{\odot}$ by the
+code. This OC is one of the nine clusters -- five in the LMC and four in the SMC
+-- identified by H03 as ``extreme'' clusters due to their very low absolute
+magnitude values (see end of Sect. 4 in H03).
+
+The mean and standard deviation for $\overline{\Delta M_r}$ in the medium and
+large-mass regions shown in the center and right plots of
+Fig.~\ref{fig:cross_match_ip_mass}, are ${\sim-}0.5{\pm}0.3$,
+and ${\sim-}0.8{\pm}0.1$ respectively.
+A mass value estimated by the DBs is thus on average between 3 and 9 times
+larger than the one calculated by \texttt{ASteCA}.
+The smaller standard deviations for $\overline{\Delta M_r}$ in both these
+regions, would seem to imply that this is not just a stochastic effect but
+rather a systematic one.
+
+%
+\begin{table*}
+\centering
+\caption{OCs with large differences ($\Delta M{>}20000\,M_{\odot}$) in their
+assigned \texttt{ASteCA} masses, versus the values found in the DBs.
+Equatorial coordinates are expressed in degrees for the $J2000.0$ epoch.
+Ages are given as $\log(age/yr)$.}
+\label{tab:integ_phot_masses}
+\begin{tabular}{lcccccccc}
+\hline\hline
+Cluster & $\alpha(^\circ)$ & $\delta(^\circ)$ & H03$_{age}$ &
+P12$_{age}$ & \texttt{ASteCA}$_{age}$ &
+H03$_{M}\,[M_{\odot}]$ &
+P12$_{M}\,[M_{\odot}]$ & \texttt{ASteCA}$_{M}\,[M_{\odot}]$\\
+\hline\
+%
+S-NGC419 & 17.07917 & -72.88417 & $9.31{\pm}0.12$ & -- & $8.95{\pm}0.05$ &
+$\sim3.9{\times}10^{5}$ & -- & $2.8{\pm}0.3{\times}10^{4}$\\
+%
+L-NGC1917 & 79.7583 & -69.001 & $9.48{\pm}0.09$ & $9.46{\pm}0.08$ & $9.15{\pm}0.08$ &
+$\sim5.9{\times}10^{4}$ & $1{\pm}0.05{\times}10^{5}$ & $4{\pm}1{\times}10^{3}$\\
+%
+L-NGC1751 & 73.550 & -69.80694 & $9.48{\pm}0.09$ & $9.06{\pm}0.01$ & $9.1{\pm}0.05$ &
+$\sim9.7{\times}10^{4}$ & $6.5{\pm}1{\times}10^{4}$ & $9{\pm}1{\times}10^{3}$\\
+%
+S-L27 & 10.35 & -72.89083 & $9.28{\pm}0.12$ & -- & $9.45{\pm}0.06$ &
+$\sim5.5{\times}10^{4}$ & -- & $1.3{\pm}0.4{\times}10^{4}$\\
+%
+L-SL244 & 76.90417 & -68.54194 & $9.48{\pm}0.09$ & $9.43{\pm}0.01$ & $9.15{\pm}0.09$ &
+$\sim2.9{\times}10^{4}$ & $3.5{\pm}0.4{\times}10^{4}$ & $4{\pm}1{\times}10^{3}$\\
+\hline   
+\end{tabular}
+\end{table*}
+
+Considering that integrated photometry studies assign more credibility to higher
+mass estimates -- as they will tend to be less influenced by stochastic
+fluctuations -- this constitutes indeed an unexpected result.
+%
+It is also in direct contrast with what we show in
+Appendix~\ref{apdx:mass_valid}, where the total mass estimation by
+\texttt{ASteCA} is validated using MASSCLEAN synthetic clusters. In that study
+we found that the relative differences in mass -- \texttt{ASteCA} minus
+MASSCLEAN -- do not tend to either increase or decrease with the true mass of
+the cluster. The mass estimations done by \texttt{ASteCA} remain close to the
+actual cluster masses even for low values. The standard deviation of the
+average relative differences for the three mass regions explored (as shown in
+Fig.~\ref{fig:cross_match_ip_mass}), actually decrease for larger masses, as
+expected, pointing to a more accurate recovery of the mass as the clusters
+analyzed grow in size.\\
+
+%
+In Table~\ref{tab:integ_phot_masses} we show the five OCs with the largest
+\texttt{ASteCA}-DBs mass discrepancies, $\Delta M{>}2{\times}10^4\,M_{\odot}$,
+ordered locating the ones with the larger DB masses on top.
+CMD plots for each one of these OCs are presented in
+Appendix~\ref{apdx:largemass}, along with the best match synthetic clusters
+generated by the code.
+For the most extreme cases, both DBs assign total masses that are over an order
+of magnitude greater than the value found by \texttt{ASteCA}.
+Ages are largely in good agreement across the two DBs and this work, for these
+five OCs.
+As mentioned previously for the SMC cluster NGC419, H03 assigns a mass that is
+$3.6{\times}10^5\,M_{\odot}$ -- or equivalently 14 times -- larger than the mass
+obtained by the code. Similarly, P12 gives LMC cluster NGC1917 a mass 25
+times larger -- $\Delta M{=}9.6{\times}10^4\,M_{\odot}$ -- than the one
+derived by \texttt{ASteCA}.
+
+A possible explanation for this large divergence in the calculated masses, is
+the presence of contaminating field stars.
+To test this hypothesis we re-processed with \texttt{ASteCA} all OCs in
+Table~\ref{tab:integ_phot_masses}, this time with no previous decontamination
+process applied. This means that all stars within the cluster region, including
+field stars in the same line of sight, will be employed in the obtention of 
+the best synthetic cluster match. The upper limit for the total mass is set to
+$5{\times}10^5\,M_{\odot}$, to avoid biasing the results by setting a low total
+mass value.
+%
+For LMC cluster SL244 the total mass value obtained this way is
+$3{\times}10^4\,M_{\odot}$, meaning its average DB mass is recovered when no
+field stars cleaning is performed.
+The best synthetic cluster match for SMC cluster L27 results in an even higher
+total mass of $1{\times}10^5\,M_{\odot}$. These two cases clearly highlight the
+importance of a proper field star decontamination, before the method to derive an
+OC's mass is applied.
+
+For the remaining three OCs -- S-NGC419, L-NGC1917, and L-NGC1751; the most
+massive according to H03 and P12 -- the masses derived by \texttt{ASteCA} using
+the contaminated cluster region fall short from the values assigned by the DBs.
+The closest match is found for LMC clusters NGC1751 and NGC1917, for which a
+mass of $2{\times}10^4\,M_{\odot}$ is estimated by the code while their average DB
+mass is ${\sim}8{\times}10^4\,M_{\odot}$.
+In the case of SMC cluster NGC419, the recovered \texttt{ASteCA} mass using the
+entirety of stars in its observed field is $5.5{\times}10^4\,M_{\odot}$, still
+seven times smaller then the value given by H03. The radius used for NGC419 in
+our case is larger than the one employed in H03 by more than 20\%
+(${\sim}85^{\prime\prime}$ versus ${\sim}70^{\prime\prime}$), so we can be sure
+that this effect is not related to a lack of stars included within the cluster
+region.
+
+These three OCs share a common extra attribute beyond being the ones with
+the largest assigned masses in both DBs, and showing the largest discrepancies
+with \texttt{ASteCA} mass values: they are all identified as clusters
+presenting the controversial ``dual red clump'' (dRC) structure~\citep
+{Girardi_2009}.
+This feature was predicted in~\cite{Girardi_1998} as a grouping of stars with
+enough mass to ignite helium, while avoiding e$^-$-degeneracy.
+%
+% * made of stars just massive enough to have ignited helium in non-degenerate
+% conditions
+% * stars just massive enough to ignite He under non-degenerate conditions should
+% define a secondary clumpy feature, located about 0.3 mag below the clump of
+% lower mass stars, and at its blue extremity
+% * He-ignition in stars just massive enough to avoid e-degeneracy settling in
+% their H-exhausted cores. The main red clump instead is made of the slightly less
+% massive stars which passed through e-degeneracy and ignited He at the tip of
+% the red giant branch.
+% * simultaneous presence of stars which passed through electron degeneracy after
+% central-hydrogen exhaustion and those that did not.
+%
+%
+The quantitative effect of the dRC structure, on the integrated magnitude of a
+cluster, was tested on synthetic MASSCLEAN clusters of varying masses. We found
+that adding a secondary RC composed of about ${\sim}15\%$ of the stars present
+in the main RC~\citep[the approximate value found for NGC419 in][]
+{Girardi_2009}, has a very small effect on the synthetic cluster's integrated V
+magnitude, as well as its (B-V) color.\footnote{Where both V and B filters
+correspond to the Johnson photometric system.}
+%
+For a 1 Gyr synthetic cluster of 10000 $M_{\odot}$, adding stars
+to form the dRC -- located ${\sim}0.3$ mag below the RC, and
+${\sim}0.04$ mag towards the bluer region of the (B-V) vs. V CMD -- results
+in the integrated V band (and the integrated (B-V) color) increasing only
+a few hundredths of a magnitude.
+At the same time, just doubling the mass of the synthetic cluster, i.e.
+20000 $M_{\odot}$, increases the integrated V band value almost a full
+magnitude. This difference is large enough to assume that the H03 and P12
+models will not mistakenly assign large masses, based on such a small variance
+in integrated photometry as that produced by a dRC.\@
+%
+The excess brightness generated by stars in the dRC region of these three OCs,
+would thus appear to not be enough to explain the overestimated total mass
+values given by H03 and P12 (in particular to NGC419 by H03).
+
+In addition to the presence of a dRC, both NGC419 and NGC1751 show
+extended or multiple main-sequence turnoffs~\citep[MSTO; see:][]
+{Glatt_2008,Milone_2009,Rubele_2010,Rubele_2011,Girardi_2011}
+while NGC1917 is known to posses a broadened MSTO~\citep{Milone_2009}.
+The origin of this structure is still under debate, as seen in~\cite
+{Piatti_Bastian_2016},~\cite{Milone_2016}, and~\cite{Li_2016}.
+Its influence on the derived masses from integrated photometry studies is not
+straightforward to assess, nor can its impact be easily discarded.\\
+
+If we examine the H03 and P12 databases, we find that the aforementioned bias
+-- by which integrated photometric studies increasingly overestimate masses for
+larger mass OCs -- exists even when comparing these studies among themselves.
+%
+After removing duplicated entries in both DBs, and cross-matching them with
+a maximum search radius of 20 arcsec, we are left with 670 unique LMC OCs
+across H03 and P12.
+Fig.~\ref{fig:h03_p12_cross} shows BA diagrams for these cross-matched OCs.
+We plot here the average P12-H03 mass $\overline{M}_{DBs}$
+versus their relative difference $\overline{\Delta M}_r$, as defined in
+Eq.~\ref{eq:rel_diffs}, in the sense P12 minus H03. As done previously, masses
+are separated into three regimes for clarity.
+%
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/H03_P12_mass.png}
+\caption{\emph{Left}: BA plot for the relative difference between P12 minus H03
+masses, for average mass values below 5000 $M_{\odot}$. OCs are colored
+according to the difference in their assigned logarithmic ages by each DB --
+i.e.: $\Delta \log(age/yr)$ -- in the sense P12 minus H03; see colorbar in the
+rightmost plot. The mean and standard deviation for $\overline{\Delta M}_r$ is
+shown as a dashed black line and a gray region, respectively.
+\emph{Center}: idem, for average DB masses
+$5000<\overline{M}_{DB}<20000\,(M_{\odot})$.
+\emph{Right}: idem, for average DB masses
+$\overline{M}_{DB}>20000\,(M_{\odot})$.}
+\label{fig:h03_p12_cross}
+\end{figure*}
+%
+There are only five OCs that show average masses larger than 100000
+$M_{\odot}$, and they are all massive globular clusters which are incorrectly
+assigned a low age and mass by P12.\footnote{These five LMC globular clusters
+are: NGC1916, NGC1835, NGC1786, NGC1754, and NGC1898. P12 assigns masses
+below 2000 $M_{\odot}$ in all cases.}
+For example, the LMC globular cluster NGC1835 is correctly identified by H03 as
+an old ${\sim}5$ Gyr system, with a total mass of
+$\sim1.4{\times}10^6\,M_{\odot}$~\citep[a reasonable value,
+although a bit overestimated, according to][]{Dubath_1990}. P12 on the
+other hand classifies this as an extremely young
+${\sim}6.3$ Myr OC with a very low total mass estimate of $1700\,M_{\odot}$.
+
+In Fig.~\ref{fig:h03_p12_cross} we see that, as the average OC mass given by
+these DBs increases, so do their relative differences.
+The mean values of $\overline{\Delta M}_r$ decreases from ${\sim}0.5\pm0.4$ in
+the low mass region, to ${\sim}0.1\pm0.4$ in the medium OC mass region, to
+${\sim-}0.4\pm0.6$ in the large mass region. Masses go from being overestimated
+a factor of 3 by P12 -- in relation to H03 -- in the low mass region, to being
+underestimated by a factor of more than ${\sim}2$ in the large mass region .
+%
+These differences in total mass grow with larger average masses, in a way that
+is closely related to the difference in the $\log(age/yr)$ values estimated by
+each DB.\@ Where P12 estimates larger masses than H03 -- i.e., the low mass
+region -- it also assigns larger ages by more than 1.5 dex. Conversely, in the
+large average mass region, P12 ages can reach differences of up to 3 dex lower
+than H03.
+%
+This age-mass positive correlation, by which an older large cluster can be
+incorrectly identified as a much younger and less massive one or vice-versa, is
+also noticeable in Fig.~\ref{fig:cross_match_ip_mass} albeit to a lesser
+extent. In Fig.~\ref{fig:age_mass_corr} we show how the age-mass correlation
+affects DBs estimates compared to those taken from \texttt{ASteCA} (left plot),
+and how this effect is much stronger in P12 and H03 estimates (right plot).
+
+\begin{figure}
+\centering
+\includegraphics[width=\hsize]{figures/age_mass_corr.png}
+\caption{\emph{Top}: Differences plot for \texttt{ASteCA} minus the combined P12
+and H03 DBs. Horizontal and vertical axis show differences in
+$\log(age/yr)$, and $\log(M/M_{\odot})$, respectively.
+A 2-dimensional Gaussian kernel density estimate is shown as iso-density black
+curves.
+\emph{Bottom}: idem, for ages and masses of P12 and H03 cross-matched OCs, in
+the sense P12 minus H03.}
+\label{fig:age_mass_corr}
+\end{figure}
+
+% H03: 149 con M>5000 de 939 --> 16% 
+% H03: 78 con M>10000 de 939 --> 8% 
+% H03: 46 con M>20000 de 939 --> 5%
+% P12: 156 con M>5000 de 920 --> 17%
+% P12: 61 con M>10000 de 920 --> 7%
+% P12: 20 con M>20000 de 920 --> 2%
+% ASteCA 41 con M>5000 de 239 --> 17% 
+% ASteCA 15 con M>10000 de 239 --> 6% 
+% ASteCA 6 con M>20000 de 239 --> 2.5% 
+About ${\sim}17\%$ of the OCs in H03 and P12, are assigned masses
+above 5000 $M_{\odot}$ in their respective DBs. A smaller percentage,
+less than ${\sim}8\%$ and ${\sim}5\%$, are assigned by those works mass values
+above 10000 $M_{\odot}$ and 20000 $M_{\odot}$ respectively. Similar proportions
+are found when inspecting \texttt{ASteCA}'s obtained masses.
+%
+Clusters with relatively large masses represent -- as demonstrated by
+the aforementioned percentages -- a small portion of OCs in the DBs.
+Nonetheless, care should be taken when applying their integrated photometry
+estimated masses to the study of properties such as the initial cluster
+mass function (ICMF).
+Large discrepancies in the mass value assigned for the most massive OCs, could
+have a non-negligible impact on the slope of the IMCF.\@
+
+
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Parameters distribution}
+\label{sec:param-dist}
+
+We present here a summary of the distribution of fundamental parameter values
+obtained with \texttt{ASteCA}, for our set of 239 Magellanic Clouds clusters.
+%
+% \cite{Piatti_2014_prob} analyzed XX small angular sized candidate clusters in
+% the LMC and found that $13\pm6 \%$ of these catalogued systems were possible
+% non-clusters. \texttt{ASteCA} includes a function which obtains the probability
+% for a given star region of having arisen from the same distribution as its
+% surrounding field. About $5\%$ (13) of our total sample had probabilities
+% assigned in the lower quarter, i.e. below $25\%$. This means that the
+% likelihood
+% that these are real star clusters is very low according to the code.
+
+% * Duong probability for SMC
+% Probs<0.25: 7
+% Clust H86-70, prob: 0.14
+% Clust BS88, prob: 0.22
+% Clust H86-197, prob: 0.20
+% Clust B111, prob: 0.20
+% Clust H86-85, prob: 0.14
+% Clust H86-90, prob: 0.16
+% Clust NGC242, prob: 0.23
+% * Duong probability for LMC
+% Probs<0.25: 6
+% Clust HS151, prob: 0.18
+% Clust KMHK58, prob: 0.13
+% Clust H88-52, prob: 0.16
+% Clust OGLE298, prob: 0.11
+% Clust H88-245, prob: 0.23
+% Clust H88-316, prob: 0.13
+
+In astrophysics analysis, histograms are widely used to derive a large number of
+properties when a substantial amount of data is available. A galaxy's star
+formation history (SFH) is a good example of such a property, almost always
+quantified via a one-dimensional histogram.
+%
+Their widespread use notwithstanding, the generation of a histogram is affected
+by well known statistical issues;
+see~\cite{Silverman_1986},~\cite{Simonoff_1997}. Different selected bin widths
+and anchor positions (point of origin) can make histograms built
+from the exact same data look utterly dissimilar. In the worst cases, completely
+spurious sub-structures may appear, leading the analysis towards erroneous
+conclusions.
+%
+We bypass these issues by constructing an adaptive (or variable) Gaussian kernel
+density estimate (KDE) in one and two dimensions, using the standard deviations
+associated to a given parameter as the bandwidth estimates. The formulas for
+both KDEs are:
+
+\begin{equation}
+KDE_{1D}(x) = \frac{1}{N\sqrt{2\pi}} \sum_{i=1}^N \frac{1}{\sigma_i}
+e^{-\frac{(x-x_i)^2}{2\sigma_i^2}},
+\label{eq:kde-1d}
+\end{equation}
+
+\begin{equation}
+KDE_{2D}(x,y) = \frac{1}{2\pi N} \sum_{i=1}^N \frac{1}{\sigma_{xi}\sigma_{yi}}
+e^{-\frac{1}{2} \left( \frac{(x-x_i)^2}{\sigma_{xi}^2} + 
+\frac{(y-y_i)^2}{\sigma_{yi}^2} \right)},
+\label{eq:kde-2d}
+\end{equation}
+
+\noindent where $N$ is the number of observed values, $x_i$ is the ith observed
+value of parameter $x$, and $\sigma_{xi}$ its assigned standard deviation (same
+for $y_i$ and $\sigma_{yi}$). The 1D version of these KDEs is similar to the
+``smoothed histogram'' used in the~\cite{Rafelski_2005} study of SMC clusters.
+%
+The use of standard deviations as bandwidth estimates means that the
+contribution to the density map (in 1D or 2D) of parameters derived with large
+errors, will be smoothed (or ``spread out'') over a large portion of the
+parameter's domain. Precise parameter values on the other hand -- i.e. those
+with small assigned errors -- will contribute to a much more narrow region, as
+one would expect.
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/as_kde_maps0.png}
+\caption{One and two-dimensional Gaussian adaptive KDEs for the age, metallicity
+and mass parameters. Top and right plots are 1D KDEs while the center plots are
+2D KDEs.
+Observed clusters are plotted as red and blue stars for the S/LMC,
+respectively in the 2D KDEs. Sizes are scaled according to each OC's radius in
+parsecs. A small scatter is introduced for clarity.}
+\label{fig:kde_fig0}
+\end{figure*}
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/as_kde_maps1.png}
+\caption{Same as Fig.~\ref{fig:kde_fig0} for the extinction and distance
+modulus parameters.}
+\label{fig:kde_fig1}
+\end{figure*}
+
+Replacing one and two-dimensional histogram analysis with these KDEs has two
+immediate benefits: a) it frees us from having to select an
+arbitrary value for the bandwidth (the most important component of a KDE,
+equivalent to the bin width of a regular histogram), and b) it naturally
+incorporates the errors obtained for each studied parameter into its derived
+probability density function.
+Figs.~\ref{fig:kde_fig0} and~\ref{fig:kde_fig1} show 1D and 2D density maps
+constructed via Eqs.~\ref{eq:kde-1d} and~\ref{eq:kde-2d}, for two paired
+parameters, for each of the MCs.\@
+%
+Being probability density functions means that the area under the curve
+integrates to unity. This makes the distributions for a given parameter
+comparable for both galaxies, even if the number of observed points -- clusters
+in our case -- is not the same (equivalent to a normalized histogram).
+%
+
+Based on the analysis of a database of over 1500 OCs, G10 reports two periods of
+enhanced cluster formation in the MCs: around 160 Myr and 630 Myr for the SMC,
+and around 125 Myr and 800 Myr for the LMC.\@ A third period is reported at
+approximately 8 Myr for both MCs.
+%
+To obtain these results, the authors construct histograms of their data,
+combined with data from P00 and C06 (see Figs. 5 and 6 in G10). They analyze the
+peaks found in both histograms and conclude that the formation episodes are
+correlated, as they happened around the same period of time.
+%
+This is a good example of the issues mentioned at the beginning of this section,
+regarding histogram construction. If we look at the 1D $\log(age/yr)$ KDEs in
+Fig.~\ref{fig:kde_fig0} (top), we see that most of the enhanced formation
+periods reported in G10 are not present.
+A distinct period of cluster formation is visible in the LMC starting around the
+${\sim}$5 Gyr mark, which lasted up to ${\sim}$1.3 Gyr ago.
+A similar, but much less pronounced peak is seen for the SMC, with a clear drop
+in cluster formation around ${\sim}$2 Gyr.
+The height difference  between the SMC and LMC KDEs is related to the decline in
+cluster formation. While the LMC sharply drops to almost zero from ${\sim}$1 Gyr
+to present times, the SMC shows a much softer descent with smaller peaks
+around ${\sim}$250 Myr and ${\sim}$130 Myr.
+The well known ``age gap'' in the LMC between 3--10 Gyrs~\citep{Balbinot_2010}
+is present, visible as a marked drop in the $KDE_{\log(age/yr)}$ curve at
+approximately $\sim9.5$ dex. No clusters older than this age are found in our
+work.
+
+The 2D KDE age-metallicity map shows how spread out these values are for OCs in
+the SMC, compared to those in the LMC which are much more heavily
+clustered together.
+Although in this map the abundance of the SMC can be seen to reach
+substantially lower values than the LMC, the 1D KDE to the right reveals that
+the [Fe/H] parameter peaks between 0 dex and -0.2 dex, for OCs in both clouds.
+
+The age-mass 2D map shows a clustering around younger ages and smaller masses
+for the LMC, relative to the SMC.\@ The OC seen in the bottom right corner of
+the age-mass SMC map is HW42 ($\alpha{=}1^h01^m08^s$, $\delta
+{=}-74^\circ04'25''$ [J2000.0]), a small cluster (radius ${<}20$ pc) located
+close the the SMC's center. Though its position in the map is somewhat
+anomalous, the 1$\sigma$ error in its age and mass estimates could move it to
+$\log(age/yr){\simeq}9.4$ and $\log(M/M_{\odot}){\simeq}2.6$. This OC is
+classified as a possible emissionless association by~\cite{Bica_1995}.
+
+In both clouds there is a tendency for the mass and the size of the OC, to grow
+with the estimated age, as expected. In the 1D mass KDE, we see that the LMC
+accumulates most OCs in the low mass regime (${\sim}3000\,M_{\odot}$).
+This is also true for the SMC which has a larger proportion of large mass OCs,
+with a distinctive peak around ${\sim}30000\,M_{\odot}$.
+
+
+% dm +- std: 18.96 +- 0.08
+% dm +- std: 18.49 +- 0.08
+As seen in Fig.~\ref{fig:kde_fig1} (top), the 1D KDEs of the true distance
+moduli are well behaved and clearly normal in their distribution.
+A Gaussian fit to these curves results in best fit values of 18.96$\pm$0.08 mag
+for the SMC, and 18.49$\pm$0.08 mag for the LMC.\@ The initial ranges given in
+Table~\ref{tab:ga-range}, as well as the literature mean distances, are thus
+properly recovered.
+%
+Extinction values are much more concentrated in the SMC around $E_{B-V}
+{\approx}0.015$ mag. The OCs in the LMC on the other hand, show that most
+values are dispersed below $E_{B-V}{\approx}0.1$ mag, with a shallower peak
+located at ${\sim}0.03$ mag.
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \subsection{Cluster radius}
+% \label{ssec:core-radius}
+
+% In Fig~\ref{fig:rad_pars} the distribution of metallicity and ages for both MCs
+% versus the assigned radii, is shown.
+% \cite{Wilkinson_2003}.
+
+% \begin{figure}
+% \includegraphics[width=\columnwidth]{figures/rad_vs_pars_S-LMC.png}
+% \caption{XXXXX}
+% \label{fig:rad_pars}
+% \end{figure}
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Age-metallicity relation}
+\label{ssec:amr}
+
+A stellar system's age-metallicity relation (AMR) is an essential tool to learn
+about its chemical enrichment evolution.
+This relation is usually presented either as scattered single points in the
+age-metallicity space, or as a function created by grouping and averaging
+metallicity estimates in arbitrary age bins.
+%
+In~\cite{Piatti_2010_AMR} a method was devised to generate an AMR able to take
+into account the errors in age values, to produce bins of different sizes. This
+method has been applied to the obtention of AMRs in~\cite{Piatti_Geisler_2013},
+and also adapted to derive star cluster frequency distributions~\citep[e.g.,][]
+{Piatti_2013_CF}.
+
+We can take advantage of the KDE technique described in
+Sect.~\ref{sec:param-dist} -- used to produce two-parameters density maps -- to
+generate an AMR that is truly representative of the observed data, with some
+important improvements over previous methods.
+%
+First, a Gaussian density map has no dependence on the number, size 
+(fixed or variable) or location of bins, as a regular histogram or the
+aforementioned method would.
+Second, the errors in the two parameters used to obtain the density map (age and
+metallicity), are organically included in the function that generates it
+(as explained in Sect.~\ref{sec:param-dist}).
+This means that no ad-hoc procedure is required to incorporate the important
+information carried by these values, into the final AMR.\@
+
+The process of creating an AMR function\footnote{By ``AMR function'' we mean a
+curve that spans the entire observed age range, mapping each age value
+to a single metallicity value.} requires that we associate a unique [Fe/H] to a
+single age value, for the available age range.
+%
+After generating the age-metallicity 2D density map, a dense 2D grid is created
+dividing it into N steps of 0.01 dex width, covering the ranges of both
+parameters. Every point in this grid is evaluated in the KDE map and its value 
+($w_i$) is stored, along with its age-metallicity coordinates ($age_i,\;
+[Fe/H]_i$).
+Each of the N ages defined in the grid is then associated to a single
+representative [Fe/H] value. This representative metallicity for a given age is
+obtained as the mean metallicity value, weighted by the KDE function at that
+particular age. The formal equation for obtaining it, can be written as
+
+\begin{equation}
+\overline{[Fe/H]}_{age_i}=\frac{\sum w_i {[Fe/H]}_i}{\sum w_i}
+\label{eq:w-feh}
+\end{equation}
+
+\noindent where the summations are performed over each $i$ step for the N
+defined steps in the metallicity range, ${[Fe/H]}_i$ is the metallicity value
+at step $i$, and $w_i$ is the value of the 2D KDE map for that fixed age and
+metallicity coordinates.
+The $age_i$ subindex in Eq.~\ref{eq:w-feh} indicates that this mean
+metallicity was calculated for a fixed age value, and thus represents a unique
+point in the AMR.\@
+A similar version of this weighted metallicity was employed 
+in~\citet[][see Eq. 3]{Noel_2009} to derive AMR estimates for three observed
+fields.
+We apply the above formula to all the N ages in the grid defined at the
+beginning of the process. The standard deviation for each $\overline{[Fe/H]}_
+{age_i}$ value is calculated trough the equation
+
+\begin{equation}
+\sigma_{age_i}^2=\frac{\sum w_i \sum [w_i {({[Fe/H]}_i -
+\overline{[Fe/H]}_{age_i})}^2]}{{(\sum w_i)}^2 - \sum w_i^2}
+\label{eq:w-std-dev}
+\end{equation}
+
+\noindent where again all summations are applied over N, and the descriptions
+given for the parameters in Eq.~\ref{eq:w-feh} apply.
+%
+At this point, this method already gives us an AMR function estimate, since
+every age step is mapped to a unique metallicity. The downsides are that
+the AMR is noisy due to the very small step of 0.01 dex used, and that the
+associated errors are quite large.
+This latter effect arises because the weighted standard deviation, Eq.~\ref
+{eq:w-std-dev}, will be affected not only by the errors in both measured
+parameters -- through the constructed 2D KDE map -- but also by the intrinsic
+dispersion in the metallicity values found for any given age.
+%
+To solve this, we calculate the average [Fe/H] for a given age interval, rather
+than assigning a metallicity value to each age step in the grid. Dividing the
+age range into intervals requires a decision about the step width, much like
+when constructing a histogram, bringing back the issue of binning.
+We have two advantages here: a) we use Knuth's algorithm (see
+Sect.~\ref{ssec:isoch-fit}) to obtain the optimal binning for our data, and
+b) the final AMR function is very robust to changes in the binning method
+selected, so even the previous choice is not crucial in determining the
+shape of our AMR.\@
+%
+Finally, the $\overline{[Fe/H]}_{age_i}$ values obtained for every ${age_i}$
+within a defined age interval, are averaged. Errors are propagated through the
+standard formula, disregarding covariant terms~\citep[][Eq. 3.14]
+{Bevington_2003}.
+
+The final \texttt{ASteCA} AMRs for the S/LMC can be seen in Fig.~\ref{fig:amr}
+as red and blue continuous lines, respectively. Stars show the position of all
+OCs in our sample for each galaxy, with sizes scaled according to their radii.
+%
+The shaded regions represent the 1$\sigma$ standard deviations of the AMR
+functions. These regions span a [Fe/H] width of approximately 0.2 dex for both
+Clouds, for the entire age range.
+%
+The blue (top) and red (bottom) vertical segments in the top plot are the bin
+edges determined for each age interval by Knuth's algorithm, for the LMC and the
+SMC respectively.
+% The last blue segment visible around ${\sim}5.1$ Gyr is added to
+% include points in the grid that extend beyond the most extreme OC ages.
+% This is due to the age error associated to each OC, which makes the KDE map
+% evaluate to non-null values farther away from where OCs are positioned.
+% Similarly, an edge is added at the left of the age range but it is not
+% shown; the same is true for the SMC.\@
+%
+As stated previously, the final AMR functions are mostly unaffected by the
+chosen binning method. Using Knuth's algorithm results in approximately 12 age
+intervals of widths between 0.35 and 1 Gyr, as seen in Fig.~\ref{fig:amr}.
+If instead we use 100 intervals of ${\sim}0.1$ dex width, the only substantial
+change is that the SMC curve is raised by ${\sim}0.1$ dex, for ages below 500
+Myr.
+%
+The two SMC clusters with extremely low metallicities -- [Fe/H]${<-}2$
+dex -- are NGC294 and HW85;\@ their abundances were already analyzed in
+Sect.~\ref{ssec:lit-values}.
+Having such small metallicity values means that their associated uncertainty
+will be quite large, as discussed in Sect.~\ref{sec:errors-fit}.
+This has the effect of spreading their positions in the density
+map, preventing these low values from affecting the AMR substantially.
+If these two OCs are excluded from our data, the resulting AMR for the SMC moves
+upwards in the [Fe/H] axis by less than 0.02 dex.
+
+Several chemical evolution models and empirically estimated AMRs can be found in
+the literature for both Magellanic Clouds. Many of the studies performed on the
+age-metallicity relation of the S/LMC present their results as scattered points
+in the age vs metallicity plot, rather than fitting a unique AMR function to
+describe the distribution of those observed values.
+%
+To allow a straightforward comparison with our AMR functions, we show in
+Fig.~\ref{fig:amr} -- center and bottom plots -- the functions presented in
+twelve other works.
+%
+\begin{figure}
+\centering
+\includegraphics[width=\hsize]{figures/AMR_asteca.png}
+\caption{\texttt{ASteCA}'s age-metallicity relation for the S/LMC (red/blue
+solid lines). Shaded areas are the 1$\sigma$ regions for each AMR.\@ Blue and
+red stars are the LMC and SMC clusters in our set.
+See text in Sect.~\ref{ssec:amr} for more details.}
+\label{fig:amr}
+\end{figure}
+%
+These studies constitute a representative sample of the different methods and
+data used in the literature over the past twenty years, for these two
+galaxies:
+\citet[][PT98; bursting models]{Pagel_1998}, \citet[][G98; closed-box model
+with Holtzman SFH]{Geha_1998}, \citet[][HZ04]{Harris_2004}, \citet[][C08a;
+average of four disk frames]{Carrera_2008_lmc}, \citet[][C08b; average of
+thirteen frames]{Carrera_2008_smc}, \citet[][HZ09]{Harris_2009}, \citet[][N09;
+5th degree polynomial fit to the AMRs of their three observed regions]
+{Noel_2009}, \citet[][TB09; 1: no merger model, 2: equal mass merger, 3: one
+to four merger]{Tsujimoto_2009}, \citet[][R12; four tiles average]{Rubele_2012},
+\citet[][C13; B: Bologna, C: Cole]{Cignoni_2013}, \citet[][PG13]
+{Piatti_Geisler_2013}, and \citet[][M14; 0: field LMC0, 1: field LMC1 , 2: field
+LMC2]{Meschin_2014}.
+Details on how these AMRs were constructed will not be given here, as
+they can be consulted in each reference.
+%
+All of the above mentioned articles used field stars for the obtention
+of their AMRs. This is, as far as we are aware, the first work were the AMR
+function for both galaxies is derived entirely from observed star clusters.
+
+% PT98: bursting models for both galaxies.
+% G98: closed-box model, Holtzman
+% C08 LMC: global average of 13 frames, .
+% C08 LMC: average of 4 frames, for the disk.
+% TB09: 3 models, M1 (no merger), M2 (1:1 merger), M3 (1:4 merger)
+% C13: B: Bologna code, C: Andre Cole's annealing procedure
+% M14: LMC0 (R$_{gc}{=}7.1^{\circ}$), LMC1 (R$_{gc}{=}5.5^{\circ}$),
+% LMC2 (R$_{gc}{=}4.0^{\circ}$)
+
+The overall trend of both AMRs coincides with what has already been found in the
+literature, namely that the metallicity increases rather steadily with younger 
+ages. On average, our AMR estimates are displaced slightly towards more metal
+rich values, particularly in the case of the SMC.\@ This tendency was already
+mentioned in Sect.~\ref{ssec:lit-values}, where possible causes for at least
+some part of the effect were also given.
+
+For the LMC galaxy, Fig.~\ref{fig:amr} center plot, we see a marked
+drop in metallicity from ${\sim-}0.3$ dex beginning around 3.8 Gyr, and
+ending 3 Gyrs ago at ${\sim-}0.55$ dex. The former high [Fe/H] value is not
+found in any of the remaining functions for the LMC.\@ The M14-0 curve seems to
+reproduce this behavior, but shifted ${\sim}0.8$ Gyr towards younger ages, and
+with a less pronounced peak that reaches its maximum of ${\sim-}0.45$ dex at
+${\sim}3.2$ Gyr.
+%
+The high metallicity value in the LMC AMR at 3.8 Gyr, is caused by the four OCs
+located around ${\sim}3.3$ Gyr with [Fe/H]${\approx-0.25}$ dex; when they are
+excluded, the peak disappears.
+These four OCs are: SL33, H3, SL5, and KMHK586, their CMDs are shown in
+Appendix~\ref{apdx:amr_lit}, Fig~\ref{fig:largemet}.
+The last three of these OCs are analyzed in~\citet{Piatti_2011b} and have no
+metallicities or extinction values assigned,
+as only ages were estimated in this article via the $\delta T_1$ index.
+Ages obtained by \texttt{ASteCA} for this group of OCs are between 0.1-0.3 dex
+larger than the ones given in~\citet{Piatti_2011b}.
+According to this article, the oldest OCs in the group have ages of ${\sim}2.5$
+Gyr. This means that if literature's ages were used instead of the ones produced
+by the code, the peak would not show.
+In fact, the entire AMRs functions derived using literature values -- i.e.,
+those taken from the articles in Table~\ref{tab:literature} -- are markedly
+different from the ones shown in Fig.~\ref{fig:amr}.
+This is expected as most OCs in these works are assigned fixed metallicities of
+-0.7 dex and -0.4 dex for the S/LMC, respectively; particularly for estimated
+ages below 1 Gyr. Literature AMRs for both MCs, obtained following the same
+method explained in this section, can be seen in Appendix~\ref{apdx:amr_lit},
+Fig~\ref{fig:amr_lit}.
+
+% LMC clusters with large ASteCA ages and met values:
+% Name (RA, DEC): (ASteCA, Literature)
+% H3 (05:33:20, -68:9:8): (9.5, 9.4); (-0.18, --)
+% SL5 (04:35:38, -73:43:54): (9.55, 9.4); (-0.18, --)
+% SL33 (04:46:25, -72:34:06): (9.55, 9.3); (-0.28, -0.4)
+% KMHK586 (05:08:51, -67:58:49): (9.55, 9.26); (-0.18, --)
+
+%
+After the aforementioned drop in the LMC's AMR, there is a steep climb from 3
+Gyr to 2 Gyr reaching almost [Fe/H]${\sim-}0.25$ dex, and then a sustained but
+much more shallow increase up to the present day's metal content of ${\sim-}0.2$
+dex. The AMR functions for the LMC that differ the most from the one obtained
+with \texttt{ASteCA} values, are those taken from HZ09 and G98. These two curves
+are visibly separated, not only from our AMR, but also from the rest of the
+group.
+Our average metallicity value for present day OCs, coincides reasonably well
+with those from PT98, C08a, and M14-2. The PT98 bursting model and field 2
+from M14, show nonetheless a very different rate of increase from 2 Gyr to
+present times, compared to \texttt{ASteCA}'s AMR. The average AMR from C08a,
+while lacking finer details, provides a better match for this age range.
+
+%
+The AMR function for the SMC obtained using \texttt{ASteCA}'s age and
+metallicity values, is shown along ten AMRs taken from the published literature
+in Fig.~\ref{fig:amr}, bottom.
+%
+Our AMR shows an increased rate of [Fe/H] that reaches a peak around
+${\sim}7.5$ Gyrs ago, followed by a marked dip between $6{-}7$ Gyr.
+This feature was reported by TB09 in its two merger models.
+The TB09-2 model (equal mass merger) appears to best mimic our AMR for the SMC,
+although ours is shifted upwards towards higher abundances. The TB09-3 model 
+(1:4 mass merger) shows the same peak, but followed by a much more pronounced
+dip that goes well below most AMRs, including our own.
+%
+The TB09-2 model and our AMR follow a very similar path up to 3 Gyr,
+where they start to deviate. For present day ages, where the AMRs differ the
+most, our curve is more metal rich by about 0.4 dex compared to the TB09-2
+model.
+%
+Following the dip beyond ${\sim}6$ Gyr, abundances in our AMR plateau around a
+value of [Fe/H]${\simeq-}0.8$ dex until approximately 3 Gyrs ago, where the
+rate of growth for the metallicity increases considerably. From that point up to
+the present day, the average metallicity for OCs in the SMC grows by about 0.4
+dex, according to the \texttt{ASteCA} AMR.
+%
+The increased rate of growth behavior for ages younger than 3 Gyrs, is only
+reproduced by the PT8 model, and the HZ04 function. In both cases, the maximum 
+[Fe/H] value attained by these AMRs for the youngest ages is lower by
+${\sim}0.12$ dex, compared to our own estimate for this galaxy.
+
+The canonical metallicity values usually accepted -- [Fe/H]${=-0.7}$ dex,
+[Fe/H]${=-}0.4$ dex, for the S/LMC -- are shown to be off by ${\sim0.3}$ dex on
+average, for clusters younger than 2.5 Gyr in both galaxies. We must keep in
+mind though, that most of the [Fe/H] values in the previous literature are
+obtained using a solar metallicity of $z_{\odot}{=}0.019$. Instead in this work
+we used the more recent value of $z_{\odot}{=}0.0152$. As was shown in
+Sect.~\ref{ssec:lit-values}, this difference alone means our [Fe/H] estimates
+will be ${\sim}0.1$ dex above the others.
+
+Overall our AMRs can not be explained by any single model or empirical AMR
+function, and are best reproduced by a combination of several of these. A
+similar result was found in~\cite{Piatti_Geisler_2013}, although their AMRs --
+derived from field star population -- are significantly different from ours,
+mainly for the SMC case.
+%
+It is important to remember that the AMRs estimated using the ages and
+metallicities derived via \texttt{ASteCA}, are averaged over the structure of
+both Magellanic Clouds. In Fig.~\ref{fig:ra-dec} we showed that our set of OCs
+covers a large portion of the surface of these galaxies.
+%
+If more OCs where available so that the AMRs could be instead
+estimated by sectors in the S/LMC, it is entirely possible that different
+results would arise. When clusters in our set are divided by sectors,
+statistically low numbers are assigned to each -- particularly for the SMC --
+which makes this more detailed study not feasible.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Summary and conclusions}
+\label{sec:summ-concl}
+
+We presented an homogeneous catalog for a set of 239 star clusters in the
+Large and Small Magellanic Clouds, observed with the Washington photometric
+system. The OCs span a wide range in metallicity, age, and mass, and are
+spatially distributed throughout both galaxies.
+%
+The fundamental parameters metallicity, age, reddening, distance modulus, and
+total mass were determined using the \texttt{ASteCA} package.
+%
+This tool allows the automated processing of an OC's positional and photometric
+data, resulting in estimates of both its structural and intrinsic/extrinsic
+properties.
+%
+As already shown in Paper I, the advantages of using this package include
+reproducible and objective results, along with a proper handling of the
+uncertainties involved in the synthetic cluster matching process.
+%
+This permits the generation of a truly homogeneous catalog of observed
+clusters, with their most important parameters fully recovered.
+%
+Our resulting catalog is complete for all the analyzed parameters, including
+metallicity an mass, two properties often assumed or not obtained at all.
+
+% TOMADO DE BAAA58 v
+The analysis of our results, demonstrate that the assigned values for the OCs
+are in good agreement with published literature which used the same
+Washington photometry.
+%
+The metallicity parameter showed to be the most discrepant one, with \texttt
+{ASteCA}'s [Fe/H] values -- for both galaxies combined -- being on average
+${\sim}0.22$ dex larger than those present in the literature. Half of this
+difference is due to the solar abundance assumed in this work~\citep[$z_{\odot}
+{=}0.0152$;][]{Bressan_2012}. The explanation for the remaining ${\sim}0.1$ dex
+is largely the confirmation bias effect, by which most OC studies will
+assume the canonical [Fe/H] values rather than derive them through statistically
+valid means.
+%
+We also compared our results with those taken from articles that used different
+photometric systems. While the age differences in this case are somewhat
+larger, they can be mostly explained by effects outside the code.
+% TOMADO DE BAAA58 ^
+Internal errors show no biases present in our determination of fundamental
+parameters.
+
+We performed a detailed comparative study of masses obtained through integrated
+photometry studies, with our own estimates from CMD analysis. The total mass
+values from the latter studies are shown to be systematically overestimated.
+This result is opposite to the expectation that larger clusters can have their
+masses recovered with moderate accuracy, via integrated photometry.
+
+A method for deriving the distribution of any fundamental parameter -- or a
+combination of two of them -- is presented. This method takes into account the
+information contained by the uncertainties, often excluded from the analysis.
+By relying on Gaussian kernels, it is robust and independent of ad-hoc binning
+choices.
+%
+An age-metallicity relation is derived using the above mentioned method and the
+parameter values obtained by \texttt{ASteCA}, for both galaxies. The AMRs
+generated can not be fully matched by any model or empirical determination found
+in the recent literature.
+
+We demonstrated that the \texttt{ASteCA} package is able to produce proper
+estimations of observed star clusters, with their fundamental parameters
+covering a wide range of values. A necessary statistically valid error analysis
+can be performed, thanks to its built-in bootstrap error assignment method.
+%
+The tool is also proven to be capable of operating almost entirely unassisted,
+on large databases of clusters. This is an increasingly essential feature
+of any astrophysical analysis tool, given the growing importance of big data and
+the necessity to conduct research on large astronomical data sets.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{acknowledgements}
+GIP would like to thank the help and assistance provided throughout the
+redaction of several portions of this work by: D. Hunter, A. E. Dolphin,
+M. Rafeslski, D. Zaritsky, T. Palma, F. F. S. Maia, B. Popescu,
+and H. Baumgardt.
+%
+This research has made use of the
+VizieR\footnote{\url{http://vizier.u-strasbg.fr/viz-bin/VizieR}} catalogue
+access tool, operated at CDS, Strasbourg, France~\citep{Ochsenbein_2000}.
+%
+This research has made use of
+``Aladin sky atlas''\footnote{\url{http://aladin.u-strasbg.fr/}} developed at
+CDS, Strasbourg Observatory, France~\citep{Bonnarel2000,Boch2014}.
+%
+This research has made use of NASA's Astrophysics Data
+System\footnote{\url{http://www.adsabs.harvard.edu/}}.
+%
+This research made use of
+the Python language v2.7\footnote{\url{http://www.python.org/}}~\citep
+{vanRossum_1995},
+and the following packages:
+NumPy\footnote{\url{http://www.numpy.org/}}~\citep{vanDerWalt_2011};
+SciPy\footnote{\url{http://www.scipy.org/}}~\citep{Jones_2001};
+Astropy\footnote{\url{http://www.astropy.org/}}, a community-developed core Python
+package for Astronomy \citep{Astropy_2013};
+scikit-learn\footnote{\url{http://scikit-learn.org/}}~\citep{pedregosa_2011};
+matplotlib\footnote{\url{http://matplotlib.org/}}~\citep{hunter_2007}.
+%
+This research made use of the Tool for OPerations on Catalogues And
+Tables (TOPCAT)\footnote{\url{http://www.starlink.ac.uk/topcat/}}~\citep{Taylor_2005}.
+%M. Demleitner and H. Heinl (Astronomisches Rechen-Institut)
+\end{acknowledgements}
+
+%-------------------------------------------------------------------
+\bibliographystyle{aa} % style aa.bst
+\bibliography{biblio} % your references Yourfile.bib
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{appendix}
+
+\section{Color-magnitude diagrams for outliers}
+\label{apdx:outliers}
+
+We present CMDs for the ten OCs referred to as ``outliers'', given their
+$\log\mathrm{(age/yr)}{>}0.5$ differences between \texttt{ASteCA} and literature
+values.
+In Fig.~\ref{fig:outliers0} the CMDs for these OCs are plotted in pairs, two OCs
+per row.
+
+The left CMD in each pair shows the cluster region with the literature isochrone
+fit shown in red. For nine of the OCs we fit~\cite{Marigo_2008} isochrones,
+since this set of theoretical isochrones were used in all but one of the
+articles where these OCs were analyzed. The exception is SMC-L35 which was fit
+using~\cite{Girardi_2002} isochrones, so the same set is used for this OC.\@
+%
+The right CMD shows the same cluster region with the isochrone
+that generated the best match SC found by \texttt{ASteCA}, shown in green.
+The colors of the stars in this CMD correspond to the MPs assigned by the DA,
+when applied.
+Semi-transparent stars are those removed by the cell-by-cell density based
+cleaning algorithm  (see Sect.\ref{ssec:dencontamination}), also when applied.
+%
+Values for the fundamental parameters in both fits are shown to the bottom left
+of each CMD.\@
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/outliers_VS_asteca_0.png}
+\caption{CMDs for the outliers set. See description of the plots in
+Appendix~\ref{apdx:outliers}.}
+\label{fig:outliers0}
+\end{figure*}
+\clearpage
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Color-magnitude diagrams for the P99, P00, C06, and G10 databases}
+\label{apdx:databases}
+
+This appendix presents the CMDs of all OCs cross-matched with our own
+sample, in the databases P99, P00, C06, and G10, i.e.:\ those that used the
+isochrone fit method in their analysis.
+
+Each CMD pair in the figures below shows a given OC with the fit proposed by the
+corresponding database to the left (red isochrone), and the one estimated by
+\texttt{ASteCA} to the right (green isochrone).
+The coloring of the stars in the CMD to the right, correspond to the weights
+assigned by the decontamination algorithm. Stars drawn semi-transparent were
+discarded by the cell-by-cell cleaning method, and thus not used in the
+synthetic match process.
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/P99_VS_asteca_0.png}
+\caption{CMDs for the P99 database.}
+\label{fig:DBs_P99_0}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/P99_VS_asteca_1.png}
+\caption{CMDs for the P99 database.}
+\label{fig:DBs_P99_1}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/P00_VS_asteca_0.png}
+\caption{CMDs for the P00 database.}
+\label{fig:DBs_P00_0}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/P00_VS_asteca_1.png}
+\caption{CMDs for the P00 database.}
+\label{fig:DBs_P00_1}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/P00_VS_asteca_2.png}
+\caption{CMDs for the P00 database.}
+\label{fig:DBs_P00_2}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/C06_VS_asteca_0.png}
+\caption{CMDs for the C06 database.}
+\label{fig:DBs_C06_0}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/C06_VS_asteca_1.png}
+\caption{CMDs for the C06 database.}
+\label{fig:DBs_C06_1}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/C06_VS_asteca_2.png}
+\caption{CMDs for the C06 database.}
+\label{fig:DBs_C06_2}
+\end{figure*}
+\clearpage
+
+\begin{figure}
+\includegraphics[width=\columnwidth]{figures/DB_fit/C06_VS_asteca_3.png}
+\caption{CMDs for the C06 database.}
+\label{fig:DBs_C06_3}
+\end{figure}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/G10_VS_asteca_0.png}
+\caption{CMDs for the G10 database.}
+\label{fig:DBs_G10_0}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/G10_VS_asteca_1.png}
+\caption{CMDs for the G10 database.}
+\label{fig:DBs_G10_1}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/G10_VS_asteca_2.png}
+\caption{CMDs for the G10 database.}
+\label{fig:DBs_G10_2}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/G10_VS_asteca_3.png}
+\caption{CMDs for the G10 database.}
+\label{fig:DBs_G10_3}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/G10_VS_asteca_4.png}
+\caption{CMDs for the G10 database.}
+\label{fig:DBs_G10_4}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/G10_VS_asteca_5.png}
+\caption{CMDs for the G10 database.}
+\label{fig:DBs_G10_5}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/G10_VS_asteca_6.png}
+\caption{CMDs for the G10 database.}
+\label{fig:DBs_G10_6}
+\end{figure*}
+\clearpage
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/DB_fit/G10_VS_asteca_7.png}
+\caption{CMDs for the G10 database.}
+\label{fig:DBs_G10_7}
+\end{figure*}
+\clearpage
+
+\begin{figure}
+\centering
+\includegraphics[width=\hsize]{figures/DB_fit/G10_VS_asteca_8.png}
+\caption{CMDs for the G10 database.}
+\label{fig:DBs_G10_8}
+\end{figure}
+\clearpage
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Total cluster mass validation}
+\label{apdx:mass_valid}
+
+The likelihood used in this work, presented in Eq.~\ref{eq:likelihood}, allows
+us to set the total cluster mass as a free parameter to be optimized, i.e.
+treat it the same way we treat the metallicity, age, extinction, and distance
+parameters.
+To validate the masses recovered by \texttt{ASteCA} we processed 768 synthetic
+cluster generated with the MASSCLEAN tool, 384 for each Magellanic Cloud.
+%
+These synthetic clusters were created to imitate the metallicity, age, and mass
+range that clusters in both Magellanic Clouds have, while the distance and
+extinction parameters were fixed. In Table~\ref{tab:massclean-range} these
+values are shown for the five fundamental parameters fitted.
+The process of generating a synthetic cluster with MASSCLEAN was described in
+Paper I, Sect. 3. Each MASSCLEAN cluster had its $V$ vs ($B-V)$ CMD (in the
+$UBRIJHK$ photometric system) analyzed by the code.
+
+\begin{table*}
+\centering
+\caption{Parameters values used to generate the set of 768 MASSCLEAN
+synthetic clusters.}
+\label{tab:massclean-range}
+\begin{tabular}{lcc}
+\hline\hline
+ Parameter & Values & N\\
+\hline
+z & 0.001, 0.004, 0.015, 0.03 & 4\\
+$\log\mathrm{(age/yr)}$ & 7, 7.2, 7.5, 7.7, 8, 8.2, 8.5, 8.7, 9, 9.2, 9.5, 9.7 &
+12\\
+$\mu$ & 18.9 (SMC), 18.5 (LMC) & 2\\
+$E_{B-V}$ & 0.1 & 1\\
+Mass ($M_{\odot}$) & 500, 1000, 5000, 10000, 25000, 50000, 100000, 250000 & 8\\
+\hline
+\end{tabular}
+\end{table*}
+
+In Fig~\ref{fig:massclean_mass} we show the results from the best match process
+applied on the 768 MASSCLEAN synthetic cluster, separated into three mass
+regions. The x axis displays the average
+mass, i.e.: $\overline{M}=0.5\times(M_{\mathtt{ASteCA}}+M_{MASSCLEAN})$.
+The y axis shows the relative difference mass defined in Eq.\ref{eq:rel_diffs},
+in the sense:
+
+\begin{equation}
+\overline{\Delta M_r} = (M_{\mathtt{ASteCA}}-M_{MASSCLEAN})/(M_{\mathtt
+{ASteCA}}+M_{MASSCLEAN})
+\label{eq:rel_diffs2}
+\end{equation}
+
+\noindent Colors are associated to the differences in $\log(age/yr)$
+(\texttt{ASteCA} minus MASSCLEAN values), according to the colorbar shown to the
+bottom right of the rightmost plot. The average age difference for each mass
+region defined is: 
+$-0.3{\pm}0.6$ dex ($\overline{M}{\le}5000\,[M_{\odot}]$),
+$-0.04{\pm}0.2$ dex ($5000{<}\overline{M}{\le}20000\,[M_{\odot}]$),
+$-0.01{\pm}0.1$ dex ($\overline{M}{>}20000\,[M_{\odot}]$). As expected, cluster
+with larger masses are assigned more accurate ages by the code.
+On average, the difference between \texttt{ASteCA} (estimated) minus MASSCLEAN 
+(true) logarithmic ages in the full mass range analyzed is of ${\sim}-0.1
+{\pm}0.4$ dex.
+%
+% Low mass Delta M_r mean +- std: [-0.14547925707145071, 0.23800919931202841]
+% Med mass Delta M_r mean +- std: [0.028213398098921358, 0.13227027422986309]
+% Lar mass Delta M_r mean +- std: [0.0178967368114792, 0.093574749970903121]
+The gray bands represent the mean and standard deviation for the average
+relative differences, $\overline{\Delta M_r}$, in the estimated versus true
+masses. For each mass region defined above these values are: $-0.15{\pm}0.2$,
+$0.03{\pm}0.13$, $0.02{\pm}0.09$, for the combined set of synthetic clusters
+belonging to both galaxies.
+There is no visible trend, other than a larger average relative difference and
+dispersion in the estimated mass values, for clusters with low masses
+(${<}1000\,M_{\odot}$). For this set of synthetic clusters -- where the total
+true mass is either $500\,M_{\odot}$ or $1000\,M_{\odot}$ -- the code assigns
+masses in a range between ${\sim}200$ and 3000 $M_{\odot}$.
+
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/massclean_mass.png}
+\caption{Recovered masses by \texttt{ASteCA}, for the set of 384 SMC MASSCLEAN
+synthetic clusters. Relative masses are obtained in the sense
+\texttt{ASteCA} minus MASSCLEAN (i.e.: estimated minus true values), and shown
+in the y axis. The average masses in the x axis are perturbed with a small
+random scatter to improve visibility.}
+\label{fig:massclean_mass}
+\end{figure*}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Metallicity estimation for different mass values}
+\label{apdx:ssec:metallicity}
+
+The metallicity ($z$) estimated for the entire set is displayed in
+Fig.~\ref{fig:massclean_z}, for each mass value used in the generation of the
+synthetic MASSCLEAN clusters. There are two clear tendencies visible in these
+plots.
+%
+First we notice that, as the cluster's mass grows, so does the accuracy of the
+metallicity estimates. Although the average difference between true and
+estimated $z$ values remains close to
+$\overline{\Delta z}{\approx}0.001$\footnote{This is expected, as $z{=}0.001$
+is the metallicity step used when processing the synthetic clusters with
+\texttt{ASteCA}.} for the entire range, its standard deviation drops from $
+{\sim}0.01$ to $0.004$ for the more massive clusters.
+%
+% The largest differences occur for the lowest masses (${\le}1000\,M_{\odot}$),
+% and are related to incorrect age assignments by the code.
+%
+Most of the poor solutions obtained by \texttt{ASteCA} -- those with
+$|\Delta z|{>}0.01$ dex -- are associated to low mass scarcely populated
+clusters, with an average of ${{\sim}40}$ true members present in their analyzed
+CMDs. This poor solutions set is composed of 91 synthetic clusters
+(equivalent to ${\sim}12\%$ of the entire processed sample), 58 of which are
+of low mass (${\le}1000\,M_{\odot}$).
+%
+The majority of these low mass clusters -- 38 out of the 58 -- are assigned
+younger ages by the code, due to an improper field star decontamination process 
+(an expected issue when the number of true members is very low).
+%
+% |Delta log(age)|<0.5, Delta z mean +- std: -0.00078 +- 0.0057 (686)
+If we leave out those clusters with a visibly wrong age estimation -- i.e.,
+those with $|\Delta\log(age/yr)|{\ge}0.5$ dex -- the average difference in $z$
+for the entire mass range is found to be ${\sim}0.0008{\pm}0.006$ dex; a rather
+small difference with reasonable dispersion.
+These subset of clusters with wrong ages estimated by \texttt{ASteCA} represent
+approximately ${\sim}11\%$ of the combined S/LMC MASSCLEAN sample (82 synthetic
+clusters), and is almost entirely composed of clusters with
+$M{\le}1000\,M_{\odot}$ (73 synthetic clusters).
+
+Second, the code seems to overestimate the metal content for lower
+metallicities, and overestimate it for the largest ones.
+A balanced distribution around the $\Delta z{=}0$ line is only seen for the
+abundances in the middle portion of the analyzed range. This trend is much more
+noticeable for lower masses, but can be found for all the mass values shown.
+%
+This is a statistical artifact that arises due to the necessarily limited
+metallicity range analyzed by the code. For the synthetic clusters with the
+lowest metal contents ($z{=}0.001$), \texttt{ASteCA} can only assign equal or
+larger metallicities since negative $z$ values are not possible.
+Equivalently, for the clusters with the largest abundances ($z{=}0.03$) the code
+can only associate equal or lower metallicities. This is because of the upper
+limit used in the $z$ range analyzed by \texttt{ASteCA}, which is precisely
+$z{=}0.03$.
+This ``bias'' could be avoided for those large metallicity clusters, by
+increasing the upper limit for the $z$ range in the code. It can not be avoided
+for the lowest metal abundances.\\
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/massclean_z.png}
+\caption{\texttt{ASteCA} metallicity estimates for each mass used to generate
+the synthetic MASSCLEAN clusters. Colors are associated to the logarithmic age
+differences, shown in the colorbars to the right. The green dashed horizontal
+line is the $\Delta[Fe/H]{=}0$ line, show as reference.}
+\label{fig:massclean_z}
+\end{figure*}
+
+An external source of errors also needs to be taken into account when comparing
+\texttt{ASteCA}'s metallicity (and age) estimates, for MASSCLEAN synthetic
+clusters.
+%
+This is the intrinsic differences between the~\cite{Marigo_2008} isochrones --
+used to generate the synthetic MASSCLEAN clusters -- and the
+PARSEC~\citep{Bressan_2012} isochrones -- used by the code to find the optimal
+fundamental parameters. These differences are a source of error in the matching
+process that is not straightforward to quantify.
+%
+The two sets of tracks have non-negligible dissimilarities beyond the turn-off
+points, for most of the age range where they can be produced. This can be seen
+in Fig.~\ref{fig:marig_parsec}, where isochrones from both sets are compared for
+five different $\log(age/yr)$ ages from 7.5 to 9.5 dex.
+%
+For ages up to 8 dex the PARSEC isochrones present a turn-off point located at
+lower $\log(L/L_{\odot})$ values, particularly for lower metallicities. This
+causes a shift in the more evolved portions of the isochrone, displacing the
+Marigo isochrones towards larger $\log(L/L_{\odot})$ values.
+%
+Beyond that age this effects reverses, and the PARSEC isochrones are now lifted
+above the Marigo tracks. Given the many known correlations between fundamental
+parameters (e.g., the age-metallicity, extinction-distance, and
+distance-metallicity relations), it is not easy to predict how the matching
+algorithm will resolve such instances.
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/mar_vs_par_isochs.png}
+\caption{\cite{Marigo_2008} versus PARSEC~\citep{Bressan_2012} isochrones, for
+different metallicities and ages.}
+\label{fig:marig_parsec}
+\end{figure*}
+\clearpage
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Color-magnitude diagrams for large mass OCs}
+\label{apdx:largemass}
+
+We present in Fig~\ref{fig:largemass} CMDs for the five OCs with the largest
+mass estimates by either the H03 or the P12 databases. These are also the OCs
+with the largest differences in assigned masses when compared with those derived
+by \texttt{ASteCA}.
+See Table~\ref{tab:integ_phot_masses} for more information about the fundamental
+parameters assigned to these OCs.
+
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/largemass_VS_asteca_0.png}
+\caption{CMDs for the OCs with the largest masses assigned by H03 and/or P12.
+The best match synthetic cluster is plotted to the right, and the observed
+cluster region CMD to the left, for each OC.}
+\label{fig:largemass}
+\end{figure*}
+\clearpage
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Age-metallicity relationships for literature values}
+\label{apdx:amr_lit}
+
+Fig.~\ref{fig:amr_lit} shows the AMRs for both Clouds, generated using the
+metallicity and age values taken from those articles presented in
+Table.~\ref{tab:literature}, i.e.:~the ``literature''.
+%
+\begin{figure}
+\centering
+\includegraphics[width=\hsize]{figures/AMR_literature.png}
+\caption{Age-metallicity relationships for our set of 239 OCs, using
+$\log\mathrm{(age/yr)}$ and [Fe/H] values taken from the literature.}
+\label{fig:amr_lit}
+\end{figure}
+
+In Fig.~\ref{fig:largemet} the CMDs for the four LMC OCs with metallicities and
+ages in the vicinity of ${\sim}3.3$ Gyr and [Fe/H]${\approx-0.25}$ dex, are
+shown. These are the OCs responsible for the high metallicity found for the AMR
+of this galaxy, for ages close to 4 Gyr.
+%
+\begin{figure*}
+\includegraphics[width=2.\columnwidth]{figures/largemet_VS_asteca_0.png}
+\caption{CMDs for the OCs that cause a peak in the AMR for the LMC, for ages
+close to 4 Gyr.
+The best match synthetic cluster is plotted to the right, and the observed
+cluster region CMD to the left, for each OC.}
+\label{fig:largemet}
+\end{figure*}
+
+\end{appendix} 
+
+\end{document}

@@ -1,0 +1,26 @@
+
+
+Line 49, page 2: remove the second "the" in "photometric data sets in the CT1
+the Washing..."
+
+Line 24, page 3: please either remove footnote 7, or move here the link to the
+Vizier catalog shown in the title of the article.
+
+Line 69, page 4: "First" should not be capitalized.
+
+Line 56, page 5: "compared t ~" --> "compared to ∼"
+
+Line 74, page 7: "exactly the internal" --> "exactly the mean internal"
+
+Last line in caption of Fig 9, page 12: "the mixed H03 and P12 sample" -->
+"the combined H03 and P12 sample"
+
+First line in caption of Fig 11, page 14: "The top and right plots" --> remove
+italics from the word "plots".
+
+Line 42, page 15: remove "are" in "the oldest ages are estimated by"
+
+Line 63, page 15: "by the PT8 model" --> "by the PT98 model"
+
+Line 21, page 16: remove "of" in "parameters of metallicity"
+

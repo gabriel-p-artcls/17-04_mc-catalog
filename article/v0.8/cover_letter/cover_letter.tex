@@ -1,0 +1,148 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{natbib,twoopt}
+\usepackage{microtype}
+\usepackage{afterpage}
+\usepackage{amsmath}
+
+\usepackage{xcolor}
+\newcommand{\finish}{\textcolor{red}{\textbf{$\;\;$|-- FINISH --|$\;\;$}}}
+
+\begin{document}
+
+\title{Corrections suggested by the Editor}
+\author{GI Perren, AE Piatti, RA V\'azquez}
+
+\maketitle
+
+
+\begin{abstract}
+We thank Dr Tolstoy for her proposed corrections to our article.
+
+Below we address these corrections, plus one extra modification we would like to
+incorporate into the article, described in Sect.~\ref{sec:C}.
+%
+If these changes are accepted by Dr Tolstoy (or by the referee, if the article
+is sent back to them), we will immediately send the tex and bbl files for
+language editing.
+
+The compiled PDF with these modifications is attached along with this letter.
+For convenience, we generated it without images.
+\end{abstract}
+
+\clearpage
+
+\renewcommand\thesubsection{\Alph{subsection}}
+\subsection{Footnotes}
+The footnotes have been incorporated into the text, as suggested.
+
+
+%
+\subsection{Proposal IDs}
+As the data used in this work has already been analyzed and published in
+previous articles (see Table 1), all the relevant information regarding the
+facilities can be found in the original publications.
+We prefer to avoid repeating that here, unless Dr Tolstoy feels it is necessary.
+In that case, we could add the following to the Acknowledgments section:\\
+
+\noindent \emph{This work is based on observations made at Cerro Tololo
+Inter-American Observatory (CTIO), which is operated by the Association of
+Universities for Research in Astronomy (AURA), Inc., under cooperative agreement
+with the National Science Foundation (NSF).
+%
+This work is based on observations made at La Silla European Southern
+Observatory (ESO).
+%
+This research draws upon data as distributed by the NOAO Science Archive.
+NOAO is operated by AURA, under a cooperative agreement with the NSF.}
+
+
+
+
+
+%
+\subsection{Crowding in the central regions of massive clusters}
+\label{sec:C}
+
+In our previous letter we wanted to respond to the referee's comments as quick
+as possible, and we feel we rushed the response.
+We present here the explanation for our proposed modification to the article,
+marked in boldface (Sect. 5.2.1, and Appendix A) in the version attached along
+with this letter.
+
+We apologize for the inconveniences this may cause.\\
+
+In the cover letter for Revision 2, the referee correctly pointed out that the
+most likely reason for the mass underestimation by \texttt{ASteCA} was the
+crowding effect. We agreed, responding\\
+
+
+\noindent ``\emph{Although \texttt{ASteCA} considers how other photometric effects
+alter the generated synthetic CMDs (limiting magnitude, faint stars
+incompleteness, photometric errors), it does not include the loss of stars in
+the central regions of a massive cluster due to photometric crowding.
+(...) This percentage of lost stars in the cluster region couldn't be
+accounted for by any of the photometric process included in \texttt{ASteCA}.}''\\
+
+We introduced this effect as the responsible for the mass differences in Sect.
+5.2.1 of the article, and closed that section stating\\
+
+\noindent ``\emph{A modelization of this process on our synthetic CMDs is
+planned for future releases of the code.}''\\
+
+The above statements are somewhat misleading, since \texttt{ASteCA} does in fact
+account for the loss of the \emph{faintest} stars in the synthetic CMDs.
+
+What the code can not do -- as it works with already processed photometric
+tables, not with raw fits images -- is a proper artificial stars
+test~\citep[as described e.g. in][]{Aparicio_Gallart_1995}. This
+is the only way to correctly asses the loss of sources due to crowding (and
+blending), and its dependence with observed magnitudes. Instead, \texttt{ASteCA}
+approximates the loss of faint stars using the observed luminosity
+function~\citep[mentioned in][]{Perren_2015}.
+Briefly, this process involves the following steps:
+
+\begin{enumerate}
+    \item Obtain the LF of the observed region.
+    \item Identify the magnitude value where the maximum count of stars occurs,
+    $mag_{max}$. For smaller magnitudes (brighter stars) the data is
+    assumed to be 100\% complete.
+    \item Model the drop in stars count from $mag_{max}$ towards fainter
+    magnitudes.
+    \item Remove from each generated synthetic CMD a proportional number of
+    stars beyond $mag_{max}$, given by the model obtained in the above step.
+\end{enumerate}
+
+This algorithm makes the assumptions that: a) the loss of stars can be roughly
+estimated from the region's LF, and b) only the faintest stars will be
+affected by incompleteness. For clusters with low densities (open
+clusters), this approximation works rather well, but it breaks down as the
+observed clusters grow in mass (globular clusters). The reason is that massive
+clusters are heavily affected by crowding, whereas sparse clusters are not.
+%
+As demonstrated in~\cite{Mateo_1988}, crowding in globular clusters affects the
+completeness of stars in the entire observed magnitude range, not just at their
+faintest end. This is particularly true in the densest central regions of such
+clusters.\\
+
+We thus slightly modified Sect 5.2.1 of the article to clearly state that the 
+(approximated) completeness correction performed by \texttt{ASteCA} will be
+\emph{extended}, to accept a user defined completeness function. The latter is
+assumed to be obtained through a proper artificial stars test on the observed
+frames.
+A small modification was also introduced in Appendix A, regarding the effect of
+crowding in the synthetic MASSCLEAN validation clusters.
+
+% Out of the approximately 7 magnitudes spanned on average by the CMDs of our
+% 239 observed clusters, only the largest 2.5 magnitudes (at best)
+% are corrected by completeness.
+
+
+\subsection{Minimal changes}
+We added the anonymous referee to the Acknowledgments section.
+%-------------------------------------------------------------------
+\bibliographystyle{aa}
+\bibliography{biblio} % your references Yourfile.bib
+
+\end{document}

@@ -1,0 +1,96 @@
+
+
+# Comentarios sobre los cambios propuestos por Piatti (2016-08-02)
+
+
+## Título
+
+* Sí. Latex se quejaba de que el título era muy largo así que puse un
+'short-title' provisional. Lo quito.
+
+
+
+##  5. Comparision with published fundamental parameters
+
+* Eq. 3: entiendo lo que comentás sobre la precisión mínima que podemos esperar
+en un estudio de este tipo; es razonable. Pero fijate que esta parte no trata
+del *error*, si no del *offset* obervado para [Fe/H].
+
+En la Sect. 4 vimos que los errores internos (o sea: los encontrados por el por
+ASteCA mediante el método de bootstrap) tanto para la metalicidad como para la
+edad son de ~0.3 dex, lo cual representa un valor no menor. Ahí es donde están
+metidas todas las limitaciones fotométricas que mencionás. El hecho de que el
+desvío estándar de las diferencias entre los valores de ASteCA y la literatura 
+sea nuevamente ~0.3 dex (para ambos parámetros, ver Fig. 4), nos dice que el
+error interno obtenido por ASteCA es razonable. La dispersión observada
+entre ASteCA y la literatura lo confirma.
+
+Pero en este punto estamos hablando de un *offset* de ~0.2 dex en la
+metalicidad, no de su *error*. Este offset indica que hay algún proceso
+subyacente que desvía las estimaciones de la literatura y/o el código, de manera
+que en promedio ASteCA asigna valores de [Fe/H] mayores (equivalentemente: que
+la literatura asigna valores de [Fe/H] menores).
+
+Si no existiese tal proceso, tendríamos que ver para la metalicidad lo mismo que
+vemos para la edad, o sea: el desvío estándar de las diferencias confirma el
+error de ~0.3 dex, pero sin offset visible. El valor promedio de las
+diferencias en edad, es cero (-0.01 dex en realidad, aproximado a cero); no hay
+offset.
+
+En el caso de la metalicidad, sí hay un offset de ~0.2 dex. La diferencia entre
+el valor de metalicidad solar utilizado da cuenta de 0.1 dex, la mita de eso. La
+otra mitad la asigno al efecto de "confirmation bias" porque es razonable
+hacerlo. Como se menciona en el artículo, aproximadamente un 70% de los cúmulos
+en los 19 artículos de la Tabla 1 tienen asignados los valores de metalicidad
+estándar de -0.7 y -0.4 dex. Este efecto también aparece en la MW, donde la
+metalicidad solar se usa por defecto cuando no hay un estimador razonable a
+mano.
+
+En resumen: los 0.1 dex que aporta la diferencia en metalicidad solar utilizada,
+no va a los errores, sino al offset; ya que es una diferencia sistemática.
+
+* 499-527: de acuerdo. Quito el párrafo sobre estos dos cúmulos como indicaste.
+También quito la mención a estos dos cúmulos que se hacía en la sección sobre
+las AMR.
+
+
+### 5.2 Database values
+
+* El problema con tratar de vincular los 4 parámetros (dejando de lado la masa),
+es que la mayoría se toman como valores fijos en estos artículos (las
+"databases") y no se ajustan, por lo que no tendría mucho valor. El único que sí
+se ajusta en todos los casos es la edad. Cuando analizo los valores de edad, lo
+hago teniendo en cuenta los valores de extinción y modulo de distancia, así como
+otros posibles factores  (e.g, la fotometría). Creo que la correlación entre
+parámetros esta cubierto de manera aceptable en esta sección.
+
+* 714: uniformizado en "reddening". Solamente dejo "extinction" en aquellos
+lugares donde específicamente hablo del parámetro E(B-V).
+
+
+#### 5.2.1. Integrated photometry masses
+
+* Eq. 4: de acuerdo. Cambié este parámetro por las diferencias logarítmicas de
+las masas y modifiqué el texto de manera acorde. Prefiero dejar esta parte. Las
+diferencias encontradas con las masas obtenidas a partir de fotometría
+integrada me parece importante de remarcar.
+
+
+## 6. Distribution of fundamental parameters
+
+* 1033: No me queda claro esto: "Lamentablemente la muestra utilizada no es
+representativa de las historias de estas galaxias. Hay una tendencia a tener
+cúmulos en una región del espacio edad-metalicidad"
+He visto gran cantidad de artículos que estiman SFHs y AMRs a partir de un
+puñado de cúmulos. En nuestro caso tenemos una muestra de cúmulos con su CMD
+analizado, más grande que la que han usado *muchas* publicaciones donde se
+presen ta una SFH y/o una AMR (creo que es la más grande con CMD analizados con
+el mismo exacto procedimiento). ¿La idea es que estas funciones repesentan al
+*sistema de cúmulos* y no a las *galaxias en general*?
+Por las dudas cambié:
+"can be regarded as a representative randomized sample  of the MCs."
+por:
+"can be regarded as a representative randomized sample of the cluster system in
+the MCs."
+También modifiqué de manera similar la mención a la AMR en las conclusiones.
+Si esto no es a lo que te referías, por favor decime y lo arreglamos.

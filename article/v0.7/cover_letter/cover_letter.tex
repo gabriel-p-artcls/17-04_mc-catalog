@@ -1,0 +1,386 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{natbib,twoopt}
+\usepackage{microtype}
+\usepackage{afterpage}
+\usepackage{amsmath}
+
+\usepackage{xcolor}
+\newcommand{\finish}{\textcolor{red}{\textbf{$\;\;$|-- FINISH --|$\;\;$}}}
+
+\begin{document}
+
+\title{Referee's comments and suggestions (Revision 2)}
+\author{GI Perren, AE Piatti, RA V\'azquez}
+
+\maketitle
+
+\begin{abstract}
+We thank the referee for this second detailed revision of our article.
+
+Below are the responses to the referee's comments and suggestions, following
+their numbering.
+\end{abstract}
+
+\clearpage
+\renewcommand\thesubsection{\arabic{subsection}}
+% \section*{Comments and questions}
+
+% 9
+\setcounter{subsection}{8}
+\subsection{Sect. 3.4, paragraph 2}
+With respect to the weight given in the fit process, the likelihood used in this
+work treats all bins in the same manner. This is, no ``strong weight'' is given
+to the post-MS region, or any other region of the CMD.\\
+
+\noindent For low mass clusters the stochastic effects will indeed be much more
+noticeable. This reflects in the fact that those clusters with the lowest mass
+estimates, are generally those which present more issues in their matching.
+These issues are mentioned throughout the article a number of times:\\
+
+\noindent * \textbf{Sect. 5}: ``We find in Appendix A that the code will
+slightly underestimate the masses by approximately 200 $M_{\odot}$, for low mass
+clusters.''\\
+\noindent * \textbf{Sect. 5.2.1}: ``The standard deviation of the average
+relative mass differences decreases for larger masses (see Fig. 9) as expected,
+pointing to a more accurate recovery of the true total mass by \texttt{ASteCA},
+as the clusters grow in size.''\\
+\noindent * \textbf{Appendix A}\@: ``For low mass clusters -- $500\,M_{\odot}$
+or $1000\,M_{\odot}$ -- the code assigns masses in a range between ${\sim}200
+{-}3000$ $M_{\odot}$. In this region \texttt{ASteCA} underestimates clusters'
+masses by ${\sim}200\,M_{\odot}$. This effect is tied to an improper age
+estimation, where \texttt{ASteCA} incorrectly assigns younger ages to scarcely
+populated clusters, and compensates the low number of stars by decreasing the
+total mass. Such an issue is not unexpected for very low mass clusters.''\\
+\noindent * \textbf{Appendix A.1}: ``Most of the poorest solutions obtained by
+\texttt{ASteCA} -- those with $|\Delta z|{>}0.01$ dex -- are associated to low
+mass scarcely populated clusters, with ${\sim}40$ true member stars on average 
+(from two up to a hundred) in their analyzed CMDs. This poor solutions set is
+composed of 91 clusters -- ${\sim}12\%$ of the sample -- 58 of which have
+$M{\le}1000\,M_{\odot}$.
+Of these 58 low mass clusters, 38 are assigned younger ages by the code due to
+an improper field star decontamination process (an expected issue when the
+number of true members is very low).''\\
+
+\texttt{ASteCA} does not currently provide a ``goodness of fit''
+parameter. The best fit obtained by the code is relative to all the
+remaining synthetic CMDs analyzed (hundreds of thousands, or millions), but
+there's no value to quantify how good this fit is. The original
+article where the employed likelihood is derived~\citep{Dolphin_2002}, gives a
+method to asses this goodness of fit (Sect. 2.6), but it isn't yet incorporated
+into the code.
+%
+A coarse ``goodness of fit'' estimator are the uncertainties obtained for the
+best fit model. For low mass clusters, the stochasticity involved in their
+generation will impact as larger overall uncertainties assigned to its
+parameters. This is particularly noticeable for the age, as seen
+in~Fig.\ref{fig:errors_mass}.\\
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=5in]{figs/errors_mass.png}
+    \caption{Distribution of $\log(age)$ errors versus (normalized) masses.}
+    \label{fig:errors_mass}
+\end{figure}
+
+To address this point more directly we added a sentence to the end of
+paragraph two in this section, and another in the second to last paragraph of
+Sect. 4.
+
+
+% 13
+\setcounter{subsection}{12}
+\subsection{Sect. 4, paragraph 5}
+We could use $z/z_{\odot}$ internally in \texttt{ASteCA}, but there would be
+nothing to gain from it (programmatically speaking). Since this is a simple
+re-scaling, it can be easily performed after the matching process is done. It
+wouldn't change the fact that converting to [Fe/H] involves a logarithm, and
+thus a mathematical dependence in the uncertainties of the form:
+
+\begin{equation}
+\begin{split}
+% \begin{aligned}
+[F/H] & = \log(X) \,\,;\,\, X=z/z_{\odot} \\
+\sigma_{[Fe/H]} & = \sigma_{X} / [X \times \ln(10)] \;\;;\:\;  \sigma_{X}
+= \sigma_{z} \times z_{\odot}
+\end{split}
+% \end{aligned}
+\end{equation}
+
+Hence if we used $z/z_{\odot}$ for the distribution of uncertainties in Fig 3,
+the result would look like Fig. 1 in the cover letter from Rev 1, only re-scaled.
+It wouldn't resolve the error dependence that arises in [Fe/H] due to the
+logarithm.
+%
+Errors are thus purposely displayed using [Fe/H] (rather than z) to make the
+reader aware that [Fe/H] errors increase for low metallicities, for a
+mathematical reason.
+
+
+% 18
+\setcounter{subsection}{17}
+\subsection{Sect. 5.1, paragraph 9 (near bottom of page 9)}
+\label{sec:18}
+(Notice that this question is related to Sect. 5.1, not 5.2 as stated in the
+referee's letter)\\
+
+The referee said that the ``tidal radius of the cluster is typically
+significantly larger than the radius at which the surface number density of the
+cluster equals that of the field''.
+%
+The tidal radius is mathematically equivalent to the radius where the number
+density of stars reaches the field density (``density radius''). This can be
+seen by solving King's number density function~\citep[][Eq. 14]{king_1962} for
+zero density (assuming the relation has been corrected for the field
+density), where the solution is $r=r_t$.
+
+We assume that what the referee meant is that, \emph{in practice}, the density
+radius is often set to more conservative values than the tidal radius.\\
+% If this is the case, we can prove that this has little impact on the estimated
+% masses.\\
+
+Using Eq. 18 from~\cite{king_1962}, we can obtain the number of
+cluster members up to a given radius. We use a constant core radius and vary
+the tidal radius to process different concentrations ($c{=r}_t/r_c$).
+%
+In Fig.~\ref{fig:frac_memb_lost} we show the fraction of total members lost, for
+five different density radius defined as fractions of the tidal radius.
+%
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=5in]{figs/figure_1.png}
+    \caption{Fraction of cluster members that are lost using the density radius
+    rather than the tidal radius, as a function of cluster concentration 
+    (assuming a King density profile). We show several density radii values,
+    defined to be smaller (i.e., underestimated) than the tidal radius by
+    given fractions.}
+    \label{fig:frac_memb_lost}
+\end{figure}
+%
+We can see that even if the density radius is underestimated by 50\% 
+($r=0.5 r_t$), the number of stars that are lost reaches $\sim30\%$ only for
+very low concentrations ($c<1.5$), and drops rapidly for more concentrated
+clusters.
+%
+In a cluster like NGC 419 for example, with $c=6.9$~\citep{Goudfrooij_2014}
+underestimating the tidal radius by $\sim50\%$ would result in 
+losing less than $10\%$ of its members.
+
+Furthermore, according to the mass segregation effect, we know that low-mass
+stars are preferentially displaced towards the outer parts of the cluster (and
+eventually lost via evaporation). Hence, stars located between the
+density radius and the tidal radius, are mainly low-mass stars.
+%
+% If we calculate the distribution of stars in a cluster of fixed
+% total mass, according to a certain IMF, we can estimate what fraction of the
+% total cluster mass these low-mass stars represent.
+% %
+% This is shown in Fig.\ref{fig:num_mass_lost}. We used a~\citet{Kroupa_2002}
+% IMF to generate a $10^4\,M_{\odot}$ cluster composed of $\sim26400$
+% stars distributed between $0.01-100\,M_{\odot}$. The plot shows the (normalized)
+% number of stars ordered from the lowest ($0.01\,M_{\odot}$) to the highest mass
+% ($100\,M_{\odot}$), versus their (normalized) cumulative sum of individual
+% masses.
+% %
+% We can see that the 50\% of lowest-mass stars in the cluster ($\sim13200$),
+% represent less than 10\% of its total mass.\\
+%
+% \begin{figure}[t]
+%     \centering
+%     \includegraphics[width=5.in]{figs/figure_2.png}
+%     \caption{Distribution of stars in a $10^4\,M_{\odot}$ cluster according to
+%     the~\citet{Kroupa_2002} IMF, ordered from lower masses to the left
+%     ($0.01\,M_{\odot}$), to larger masses to the right ($100\,M_{\odot}$).
+%     In the vertical axis the cumulative (normalized) sum of masses is shown.}
+%     \label{fig:num_mass_lost}
+% \end{figure}
+%
+% In a real cluster, the distribution of masses will of course not be as ordered
+% as it is in Fig.\ref{fig:num_mass_lost} (in the sense: smaller to larger),
+% meaning that some stars with larger masses will also be located between the
+% density and the tidal radius.
+%
+These stars are mostly not detected due to the effects of limiting
+magnitude and photometric incompleteness (both accounted for in the synthetic
+CMD generation algorithm). Extending the density radius would thus
+include an even smaller percentage of cluster stars than those predicted
+above.
+%
+For smaller low-concentration clusters, where the loss of members is seen to
+have a larger impact, the mass uncertainties are large enough to contain this
+effect.\\
+
+% Finally, given that the density radius is positioned where the radial density
+% profile reaches the field density, using a larger value would include mostly
+% field stars.
+% If we used a radius larger than the density radius, we would in a first step
+% include more stars in the cluster region CMD; this is true. But we would lose
+% all these extra stars in the following step, when the cluster CMD is cleaned
+% from field stars contamination  (prior to the best synthetic cluster match
+% process). The result is that the number of estimated members remains almost
+% unchanged, and thus the estimated mass will also remain unchanged.\\
+
+% The only way that extending the density radius could result in a larger mass
+% estimate, is if no field star cleaning was performed previous to the best
+% synthetic cluster match. This is of course, not correct.\\
+
+We have added a paragraph in Sect 5.1 explaining the mass estimation in more
+depth, mentioning this effect. A footnote was also added to the second to
+last paragraph of this same section, also related to this effect.
+
+
+
+
+% 19
+\setcounter{subsection}{18}
+\subsection{Sect. 5.2.1}
+\label{sec:19}
+\textbf{1. On the M/L relation of the H03 and P12 articles}\\
+
+We agree with the referee that the mass-age correlation is the reason for the
+discrepancies between these two parameters in the H03 and P12 articles. This is
+mentioned in the second to last paragraph of Sect 5.2.1: ``These mass
+differences [between H03 and P12] are closely related to $\log(age/yr)$
+differences.''
+
+To make this point clearer, we have made the following changes to the section:\\
+
+\noindent 1. Fig. 11 was expanded to show the age-mass correlation in different
+mass regimes. It was moved to the beginning of this section, and is now Fig.
+9\\
+2. The second to last paragraph from this section was moved to the beginning,
+and edited to reflect changes made to Fig. 11(9).\\
+3. The old Fig. 10 was removed, as it became redundant after the changes made
+to Fig. 11(9).\\
+
+Other changes made to Sect 5.2.1 are mentioned in the following point.\\\\
+
+\noindent \textbf{2. Issues related to crowding in the central regions of
+massive clusters}\\
+
+% ``even for well-exposed HST images, the completeness in the central
+% regions of massive LMC clusters decreases to about 50\% for stars with
+% brightnesses $\sim3$ mag below the MSTO (see, e.g., Milone et al. 2009, A\&A,
+% 497, 755), so that even HST photometry of individual stars will miss some
+% significant part of the total mass (or light) of the cluster.''\\
+
+The referee is \emph{absolutely correct} regarding the issue of crowding in our
+photometry. Even though we investigated the effects of complicated cluster
+features (such as the double red clump, or the extended main sequence turn-off),
+we failed to realize that the much simpler effect of crowding could account for
+the mass discrepancies found.
+%
+Although \texttt{ASteCA} considers how other photometric effects alter the
+generated synthetic CMDs (limiting magnitude, faint stars incompleteness,
+photometric errors), it does not include the loss of stars in the central
+regions of a massive cluster due to photometric crowding.
+%
+Since the mass estimation is based on the number of observed stars, losing a
+large portion of those will very clearly bias our results. The \texttt{ASteCA}
+code was originally developed to analyze open clusters, which is why crowding
+was never really an issue (until now of course). The effect of crowding on
+synthetic CMDs will be added to the code as soon as possible.\\
+
+Our Washington photometry for the clusters NGC419, NGC1917, and NGC1751, show
+total numbers of estimated cluster stars around 2300, 170, and 200 in their
+cluster region CMDs.
+%
+The synthetic CMDs of large masses (those given in the literature) show for
+these same clusters a number of members around 32700
+($M{=}2.7{\times}10^5\,M_{\odot}$), 3900 ($M{=}8{\times}10^4\,M_{\odot}$), and
+6800 ($M{=}7.2{\times}10^4\,M_{\odot}$), for NGC419, NGC1917, and NGC1751
+respectively.
+%
+This means that, to account for the differences in the number of observed versus
+synthetic cluster stars, photometric crowding in our Washington data would need
+to be responsible for the loss of ${\sim}95\%$ of the stars present in the
+observed cluster regions.
+%
+This percentage of lost stars in the cluster region couldn't be accounted for by
+any of the photometric process included in \texttt{ASteCA}.\\
+
+We requested Dr Goudfrooij for the NGC419 and NGC1751 data used
+in~\cite{Goudfrooij_2014}, who very kindly provided it to us. The photometric
+tables were generated from observations performed with the HST ACS/WFC
+instrument, which has a much higher resolution than our Washington photometry 
+(0.05 arcsex/pixel versus 0.274 arcsec/pixel). The cluster data was processed
+with \texttt{ASteCA}, imposing a cut on $F555W{=}23$ mag to minimize the number
+of stars lost due to incompleteness (as instructed by Dr Goudfrooij). The
+fundamental parameters were fixed to those given in~\cite{Goudfrooij_2014},
+except the mass which was left to vary between
+$10^3 - 3{\times}10^5\,M_{\odot}$, and $10^3 - 10^5\,M_{\odot}$, for NGC419 and
+NGC1751 respectively.
+%
+Fig.\ref{fig:NGC_fit} shows the result of this process. The mass estimated
+for NGC419 using the ACS/WFC dataset is $M{\approx}2.5{\times}10^5\,M_{\odot}$,
+very much in line with the average literature estimates of
+$M{\approx}2.7{\times}10^5\,M_{\odot}$.
+A similar result is found for NGC1751, for which a mass of
+$M{\approx}5{\times}10^4\,M_{\odot}$ is estimated, very close to the average
+Goudfrooij et al.~value of $M{\approx}6.25{\times}10^4\,M_{\odot}$.
+
+Imposing a similar cut on our NGC419 Washington data on $T_1{=}22$ mag (again,
+to minimize the loss of faint stars due to crowding) we find a mass estimate
+close to $10^5\,M_{\odot}$. This value is three times larger than our original
+estimate for this cluster ($2.8{\times}10^4\,M_{\odot}$), and around three times
+smaller than the estimate by Goudfrooij.
+While the mass difference is still somewhat large, this proves that reducing the
+loss of stars due to crowding improves our mass estimate substantially.
+Our mass validation study in Appendix A missed this effect, because the synthetic
+MASSCLEAN clusters are not affected by crowding.\\
+
+We must conclude that the referee was right to question our conclusions
+regarding the mass estimates for larger clusters. The effect of photometric
+crowding in our Washington photometry is clearly the responsible for the
+systematic underestimation of masses, when compared to the integrated photometry
+studies.\\
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=5in]{figs/NGC_cut_fit.png}
+    \caption{\emph{Top left}: ACS/WFC CMD for NGC419 (data tables by Dr
+    Goudfrooij), with limiting magnitude cut at $F555W=23$ mag. \emph{Top right}:
+    best fit found by \texttt{ASteCA} for the mass (the rest of the parameters
+    were fixed).
+    \emph{Bottom}: idem, for NGC1751.}
+    \label{fig:NGC_fit}
+\end{figure}
+
+To address the issues mentioned in this point, we have changed the
+section in the following way:\\
+
+\noindent 1. Sect 5.2.1 was substantially shortened and simplified. The
+exploration of other possible effects (double red clump, eMSTO, etc.) were
+removed, as they are no longer needed.\\
+2. Table 4 (which showed the 5 clusters with the largest mass discrepancies) was
+removed.\\
+3. The last paragraph was removed as it no longer reflects the overall
+conclusions of this section.\\
+4. The stellar crowding in our photometry is mentioned as the effect responsible
+for the systematic mass differences.\\
+
+Furthermore, the following changes were made to the rest of the article:\\
+
+\noindent 1. A sentence was added to the second to last paragraph of Sect 3.1
+mentioning this effect.\\
+2. The Conclusions were edited to reflect the above changes.\\
+3. A sentence was added to the first paragraph of Appendix A, explaining that
+MASSCLEAN clusters are not affected by crowding.\\
+4. Appendix D was removed, as it became irrelevant now that the
+reason for the mass discrepancies is clear.
+
+
+% 22
+\setcounter{subsection}{21}
+\subsection{Sect. 6.2, paragraph 5}
+Changed, as suggested by the referee. The sentences ``Both MCs accumulate most
+clusters... The SMC has a larger proportion of...'' that followed, were removed
+to accommodate the changes made in Sect 5.2.1.
+
+
+%-------------------------------------------------------------------
+\bibliographystyle{aa}
+\bibliography{biblio} % your references Yourfile.bib
+
+\end{document}
